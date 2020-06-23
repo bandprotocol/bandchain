@@ -72,7 +72,7 @@ func newDefaultRequest() types.Request {
 		1581503227,
 		"clientID",
 		nil,
-		[]types.ExternalID{42},
+		[]types.RawRequest{types.NewRawRequest(42, 1, []byte("calldata"))},
 	)
 }
 

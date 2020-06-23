@@ -31,8 +31,7 @@ func mockExecEnv() *ExecuteEnv {
 	requestTime := int64(1581589700)
 	clientID := "beeb"
 	ibcInfo := NewIBCInfo("source_port", "source_channel")
-	rawRequestID := []ExternalID{1, 2, 3}
-	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, nil)
 	env := NewExecuteEnv(request)
 
 	rawReport1 := NewRawReport(1, 0, []byte("DATA1"))
@@ -55,8 +54,7 @@ func mockFreshPrepareEnv() *PrepareEnv {
 	requestTime := int64(1581589700)
 	clientID := "beeb"
 	ibcInfo := NewIBCInfo("source_port", "source_channel")
-	rawRequestID := []ExternalID{1, 2, 3}
-	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, rawRequestID)
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, nil)
 	env := NewPrepareEnv(request, 3)
 	return env
 }
@@ -181,7 +179,7 @@ func TestAskExternalData(t *testing.T) {
 func TestAskExternalDataFailed(t *testing.T) {
 	penv := mockFreshPrepareEnv()
 
-	penv.AskExternalData(1, 3, make([]byte, MaxCalldataSize+1))
+	penv.AskExternalData(1, 3, make([]byte, MaxDataSize+1))
 	require.Equal(t, []RawRequest(nil), penv.GetRawRequests())
 
 	penv.AskExternalData(1, 1, []byte("CALLDATA1"))

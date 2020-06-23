@@ -22,7 +22,7 @@ static MAX_STACK_HEIGHT: u32 = 16 * 1024; // 16Kib of stack.
 
 static REQUIRED_EXPORTS: &[&str] = &["prepare", "execute"];
 static SUPPORTED_IMPORTS: &[&str] = &[
-    "env.get_calldata_size",
+    "env.get_span_size",
     "env.read_calldata",
     "env.set_return_data",
     "env.get_ask_count",
@@ -30,7 +30,6 @@ static SUPPORTED_IMPORTS: &[&str] = &[
     "env.get_ans_count",
     "env.ask_external_data",
     "env.get_external_data_status",
-    "env.get_external_data_size",
     "env.read_external_data",
 ];
 
@@ -46,8 +45,8 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env) -> Error {
-    match run(code.read(), gas_limit, is_prepare, env) {
+pub extern "C" fn do_run(code: Span, gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Error {
+    match run(code.read(), gas_limit, span_size, is_prepare, env) {
         Ok(_) => Error::NoError,
         Err(e) => e,
     }
@@ -145,8 +144,8 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
-fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Error> {
-    let vm = &mut vm::VMLogic::new(env, gas_limit);
+fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<(), Error> {
+    let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
     let import_object = imports! {
@@ -156,27 +155,25 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.consume_gas(gas)
             }),
-            // TODO: Change specification of OEI
-            "get_calldata_size" => func!(|ctx: &mut Ctx| -> Result<i64, Error> {
+            "get_span_size" =>  func!(|ctx: &mut Ctx| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
-                vm.get_calldata(&mut calldata)?;
-                Ok(calldata.len as i64)
+                vm.get_span_size()
             }),
-            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| -> Result<(), Error>{
+            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size() as usize;
+                // TODO: span_size bound check
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size);
                 let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
                 vm.get_calldata(&mut calldata)?;
-                for (byte, cell) in calldata.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
-                Ok(())
+                for (idx, byte) in calldata.read().iter().enumerate() {
+                    ctx.memory(0).view()[ptr as usize + idx].set(*byte)
+                }
+                Ok(calldata.len as i64)
             }),
             "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                if len as usize > vm.get_span_size() {
+                if len > vm.get_span_size() {
                     return Err(Error::SpanTooSmallError);
                 }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
@@ -196,7 +193,7 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             }),
             "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                if len as usize > vm.get_span_size() {
+                if len > vm.get_span_size() {
                     return Err(Error::SpanTooSmallError);
                 }
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
@@ -206,23 +203,17 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.get_external_data_status(eid, vid)
             }),
-            // TODO: Change specification of OEI
-            "get_external_data_size" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| -> Result<i64, Error>{
+            "read_external_data" => func!(|ctx: &mut Ctx, eid: i64, vid: i64, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 let span_size = vm.get_span_size() as usize;
                 let mut mem: Vec<u8> = Vec::with_capacity(span_size);
                 let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
+                // TODO: span_size bound check
                 vm.get_external_data(eid, vid, &mut data)?;
+                for (idx, byte) in data.read().iter().enumerate() {
+                    ctx.memory(0).view()[ptr as usize + idx].set(*byte)
+                }
                 Ok(data.len as i64)
-            }),
-            "read_external_data" => func!(|ctx: &mut Ctx, eid: i64, vid: i64, ptr: i64, len: i64| -> Result<(),Error> {
-                let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
-                vm.get_external_data(eid, vid, &mut data)?;
-                for (byte, cell) in data.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
-                Ok(())
             }),
         },
     };
