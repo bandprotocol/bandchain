@@ -70,8 +70,6 @@ services:
     image: band-validator:latest
     ports:
       - 26657:26657
-    volumes:
-      - query-files:/root/.bandd/files/
     networks:
       bandchain:
         ipv4_address: 172.18.0.15
@@ -82,8 +80,6 @@ services:
     networks:
       bandchain:
         ipv4_address: 172.18.0.20
-    volumes:
-      - query-files:/root/.bandd/files/
     restart: always
     ports:
       - 1317:1317
@@ -127,22 +123,19 @@ services:
       HASURA_GRAPHQL_SERVER_HOST: 0.0.0.0
       HASURA_GRAPHQL_SERVER_PORT: 5433
 
-  faucet:
-    image: band-validator:latest
-    ports:
-      - 5005:5005
-    environment:
-      - PORT=5005
-      - NODE_URI=tcp://172.18.0.15:26657
-    restart: always
-    networks:
-      bandchain:
-        ipv4_address: 172.18.0.17
-    command: sh -c "go run ./cmd/requestband/main.go"
-
-volumes:
-  query-files:
-    external: true
+  # TODO: faucet server
+  # faucet:
+  #   image: band-validator:latest
+  #   ports:
+  #     - 5005:5005
+  #   environment:
+  #     - PORT=5005
+  #     - NODE_URI=tcp://172.18.0.15:26657
+  #   restart: always
+  #   networks:
+  #     bandchain:
+  #       ipv4_address: 172.18.0.17
+  #   command: sh -c "go run ./cmd/requestband/main.go"
 
 networks:
   bandchain:
