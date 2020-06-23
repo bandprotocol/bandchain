@@ -30,6 +30,7 @@
     "obi.js": "^1.0.2",
     "parcel-plugin-custom-dist-structure": "^1.1.13",
     "react": "^16.13.1",
+    "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
     "react-highlight": "^0.12.0",
     "react-select": "^3.1.0",

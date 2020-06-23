@@ -40,7 +40,11 @@ func TestSuccessRequestOracleData(t *testing.T) {
 	expectRequest := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{Validator1.ValAddress, Validator3.ValAddress, Validator2.ValAddress},
-		2, 4, 1581589790, "app_test", nil, []types.ExternalID{1, 2, 3},
+		2, 4, 1581589790, "app_test", nil, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+			types.NewRawRequest(2, 2, []byte("beeb")),
+			types.NewRawRequest(3, 3, []byte("beeb")),
+		},
 	)
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: 4})
 	request, err := k.GetRequest(ctx, types.RequestID(1))
@@ -144,7 +148,11 @@ func TestExpiredRequestOracleData(t *testing.T) {
 	expectRequest := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{Validator1.ValAddress, Validator3.ValAddress, Validator2.ValAddress},
-		2, 4, 1581589790, "app_test", nil, []types.ExternalID{1, 2, 3},
+		2, 4, 1581589790, "app_test", nil, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+			types.NewRawRequest(2, 2, []byte("beeb")),
+			types.NewRawRequest(3, 3, []byte("beeb")),
+		},
 	)
 	app.EndBlocker(ctx, abci.RequestEndBlock{Height: 4})
 	request, err := k.GetRequest(ctx, types.RequestID(1))

@@ -48,9 +48,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
-	for _, rawReq := range env.GetRawRequests() {
-		req.RawRequestIDs = append(req.RawRequestIDs, rawReq.ExternalID)
-	}
+	req.RawRequests = env.GetRawRequests()
 	// We now have everything we need to the request, so let's add it to the store.
 	id := k.AddRequest(ctx, req)
 	// Emit an event describing a data request and asked validators.

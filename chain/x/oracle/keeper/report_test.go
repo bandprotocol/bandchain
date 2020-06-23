@@ -22,7 +22,10 @@ func TestHasReport(t *testing.T) {
 func TestAddReportSuccess(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 1, types.NewReport(
@@ -42,7 +45,10 @@ func TestAddReportSuccess(t *testing.T) {
 func TestReportOnInvalidRequest(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 2, types.NewReport(
@@ -58,7 +64,10 @@ func TestReportOnInvalidRequest(t *testing.T) {
 func TestReportByNotRequestedValidator(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 1, types.NewReport(
@@ -74,7 +83,10 @@ func TestReportByNotRequestedValidator(t *testing.T) {
 func TestDuplicateReport(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 1, types.NewReport(
@@ -97,7 +109,10 @@ func TestDuplicateReport(t *testing.T) {
 func TestReportInvalidDataSourceCount(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 1, types.NewReport(
@@ -111,7 +126,10 @@ func TestReportInvalidDataSourceCount(t *testing.T) {
 func TestReportInvalidExternalIDs(t *testing.T) {
 	_, ctx, k := createTestInput()
 	request := newDefaultRequest()
-	request.RawRequestIDs = []types.ExternalID{2, 10}
+	request.RawRequests = []types.RawRequest{
+		types.NewRawRequest(2, 1, []byte("calldata")),
+		types.NewRawRequest(10, 1, []byte("calldata")),
+	}
 	k.SetRequest(ctx, 1, request)
 
 	err := k.AddReport(ctx, 1, types.NewReport(
