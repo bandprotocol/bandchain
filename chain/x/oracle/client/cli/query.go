@@ -38,18 +38,6 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 	return oracleCmd
 }
 
-func printOutput(cliCtx context.CLIContext, cdc *codec.Codec, bz []byte, out interface{}) error {
-	var result types.QueryResult
-	if err := json.Unmarshal(bz, &result); err != nil {
-		return err
-	}
-	if result.Status != http.StatusOK {
-		return cliCtx.PrintOutput(result.Result)
-	}
-	cdc.MustUnmarshalJSON(result.Result, &out)
-	return cliCtx.PrintOutput(out)
-}
-
 // GetQueryCmdParams implements the query parameters command.
 func GetQueryCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
