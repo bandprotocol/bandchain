@@ -242,7 +242,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          },
          {
            switch (allSub) {
-           | Data((validator, _)) => VCode(validator.commission->Format.fPercent)
+           | Data((validator, _)) => VCode(validator.commission |> Format.fPercent(~digits=2))
            | _ => Loading(100, 16)
            };
          },
@@ -257,7 +257,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          {
            switch (allSub) {
            | Data((validator, _)) =>
-             VCode((validator.commissionMaxChange *. 100.)->Format.fPercent)
+             VCode(validator.commissionMaxChange *. 100. |> Format.fPercent(~digits=2))
            | _ => Loading(100, 16)
            };
          },
@@ -271,7 +271,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          {
            switch (allSub) {
            | Data((validator, _)) =>
-             VCode((validator.commissionMaxRate *. 100.)->Format.fPercent)
+             VCode(validator.commissionMaxRate *. 100. |> Format.fPercent(~digits=2))
            | _ => Loading(100, 16)
            };
          },
