@@ -77,11 +77,6 @@ var relayFormat = []byte(`
     "type": "tuple"
   },
   {
-    "internalType": "bytes",
-    "name": "_signedDataPrefix",
-    "type": "bytes"
-  },
-  {
     "components": [
       {
         "internalType": "bytes32",

@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (bug) [\#2048](https://github.com/bandprotocol/bandchain/pull/2048) Fix prefix not consistency bug.
 - (bug) [\#2046](https://github.com/bandprotocol/bandchain/pull/2043) Use dash for bandcli report-info.
 - (impv) [\#2043](https://github.com/bandprotocol/bandchain/pull/2043) Add full raw requests information in request struct.
 - (chore) [\#2040](https://github.com/bandprotocol/bandchain/pull/2040) Set HomeFlag to /tmp for SimApp.
