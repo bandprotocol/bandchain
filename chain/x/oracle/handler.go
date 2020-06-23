@@ -89,7 +89,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 	}
 	filename, err := k.AddOracleScriptFile(m.Code)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrCompileFailed, err.Error())
+		return nil, sdkerrors.Wrapf(types.ErrOwasmCompilation, err.Error())
 	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
@@ -117,7 +117,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 	}
 	filename, err := k.AddOracleScriptFile(m.Code)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrCompileFailed, err.Error())
+		return nil, sdkerrors.Wrapf(types.ErrOwasmCompilation, err.Error())
 	}
 	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,

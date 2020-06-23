@@ -95,7 +95,7 @@ func wat2wasm(wat []byte) []byte {
 }
 
 func mustGetOwasmCode(filename string) []byte {
-	absPath, _ := filepath.Abs(fmt.Sprintf("../../pkg/owasm/res/%s", filename))
+	absPath, _ := filepath.Abs(fmt.Sprintf("./testfiles/%s", filename))
 	rawWAT, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)

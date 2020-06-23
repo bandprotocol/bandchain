@@ -68,7 +68,7 @@ func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 }
 
 func getTestOracleScript() (os types.OracleScript, clear func()) {
-	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wat")
+	absPath, _ := filepath.Abs("../testfiles/beeb.wat")
 	rawWAT, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
