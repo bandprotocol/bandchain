@@ -33,7 +33,7 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 			if err != nil {
 				return err
 			}
-			compiledData, err := api.Compile(data, otypes.MaxDataSize)
+			compiledData, err := api.Compile(data, otypes.MaxCompiledWasmCodeSize)
 			if err != nil {
 				return err
 			}
