@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2050](https://github.com/bandprotocol/bandchain/pull/2050) Return proper HTTP status codes on REST endpoints.
 - (bugs) [\#2042](https://github.com/bandprotocol/bandchain/pull/2042) Add request and resolve time on failed and expired requests
 - (bug) [\#2047](https://github.com/bandprotocol/bandchain/pull/2047) Fix request search ordering in 0.38.
 - (bug) [\#2046](https://github.com/bandprotocol/bandchain/pull/2043) Use dash for bandcli report-info.
