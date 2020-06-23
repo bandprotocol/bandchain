@@ -1,11 +1,16 @@
 package keeper_test
 
 import (
+	"io/ioutil"
+	"path/filepath"
 	"testing"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
+	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 func TestHasOracleScript(t *testing.T) {
@@ -149,4 +154,32 @@ func TestGetAllOracleScripts(t *testing.T) {
 	k.SetOracleScript(ctx, 2, oracleScripts[1])
 	// We should now be able to get all the existing oracle scripts.
 	require.Equal(t, oracleScripts, k.GetAllOracleScripts(ctx))
+}
+
+func TestAddOracleScriptFile(t *testing.T) {
+	_, _, k := createTestInput()
+
+	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wat")
+	rawWAT, err := ioutil.ReadFile(absPath)
+	if err != nil {
+		panic(err)
+	}
+	code := wat2wasm(rawWAT)
+
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	filename, err := k.AddOracleScriptFile(code)
+	defer deleteFile(filepath.Join(dir, filename))
+
+	require.NoError(t, err)
+	compiledCode, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
+	require.NoError(t, err)
+
+	require.Equal(t, compiledCode, k.GetFile(filename))
+
+	filename, err = k.AddOracleScriptFile(types.DoNotModifyBytes)
+	require.NoError(t, err)
+	require.Equal(t, types.DoNotModify, filename)
+
+	_, err = k.AddOracleScriptFile([]byte("code"))
+	require.Error(t, err)
 }
