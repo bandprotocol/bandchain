@@ -123,7 +123,7 @@ cd ..
 
 docker-compose up -d --build
 
-sleep 30
+sleep 10
 
 for v in {1..4}
 do
