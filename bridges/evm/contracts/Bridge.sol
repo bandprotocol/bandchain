@@ -65,13 +65,11 @@ contract Bridge is IBridge, Ownable {
     /// @param _blockHeight The height of block to relay to this bridge contract.
     /// @param _multiStore Extra multi store to compute app hash. See MultiStore lib.
     /// @param _merkleParts Extra merkle parts to compute block hash. See BlockHeaderMerkleParts lib.
-    /// @param _signedDataPrefix Prefix data prepended prior to signing block hash.
     /// @param _signatures The signatures signed on this block, sorted alphabetically by address.
     function relayOracleState(
         uint256 _blockHeight,
         MultiStore.Data memory _multiStore,
         BlockHeaderMerkleParts.Data memory _merkleParts,
-        bytes memory _signedDataPrefix,
         TMSignature.Data[] memory _signatures
     ) public {
         bytes32 appHash = _multiStore.getAppHash();
@@ -84,10 +82,7 @@ contract Bridge is IBridge, Ownable {
         address lastSigner = address(0);
         uint256 sumVotingPower = 0;
         for (uint256 idx = 0; idx < _signatures.length; ++idx) {
-            address signer = _signatures[idx].recoverSigner(
-                blockHeader,
-                _signedDataPrefix
-            );
+            address signer = _signatures[idx].recoverSigner(blockHeader);
             require(signer > lastSigner, "INVALID_SIGNATURE_SIGNER_ORDER");
             sumVotingPower = sumVotingPower.add(validatorPowers[signer]);
             lastSigner = signer;

@@ -15,6 +15,8 @@ type internal_t = {
   website: string,
   tokens: Coin.t,
   commissionRate: float,
+  commissionMaxChange: float,
+  commissionMaxRate: float,
   consensusPubKey: PubKey.t,
   bondedHeight: int,
   jailed: bool,
@@ -35,6 +37,8 @@ type t = {
   details: string,
   tokens: Coin.t,
   commission: float,
+  commissionMaxChange: float,
+  commissionMaxRate: float,
   bondedHeight: int,
   completedRequestCount: int,
   missedRequestCount: int,
@@ -52,6 +56,8 @@ let toExternal =
         tokens,
         commissionRate,
         consensusPubKey,
+        commissionMaxChange,
+        commissionMaxRate,
         bondedHeight,
         jailed,
         details,
@@ -70,6 +76,8 @@ let toExternal =
   details,
   tokens,
   commission: commissionRate *. 100.,
+  commissionMaxChange: commissionMaxChange *. 100.,
+  commissionMaxRate: commissionMaxRate *. 100.,
   bondedHeight,
   // TODO: remove hardcoded when somewhere use it
   avgResponseTime: 2,
@@ -95,6 +103,8 @@ module SingleConfig = [%graphql
           website
           tokens @bsDecoder(fn: "GraphQLParser.coin")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
+          commissionMaxChange: commission_max_change @bsDecoder(fn: "float_of_string")
+          commissionMaxRate: commission_max_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed
@@ -115,6 +125,8 @@ module MultiConfig = [%graphql
           website
           tokens @bsDecoder(fn: "GraphQLParser.coin")
           commissionRate: commission_rate @bsDecoder(fn: "float_of_string")
+          commissionMaxChange: commission_max_change @bsDecoder(fn: "float_of_string")
+          commissionMaxRate: commission_max_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed

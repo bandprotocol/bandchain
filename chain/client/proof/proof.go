@@ -44,7 +44,6 @@ func init() {
 type BlockRelayProof struct {
 	MultiStoreProof        MultiStoreProof        `json:"multiStoreProof"`
 	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
-	SignedDataPrefix       tmbytes.HexBytes       `json:"signedDataPrefix"`
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
@@ -57,7 +56,6 @@ func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, 
 		big.NewInt(int64(blockHeight)),
 		blockRelay.MultiStoreProof.encodeToEthFormat(),
 		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
-		blockRelay.SignedDataPrefix,
 		parseSignatures,
 	)
 }
@@ -157,7 +155,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		eventHeight := iavlProof.Proof.Leaves[0].Version
-		signatures, prefix, err := GetSignaturesAndPrefix(&commit.SignedHeader)
+		signatures, err := GetSignaturesAndPrefix(&commit.SignedHeader)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -166,7 +164,6 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
 			BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(cliCtx.Codec, commit.Header),
 			Signatures:             signatures,
-			SignedDataPrefix:       prefix,
 		}
 		resValue := resp.Response.GetValue()
 
