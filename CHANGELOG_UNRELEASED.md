@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (chore) [\#2056](https://github.com/bandprotocol/bandchain/pull/2056) Remove IBCInfo from current v0.38 release.
 - (impv) [\#2052](https://github.com/bandprotocol/bandchain/pull/2052) Improve proof endpoint and patch evm bridge contract
 - (impv) [\#1934](https://github.com/bandprotocol/bandchain/pull/1934) Wireup go-owasm with blockchain properly.
 - (impv) [\#2050](https://github.com/bandprotocol/bandchain/pull/2050) Return proper HTTP status codes on REST endpoints.
