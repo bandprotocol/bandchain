@@ -162,7 +162,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                  className=Styles.logoSmall
                />
              </>
-           | _ => <LoadingCensorBar width=80 height=24 />
+           | _ => <LoadingCensorBar width=80 height=50 />
            }}
           <HSpacing size=Spacing.md />
         </div>
@@ -257,7 +257,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          {
            switch (allSub) {
            | Data((validator, _)) =>
-             VCode(validator.commissionMaxChange *. 100. |> Format.fPercent(~digits=2))
+             VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2))
            | _ => Loading(100, 16)
            };
          },
@@ -271,7 +271,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          {
            switch (allSub) {
            | Data((validator, _)) =>
-             VCode(validator.commissionMaxRate *. 100. |> Format.fPercent(~digits=2))
+             VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
            | _ => Loading(100, 16)
            };
          },
