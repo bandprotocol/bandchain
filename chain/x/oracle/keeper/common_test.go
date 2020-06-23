@@ -59,6 +59,19 @@ func deleteFile(path string) {
 	}
 }
 
+func newDefaultRequest() types.Request {
+	return types.NewRequest(
+		1,
+		[]byte("calldata"),
+		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
+		2,
+		0,
+		1581503227,
+		"clientID",
+		[]types.RawRequest{types.NewRawRequest(42, 1, []byte("calldata"))},
+	)
+}
+
 func getTestDataSource(executable string) (ds types.DataSource, clear func()) {
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)

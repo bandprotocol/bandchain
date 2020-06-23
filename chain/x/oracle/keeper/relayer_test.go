@@ -1,10 +1,5 @@
 package keeper_test
 
-import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
 // import (
 // 	"fmt"
 // 	"testing"
@@ -61,20 +56,6 @@ import (
 // func (t *TestErrLogger) With(keyvals ...interface{}) log.Logger {
 // 	return t
 // }
-
-func newDefaultRequest() types.Request {
-	return types.NewRequest(
-		1,
-		[]byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2,
-		0,
-		1581503227,
-		"clientID",
-		nil,
-		[]types.RawRequest{types.NewRawRequest(42, 1, []byte("calldata"))},
-	)
-}
 
 // func createTestChains(logger log.Logger) (*bandapp.BandApp, *bandapp.BandApp) {
 // 	appA := simapp.NewSimApp(ChainIDA, logger)
