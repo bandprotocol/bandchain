@@ -4,8 +4,8 @@ pragma experimental ABIEncoderV2;
 import {IBridge} from "./Bridge.sol";
 
 interface IBridgeCache {
-    /// ...
-    /// @param _request The ...
+    /// Query the ResponsePacket for a given RequestPacket.
+    /// @param _request The tuple that represent RequestPacket struct.
     function getLatestResponse(IBridge.RequestPacket calldata _request)
         external
         view
