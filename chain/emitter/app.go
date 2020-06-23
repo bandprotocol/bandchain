@@ -48,7 +48,7 @@ func NewBandAppWithEmitter(
 			home, baseAppOptions...,
 		),
 		writer: kafka.NewWriter(kafka.WriterConfig{
-			Brokers:      []string{"localhost:9092"}, // TOD: Remove hardcode
+			Brokers:      []string{"localhost:9092"}, // TODO: Remove hardcode
 			Topic:        topic,
 			Balancer:     &kafka.LeastBytes{},
 			BatchTimeout: 1 * time.Millisecond,
