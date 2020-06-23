@@ -17,6 +17,7 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -91,7 +92,7 @@ type Proof struct {
 	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
-func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
+func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		intRequestID, err := strconv.ParseUint(vars[RequestIDTag], 10, 64)
@@ -100,6 +101,29 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			return
 		}
 		requestID := types.RequestID(intRequestID)
+		bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, requestID))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		var qResult types.QueryResult
+		if err := json.Unmarshal(bz, &qResult); err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		if qResult.Status != http.StatusOK {
+			clientcmn.PostProcessQueryResponse(w, cliCtx, bz)
+			return
+		}
+		var request types.QueryRequestResult
+		if err := cliCtx.Codec.UnmarshalJSON(qResult.Result, &request); err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		if request.Result == nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, "Result has not been resolved")
+			return
+		}
 
 		commit, err := cliCtx.Client.Commit(nil)
 		if err != nil {
@@ -119,7 +143,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		proof := resp.Response.GetProof()
 		if proof == nil {
-			rest.WriteErrorResponse(w, http.StatusInternalServerError, "proof not found")
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, "Proof not found")
 			return
 		}
 
@@ -152,7 +176,10 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 				}
 			}
 		}
-
+		if iavlProof.Proof == nil {
+			rest.WriteErrorResponse(w, http.StatusNotFound, "Proof has not been ready.")
+			return
+		}
 		eventHeight := iavlProof.Proof.Leaves[0].Version
 		signatures, err := GetSignaturesAndPrefix(&commit.SignedHeader)
 		if err != nil {
