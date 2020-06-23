@@ -12,26 +12,3 @@ TODO
 [dependencies]
 json = "0.12.0"
 num = "*"
-
-[workspace]
-members = [
-    "chaintests/crypto_price",
-    "chaintests/main",
-    "chaintests/moresilly",
-    "chaintests/silly",
-    "chaintests/get_env",
-    "chaintests/gold_price",
-    "chaintests/alphavantage",
-    "chaintests/bitcoin_block_count",
-    "chaintests/bitcoin_block_hash",
-    "chaintests/coingecko_volume",
-    "chaintests/crypto_compare_volume",
-    "chaintests/eth_gas_station",
-    "chaintests/open_sky_network",
-    "chaintests/open_weather_map",
-    "chaintests/fair_crypto_market_price",
-    "chaintests/qrng",
-    "chaintests/yahoo_price",
-    "chaindebugtests/allocate",
-    "chaindebugtests/wrong_args",
-]
