@@ -17,8 +17,7 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 var (
@@ -61,10 +60,10 @@ func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, 
 }
 
 type OracleDataProof struct {
-	RequestPacket  oracle.OracleRequestPacketData  `json:"requestPacket"`
-	ResponsePacket oracle.OracleResponsePacketData `json:"responsePacket"`
-	Version        uint64                          `json:"version"`
-	MerklePaths    []IAVLMerklePath                `json:"merklePaths"`
+	RequestPacket  types.OracleRequestPacketData  `json:"requestPacket"`
+	ResponsePacket types.OracleResponsePacketData `json:"responsePacket"`
+	Version        uint64                         `json:"version"`
+	MerklePaths    []IAVLMerklePath               `json:"merklePaths"`
 }
 
 func (o *OracleDataProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
@@ -100,7 +99,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		requestID := otypes.RequestID(intRequestID)
+		requestID := types.RequestID(intRequestID)
 
 		commit, err := cliCtx.Client.Commit(nil)
 		if err != nil {
@@ -110,7 +109,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 
 		resp, err := cliCtx.Client.ABCIQueryWithOptions(
 			"/store/oracle/key",
-			otypes.ResultStoreKey(requestID),
+			types.ResultStoreKey(requestID),
 			rpcclient.ABCIQueryOptions{Height: commit.Height - 1, Prove: true},
 		)
 		if err != nil {
@@ -168,8 +167,8 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		resValue := resp.Response.GetValue()
 
 		type result struct {
-			Req oracle.OracleRequestPacketData
-			Res oracle.OracleResponsePacketData
+			Req types.OracleRequestPacketData
+			Res types.OracleResponsePacketData
 		}
 		var rs result
 		obi.MustDecode(resValue, &rs)
