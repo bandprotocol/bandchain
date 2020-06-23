@@ -18,6 +18,7 @@ type TMSignature struct {
 	R                tmbytes.HexBytes `json:"r"`
 	S                tmbytes.HexBytes `json:"s"`
 	V                uint8            `json:"v"`
+	SignedDataPrefix tmbytes.HexBytes `json:"signedPrefixSuffix"`
 	SignedDataSuffix tmbytes.HexBytes `json:"signedDataSuffix"`
 }
 
@@ -25,15 +26,17 @@ type TMSignatureEthereum struct {
 	R                common.Hash
 	S                common.Hash
 	V                uint8
+	SignedDataPrefix []byte
 	SignedDataSuffix []byte
 }
 
 func (signature *TMSignature) encodeToEthFormat() TMSignatureEthereum {
 	return TMSignatureEthereum{
-		common.BytesToHash(signature.R),
-		common.BytesToHash(signature.S),
-		signature.V,
-		signature.SignedDataSuffix,
+		R:                common.BytesToHash(signature.R),
+		S:                common.BytesToHash(signature.S),
+		V:                signature.V,
+		SignedDataPrefix: signature.SignedDataPrefix,
+		SignedDataSuffix: signature.SignedDataSuffix,
 	}
 }
 
@@ -54,8 +57,7 @@ func recoverETHAddress(msg, sig, signer []byte) ([]byte, uint8, error) {
 	return nil, 0, fmt.Errorf("No match address found")
 }
 
-func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, error) {
-	prefix := ""
+func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, error) {
 	addrs := []string{}
 	mapAddrs := map[string]TMSignature{}
 	for i, vote := range info.Commit.Signatures {
@@ -66,27 +68,24 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, er
 		lr := strings.Split(hex.EncodeToString(msg), hex.EncodeToString(info.Commit.BlockID.Hash))
 
 		if len(lr) != 2 {
-			return nil, nil, fmt.Errorf("Split block hash failed")
+			return nil, fmt.Errorf("Split block hash failed")
 		}
 
-		if prefix != "" && prefix != lr[0] {
-			return nil, nil, fmt.Errorf("Inconsistent prefix signature bytes")
-		}
-		prefix = lr[0]
 		addr, v, err := recoverETHAddress(msg, vote.Signature, vote.ValidatorAddress)
 		if err != nil {
-			return nil, nil, err
+			return nil, err
 		}
 		addrs = append(addrs, string(addr))
 		mapAddrs[string(addr)] = TMSignature{
 			vote.Signature[:32],
 			vote.Signature[32:],
 			v,
+			mustDecodeString(lr[0]),
 			mustDecodeString(lr[1]),
 		}
 	}
 	if len(addrs) == 0 {
-		return nil, nil, fmt.Errorf("No valid precommit")
+		return nil, fmt.Errorf("No valid precommit")
 	}
 
 	signatures := make([]TMSignature, len(addrs))
@@ -95,5 +94,5 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, []byte, er
 		signatures[i] = mapAddrs[addr]
 	}
 
-	return signatures, mustDecodeString(prefix), nil
+	return signatures, nil
 }
