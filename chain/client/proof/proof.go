@@ -155,7 +155,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 		}
 
 		eventHeight := iavlProof.Proof.Leaves[0].Version
-		signatures, err := GetSignaturesAndPrefix(&commit.SignedHeader)
+		signatures, err := GetSignatures(&commit.SignedHeader)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return

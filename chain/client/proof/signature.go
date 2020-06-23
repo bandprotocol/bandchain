@@ -57,7 +57,7 @@ func recoverETHAddress(msg, sig, signer []byte) ([]byte, uint8, error) {
 	return nil, 0, fmt.Errorf("No match address found")
 }
 
-func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, error) {
+func GetSignatures(info *types.SignedHeader) ([]TMSignature, error) {
 	addrs := []string{}
 	mapAddrs := map[string]TMSignature{}
 	for i, vote := range info.Commit.Signatures {
