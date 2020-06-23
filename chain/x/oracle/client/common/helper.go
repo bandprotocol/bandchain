@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/types/rest"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func PostProcessQueryResponse(w http.ResponseWriter, cliCtx context.CLIContext, bz []byte) {

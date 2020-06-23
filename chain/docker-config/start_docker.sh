@@ -12,10 +12,8 @@ bandd init node-validator --chain-id bandchain
 
 # add data sources to genesis
 
-cd ../../genesis_ds_os/genesis
-chmod +x scripts/add_os_ds.sh
-./scripts/add_os_ds.sh
-cd ../../bandchain/chain/
+chmod +x $DIR/add_os_ds.sh
+$DIR/add_os_ds.sh
 
 # create acccounts
 echo "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
@@ -111,13 +109,6 @@ bandd collect-gentxs
 
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
-
-# Recreate files volume
-docker volume rm query-files
-docker volume create --driver local \
-    --opt type=none \
-    --opt device=$HOME/.bandd/files \
-    --opt o=bind query-files
 
 cd ..
 
