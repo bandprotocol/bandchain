@@ -29,7 +29,7 @@ module Styles = {
       marginLeft(`auto),
     ]);
 
-  let pagination = style([height(`px(50))]);
+  let pagination = style([height(`px(30))]);
 };
 
 module TableHeader = {
