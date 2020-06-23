@@ -17,7 +17,7 @@ module Styles = {
   let withWidth = w => style([width(`px(w))]);
 
   let fillLeft = style([marginLeft(`auto)]);
-  let pagination = style([height(`px(50))]);
+  let pagination = style([height(`px(30))]);
 };
 
 module TableHeader = {
