@@ -31,7 +31,6 @@ message MsgReportData {
     (gogoproto.casttype) = "RequestID"
   ];
   repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
-  ;
   bytes validator = 3
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
   bytes reporter = 4
@@ -259,10 +258,7 @@ message Request {
   int64 request_time = 6;
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
   IBCInfo ibc_info = 8 [(gogoproto.customname) = "IBCInfo"];
-  repeated int64 raw_request_ids = 9 [
-    (gogoproto.customname) = "RawRequestIDs",
-    (gogoproto.casttype) = "ExternalID"
-  ];
+  repeated RawRequest raw_requests = 9 [(gogoproto.nullable) = false];
 }
 
 message IBCInfo {

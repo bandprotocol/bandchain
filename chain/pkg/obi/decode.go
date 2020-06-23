@@ -85,11 +85,15 @@ func decodeImpl(data []byte, v interface{}) ([]byte, error) {
 	}
 }
 
-// Decode uses obi encoding scheme to decode the given input.
-func Decode(data []byte, v interface{}) error {
-	rem, err := decodeImpl(data, v)
-	if err != nil {
-		return err
+// Decode uses obi encoding scheme to decode the given input(s).
+func Decode(data []byte, v ...interface{}) error {
+	var err error
+	rem := data
+	for _, each := range v {
+		rem, err = decodeImpl(rem, each)
+		if err != nil {
+			return err
+		}
 	}
 	if len(rem) != 0 {
 		return errors.New("obi: not all data was consumed while decoding")
@@ -98,8 +102,8 @@ func Decode(data []byte, v interface{}) error {
 }
 
 // MustDecode uses obi encoding scheme to decode the given input. Panics on error.
-func MustDecode(data []byte, v interface{}) {
-	err := Decode(data, v)
+func MustDecode(data []byte, v ...interface{}) {
+	err := Decode(data, v...)
 	if err != nil {
 		panic(err)
 	}

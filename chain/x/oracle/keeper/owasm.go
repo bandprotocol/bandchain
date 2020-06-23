@@ -43,14 +43,12 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	err = owasm.Prepare(code, types.WasmPrepareGas, env)
+	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
-	for _, rawReq := range env.GetRawRequests() {
-		req.RawRequestIDs = append(req.RawRequestIDs, rawReq.ExternalID)
-	}
+	req.RawRequests = env.GetRawRequests()
 	// We now have everything we need to the request, so let's add it to the store.
 	id := k.AddRequest(ctx, req)
 	// Emit an event describing a data request and asked validators.
@@ -91,7 +89,7 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env.SetReports(k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	err := owasm.Execute(code, types.WasmExecuteGas, env)
+	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	// var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
