@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -20,19 +21,29 @@ func queryRequest(route string, cliCtx context.CLIContext, rid string) ([]byte, 
 func QuerySearchLatestRequest(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string,
 ) ([]byte, int64, error) {
-
-	events := []string{
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyCalldata, calldata),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyAskCount, askCount),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyMinCount, minCount),
-	}
-	searchResult, err := utils.QueryTxsByEvents(cliCtx, events, 1, 30) // TODO: FIX THIS! , "desc")
+	query := fmt.Sprintf("%s.%s='%s' AND %s.%s='%s' AND %s.%s='%s' AND %s.%s='%s'",
+		types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid,
+		types.EventTypeRequest, types.AttributeKeyCalldata, calldata,
+		types.EventTypeRequest, types.AttributeKeyAskCount, askCount,
+		types.EventTypeRequest, types.AttributeKeyMinCount, minCount,
+	)
+	node, err := cliCtx.GetNode()
 	if err != nil {
 		return nil, 0, err
 	}
-	for _, tx := range searchResult.Txs {
-		for _, log := range tx.Logs {
+	resTxs, err := node.TxSearch(query, !cliCtx.TrustNode, 1, 30, "desc")
+	if err != nil {
+		return nil, 0, err
+	}
+	for _, tx := range resTxs.Txs {
+		if !cliCtx.TrustNode {
+			err := utils.ValidateTxResult(cliCtx, tx)
+			if err != nil {
+				return nil, 0, err
+			}
+		}
+		logs, _ := sdk.ParseABCILogs(tx.TxResult.Log)
+		for _, log := range logs {
 			for _, ev := range log.Events {
 				if ev.Type != types.EventTypeRequest {
 					continue

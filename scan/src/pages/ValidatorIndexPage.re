@@ -90,7 +90,7 @@ module Uptime = {
             "Percentage of the blocks that the validator is active for out of the last 250"
             |> React.string;
           },
-          VCode(uptime->Format.fPercent),
+          VCode(uptime |> Format.fPercent(~digits=2)),
         )
         |> Sub.resolve
       | None =>
@@ -197,7 +197,28 @@ let make = (~address, ~hashtag: Route.validator_tab_t) =>
            {
              "Validator service fees charged to delegators" |> React.string;
            },
-           VCode(validator.commission->Format.fPercent),
+           VCode(validator.commission |> Format.fPercent(~digits=2)),
+         )}
+        <VSpacing size=Spacing.lg />
+        {kvRow(
+           "COMMISSION MAX CHANGE",
+           {
+             "Maximum increment by which the validator can change their commission rate at a time"
+             |> React.string;
+           },
+           {
+             VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2));
+           },
+         )}
+        <VSpacing size=Spacing.lg />
+        {kvRow(
+           "COMMISSION MAX RATE",
+           {
+             "The highest possible commission rate the validator can set" |> React.string;
+           },
+           {
+             VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2));
+           },
          )}
         <VSpacing size=Spacing.lg />
         {kvRow(
