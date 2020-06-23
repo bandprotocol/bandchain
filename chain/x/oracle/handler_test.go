@@ -409,7 +409,6 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	fmt.Println(filename)
 	defer deleteFile(filepath.Join(dir, filename))
 
 	oracleScriptID := types.OracleScriptID(1)
@@ -438,7 +437,6 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 	}
 	require.Equal(t, expectEvents, res.Events)
 	filename = keeper.MustGetOracleScript(ctx, 1).Filename
-	fmt.Println(filename)
 	defer deleteFile(filepath.Join(dir, filename))
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
