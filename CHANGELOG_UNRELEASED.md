@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (feat) [\#2058](https://github.com/bandprotocol/bandchain/pull/2058) Implement faucet service for testnet.
 - (impv) [\#2057](https://github.com/bandprotocol/bandchain/pull/2057) Change wasm execute gas to 100000.
 - (chore) [\#2053](https://github.com/bandprotocol/bandchain/pull/2053) Remove data sources and oracle scripts from repo.
 - (chore) [\#2056](https://github.com/bandprotocol/bandchain/pull/2056) Remove IBCInfo from current v0.38 release.
