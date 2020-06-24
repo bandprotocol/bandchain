@@ -119,7 +119,10 @@ func getBadOracleScript() (os types.OracleScript, clear func()) {
 
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	compiledCode, _ := api.Compile(code, 1024)
+	compiledCode, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
+	if err != nil {
+		panic(err)
+	}
 	filename := f.AddFile(compiledCode)
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
