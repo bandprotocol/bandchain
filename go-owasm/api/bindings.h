@@ -24,6 +24,7 @@ enum Error {
   Error_RuntimeError = 11,
   Error_OutOfGasError = 12,
   Error_BadEntrySignatureError = 13,
+  Error_MemoryOutOfBoundError = 14,
   Error_WrongPeriodActionError = 128,
   Error_TooManyExternalDataError = 129,
   Error_BadValidatorIndexError = 130,
@@ -33,6 +34,15 @@ enum Error {
 };
 typedef int32_t Error;
 
+/**
+ * A `span` is a lightweight struct used to refer to a section of memory. The memory
+ * section is not owned by the span, similar to C++'s std::span. The `span`'s creator is
+ * responsible for allocating the space and freeing it afterward.
+ *
+ * The primary usecase of `span` is to faciliate communication between Go and Rust.
+ * One side allocates space and creates a `span` for the counterpart to read or write
+ * without needing to worry about memory management.
+ */
 typedef struct Span {
   uint8_t *ptr;
   uintptr_t len;

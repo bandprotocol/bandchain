@@ -18,6 +18,7 @@ pub enum Error {
   RuntimeError = 11,           // Runtime error while executing the Wasm script.
   OutOfGasError = 12,          // Out-of-gas while executing the Wasm script.
   BadEntrySignatureError = 13, // Bad execution entry point sigature.
+  MemoryOutOfBoundError = 14,  // Out-of-bound memory access while executing the wasm script
   // Go-generated errors while interacting with OEI.
   WrongPeriodActionError = 128,       // OEI action to invoke is not available.
   TooManyExternalDataError = 129,     // Too many external data requests.
