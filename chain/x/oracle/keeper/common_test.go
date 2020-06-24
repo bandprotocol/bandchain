@@ -103,7 +103,7 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 }
 
 func getBadOracleScript() (os types.OracleScript, clear func()) {
-	// cannot get_external_data_size in prepare function
+	// cannot set_return_data in prepare function
 	wat := []byte(`(module
 		(type $t0 (func))
 		(type $t2 (func (param i64 i64)))
