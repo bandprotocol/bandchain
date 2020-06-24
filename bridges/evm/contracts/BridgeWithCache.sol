@@ -56,6 +56,11 @@ contract BridgeWithCache is Bridge {
             (RequestPacket, ResponsePacket)
         );
 
+        require(
+            res.requestId > requestsCache[getRequestKey(req)].requestId,
+            "FAIL_REQUEST_SHOULD_NEWER_THAN_THE_LATEST"
+        );
+
         requestsCache[getRequestKey(req)] = res;
     }
 }
