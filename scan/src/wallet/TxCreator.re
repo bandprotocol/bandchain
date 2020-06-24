@@ -257,7 +257,8 @@ let createSignedTx = (~network, ~signature, ~pubKey, ~tx: raw_tx_t, ~mode, ()) =
           exception WrongNetwork(string);
           switch (network) {
           | "GUANYU" => Js.Json.string(newPubKey)
-          | "WENCHANG" =>
+          | "WENCHANG"
+          | "WENCHANG38" =>
             Js.Json.object_(
               Js.Dict.fromList([
                 ("type", Js.Json.string("tendermint/PubKeySecp256k1")),

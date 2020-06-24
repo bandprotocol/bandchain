@@ -56,7 +56,8 @@ let parse = code => {
   exception WrongNetwork(string);
   switch (Env.network) {
   | "GUANYU" => guanyu(code)
-  | "WENCHANG" => wenchang(code)
+  | "WENCHANG"
+  | "WENCHANG38" => wenchang(code)
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
 };

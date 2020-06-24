@@ -118,8 +118,9 @@ module TopBar = {
 let make = () => {
   exception WrongNetwork(string);
   switch (Env.network) {
-  | "GUANYU" => ()
-  | "WENCHANG" => ()
+  | "GUANYU" 
+  | "WENCHANG" 
+  | "WENCHANG38" => ()
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
 
