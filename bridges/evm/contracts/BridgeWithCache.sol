@@ -35,9 +35,7 @@ contract BridgeWithCache is Bridge {
         view
         returns (ResponsePacket memory)
     {
-        ResponsePacket memory res = requestsCache[keccak256(
-            abi.encode(_request)
-        )];
+        ResponsePacket memory res = requestsCache[getRequestKey(_request)];
         require(res.requestId != 0, "RESPONSE_NOT_FOUND");
 
         return res;
@@ -47,10 +45,17 @@ contract BridgeWithCache is Bridge {
     /// After that, the results will be recorded to the state by using the hash of RequestPacket as key.
     /// @param _data The encoded data for oracle state relay and data verification.
     function relay(bytes calldata _data) external {
-        (RequestPacket memory req, ResponsePacket memory res) = relayAndVerify(
-            _data
+        (bool ok, bytes memory rawResult) = address(this).call(
+            abi.encodeWithSignature("relayAndVerify(bytes)", _data)
         );
 
-        requestsCache[keccak256(abi.encode(req))] = res;
+        require(ok, "FAIL_TO_RELAY_AND_VERIFY");
+
+        (RequestPacket memory req, ResponsePacket memory res) = abi.decode(
+            rawResult,
+            (RequestPacket, ResponsePacket)
+        );
+
+        requestsCache[getRequestKey(req)] = res;
     }
 }
