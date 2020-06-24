@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2056](https://github.com/bandprotocol/bandchain/pull/2056) Change wasm execute gas to 100000.
 - (chore) [\#2053](https://github.com/bandprotocol/bandchain/pull/2053) Remove data sources and oracle scripts from repo.
 - (chore) [\#2056](https://github.com/bandprotocol/bandchain/pull/2056) Remove IBCInfo from current v0.38 release.
 - (impv) [\#2052](https://github.com/bandprotocol/bandchain/pull/2052) Improve proof endpoint and patch evm bridge contract
