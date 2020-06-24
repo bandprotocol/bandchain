@@ -15,10 +15,9 @@ import (
 )
 
 const (
-	flagValidator          = "validator"
-	flagLogLevel           = "log-level"
-	flagExecutor           = "executor"
-	flagChainRestServerURI = "chain-rest-server"
+	flagValidator = "validator"
+	flagLogLevel  = "log-level"
+	flagExecutor  = "executor"
 )
 
 // Config data structure for bandoracled daemon.

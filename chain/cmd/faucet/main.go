@@ -15,11 +15,8 @@ import (
 )
 
 const (
-	flagValidator          = "validator"
-	flagExecutor           = "executor"
-	flagChainRestServerURI = "chain-rest-server"
-	flagPort               = "port"
-	flagAmount             = "amount"
+	flagPort   = "port"
+	flagAmount = "amount"
 )
 
 // Config data structure for faucet server.

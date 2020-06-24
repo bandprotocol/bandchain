@@ -150,8 +150,7 @@ done
 # Create faucet container
 rm -rf ~/.faucet
 faucet config chain-id bandchain
-faucet config node tcp://172.18.0.1$v:26657
-faucet config chain-rest-server tcp://172.18.0.15:26657
+faucet config node tcp://172.18.0.15:26657
 faucet config port 5005
 for i in $(eval echo {1..5})
 do
