@@ -159,7 +159,7 @@ func TestGetAllOracleScripts(t *testing.T) {
 func TestAddOracleScriptFile(t *testing.T) {
 	_, _, k := createTestInput()
 
-	absPath, _ := filepath.Abs("../../../pkg/owasm/res/beeb.wat")
+	absPath, _ := filepath.Abs("../testfiles/beeb.wat")
 	rawWAT, err := ioutil.ReadFile(absPath)
 	if err != nil {
 		panic(err)
