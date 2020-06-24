@@ -63,6 +63,7 @@
 
 ### Owasm
 
+- (impv) [\#2004](https://github.com/bandprotocol/bandchain/pull/2004) Implement recursive and memory test in go-owasm .
 - (impv) [\#2026](https://github.com/bandprotocol/bandchain/pull/2026) Remove get_calldata_size and get_external_data_size from OEI.
 - (chore) [\#2025](https://github.com/bandprotocol/bandchain/pull/2025) Cleanup code documentation and error messages
 - (feat) [\#1998](https://github.com/bandprotocol/bandchain/pull/1998) Implement safe guard to check import and export from wasm
