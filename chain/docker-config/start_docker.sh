@@ -5,24 +5,15 @@ DIR=`dirname "$0"`
 # remove old genesis
 rm -rf ~/.band*
 
-mkdir -p pkg/owasm/res
-
-# Build genesis oracle scripts
-cd ../owasm/chaintests
-
-for f in *; do
-    if [ -d "$f" ]; then
-        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
-        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/pkg/owasm/res
-    fi
-done
-
-cd ../../chain
-
 make install
 
 # initial new node
-bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
+bandd init node-validator --chain-id bandchain
+
+# add data sources to genesis
+
+chmod +x $DIR/add_os_ds.sh
+$DIR/add_os_ds.sh
 
 # create acccounts
 echo "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
@@ -55,6 +46,7 @@ bandcli config trust-node true
 
 # create copy of config.toml
 cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
+cp -r ~/.bandd/files docker-config/
 
 # modify moniker
 sed 's/node-validator/🙎‍♀️Alice \& Co./g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
@@ -118,18 +110,11 @@ bandd collect-gentxs
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
 
-# Recreate files volume
-docker volume rm query-files
-docker volume create --driver local \
-    --opt type=none \
-    --opt device=$HOME/.bandd/files \
-    --opt o=bind query-files
-
 cd ..
 
 docker-compose up -d --build
 
-sleep 30
+sleep 10
 
 for v in {1..4}
 do

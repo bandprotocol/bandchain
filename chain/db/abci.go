@@ -34,17 +34,17 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 
 		resolveStatus := otypes.ResolveStatus(numResolveStatus)
 
+		requestTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyRequestTime], 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		resolveTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyResolveTime], 10, 64)
+		if err != nil {
+			panic(err)
+		}
+
 		if parseResolveStatus(resolveStatus) == Success {
-			requestTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyRequestTime], 10, 64)
-			if err != nil {
-				panic(err)
-
-			}
-			resolveTime, err := strconv.ParseInt(kvMap[otypes.AttributeKeyResolveTime], 10, 64)
-			if err != nil {
-				panic(err)
-
-			}
 			result := []byte(kvMap[otypes.AttributeKeyResult])
 
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
@@ -59,7 +59,11 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 			}
 		} else {
 			err = b.tx.Model(&Request{}).Where(Request{ID: id}).
-				Update(Request{ResolveStatus: parseResolveStatus(resolveStatus)}).Error
+				Update(
+					Request{ResolveStatus: parseResolveStatus(resolveStatus),
+						RequestTime: requestTime,
+						ResolveTime: resolveTime,
+					}).Error
 			if err != nil {
 				panic(err)
 			}

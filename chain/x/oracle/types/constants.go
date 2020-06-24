@@ -10,9 +10,10 @@ const (
 	MaxSchemaLength      = 512
 	MaxURLLength         = 128
 
-	MaxExecutableSize = 8 * 1024   // 8kB
-	MaxWasmCodeSize   = 512 * 1024 // 512kB
-	MaxDataSize       = 1 * 1024   // 1kB
+	MaxExecutableSize       = 8 * 1024        // 8kB
+	MaxWasmCodeSize         = 512 * 1024      // 512kB
+	MaxCompiledWasmCodeSize = 1 * 1024 * 1024 // 1MB
+	MaxDataSize             = 1 * 1024        // 1kB
 
 	WasmPrepareGas = 100000
 	WasmExecuteGas = 500000

@@ -1,7 +1,7 @@
 package proof
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type RequestPacketEthereum struct {
@@ -12,7 +12,7 @@ type RequestPacketEthereum struct {
 	MinCount       uint64
 }
 
-func transformRequestPacket(p oracle.OracleRequestPacketData) RequestPacketEthereum {
+func transformRequestPacket(p types.OracleRequestPacketData) RequestPacketEthereum {
 	return RequestPacketEthereum{
 		ClientId:       p.ClientID,
 		OracleScriptId: uint64(p.OracleScriptID),
@@ -32,7 +32,7 @@ type ResponsePacketEthereum struct {
 	Result        []byte
 }
 
-func transformResponsePacket(p oracle.OracleResponsePacketData) ResponsePacketEthereum {
+func transformResponsePacket(p types.OracleResponsePacketData) ResponsePacketEthereum {
 	return ResponsePacketEthereum{
 		ClientId:      p.ClientID,
 		RequestId:     uint64(p.RequestID),

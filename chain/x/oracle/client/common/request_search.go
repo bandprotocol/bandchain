@@ -1,38 +1,56 @@
 package common
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func queryRequest(route string, cliCtx context.CLIContext, rid string) ([]byte, int64, error) {
-	res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid), nil)
+func queryRequest(route string, cliCtx context.CLIContext, rid string) (types.QueryRequestResult, int64, error) {
+	bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid), nil)
 	if err != nil {
-		return nil, 0, err
+		return types.QueryRequestResult{}, 0, err
 	}
-	return res, height, nil
+	var result types.QueryResult
+	if err := json.Unmarshal(bz, &result); err != nil {
+		return types.QueryRequestResult{}, 0, err
+	}
+	var reqResult types.QueryRequestResult
+	cliCtx.Codec.MustUnmarshalJSON(result.Result, &reqResult)
+	return reqResult, height, nil
 }
 
 func QuerySearchLatestRequest(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string,
 ) ([]byte, int64, error) {
-
-	events := []string{
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyCalldata, calldata),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyAskCount, askCount),
-		fmt.Sprintf("%s.%s='%s'", types.EventTypeRequest, types.AttributeKeyMinCount, minCount),
-	}
-	searchResult, err := utils.QueryTxsByEvents(cliCtx, events, 1, 30) // TODO: FIX THIS! , "desc")
+	query := fmt.Sprintf("%s.%s='%s' AND %s.%s='%s' AND %s.%s='%s' AND %s.%s='%s'",
+		types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid,
+		types.EventTypeRequest, types.AttributeKeyCalldata, calldata,
+		types.EventTypeRequest, types.AttributeKeyAskCount, askCount,
+		types.EventTypeRequest, types.AttributeKeyMinCount, minCount,
+	)
+	node, err := cliCtx.GetNode()
 	if err != nil {
 		return nil, 0, err
 	}
-	for _, tx := range searchResult.Txs {
-		for _, log := range tx.Logs {
+	resTxs, err := node.TxSearch(query, !cliCtx.TrustNode, 1, 30, "desc")
+	if err != nil {
+		return nil, 0, err
+	}
+	for _, tx := range resTxs.Txs {
+		if !cliCtx.TrustNode {
+			err := utils.ValidateTxResult(cliCtx, tx)
+			if err != nil {
+				return nil, 0, err
+			}
+		}
+		logs, _ := sdk.ParseABCILogs(tx.TxResult.Log)
+		for _, log := range logs {
 			for _, ev := range log.Events {
 				if ev.Type != types.EventTypeRequest {
 					continue
@@ -52,18 +70,18 @@ func QuerySearchLatestRequest(
 					}
 				}
 				if ok && rid != "" {
-					res, h, err := queryRequest(route, cliCtx, rid)
+					out, h, err := queryRequest(route, cliCtx, rid)
 					if err != nil {
 						return nil, 0, err
 					}
-					var out types.QueryRequestResult
-					cliCtx.Codec.MustUnmarshalJSON(res, &out)
 					if out.Result != nil {
-						return res, h, nil
+						bz, err := types.QueryOK(out)
+						return bz, h, err
 					}
 				}
 			}
 		}
 	}
-	return nil, 0, fmt.Errorf("request not found")
+	bz, err := types.QueryNotFound("request with specified specification not found")
+	return bz, 0, err
 }

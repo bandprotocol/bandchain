@@ -17,7 +17,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/merkle"
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type MultiStoreProof struct {
@@ -62,7 +62,7 @@ func GetMultiStoreProof(proof rootmulti.MultiStoreProofOp) MultiStoreProof {
 			encodeStoreMerkleHash(bam.MainStoreKey, m[bam.MainStoreKey]),
 			encodeStoreMerkleHash(mint.StoreKey, m[mint.StoreKey]),
 		}),
-		OracleIAVLStateHash:    m[oracle.StoreKey],
+		OracleIAVLStateHash:    m[types.StoreKey],
 		ParamsStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{encodeStoreMerkleHash(params.StoreKey, m[params.StoreKey])}),
 		SlashingToUpgradeStoresMerkleHash: merkle.SimpleHashFromByteSlices([][]byte{
 			encodeStoreMerkleHash(slashing.StoreKey, m[slashing.StoreKey]),

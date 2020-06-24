@@ -1,12 +1,9 @@
 package keeper_test
 
 import (
-	"path/filepath"
 	"testing"
 
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -68,16 +65,4 @@ func TestGetSetParams(t *testing.T) {
 	k.SetParam(ctx, types.KeyBaseRequestGas, 150000)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 30000)
 	require.Equal(t, types.NewParams(2, 20, 40, 7, 150000, 30000), k.GetParams(ctx))
-}
-
-func TestAddFile(t *testing.T) {
-	_, _, k := createTestInput()
-
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := k.AddFile([]byte("file"))
-	defer deleteFile(filepath.Join(dir, filename))
-
-	require.Equal(t, []byte("file"), k.GetFile(filename))
-
-	require.Equal(t, types.DoNotModify, k.AddFile(types.DoNotModifyBytes))
 }

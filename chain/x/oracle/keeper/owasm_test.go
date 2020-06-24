@@ -43,13 +43,13 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	}
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.NoError(t, err)
 
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
-		requestHeight, int64(1581589790), clientID, nil, rawRequests)
+		requestHeight, int64(1581589790), clientID, rawRequests)
 	require.Equal(t, expectReq, req)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(
@@ -113,7 +113,7 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
@@ -147,10 +147,10 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
+	require.Panics(t, func() { k.PrepareRequest(ctx, &m) })
 
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000))
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.NoError(t, err)
 
 }
@@ -191,7 +191,7 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	// PrepareRequest panics because set gas meter at 150000
 	// but PrepareRequest consume gas more than 200000
 	// (baseRequestGas + askCount*perValidatorRequestGas = 200000)
-	require.Panics(t, func() { k.PrepareRequest(ctx, &m, nil) })
+	require.Panics(t, func() { k.PrepareRequest(ctx, &m) })
 }
 
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
@@ -221,7 +221,7 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
@@ -251,7 +251,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
@@ -270,7 +270,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 // 	clientID := "beeb"
 
 // 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-// 	err := k.PrepareRequest(ctx, &m, nil)
+// 	err := k.PrepareRequest(ctx, &m)
 // 	require.Error(t, err)
 // }
 
@@ -288,7 +288,7 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 	clientID := "beeb"
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
@@ -314,7 +314,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, nil, rawRequests)
+		requestTime, clientID, rawRequests)
 	reqID := k.AddRequest(ctx, req)
 
 	// Set report validator

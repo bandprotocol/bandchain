@@ -18,7 +18,7 @@ const (
 
 // PrepareRequest takes an request specification object, performs the prepare call, and saves
 // the request object to store. Also emits events related to the request.
-func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *types.IBCInfo) error {
+func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	askCount := r.GetAskCount()
 	if askCount > k.GetParam(ctx, types.KeyMaxAskCount) {
 		return sdkerrors.Wrapf(types.ErrInvalidAskCount, "got: %d, max: %d", askCount, k.GetParam(ctx, types.KeyMaxAskCount))
@@ -34,7 +34,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec, ibcInfo *ty
 	// Create a request object. Note that RawRequestIDs will be populated after preparation is done.
 	req := types.NewRequest(
 		r.GetOracleScriptID(), r.GetCalldata(), validators, r.GetMinCount(),
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), ibcInfo, nil,
+		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
 	env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
@@ -90,18 +90,12 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
-	// var res types.OracleResponsePacketData
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf(
 			"failed to execute request id: %d with error: %s", reqID, err.Error(),
 		))
 		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
-		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
 		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
-		// res = k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
-	// if req.IBCInfo != nil {
-	// 	k.SendOracleResponse(ctx, req.IBCInfo.SourcePort, req.IBCInfo.SourceChannel, res)
-	// }
 }
