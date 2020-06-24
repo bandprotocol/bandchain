@@ -82,6 +82,8 @@ func toGoError(code C.Error) error {
 		return ErrOutOfGas
 	case C.Error_BadEntrySignatureError:
 		return ErrBadEntrySignature
+	case C.Error_MemoryOutOfBoundError:
+		return ErrMemoryOutOfBound
 	// Go-generated errors while interacting with OEI.
 	case C.Error_WrongPeriodActionError:
 		return ErrWrongPeriodAction

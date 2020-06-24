@@ -144,6 +144,13 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
+fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error> {
+    if max_range < require_range {
+        return Err(Error::MemoryOutOfBoundError);
+    }
+    return Ok(());
+}
+
 fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<(), Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
