@@ -7,9 +7,8 @@ import (
 )
 
 // handleMsg handles the given message by publishing relevant events and populates accounts
-// that need balance update in 'app.accs'. Returns extra info for this message to be published.
-func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog) interface{} {
-	extra := make(JsDict)
+// that need balance update in 'app.accs'. Also fills in extra info for this message.
+func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra JsDict) {
 	evMap := make(EvMap)
 	for _, event := range log.Events {
 		for _, kv := range event.Attributes {
@@ -22,8 +21,5 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog) in
 		app.handleMsgRequestData(txHash, msg, evMap, extra)
 	case oracle.MsgReportData:
 		app.handleMsgReportData(txHash, msg, evMap, extra)
-	default:
-		break
 	}
-	return extra
 }

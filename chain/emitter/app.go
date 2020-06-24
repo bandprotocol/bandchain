@@ -176,9 +176,9 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	logs, _ := sdk.ParseABCILogs(res.Log) // Error must always be nil if res.IsOK is true.
 	messages := []map[string]interface{}{}
 	for idx, msg := range tx.GetMsgs() {
-		var extra interface{}
+		var extra = make(JsDict)
 		if res.IsOK() {
-			extra = app.handleMsg(txHash, msg, logs[idx])
+			app.handleMsg(txHash, msg, logs[idx], extra)
 		}
 		messages = append(messages, JsDict{
 			"msg":   msg,
