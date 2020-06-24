@@ -36,7 +36,7 @@ bandd add-genesis-account validator1 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator2 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator3 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator4 10000000000000uband --keyring-backend test
-bandd add-genesis-account requester 10000000000000uband --keyring-backend test
+bandd add-genesis-account requester 100000000000000uband --keyring-backend test
 
 # genesis configurations
 bandcli config chain-id bandchain
@@ -146,3 +146,25 @@ do
     docker cp ~/.oracled bandchain_oracle${v}:/root/.oracled
     docker start bandchain_oracle${v}
 done
+
+# Create faucet container
+rm -rf ~/.faucet
+faucet config chain-id bandchain
+faucet config node tcp://172.18.0.1$v:26657
+faucet config chain-rest-server tcp://172.18.0.15:26657
+faucet config port 5005
+for i in $(eval echo {1..5})
+do
+    # add worker key
+    faucet keys add worker$i
+
+    # send band tokens to worker
+    echo "y" | bandcli tx send requester $(faucet keys show worker$i) 1000000000000uband --keyring-backend test
+
+    # wait for addding reporter transaction success
+    sleep 2
+done
+
+docker create --network bandchain_bandchain --name bandchain_faucet --ip 172.18.0.17 band-validator:latest faucet r
+docker cp ~/.faucet bandchain_faucet:/root/.faucet
+docker start bandchain_faucet
