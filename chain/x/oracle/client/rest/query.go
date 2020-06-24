@@ -1,7 +1,6 @@
 package rest
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -12,15 +11,6 @@ import (
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
-
-func postProcessQueryResponse(w http.ResponseWriter, cliCtx context.CLIContext, bz []byte) {
-	var result types.QueryResult
-	if err := json.Unmarshal(bz, &result); err != nil {
-		rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-	}
-	w.WriteHeader(result.Status)
-	rest.PostProcessResponse(w, cliCtx, result.Result)
-}
 
 func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +23,7 @@ func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -48,7 +38,7 @@ func getCountsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -82,7 +72,7 @@ func getDataSourceByIDHandler(cliCtx context.CLIContext, route string) http.Hand
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -98,7 +88,7 @@ func getOracleScriptByIDHandler(cliCtx context.CLIContext, route string) http.Ha
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -114,7 +104,7 @@ func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.Handler
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -132,7 +122,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -148,7 +138,7 @@ func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFu
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -164,6 +154,6 @@ func getReportInfoHandler(cliCtx context.CLIContext, route string) http.HandlerF
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		postProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }

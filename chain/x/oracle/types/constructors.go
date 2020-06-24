@@ -231,7 +231,6 @@ func NewRequest(
 	RequestHeight int64,
 	RequestTime int64,
 	ClientID string,
-	IBCInfo *IBCInfo,
 	RawRequests []RawRequest,
 ) Request {
 	return Request{
@@ -242,18 +241,7 @@ func NewRequest(
 		RequestHeight:       RequestHeight,
 		RequestTime:         RequestTime,
 		ClientID:            ClientID,
-		IBCInfo:             IBCInfo,
 		RawRequests:         RawRequests,
-	}
-}
-
-func NewIBCInfo(
-	SourcePort string,
-	SourceChannel string,
-) IBCInfo {
-	return IBCInfo{
-		SourcePort:    SourcePort,
-		SourceChannel: SourceChannel,
 	}
 }
 

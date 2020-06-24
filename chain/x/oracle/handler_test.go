@@ -594,7 +594,7 @@ func TestReportSuccess(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", nil, []types.RawRequest{
+		2, 1581589790, "clientID", []types.RawRequest{
 			types.NewRawRequest(1, 1, []byte("beeb")),
 			types.NewRawRequest(42, 2, []byte("beeb")),
 		},
@@ -636,7 +636,7 @@ func TestReportFailed(t *testing.T) {
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", nil, []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
+		2, 1581589790, "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
 	)
 	k.SetRequest(ctx, 1, request)
 
