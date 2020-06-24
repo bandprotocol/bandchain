@@ -30,8 +30,7 @@ func mockExecEnv() *ExecuteEnv {
 	requestHeight := int64(999)
 	requestTime := int64(1581589700)
 	clientID := "beeb"
-	ibcInfo := NewIBCInfo("source_port", "source_channel")
-	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, nil)
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, nil)
 	env := NewExecuteEnv(request)
 
 	rawReport1 := NewRawReport(1, 0, []byte("DATA1"))
@@ -53,8 +52,7 @@ func mockFreshPrepareEnv() *PrepareEnv {
 	requestHeight := int64(999)
 	requestTime := int64(1581589700)
 	clientID := "beeb"
-	ibcInfo := NewIBCInfo("source_port", "source_channel")
-	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, &ibcInfo, nil)
+	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, nil)
 	env := NewPrepareEnv(request, 3)
 	return env
 }
