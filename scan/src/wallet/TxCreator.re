@@ -103,16 +103,24 @@ type response_t =
   | Tx(tx_response_t)
   | Unknown;
 
+let decodeAccountInt = json => {
+  switch (JsonUtils.Decode.(optional(int, json), optional(intstr, json))) {
+  | (Some(x), _) => x
+  | (_, Some(x)) => x
+  | (None, None) => raise(Not_found)
+  };
+};
+
 let getAccountInfo = address => {
   let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
   let%Promise info = Axios.get(url);
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], int),
+      accountNumber: data |> at(["result", "value", "account_number"], decodeAccountInt),
       sequence:
         data
-        |> optional(at(["result", "value", "sequence"], int))
+        |> optional(at(["result", "value", "sequence"], decodeAccountInt))
         |> Belt_Option.getWithDefault(_, 0),
     },
   );
