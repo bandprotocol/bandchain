@@ -51,8 +51,6 @@ func main() {
 		return initConfig(rootCmd)
 	}
 
-	lcdCmd := lcd.ServeCommand(cdc, registerRoutes)
-	lcdCmd.Flags().String(bandclient.FlagHomeDaemon, app.DefaultNodeHome, "Daemon's home directory")
 	// Construct Root Command
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
@@ -60,7 +58,7 @@ func main() {
 		queryCmd(cdc),
 		txCmd(cdc),
 		flags.LineBreak,
-		lcdCmd,
+		lcd.ServeCommand(cdc, registerRoutes),
 		flags.LineBreak,
 		keys.Commands(),
 		flags.LineBreak,
