@@ -10,4 +10,5 @@ type Context struct {
 	client    rpcclient.Client
 	gasPrices sdk.DecCoins
 	keys      chan keys.Info
+	amount    sdk.Coins
 }

@@ -15,7 +15,6 @@ import (
 
 type Request struct {
 	Address string `json:"address" binding:"required"`
-	Amount  int64  `json:"amount" binding:"required"`
 }
 
 type Response struct {
@@ -42,11 +41,7 @@ func handleRequest(gc *gin.Context, c *Context) {
 		gc.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if req.Amount > 1000000 {
-		gc.JSON(http.StatusBadRequest, gin.H{"error": "Request more than limit"})
-		return
-	}
-	msg := bank.NewMsgSend(key.GetAddress(), to, sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(req.Amount))))
+	msg := bank.NewMsgSend(key.GetAddress(), to, c.amount)
 	if err := msg.ValidateBasic(); err != nil {
 		gc.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -61,7 +56,7 @@ func handleRequest(gc *gin.Context, c *Context) {
 
 	txBldr := auth.NewTxBuilder(
 		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-		30000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
+		200000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
 	)
 	out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 	if err != nil {

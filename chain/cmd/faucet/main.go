@@ -19,6 +19,7 @@ const (
 	flagExecutor           = "executor"
 	flagChainRestServerURI = "chain-rest-server"
 	flagPort               = "port"
+	flagAmount             = "amount"
 )
 
 // Config data structure for bandoracled daemon.
@@ -27,6 +28,7 @@ type Config struct {
 	NodeURI   string `mapstructure:"node"`       // Remote RPC URI of BandChain node to connect to
 	GasPrices string `mapstructure:"gas-prices"` // Gas prices of the transaction
 	Port      string `mapstructure:"port"`       // Port of faucet service
+	Amount    int64  `mapstructure:"amount"`     // Amount of BAND for each request
 }
 
 // Global instances.

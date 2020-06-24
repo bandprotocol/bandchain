@@ -41,6 +41,7 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			c.amount = sdk.NewCoins(sdk.NewCoin("uband", sdk.NewInt(cfg.Amount)))
 			r := gin.Default()
 			r.Use(func(c *gin.Context) {
 				c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
@@ -64,10 +65,12 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flags.FlagChainID, "", "chain ID of BandChain network")
 	cmd.Flags().String(flags.FlagNode, "tcp://localhost:26657", "RPC url to BandChain node")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
-	cmd.Flags().String(flagPort, "5000", "port of faucet service")
+	cmd.Flags().String(flagPort, "5005", "port of faucet service")
+	cmd.Flags().Int64(flagAmount, 10000000, "amount in uband for each request")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	viper.BindPFlag(flagPort, cmd.Flags().Lookup(flagPort))
+	viper.BindPFlag(flagAmount, cmd.Flags().Lookup(flagAmount))
 	return cmd
 }
