@@ -24,7 +24,7 @@ let parseErr = msg => {
   switch (Env.network) {
   | "GUANYU" => msg
   | "WENCHANG"
-  | "WENCHANG38" =>
+  | "GUANYU38" =>
     let err =
       {
         let%Opt json = msg |> Json.parse;

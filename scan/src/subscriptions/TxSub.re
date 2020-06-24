@@ -691,7 +691,7 @@ module Msg = {
           exception WrongNetwork(string);
           switch (Env.network) {
           | "GUANYU"
-          | "WENCHANG38" =>
+          | "GUANYU38" =>
             json
             |> field("reward_amount", array(string))
             |> Belt.Array.getExn(_, 0)
