@@ -690,8 +690,13 @@ module Msg = {
         amount: {
           exception WrongNetwork(string);
           switch (Env.network) {
-          | "GUANYU" =>  json |> field("reward_amount", array(string)) |> Belt.Array.getExn(_, 0) |> GraphQLParser.coins;
-          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins;
+          | "GUANYU"
+          | "GUANYU38" =>
+            json
+            |> field("reward_amount", array(string))
+            |> Belt.Array.getExn(_, 0)
+            |> GraphQLParser.coins
+          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins
           | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
           };
         },

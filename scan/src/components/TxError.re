@@ -23,7 +23,8 @@ let parseErr = msg => {
   exception WrongNetwork(string);
   switch (Env.network) {
   | "GUANYU" => msg
-  | "WENCHANG" =>
+  | "WENCHANG"
+  | "GUANYU38" =>
     let err =
       {
         let%Opt json = msg |> Json.parse;
