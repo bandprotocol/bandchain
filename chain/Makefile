@@ -24,6 +24,9 @@ install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandcli
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandoracled2
 
+faucet: go.sum
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/faucet
+
 release: go.sum
 	env GOOS=linux GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandd_linux_amd64 $(BUILD_FLAGS) ./cmd/bandd
