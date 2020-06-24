@@ -270,7 +270,7 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 
 	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
 	err := k.PrepareRequest(ctx, &m, nil)
-	require.EqualError(t, err, `bad wasm execution: failed to prepare request with error: get external data on non-execution period`)
+	require.EqualError(t, err, "bad wasm execution: failed to prepare request with error: OEI action to invoke is not available")
 }
 
 func TestPrepareRequestGetDataSourceFail(t *testing.T) {
