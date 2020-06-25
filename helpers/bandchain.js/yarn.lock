@@ -810,10 +810,10 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@bandprotocol/obi.js@1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@bandprotocol/obi.js/-/obi.js-1.0.4.tgz#c1af2c7688e13aedeacd043e06e5afb5e22e0bf5"
-  integrity sha512-pqecnFHkggQzA6UpACt5mXwkYIdiW4zk334cRoyMnRLkud6nCVVaUdSKNvLQGZudI7ciE4Q42dubYenDv9/KhA==
+"@bandprotocol/obi.js@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@bandprotocol/obi.js/-/obi.js-1.0.5.tgz#8f0bb161cf029b3df00cea4f227ee2de99ad080f"
+  integrity sha512-aUFwdePMWfogrLW5YHe+11rdZd4CWuuxLLxzXQh8vBLFnfsUDo0B7DSLK10Ak9YFJb/SQ0l3Ge8PjZQMrFP9Cw==
 
 "@bcoe/v8-coverage@^0.2.3":
   version "0.2.3"
