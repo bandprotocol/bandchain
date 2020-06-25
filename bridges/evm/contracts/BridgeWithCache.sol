@@ -18,8 +18,8 @@ contract BridgeWithCache is Bridge, IBridgeCache {
         Bridge(_validators)
     {}
 
-    /// Create hash of a RequestPacket.
-    /// @param _request A tuple that represent RequestPacket struct.
+    /// Returns the hash of a RequestPacket.
+    /// @param _request A tuple that represents RequestPacket struct.
     function getRequestKey(RequestPacket memory _request)
         public
         pure
@@ -28,9 +28,9 @@ contract BridgeWithCache is Bridge, IBridgeCache {
         return keccak256(abi.encode(_request));
     }
 
-    /// Query the ResponsePacket for a given RequestPacket.
-    /// Revert if can't find the related response in the mapping.
-    /// @param _request A tuple that represent RequestPacket struct.
+    /// Returns the ResponsePacket for a given RequestPacket.
+    /// Reverts if can't find the related response in the mapping.
+    /// @param _request A tuple that represents RequestPacket struct.
     function getLatestResponse(RequestPacket memory _request)
         public
         view
