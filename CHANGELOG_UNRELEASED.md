@@ -26,6 +26,8 @@
 
 ### Oracle Binary Encoding (OBI)
 
+- (impv) [#1947](https://github.com/bandprotocol/bandchain/pull/2065) Remove obi.js build process
+
 ### Helpers
 
 ### MISC
