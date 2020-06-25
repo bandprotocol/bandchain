@@ -23,6 +23,8 @@
 
 ### Bridges
 
+- (feat) [\#2055](https://github.com/bandprotocol/bandchain/pull/2055) Implement BridgeWithCache to keep the latest response for any unique request packet
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
