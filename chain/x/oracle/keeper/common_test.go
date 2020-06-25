@@ -103,9 +103,27 @@ func getTestOracleScript() (os types.OracleScript, clear func()) {
 }
 
 func getBadOracleScript() (os types.OracleScript, clear func()) {
+	// cannot set_return_data in prepare function
+	wat := []byte(`(module
+		(type $t0 (func))
+		(type $t2 (func (param i64 i64)))
+		(import "env" "set_return_data" (func $set_return_data (type $t2)))
+		(func $prepare (export "prepare")
+			i64.const 1024
+			i64.const 4
+			call $set_return_data)
+		(func $execute (export "execute"))
+		(memory $memory (export "memory") 17))
+	`)
+	code := wat2wasm(wat)
+
 	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
 	f := filecache.New(dir)
-	filename := f.AddFile([]byte("bad_code"))
+	compiledCode, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
+	if err != nil {
+		panic(err)
+	}
+	filename := f.AddFile(compiledCode)
 	return types.NewOracleScript(
 		Owner.Address, "imported script", "description",
 		filename,
