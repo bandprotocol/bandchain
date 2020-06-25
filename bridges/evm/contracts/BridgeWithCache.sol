@@ -46,16 +46,8 @@ contract BridgeWithCache is Bridge, IBridgeCache {
     /// After that, the results will be recorded to the state by using the hash of RequestPacket as key.
     /// @param _data The encoded data for oracle state relay and data verification.
     function relay(bytes calldata _data) external {
-        (bool ok, bytes memory rawResult) = address(this).call(
-            abi.encodeWithSignature("relayAndVerify(bytes)", _data)
-        );
-
-        require(ok, "FAIL_TO_RELAY_AND_VERIFY");
-
-        (RequestPacket memory req, ResponsePacket memory res) = abi.decode(
-            rawResult,
-            (RequestPacket, ResponsePacket)
-        );
+        (RequestPacket memory req, ResponsePacket memory res) = this
+            .relayAndVerify(_data);
 
         bytes32 requestKey = getRequestKey(req);
 
