@@ -20,6 +20,7 @@ func (app *App) handleMsgRequestData(
 		"min_count":        msg.MinCount,
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
+		"resolve_status":   types.ResolveStatus_Open,
 	})
 	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
 	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]

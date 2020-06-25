@@ -207,7 +207,11 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 		})
 	}
-	// TODO: Handle end block events
+
+	for _, event := range res.Events {
+		app.handleEndBlock(event)
+	}
+
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }
