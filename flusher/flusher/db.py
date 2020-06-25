@@ -61,6 +61,7 @@ transactions = sa.Table(
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix
     Column("err_msg", sa.String, nullable=True),
+    Column("success", sa.Boolean),
     Column("sender", sa.String),
     Column("memo", sa.String),
     Column("messages", sa.JSON),
