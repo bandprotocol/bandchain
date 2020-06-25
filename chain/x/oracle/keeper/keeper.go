@@ -65,6 +65,21 @@ func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
 	return params
 }
 
+// SetRollingSeed sets the rolling seed value to be provided value.
+func (k Keeper) SetRollingSeed(ctx sdk.Context, rollingSeed []byte) {
+	ctx.KVStore(k.storeKey).Set(types.RollingSeedStoreKey, rollingSeed)
+}
+
+// GetRollingSeed returns the current rolling seed value.
+func (k Keeper) GetRollingSeed(ctx sdk.Context) []byte {
+	bz := ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
+	if bz == nil {
+		// If RollingSeedStoreKey is not yet set, we initialize it to a zero 32-byte slice.
+		return make([]byte, 32)
+	}
+	return bz
+}
+
 // SetRequestCount sets the number of request count to the given value. Useful for genesis state.
 func (k Keeper) SetRequestCount(ctx sdk.Context, count int64) {
 	store := ctx.KVStore(k.storeKey)
@@ -82,13 +97,13 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 	return requestNumber
 }
 
-// SetRequestCount sets the ID of the last expired request.
+// SetRequestLastExpired sets the ID of the last expired request.
 func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id int64) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.RequestLastExpiredStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(id))
 }
 
-// SetRequestLastExpired returns the ID of the last expired request.
+// GetRequestLastExpired returns the ID of the last expired request.
 func (k Keeper) GetRequestLastExpired(ctx sdk.Context) int64 {
 	var requestNumber int64
 	bz := ctx.KVStore(k.storeKey).Get(types.RequestLastExpiredStoreKey)

@@ -4,26 +4,20 @@ import (
 	"math"
 )
 
-// addUint64Overflow performs the addition operation on two uint64 integers and
-// returns a boolean on whether or not the result overflows.
-func addUint64Overflow(a, b uint64) (uint64, bool) {
+// safeAdd performs the addition operation on two uint64 integers, but panics if overflow.
+func safeAdd(a, b uint64) uint64 {
 	if math.MaxUint64-a < b {
-		return 0, true
+		panic("bandrng::safeAdd: overflow addition")
 	}
-
-	return a + b, false
+	return a + b
 }
 
 // ChooseOne randomly picks an index between 0 and len(weights)-1 inclusively. Each index has
 // the probability of getting selected based on its weight.
 func ChooseOne(rng *Rng, weights []uint64) int {
 	sum := uint64(0)
-	var overflow bool
 	for _, weight := range weights {
-		sum, overflow = addUint64Overflow(sum, weight)
-		if overflow {
-			panic("sum of weights exceed max uint64")
-		}
+		sum = safeAdd(sum, weight)
 	}
 
 	luckyNumber := rng.NextUint64() % sum
@@ -34,8 +28,8 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 			return idx
 		}
 	}
-	// Should never happen because the sum of weights is more than the lucky number
-	panic("error")
+	// We should never reach here since the sum of weights is greater than the lucky number.
+	panic("bandrng::ChooseOne: reaching the unreachable")
 }
 
 // GetCandidateSize return candidate size that base on current round and total round
