@@ -18,7 +18,6 @@ See example [`config.json`](./config.json) for an example of requesting data fro
 
 ```json
 {
-  "chainId": "band-guanyu-devnet-2",
   "endpoint": "http://guanyu-devnet.bandchain.org/rest",
   "mnemonic": "final little loud vicious door hope differ lucky alpha morning clog oval milk repair off course indicate stumble remove nest position journey throw crane",
   "cronPattern": "*/5 * * * *",
@@ -57,6 +56,7 @@ npx @bandprotocol/cron-requester config.json
 ```
 
 ### Request Mode
+
 If `config.json` does NOT specifies `cronPattern`, the requests will be sent in just one time.
 
 ```
@@ -67,6 +67,7 @@ If `config.json` does NOT specifies `cronPattern`, the requests will be sent in 
 ```
 
 ### Cron Mode
+
 If `config.json` has specified `cronPattern`, the requests will be running by the interval specified.
 
 ```

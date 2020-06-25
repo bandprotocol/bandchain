@@ -5,7 +5,13 @@ const fs = require('fs')
 
 // Due to how bandchain.js is written, we cannot batch all the requests in one tx yet
 // TODO: Fix this
-async function runJob(bandchain, mnemonic, validatorCounts, requests, requestInterval) {
+async function runJob(
+  bandchain,
+  mnemonic,
+  validatorCounts,
+  requests,
+  requestInterval,
+) {
   let count = 0
   for (let request of requests) {
     try {
@@ -55,19 +61,16 @@ async function start(configFilePath) {
 
   const {
     mnemonic,
-    chainId,
     endpoint,
     cronPattern,
     validatorCounts,
     requests,
-    requestInterval = 0
+    requestInterval = 0,
   } = config
 
   // Check config file content format
   if (typeof mnemonic !== 'string')
     throw new Error('config.mnemonic has to be string')
-  if (typeof chainId !== 'string')
-    throw new Error('config.chainId has to be string')
   if (typeof endpoint !== 'string')
     throw new Error('config.endpoint has to be string')
   if (typeof validatorCounts !== 'object')
@@ -77,7 +80,7 @@ async function start(configFilePath) {
 
   // Instantiate BandChain object with the specified chain ID And REST Endpoint
   // TODO: Remove dependencies on chainId once #1951 goes live on devnet and bandchain.js supports it
-  const bandchain = new BandChain(chainId, endpoint)
+  const bandchain = new BandChain(endpoint)
 
   // Format requests
   const formattedRequests = await Promise.all(
@@ -95,7 +98,13 @@ async function start(configFilePath) {
       cronPattern,
       () => {
         console.log('⏰ Requests start at %s', new Date().toLocaleString())
-        runJob(bandchain, mnemonic, validatorCounts, formattedRequests, requestInterval)
+        runJob(
+          bandchain,
+          mnemonic,
+          validatorCounts,
+          formattedRequests,
+          requestInterval,
+        )
       },
       null,
       true,
@@ -107,14 +116,17 @@ async function start(configFilePath) {
       '⭐️ Cron is running! Your requests will be executed with the cron pattern %s',
       cronPattern,
     )
-    console.log(
-      '😎 Each request will be %dms apart',
-      requestInterval,
-    )
+    console.log('😎 Each request will be %dms apart', requestInterval)
     console.log('📆 Your first requests will start at %s', cronJob.nextDates())
     console.log('--------------------------------------------------------')
   } else {
-    runJob(bandchain, mnemonic, validatorCounts, formattedRequests, requestInterval)
+    runJob(
+      bandchain,
+      mnemonic,
+      validatorCounts,
+      formattedRequests,
+      requestInterval,
+    )
   }
 }
 

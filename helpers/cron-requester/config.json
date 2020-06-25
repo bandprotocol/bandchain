@@ -1,5 +1,4 @@
 {
-  "chainId": "band-guanyu-devnet-2",
   "endpoint": "http://guanyu-devnet.bandchain.org/rest",
   "mnemonic": "final little loud vicious door hope differ lucky alpha morning clog oval milk repair off course indicate stumble remove nest position journey throw crane",
   "cronPattern": "*/5 * * * *",
