@@ -77,8 +77,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     ValidatorIndexPage(address |> Address.fromBech32, Delegators)
   | (["validator", address], "reports") =>
     ValidatorIndexPage(address |> Address.fromBech32, Reports)
-  | (["validator", address], _) =>
-    ValidatorIndexPage(address |> Address.fromBech32, ProposedBlocks)
+  | (["validator", address], _) => ValidatorIndexPage(address |> Address.fromBech32, Delegators)
   | (["ibcs"], _) => IBCHomePage
   | ([], _) => HomePage
   | (_, _) => NotFound
@@ -139,7 +138,7 @@ let search = (str: string) => {
     | Some(blockID) => Some(BlockIndexPage(blockID))
     | None =>
       if (str |> Js.String.startsWith("bandvaloper")) {
-        Some(ValidatorIndexPage(str |> Address.fromBech32, ProposedBlocks));
+        Some(ValidatorIndexPage(str |> Address.fromBech32, Delegators));
       } else if (str |> Js.String.startsWith("band")) {
         Some(AccountIndexPage(str |> Address.fromBech32, AccountTransactions));
       } else if (capStr |> Js.String.startsWith("B")) {

@@ -357,10 +357,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
     <VSpacing size=Spacing.md />
     <Tab
       tabs=[|
-        {
-          name: "PROPOSED BLOCKS",
-          route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
-        },
+        // {
+        //   name: "PROPOSED BLOCKS",
+        //   route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+        // },
         {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
         {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
       |]

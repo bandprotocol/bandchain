@@ -18,7 +18,7 @@ let make =
     ) => {
   <Link
     className={Styles.container(width)}
-    route={Route.ValidatorIndexPage(validatorAddress, ProposedBlocks)}>
+    route={Route.ValidatorIndexPage(validatorAddress, Delegators)}>
     {switch (identity) {
      | Some(identity') =>
        <> <Avatar moniker identity=identity' /> <HSpacing size=Spacing.sm /> </>

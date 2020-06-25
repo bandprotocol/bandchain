@@ -49,7 +49,7 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
       className={Css.merge([Styles.container, Styles.clickable(clickable)])}
       route={
         validator
-          ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
+          ? Route.ValidatorIndexPage(address, Route.Delegators)
           : Route.AccountIndexPage(address, Route.AccountTransactions)
       }>
       <span className={Css.merge([Styles.font(position), Styles.base, Text.Styles.code])}>
