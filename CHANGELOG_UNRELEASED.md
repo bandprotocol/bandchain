@@ -15,6 +15,7 @@
 
 ### Scan
 
+- (chore) [\#2066](https://github.com/bandprotocol/bandchain/pull/2066) Disable proposed block tab
 - (impv) [\#2005](https://github.com/bandprotocol/bandchain/pull/2005) Show max commission rate and max commission change on validator index page
 - (feat) [\#2001](https://github.com/bandprotocol/bandchain/pull/2001) Add `Countup.js` to animate balance and reward
 - (chore) [\#1987](https://github.com/bandprotocol/bandchain/pull/1987) Remove `request_tab_t` in `Route.re`
