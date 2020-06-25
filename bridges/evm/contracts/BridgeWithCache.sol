@@ -3,7 +3,7 @@ pragma experimental ABIEncoderV2;
 
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
-import {IBridgeCache} from "./IBridgeCache.sol"
+import {IBridgeCache} from "./IBridgeCache.sol";
 
 /// @title BridgeWithCache <3 BandChain
 /// @author Band Protocol Team
