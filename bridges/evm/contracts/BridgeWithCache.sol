@@ -3,10 +3,11 @@ pragma experimental ABIEncoderV2;
 
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
+import {IBridgeCache} from "./IBridgeCache.sol"
 
 /// @title BridgeWithCache <3 BandChain
 /// @author Band Protocol Team
-contract BridgeWithCache is Bridge {
+contract BridgeWithCache is Bridge, IBridgeCache {
     /// Mapping from hash of RequestPacket to the latest ResponsePacket.
     mapping(bytes32 => ResponsePacket) public requestsCache;
 
@@ -56,8 +57,10 @@ contract BridgeWithCache is Bridge {
             (RequestPacket, ResponsePacket)
         );
 
+        bytes32 requestKey = getRequestKey(req);
+
         require(
-            res.resolveTime > requestsCache[getRequestKey(req)].resolveTime,
+            res.resolveTime > requestsCache[requestKey].resolveTime,
             "FAIL_LATEST_REQUEST_SHOULD_BE_NEWEST"
         );
 
@@ -66,6 +69,6 @@ contract BridgeWithCache is Bridge {
             "FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED"
         );
 
-        requestsCache[getRequestKey(req)] = res;
+        requestsCache[requestKey] = res;
     }
 }
