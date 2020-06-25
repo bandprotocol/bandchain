@@ -296,6 +296,7 @@ func (app *BandApp) Commit() (res abci.ResponseCommit) {
 func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
+	app.DeliverContext = ctx // NOTE: This will be reset at the beginning of the first block.
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 

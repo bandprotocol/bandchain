@@ -24,11 +24,13 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	banddb "github.com/bandprotocol/bandchain/chain/db"
+	"github.com/bandprotocol/bandchain/chain/emitter"
 )
 
 const (
 	flagInvCheckPeriod = "inv-check-period"
 	flagWithDB         = "with-db"
+	flagWithEmitter    = "with-emitter"
 )
 
 var invCheckPeriod uint
@@ -71,6 +73,7 @@ func main() {
 	rootCmd.PersistentFlags().String(
 		flagWithDB, "", "[Experimental] Flush blockchain state to SQL database",
 	)
+	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 
 	err := executor.Execute()
 	if err != nil {
@@ -103,6 +106,16 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 			viper.GetString(flags.FlagHome), bandDB,
 			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+			baseapp.SetInterBlockCache(cache),
+		)
+	} else if viper.IsSet(flagWithEmitter) {
+		return emitter.NewBandAppWithEmitter(
+			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+			skipUpgradeHeights, viper.GetString(flags.FlagHome),
+			baseapp.SetPruning(store.NewPruningOptionsFromString("nothing")),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
