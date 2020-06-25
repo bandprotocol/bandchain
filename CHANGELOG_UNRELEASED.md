@@ -32,3 +32,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2068](https://github.com/bandprotocol/bandchain/pull/2068) Remove `band-consumer` from repository.
