@@ -63,7 +63,7 @@ contract BridgeWithCache is Bridge {
 
         require(
             res.resolveStatus == 1,
-            "FAIL_REQUEST_IS_NOT_RESOLVED_SUCCESSFULLY"
+            "FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED"
         );
 
         requestsCache[getRequestKey(req)] = res;
