@@ -357,6 +357,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
     <VSpacing size=Spacing.md />
     <Tab
       tabs=[|
+        // TODO: enable after new version db
         // {
         //   name: "PROPOSED BLOCKS",
         //   route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
