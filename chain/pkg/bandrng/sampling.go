@@ -53,7 +53,7 @@ func ChooseSome(rng *Rng, weights []uint64, cnt int) []int {
 }
 
 // ChooseSomeMaxWeight performs ChooseSome "tries" times and returns the sampling with the
-// height weight sum among all tries.
+// heightest weight sum among all tries.
 func ChooseSomeMaxWeight(rng *Rng, weights []uint64, cnt int, tries int) []int {
 	var maxWeightSum uint64 = 0
 	var maxWeightResult []int = nil

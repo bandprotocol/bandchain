@@ -13,6 +13,10 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+const (
+	RollingSeedSizeInBytes = 32
+)
+
 type Keeper struct {
 	storeKey      sdk.StoreKey
 	cdc           *codec.Codec
@@ -74,8 +78,8 @@ func (k Keeper) SetRollingSeed(ctx sdk.Context, rollingSeed []byte) {
 func (k Keeper) GetRollingSeed(ctx sdk.Context) []byte {
 	bz := ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
 	if bz == nil {
-		// If RollingSeedStoreKey is not yet set, we initialize it to a zero 32-byte slice.
-		return make([]byte, 32)
+		// If RollingSeedStoreKey is not yet set, we initialize it to a zero'ed slice.
+		return make([]byte, RollingSeedSizeInBytes)
 	}
 	return bz
 }
