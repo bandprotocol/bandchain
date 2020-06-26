@@ -15,6 +15,7 @@ const (
 	DefaultMaxConsecutiveMisses   = uint64(10)
 	DefaultBaseRequestGas         = uint64(150000)
 	DefaultPerValidatorRequestGas = uint64(30000)
+	DefaultSamplingTryCount       = uint64(3)
 )
 
 // nolint
@@ -25,6 +26,7 @@ var (
 	KeyMaxConsecutiveMisses   = []byte("MaxConsecutiveMisses")
 	KeyBaseRequestGas         = []byte("BaseRequestGas")
 	KeyPerValidatorRequestGas = []byte("PerValidatorRequestGas")
+	KeySamplingTryCount       = []byte("SamplingTryCount")
 )
 
 // String implements the stringer interface for Params.
@@ -36,6 +38,7 @@ func (p Params) String() string {
   MaxConsecutiveMisses:   %d
   BaseRequestGas          %d
   PerValidatorRequestGas: %d
+  SamplingTryCount:       %d
 `,
 		p.MaxRawRequestCount,
 		p.MaxAskCount,
@@ -43,6 +46,7 @@ func (p Params) String() string {
 		p.MaxConsecutiveMisses,
 		p.BaseRequestGas,
 		p.PerValidatorRequestGas,
+		p.SamplingTryCount,
 	)
 }
 
@@ -55,6 +59,7 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		params.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateUint64("max consecutive misses", false)),
 		params.NewParamSetPair(KeyBaseRequestGas, &p.BaseRequestGas, validateUint64("base request gas", false)),
 		params.NewParamSetPair(KeyPerValidatorRequestGas, &p.PerValidatorRequestGas, validateUint64("per validator request gas", false)),
+		params.NewParamSetPair(KeySamplingTryCount, &p.SamplingTryCount, validateUint64("sampling try count", true)),
 	}
 }
 
@@ -67,6 +72,7 @@ func DefaultParams() Params {
 		DefaultMaxConsecutiveMisses,
 		DefaultBaseRequestGas,
 		DefaultPerValidatorRequestGas,
+		DefaultSamplingTryCount,
 	)
 }
 

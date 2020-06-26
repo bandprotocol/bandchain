@@ -73,3 +73,19 @@ func TestChooseSomeSkewedWeights(t *testing.T) {
 	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{7, 5, 8, 9, 6})
 	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{5, 8, 6, 7, 9})
 }
+
+func TestChooseSomeMaxWeight(t *testing.T) {
+	r := bandrng.NewRng("SEED")
+	length := 10
+	weights := make([]uint64, length)
+	for idx := 0; idx < length; idx++ {
+		weights[idx] = uint64(1 + idx*10)
+	}
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{6, 9, 5, 8, 3})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{7, 5, 8, 9, 6})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{5, 8, 6, 7, 9})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{6, 8, 9, 7, 4})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{7, 9, 3, 8, 2})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{1, 7, 8, 9, 5})
+	require.Equal(t, bandrng.ChooseSomeMaxWeight(r, weights, 5, 3), []int{9, 8, 6, 5, 3})
+}

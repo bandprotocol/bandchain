@@ -291,4 +291,5 @@ message Params {
   uint64 max_consecutive_misses = 4;
   uint64 base_request_gas = 5;
   uint64 per_validator_request_gas = 6;
+  uint64 sampling_try_count = 7;
 }

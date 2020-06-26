@@ -51,3 +51,22 @@ func ChooseSome(rng *Rng, weights []uint64, cnt int) []int {
 	}
 	return chosenIndexes
 }
+
+// ChooseSomeMaxWeight performs ChooseSome "tries" times and returns the sampling with the
+// height weight sum among all tries.
+func ChooseSomeMaxWeight(rng *Rng, weights []uint64, cnt int, tries int) []int {
+	var maxWeightSum uint64 = 0
+	var maxWeightResult []int = nil
+	for each := 0; each < tries; each++ {
+		candidate := ChooseSome(rng, weights, cnt)
+		candidateWeightSum := uint64(0)
+		for _, idx := range candidate {
+			candidateWeightSum += weights[idx]
+		}
+		if candidateWeightSum > maxWeightSum {
+			maxWeightSum = candidateWeightSum
+			maxWeightResult = candidate
+		}
+	}
+	return maxWeightResult
+}
