@@ -64,3 +64,17 @@ func (app *App) handleMsgReportData(
 		})
 	}
 }
+
+func (app *App) handleMsgCreateDataSource(
+	txHash []byte, msg oracle.MsgCreateDataSource, evMap EvMap, extra JsDict,
+) {
+	atoi(evMap[otypes.EventTypeCreateDataSource+"."+otypes.AttributeKeyID])
+
+	app.Write("NEW_DATA_SOURCE", JsDict{
+		"id":          msg.Da,
+		"name":        ds.Name,
+		"description": ds.Description,
+		"owner":       ds.Owner.String(),
+		"executable":  app.OracleKeeper.GetFile(ds.Filename),
+	})
+}

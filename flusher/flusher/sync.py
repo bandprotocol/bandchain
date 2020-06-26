@@ -49,9 +49,10 @@ def sync(commit_interval, db, echo_sqlalchemy):
                     if value["height"] % commit_interval == 0:
                         conn.execute(tracking.update().values(kafka_offset=msg.offset))
                         logger.info(
-                            "Committed at block {} and Kafka offset {}", value["height"], msg.offset
+                            "Committed at block {} and Kafka offset {}",
+                            value["height"],
+                            msg.offset,
                         )
                         break
                     continue
                 getattr(handler, "handle_" + key.lower())(value)
-

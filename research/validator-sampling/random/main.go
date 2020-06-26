@@ -7,7 +7,8 @@ import (
 )
 
 var (
-	t   = 1000000
+	top = 256
+	t   = 100000
 	xxx = []string{"kavavaloper1qyc2cfl0nw8r95dsdw534x99wq0xcj9rmxpl7z", "kavavaloper1qfy0e2w62g6j4jg5djcqd4py3zsaeqexjplj2d", "kavavaloper1q3y9qga5hf360dmzta67vp54qz25tmv4hhkk4t", "kavavaloper1qk0pta4ga5t8p5vv7me8dz32lvcrv2rp098cas", "kavavaloper1ptyzewnns2kn37ewtmv6ppsvhdnmeapvl7z9xh", "kavavaloper1pn5k9c5pxmg5f0rycpl9rrx6k6mk85scxf06zx", "kavavaloper1phd8jz25lumudc7ac7rhmupvcqcv7lg3c8dprc", "kavavaloper1pceqe8we7drpfqrutchwy3f99800hhzuw6cc84", "kavavaloper1rgcgqmnkeffks7enrv6hk5u4wg3nzfkmqlzjqd", "kavavaloper1yrm63pqvld8uyzkavz55p2cktpm2gm8jd8xxlu", "kavavaloper1yjj2wfers947l6n5pynpgsqlz7svc5n8ssl6ye", "kavavaloper1yna6lete8nwwwctsalzdg04ldqaz73gtn33ydq", "kavavaloper196anr2ycsalg806dz29afklnecuaupvkh5qz6c", "kavavaloper1xzud24na9tucauc7lf6pjk84kqsgq3eq747ta7", "kavavaloper1x9hq3rjc48t5upcsr3c209ycgekfasne3l5nkc", "kavavaloper1xftqdxvq0xkv2mu8c5y0jrsc578tak4m9u0s44", "kavavaloper1xka27j0jvmq97yunj5wp8fv242lycmax8ejlaf", "kavavaloper1xhxzmj8fvkqn76knay9x2chfra826369dhdu2c", "kavavaloper18zksjhrefqew0zahmts894p8asscufxvdfq702", "kavavaloper18s9m5d5cjf0humjv7mkq8pm47kchwm0r0369cx", "kavavaloper18cf35l7req0k6ulqapeyv830mrrucn9xj87plr", "kavavaloper1g20mhvcpjxp6gzlwhtfcphjehwcl2njqydgu7q", "kavavaloper1gtd040dmljyaty9tkhq0mlqz7saer48v4d608x", "kavavaloper1g4qpetrj59a29e4wxpe74x93q4df2czjh8r9ak", "kavavaloper1ffcujj05v6220ccxa6qdnpz3j48ng024ykh2df", "kavavaloper1fw7vjc3fphahqxpdjypddlulnltxws8g0mrds7", "kavavaloper1fmas0qlsucg4qwf8mqyrylcg3uluz2ffg8952q", "kavavaloper12qn7y04wzr5s3h4dmdtre4q9f4nvc03a9a9qsz", "kavavaloper12r77hhj6ylvvl4etjm0fmpzh07jum8u7qqd695", "kavavaloper129kkennsm7na34lu6sn4kwxp7ewes58y4fx6y9", "kavavaloper12g40q2parn5z9ewh5xpltmayv6y0q3zs6ddmdg", "kavavaloper12et238paeqxyhvk2pfs20ygfj6ct0dx2ccsdz5", "kavavaloper1t5l8ht0wxpd4lpe4cweftrpg5kyn3qp437yvnr", "kavavaloper1vyx7wt8s8dwcspdt7dy49sq4l3jwyhxyndakmm", "kavavaloper1vfawvtzvmcjkpqzhezvhk9q5tv5t7x8smz95uu", "kavavaloper1vw35vclatlrcmzuaxf2fleyuk38xa7xf4vdaq2", "kavavaloper1vw4t8ge2ephu0wuhcmclcw04ag2vzj9rpdme2x", "kavavaloper1vuylvflgy75d8zr07ta8x0gcqynvkvw70et853", "kavavaloper1dwae0ny4uuvacucakm9v8r8mxhw82zack4cn7y", "kavavaloper1dj63l3z0smqa8au5yek37nmj0xd60zs9dwmdh0", "kavavaloper1dntlhrw3jrej6ssdp64yfmkkz08ykyx4n7hphh", "kavavaloper1dede4flaq24j2g9u8f83vkqrqxe6cwzrxt5zsu", "kavavaloper1davtd9w5yadvlg5x7aw0kpkyhckk5m5ecrmnyl", "kavavaloper1wtcn3ylrsp4qp4urlhkf78kkt8f2ch7p0f0p98", "kavavaloper1wu8m65vqazssv2rh8rthv532hzggfr3h9azwz9", "kavavaloper1wacmlkst8s39fq83tqhlcuuacts2z6lvwfq8hv", "kavavaloper1006e7kwuhthdtxe0d90pc209cy803ehem0dg0q", "kavavaloper10m3hjapny44txmgr47rf277364htgqpr646cty", "kavavaloper1spkjjtwks5zt0dqexj8rv8ljwmwxe8ufkraukq", "kavavaloper1srhded4xw0krcwlvddtcyycuh70fp5ry9yvp86", "kavavaloper1s8akp0nq7z7vuf5g9agdswcwq7vm9uwudk0han", "kavavaloper13fxkk4730cqglgdv7w0mdelyx07myyq76uf9f3", "kavavaloper13vstf6ecmfe4p0gaufumk569sdawhtrf8gu56h", "kavavaloper13dfu6et0m8zm4hachudvn62w0c2zvcmrqn8cs3", "kavavaloper1jyuv7z9at27elvmnmzh2v39dc06r9kjcy59xkr", "kavavaloper1j26c4k2jj9tv95whdhva3e8v2fcm4s3dsgstd2", "kavavaloper1jhraz4ftxl2pd37knmeua7wjxghmlskwf7x8pf", "kavavaloper1jlzx4js09d9zzyuhuz8sfdweklrapzacuhsxq5", "kavavaloper1jl42l225565y3hm9dm4my33hjgdzleucqryhlx", "kavavaloper1nxgg4grsc0fwh893mks62d3x3r6uazgpj3m3cr", "kavavaloper1ndkn5rdl9n929am6q2zt9ndfhhggcxkhetna90", "kavavaloper1njvaku4qg9pxmx9jgjks36xrxfd6fyqs3tgs4d", "kavavaloper1nnwwu4km0alut2q8vhg7zjt45wyehddpwlfrmj", "kavavaloper15kwwzz908wl0qv4w66a5ee70kytpmfc9khvah6", "kavavaloper15urq2dtp9qce4fyc85m6upwm9xul3049dcs7da", "kavavaloper14fkp35j5nkvtztmxmsxh88jks6p3w8u7p76zs9", "kavavaloper140g8fnnl46mlvfhygj3zvjqlku6x0fwu6lgey7", "kavavaloper14kn0kk33szpwus9nh8n87fjel8djx0y02c7me3", "kavavaloper1kgddca7qj96z0qcxr2c45z73cfl0c75p27tsg6", "kavavaloper1kwj4l5putuymgxw9kx8emh3e5dpaca0hnf3zdy", "kavavaloper1k4kxxfkhhwvyzxxxgksefkzpxahp9wfc572esl", "kavavaloper1kc6vzheht92jwf0gtzhjk6jjht67rxhal9z04v", "kavavaloper1k760ypy9tzhp6l2rmg06sq4n74z0d3rejwwaa0", "kavavaloper1h9ulmhqv5e2373khk6s9n0wtrfc5qavre09fxl", "kavavaloper1hezl6xwva28xt0hk204dllalagenmfsnuu50j6", "kavavaloper1c9ye54e3pzwm3e0zpdlel6pnavrj9qqvh0atdq", "kavavaloper1cj9cdx9mg95lhvpquym08ncgzpjvhmnwdvm5kc", "kavavaloper1ceun2qqw65qce5la33j8zv8ltyyaqqfctl35n4", "kavavaloper168g9nn9vnamhsnjkm7uqqee9f3v07flgwwddf9", "kavavaloper1645czvg787l0jr6mawhs9dm3mljnggj003yed9", "kavavaloper16lnfpgn6llvn4fstg5nfrljj6aaxyee9z59jqd", "kavavaloper1m9y0c7j7wxyu3nqtmeevyfzzpga8jhdyqw42wx", "kavavaloper1mu78xhlr705mzgwqykcafp4xy3kgatvwzrww8z", "kavavaloper1uvz0vus7ktxt47cermscwe3k9gs7h9ag05sh6g", "kavavaloper1udg4pal8c9gffv4l7zhvza027z0y345gd6esa6", "kavavaloper1u0kfndes0pf8dstaunsgumv7scsnmy09p3ln9r", "kavavaloper1u3jf6c2f85kmjldxsncnhsdp44nac7v5j7vzpc", "kavavaloper1u3hqe2m7vm59l30tyaqd3zurz864dlsg7nq83f", "kavavaloper1u7vsaanwt4e5mdzmxuqurmccxjka3h0ns2n3f5", "kavavaloper1aj9r9ll8m72xr5pmxr9fmum88k864tqg39nkfu", "kavavaloper1ajwfalplxnhkwhsycfax36yyyxpxz3450s800x", "kavavaloper17wcggpjx007uc09s8y4hwrj8f228mlwez945ey", "kavavaloper17498ffqdj49zca4jm7mdf3eevq7uhcsgjvm0uk"}
 )
 
@@ -41,9 +42,33 @@ func testRandom(vps []int64, ids []string, amount, algo int) (float64, int64, fl
 	// fmt.Println()
 
 	allVp := vals.GetVotingPower()
-	randString := fmt.Sprint(rand.Int())
+	randString := fmt.Sprint(rand.Int() + rand.Int())
+
+	minVp := int64(999999999999999)
 	luckyVal, worse := randomValidators([]byte(randString), vals, amount, algo)
+	for i := 0; i < top; i++ {
+
+		tmpVal, _ := randomValidators([]byte(randString), vals, amount, algo)
+		beeb2, _ := randomValidators([]byte(randString), vals, amount, algo)
+		// beeb3, _ := randomValidators([]byte(randString), vals, amount, algo)
+
+		if tmpVal.GetVotingPower() < beeb2.GetVotingPower() {
+			tmpVal = beeb2
+		}
+		// if tmpVal.GetVotingPower() < beeb3.GetVotingPower() {
+		// 	tmpVal = beeb3
+		// }
+
+		if tmpVal.GetVotingPower() < minVp {
+			minVp = tmpVal.GetVotingPower()
+			luckyVal = tmpVal
+		}
+	}
 	sumPos := 0
+
+	// fmt.Println("------")
+	// fmt.Println(top)
+	// fmt.Println("------")
 
 	for _, val := range luckyVal.ValidatorSet {
 		sumPos += val.Number
@@ -77,6 +102,7 @@ func dup(vps []int64, ids []string, amount, algo int) {
 
 	avgVal.ValidatorSet = make([]Validator, amount)
 
+	// topBadCase := make([]float64, 0)
 	for i := 0; i < t; i++ {
 		luckyVp, allVp, pos, worse, luckyVal = testRandom(vps, ids, amount, algo)
 		sumVp += luckyVp
@@ -122,8 +148,14 @@ func dup(vps []int64, ids []string, amount, algo int) {
 		sumMore += float64(more)
 		sumLess += float64(less)
 
+		// topBadCase = append(topBadCase, luckyVp*float64(100))
+		// if len(topBadCase) >= top {
+		// 	sort.Slice(topBadCase, func(i, j int) bool { return topBadCase[i] < topBadCase[j] })
+		// 	topBadCase = topBadCase[:top]
+		// }
 	}
-
+	// fmt.Println(topBadCase)
+	// fmt.Println(len(topBadCase))
 	// for idx := 0; idx < amount; idx++ {
 	// 	for x := 0; x < 94; x++ {
 	// 		fmt.Print(level[idx][x], " ")
@@ -150,7 +182,7 @@ func dup(vps []int64, ids []string, amount, algo int) {
 
 	avgVpPercent := float64(sumVp) / float64(t) * float64(100)
 	minVpPercent := float64(minVp) * float64(100)
-	// maxVpPercent := float64(maxVp) * float64(100)
+	maxVpPercent := float64(maxVp) * float64(100)
 	// avgPos := float64(sumPos) / float64(t)
 	worsePercent := float64(worse) / float64(allVp) * float64(100)
 
@@ -180,7 +212,7 @@ func dup(vps []int64, ids []string, amount, algo int) {
 		maxDiffLessPercent = kk
 	}
 	// fmt.Println("==>", maxDiffMorePercent, maxDiffLessPercent)
-	fmt.Println(avgVpPercent, minVpPercent, worsePercent, morePercent+lessPercent, lessPercent, maxDiffMorePercent+maxDiffLessPercent, maxDiffLessPercent)
+	fmt.Println(avgVpPercent, minVpPercent, maxVpPercent, worsePercent, morePercent+lessPercent, lessPercent, maxDiffMorePercent+maxDiffLessPercent, maxDiffLessPercent)
 
 	// for idx := range freq {
 	// 	if idx != 0 {
@@ -208,8 +240,8 @@ func testKava(amount, algo int) {
 
 func main() {
 	// x := []int{5, 7, 10, 15}
-	x := []int{7}
-	for algo := 4; algo <= 5; algo++ {
+	x := []int{5}
+	for algo := 6; algo <= 6; algo++ {
 		for idx := 0; idx < len(x); idx++ {
 			// fmt.Print(algo, amount, " ")
 			fmt.Println()

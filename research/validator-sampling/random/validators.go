@@ -160,6 +160,18 @@ func getRandomRange(vals Validators, round, amount, num, algo int) int64 {
 		if randomRange == 0 {
 			randomRange = 1
 		}
+	case 6:
+		// blockSize := num / amount
+
+		t := (num - amount)
+		if round == 0 {
+			t = len(vals.ValidatorSet)
+		}
+
+		for idx := 0; idx < t; idx++ {
+			randomRange += vals.ValidatorSet[idx].VotingPower
+		}
+
 	default:
 		panic("ERROR")
 	}
@@ -256,7 +268,8 @@ func getWorseCaseVp(vals Validators, amount, num, algo int) int64 {
 
 			sumVotingPower += vals.ValidatorSet[int(t)-1].VotingPower
 		}
-
+	case 6:
+		sumVotingPower = 0
 	default:
 		panic("ERROR")
 	}
@@ -269,13 +282,24 @@ func randomValidators(seed []byte, vals Validators, amount int, algo int) (Valid
 	var luckyVal Validators
 	var val Validator
 	num := len(vals.ValidatorSet)
+
+	// topBadCase := make([]int64, 0)
+
 	worseCase := getWorseCaseVp(vals, amount, num, algo)
 	for round := 0; round < amount; round++ {
 		seed = nextSeed(seed)
 		randomRange := getRandomRange(vals, round, amount, num, algo)
 		val, vals = luckyDraw(seed, vals, randomRange)
 		luckyVal.ValidatorSet = append(luckyVal.ValidatorSet, val)
+
 	}
+
+	// topBadCase = append(topBadCase, luckyVal.GetVotingPower())
+	// fmt.Println(topBadCase)
+	// if len(topBadCase) == top {
+	// 	sort.Slice(topBadCase, func(i, j int) bool { return topBadCase[i] < topBadCase[j] })
+	// 	topBadCase = topBadCase[:top]
+	// }
 
 	return luckyVal, worseCase
 }
