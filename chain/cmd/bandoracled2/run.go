@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 )
@@ -34,17 +33,18 @@ func runImpl(c *Context, l *Logger) error {
 	defer cxl()
 
 	l.Info(":ear: Subscribing to events with query: %s...", TxQuery)
-	eventChan, err := c.client.Subscribe(ctx, "", TxQuery)
+	_, err = c.client.Subscribe(ctx, "", TxQuery)
 	if err != nil {
 		return err
 	}
 
-	for {
-		select {
-		case ev := <-eventChan:
-			go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
-		}
-	}
+	// for {
+	// 	select {
+	// 	case ev := <-eventChan:
+	// 		go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
+	// 	}
+	// }
+	return nil
 }
 
 func runCmd(c *Context) *cobra.Command {
