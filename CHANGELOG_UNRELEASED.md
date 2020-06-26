@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (bug) [\#2075](https://github.com/bandprotocol/bandchain/pull/2075) Add height check when sync on db and fix external id can be zero.
 - (feat) [\#2022](https://github.com/bandprotocol/bandchain/pull/2022) Initial implementation of BandChain emitter/flusher.
 - (chore) [\#2060](https://github.com/bandprotocol/bandchain/pull/2060) Remove unused /bandchain/file endpoints and custom swagger from bandcli REST.
 
