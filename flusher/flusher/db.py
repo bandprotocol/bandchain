@@ -9,7 +9,6 @@ class ResolveStatus(enum.Enum):
     Success = 1
     Failure = 2
     Expired = 3
-    Unknown = 4
 
 
 class CustomResolveStatus(sa.types.TypeDecorator):
