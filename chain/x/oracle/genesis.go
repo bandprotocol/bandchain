@@ -33,6 +33,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
 	k.SetParam(ctx, types.KeyBaseRequestGas, data.Params.BaseRequestGas)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, data.Params.PerValidatorRequestGas)
+	k.SetParam(ctx, types.KeySamplingTryCount, data.Params.SamplingTryCount)
 	for _, dataSource := range data.DataSources {
 		_ = k.AddDataSource(ctx, dataSource)
 	}
