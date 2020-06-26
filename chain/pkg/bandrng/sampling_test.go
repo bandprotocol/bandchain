@@ -30,11 +30,9 @@ func TestChooseOneOne(t *testing.T) {
 
 func TestChooseOnePanic(t *testing.T) {
 	r := bandrng.NewRng("SEED")
-
 	require.Panics(t, func() {
 		bandrng.ChooseOne(r, []uint64{math.MaxUint64, math.MaxUint64})
 	})
-
 	require.Panics(t, func() {
 		bandrng.ChooseOne(r, []uint64{1, math.MaxUint64})
 	})
@@ -42,45 +40,36 @@ func TestChooseOnePanic(t *testing.T) {
 	require.Panics(t, func() {
 		bandrng.ChooseOne(r, []uint64{math.MaxUint64, 1})
 	})
-
 }
 
-func TestGetCandidateSize(t *testing.T) {
-	totalRound := 7
-	require.Equal(t, bandrng.GetCandidateSize(0, totalRound, 93), 93)
-	require.Equal(t, bandrng.GetCandidateSize(1, totalRound, 92), 43)
-	require.Equal(t, bandrng.GetCandidateSize(2, totalRound, 91), 21)
-	require.Equal(t, bandrng.GetCandidateSize(3, totalRound, 90), 10)
-	require.Equal(t, bandrng.GetCandidateSize(4, totalRound, 89), 5)
-	require.Equal(t, bandrng.GetCandidateSize(5, totalRound, 88), 3)
-	require.Equal(t, bandrng.GetCandidateSize(6, totalRound, 87), 2)
-
-	require.Equal(t, bandrng.GetCandidateSize(0, 1, 9999), 9999)
-	require.Equal(t, bandrng.GetCandidateSize(1, 2, 9999), 2)
-
-}
-
-func TestGetCandidateSizePanic(t *testing.T) {
-	require.Panics(t, func() {
-		bandrng.GetCandidateSize(10, 0, 99)
-	})
-	require.Panics(t, func() {
-		bandrng.GetCandidateSize(10, 10, 99)
-	})
-	require.Panics(t, func() {
-		bandrng.GetCandidateSize(9, 10, 0)
-	})
-}
-
-func TestChooseK(t *testing.T) {
+func TestChooseSomeEqualWeights(t *testing.T) {
 	r := bandrng.NewRng("SEED")
-	length := 93
+	length := 10
 	weights := make([]uint64, length)
 	for idx := 0; idx < length; idx++ {
 		weights[idx] = 1
 	}
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{8, 0, 6, 7, 4})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{2, 7, 4, 8, 9})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{6, 0, 9, 5, 3})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{2, 7, 0, 3, 9})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{8, 3, 4, 0, 1})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{6, 7, 0, 4, 9})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{0, 4, 5, 2, 1})
+}
 
-	acc := bandrng.ChooseK(r, weights, 7)
-	require.Equal(t, acc, []int{84, 13, 8, 3, 0, 2, 4})
-
+func TestChooseSomeSkewedWeights(t *testing.T) {
+	r := bandrng.NewRng("SEED")
+	length := 10
+	weights := make([]uint64, length)
+	for idx := 0; idx < length; idx++ {
+		weights[idx] = uint64(1 + idx*10)
+	}
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{7, 4, 9, 6, 3})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{6, 9, 5, 8, 3})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{2, 6, 8, 1, 3})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{8, 2, 9, 7, 4})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{8, 9, 7, 6, 4})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{7, 5, 8, 9, 6})
+	require.Equal(t, bandrng.ChooseSome(r, weights, 5), []int{5, 8, 6, 7, 9})
 }

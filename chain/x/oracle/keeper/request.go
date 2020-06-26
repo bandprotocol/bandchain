@@ -61,9 +61,9 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) 
 		return nil, sdkerrors.Wrapf(types.ErrInsufficientValidators, "%d < %d", len(valOperators), size)
 	}
 	seed := fmt.Sprintf("%x:%d", k.GetRollingSeed(ctx), nextReqID)
-	luckyValidatorIndexes := bandrng.ChooseK(bandrng.NewRng(seed), valPowers, size)
+	chosenValIndexes := bandrng.ChooseSome(bandrng.NewRng(seed), valPowers, size)
 	validators := make([]sdk.ValAddress, size)
-	for i, idx := range luckyValidatorIndexes {
+	for i, idx := range chosenValIndexes {
 		validators[i] = valOperators[idx]
 	}
 	return validators, nil

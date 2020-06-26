@@ -32,56 +32,22 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 	panic("bandrng::ChooseOne: reaching the unreachable")
 }
 
-// GetCandidateSize return candidate size that base on current round and total round
-// currentRound must in range [0,totalRound)
-// totalRound must be more than 0 and totalCount <= totalRound
-// if currentRound is 0 the function will return totalCount
-// candidate size will decrease every round
-// candidate size calculate by function
-// size = floor((totalCount-1)**((totalRound-currentRound-1)/(totalRound-1))) + 1
-// so size must in range [2,totalCount]
-func GetCandidateSize(currentRound, totalRound, totalCount int) int {
-	if currentRound < 0 || currentRound >= totalRound {
-		panic("currentRound must in range [0,totalRound)")
+// ChooseSome randomly picks non-duplicate "cnt" indexes between 0 and len(weights)-1 inclusively.
+// The function calls ChooseOne to get an index based on the given weights. When an index is
+// chosen, it gets removed from the pool. The process gets repeated until "cnt" indexes are chosen.
+func ChooseSome(rng *Rng, weights []uint64, cnt int) []int {
+	chosenIndexes := make([]int, cnt)
+	availableWeights := make([]uint64, len(weights))
+	availableIndexes := make([]int, len(weights))
+	for idx, weight := range weights {
+		availableWeights[idx] = weight
+		availableIndexes[idx] = idx
 	}
-	if totalCount < totalRound {
-		panic("error: totalCount < totalRound")
+	for round := 0; round < cnt; round++ {
+		chosen := ChooseOne(rng, availableWeights)
+		chosenIndexes[round] = availableIndexes[chosen]
+		availableWeights = append(availableWeights[:chosen], availableWeights[chosen+1:]...)
+		availableIndexes = append(availableIndexes[:chosen], availableIndexes[chosen+1:]...)
 	}
-
-	if currentRound == 0 {
-		return totalCount
-	}
-	if totalCount == currentRound+1 {
-		return 1
-	}
-
-	base := float64(totalCount - 1)                                        // base > 0
-	exponent := float64(totalRound-1-currentRound) / float64(totalRound-1) // 0 <= exponent <= 1
-
-	size := int(math.Pow(base, exponent)) + 1
-	return size
-}
-
-// ChooseK randomly picks an array of index(size=k) between 0 and len(weights)-1 inclusively. Each index has
-// the probability of getting selected based on its weight.
-func ChooseK(rng *Rng, weights []uint64, k int) []int {
-	var luckies []int
-	totalCount := len(weights)
-	weightValues := make([]uint64, totalCount)
-	copy(weightValues, weights)
-	weightIndexes := make([]int, totalCount)
-	for idx := range weightIndexes {
-		weightIndexes[idx] = idx
-	}
-
-	for round := 0; round < k; round++ {
-		candidateSize := GetCandidateSize(round, k, totalCount)
-		luckyNumber := ChooseOne(rng, weightValues[:candidateSize])
-		luckies = append(luckies, weightIndexes[luckyNumber])
-
-		weightIndexes = append(weightIndexes[:luckyNumber], weightIndexes[luckyNumber+1:]...)
-		weightValues = append(weightValues[:luckyNumber], weightValues[luckyNumber+1:]...)
-	}
-
-	return luckies
+	return chosenIndexes
 }
