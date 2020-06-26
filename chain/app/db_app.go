@@ -212,7 +212,14 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	// Begin transaction
 	app.dbBand.BeginTransaction()
 	app.dbBand.SetContext(app.DeliverContext)
-	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
+		return res
+	}
+	err = app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
 	if err != nil {
 		panic(err)
 	}
@@ -257,8 +264,15 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.BandApp.EndBlock(req)
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
+		return res
+	}
 	inflation := app.BandApp.MintKeeper.GetMinter(app.BandApp.DeliverContext).Inflation.String()
-	err := app.dbBand.SetInflationRate(inflation)
+	err = app.dbBand.SetInflationRate(inflation)
 	if err != nil {
 		panic(err)
 	}
