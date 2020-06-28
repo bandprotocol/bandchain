@@ -57,6 +57,6 @@ func (k Keeper) HandleValidatorReport(ctx sdk.Context, val sdk.ValAddress, repor
 		k.StakingKeeper.Jail(ctx, consAddr)
 		info.ConsecutiveMissed = 0
 	}
-	// Everything is complete. Now let's udpate the validator info accordingly.
+	// Everything is complete. Now let's update the validator info accordingly.
 	k.SetReportInfo(ctx, val, info)
 }
