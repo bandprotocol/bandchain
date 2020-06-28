@@ -19,15 +19,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-type Message struct {
-	Key   string
-	Value JsDict
-}
-
 // App extends the standard Band Cosmos-SDK application with Kafka emitter
 // functionality to act as an event producer for all events in the blockchains.
 type App struct {
 	*bandapp.BandApp
+	// Decoder for unmarshaling []byte into sdk.Tx.
+	txDecoder sdk.TxDecoder
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
@@ -42,11 +39,13 @@ func NewBandAppWithEmitter(
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	baseAppOptions ...func(*bam.BaseApp),
 ) *App {
+	app := bandapp.NewBandApp(
+		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
+		home, baseAppOptions...,
+	)
 	return &App{
-		BandApp: bandapp.NewBandApp(
-			logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-			home, baseAppOptions...,
-		),
+		BandApp:   app,
+		txDecoder: auth.DefaultTxDecoder(app.Codec()),
 		writer: kafka.NewWriter(kafka.WriterConfig{
 			Brokers:      []string{"localhost:9092"}, // TODO: Remove hardcode
 			Topic:        topic,
@@ -144,7 +143,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 // DeliverTx calls into the underlying DeliverTx and emits relevant events to Kafka.
 func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	res := app.BandApp.DeliverTx(req)
-	tx, err := app.TxDecoder(req.Tx)
+	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		return res
 	}
