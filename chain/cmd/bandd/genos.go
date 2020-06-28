@@ -15,7 +15,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
@@ -33,7 +33,7 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 			if err != nil {
 				return err
 			}
-			compiledData, err := api.Compile(data, otypes.MaxCompiledWasmCodeSize)
+			compiledData, err := api.Compile(data, types.MaxCompiledWasmCodeSize)
 			if err != nil {
 				return err
 			}
@@ -42,25 +42,21 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 			if err != nil {
 				return err
 			}
-
 			genFile := config.GenesisFile()
 			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc, genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
-
 			oracleGenState := oracle.GetGenesisStateFromAppState(cdc, appState)
-			oracleGenState.OracleScripts = append(oracleGenState.OracleScripts, otypes.NewOracleScript(
+			oracleGenState.OracleScripts = append(oracleGenState.OracleScripts, types.NewOracleScript(
 				owner, args[0], args[1], filename, args[2], args[3],
 			))
-
 			appState[oracle.ModuleName] = cdc.MustMarshalJSON(oracleGenState)
 			appStateJSON := cdc.MustMarshalJSON(appState)
 			genDoc.AppState = appStateJSON
 			return genutil.ExportGenesisFile(genDoc, genFile)
 		},
 	}
-
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	return cmd
 }
