@@ -73,9 +73,8 @@ func (k Keeper) GetAllOracleScripts(ctx sdk.Context) (oracleScripts []types.Orac
 	return oracleScripts
 }
 
-// AddOracleScriptFile compiles oracle script and saves the compiled file to a file in HOME/files
-// directory using sha256 sum as filename.
-// Returns do-not-modify symbol is the given input file is do-not-modify.
+// AddOracleScriptFile compiles Wasm code (see go-owasm), adds the compiled file to filecache,
+// and returns its sha256 reference name. Returns do-not-modify symbol if input is do-not-modify.
 func (k Keeper) AddOracleScriptFile(file []byte) (string, error) {
 	if bytes.Equal(file, types.DoNotModifyBytes) {
 		return types.DoNotModify, nil

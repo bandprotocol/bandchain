@@ -70,9 +70,8 @@ func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSour
 	return dataSources
 }
 
-// AddExecutableFile saves the given executable file to a file in HOME/files
-// directory using sha256 sum as filename.
-// Returns do-not-modify symbol is the given input file is do-not-modify.
+// AddExecutableFile saves the given executable file to a file to filecahe storage and returns
+// its sha256sum reference name. Returns do-not-modify symbol if the input is do-not-modify.
 func (k Keeper) AddExecutableFile(file []byte) string {
 	if bytes.Equal(file, types.DoNotModifyBytes) {
 		return types.DoNotModify
