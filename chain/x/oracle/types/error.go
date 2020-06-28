@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	ErrItemNotFound                = sdkerrors.Register(ModuleName, 1, "item not found")
+	ErrOwasmCompilation            = sdkerrors.Register(ModuleName, 1, "owasm compilation failed")
 	ErrBadWasmExecution            = sdkerrors.Register(ModuleName, 2, "bad wasm execution")
 	ErrDataSourceNotFound          = sdkerrors.Register(ModuleName, 3, "data source not found")
 	ErrOracleScriptNotFound        = sdkerrors.Register(ModuleName, 4, "oracle script not found")
@@ -16,10 +16,9 @@ var (
 	ErrReporterAlreadyExists       = sdkerrors.Register(ModuleName, 9, "reporter already exists")
 	ErrValidatorNotRequested       = sdkerrors.Register(ModuleName, 10, "validator not requested")
 	ErrValidatorAlreadyReported    = sdkerrors.Register(ModuleName, 11, "validator already reported")
-	ErrInvalidDataSourceCount      = sdkerrors.Register(ModuleName, 12, "invalid data source count")
+	ErrInvalidReportSize           = sdkerrors.Register(ModuleName, 12, "invalid report size")
 	ErrReporterNotAuthorized       = sdkerrors.Register(ModuleName, 13, "reporter not authorized")
 	ErrEditorNotAuthorized         = sdkerrors.Register(ModuleName, 14, "editor not authorized")
-	ErrTooManyRawRequests          = sdkerrors.Register(ModuleName, 15, "too many raw requests")
 	ErrValidatorReportInfoNotFound = sdkerrors.Register(ModuleName, 16, "validator report info not found")
 	ErrUncompressionFailed         = sdkerrors.Register(ModuleName, 17, "uncompression failed")
 	ErrTooLongName                 = sdkerrors.Register(ModuleName, 18, "too long name")
@@ -38,10 +37,9 @@ var (
 	ErrTooLongURL                  = sdkerrors.Register(ModuleName, 31, "too long url")
 	ErrTooLargeRawReportData       = sdkerrors.Register(ModuleName, 32, "too large raw report data")
 	ErrInsufficientValidators      = sdkerrors.Register(ModuleName, 33, "insufficent available validators")
-	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "create with [do-not-modify] content")
+	ErrCreateWithDoNotModify       = sdkerrors.Register(ModuleName, 34, "cannot create with [do-not-modify] content")
 	ErrSelfReferenceAsReporter     = sdkerrors.Register(ModuleName, 35, "cannot reference self as reporter")
-	ErrOBIDecode                   = sdkerrors.Register(ModuleName, 36, "cannot obi decode")
-	ErrOwasmCompilation            = sdkerrors.Register(ModuleName, 37, "owasm compilation failed")
+	ErrOBIDecode                   = sdkerrors.Register(ModuleName, 36, "obi decode failed")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.
