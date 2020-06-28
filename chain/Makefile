@@ -17,7 +17,7 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=bandchain \
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
-all: lint install
+all: install
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandd
@@ -50,20 +50,6 @@ release: go.sum
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	GO111MODULE=on go mod verify
-
-update-swagger-docs:
-	$(BINDIR)/statik -src=client/lcd/swagger-ui -dest=client/lcd -f -m
-	@if [ -n "$(git status --porcelain)" ]; then \
-			echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
-			exit 1;\
-	else \
-		echo "\033[92mSwagger docs are in sync\033[0m";\
-	fi
-
-lint:
-	golangci-lint run
-	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
-	go mod verify
 
 test:
 	@go test -mod=readonly $(PACKAGES)

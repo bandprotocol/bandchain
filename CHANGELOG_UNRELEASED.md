@@ -10,6 +10,8 @@
 
 ### Chain
 
+- (impv) [\2080](https://github.com/bandprotocol/bandchain/pull/2080) Set count state on genesis.go and remove default values from getters.
+- (feat) [\#2022](https://github.com/bandprotocol/bandchain/pull/2022) Initial implementation of BandChain emitter/flusher.
 - (chore) [\#2060](https://github.com/bandprotocol/bandchain/pull/2060) Remove unused /bandchain/file endpoints and custom swagger from bandcli REST.
 
 ### Scan
@@ -22,6 +24,8 @@
 
 ### Bridges
 
+- (feat) [\#2055](https://github.com/bandprotocol/bandchain/pull/2055) Implement BridgeWithCache to keep the latest response for any unique request packet
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
@@ -31,3 +35,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2068](https://github.com/bandprotocol/bandchain/pull/2068) Remove `band-consumer` from repository.
