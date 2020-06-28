@@ -34,7 +34,7 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RequestID, rep types.Report
 			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
 	if len(rep.RawReports) != len(req.RawRequests) {
-		return types.ErrInvalidDataSourceCount
+		return types.ErrInvalidReportSize
 	}
 	for _, rep := range rep.RawReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
