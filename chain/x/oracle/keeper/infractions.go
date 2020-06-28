@@ -9,17 +9,32 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+// UpdateReportInfos updates validator report info for jail validator
+// that miss report more than threshold.
+func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
+	reportedMap := make(map[string]bool)
+	reports := k.GetReports(ctx, rid)
+	for _, report := range reports {
+		reportedMap[report.Validator.String()] = true
+	}
+	request := k.MustGetRequest(ctx, rid)
+	for _, val := range request.RequestedValidators {
+		_, voted := reportedMap[val.String()]
+		k.HandleValidatorReport(ctx, val, voted)
+	}
+}
+
 // HandleValidatorReport handles a validator report, must be called once per validator per request.
 func (k Keeper) HandleValidatorReport(ctx sdk.Context, val sdk.ValAddress, reported bool) {
 	logger := k.Logger(ctx)
 	// Fetch the existing report info of this validator.
-	info := k.GetValidatorReportInfoWithDefault(ctx, val)
+	info := k.GetReportInfoWithDefault(ctx, val)
 	validator := k.StakingKeeper.Validator(ctx, val)
 	if validator == nil || validator.IsJailed() {
 		// If validator not found or has been jailed, we reset the consecutive miss counts.
-		info := k.GetValidatorReportInfoWithDefault(ctx, val)
+		info := k.GetReportInfoWithDefault(ctx, val)
 		info.ConsecutiveMissed = 0
-		k.SetValidatorReportInfo(ctx, val, info)
+		k.SetReportInfo(ctx, val, info)
 		logger.Info(fmt.Sprintf("Validator %s missed report, but was either not found in store or already jailed", val))
 		return
 	}
@@ -43,5 +58,5 @@ func (k Keeper) HandleValidatorReport(ctx sdk.Context, val sdk.ValAddress, repor
 		info.ConsecutiveMissed = 0
 	}
 	// Everything is complete. Now let's udpate the validator info accordingly.
-	k.SetValidatorReportInfo(ctx, val, info)
+	k.SetReportInfo(ctx, val, info)
 }

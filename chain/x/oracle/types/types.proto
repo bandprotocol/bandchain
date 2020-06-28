@@ -270,8 +270,8 @@ message Report {
   repeated RawReport raw_reports = 3 [(gogoproto.nullable) = false];
 }
 
-// ValidatorReportInfo defines the report info for a validator
-message ValidatorReportInfo {
+// ReportInfo defines the report info for a validator
+message ReportInfo {
   option (gogoproto.equal) = true;
 
   bytes validator = 1
