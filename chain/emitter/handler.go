@@ -34,7 +34,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	}
 }
 
-func (app *App) handleEndBlock(event abci.Event) {
+func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := parseEvents(events)
 	switch event.Type {

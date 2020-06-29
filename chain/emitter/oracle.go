@@ -105,13 +105,11 @@ func (app *App) handleMsgCreateOracleScript(
 func (app *App) handleEventRequestExecute(evMap EvMap) {
 	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
 	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
-	resolveStatus := result.ResponsePacketData.ResolveStatus
-	dict := JsDict{
+	app.Write("UPDATE_REQUEST", JsDict{
 		"id":             id,
 		"request_time":   result.ResponsePacketData.RequestTime,
 		"resolve_time":   result.ResponsePacketData.ResolveTime,
-		"resolve_status": resolveStatus,
+		"resolve_status": result.ResponsePacketData.ResolveStatus,
 		"result":         result.ResponsePacketData.Result,
-	}
-	app.Write("UPDATE_REQUEST", dict)
+	})
 }

@@ -209,7 +209,7 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	}
 
 	for _, event := range res.Events {
-		app.handleEndBlock(event)
+		app.handleBeginBlockEndBlockEvent(event)
 	}
 
 	app.Write("COMMIT", JsDict{"height": req.Height})
