@@ -111,9 +111,7 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 		"request_time":   result.ResponsePacketData.RequestTime,
 		"resolve_time":   result.ResponsePacketData.ResolveTime,
 		"resolve_status": resolveStatus,
-	}
-	if resolveStatus == types.ResolveStatus_Success {
-		dict["result"] = result.ResponsePacketData.Result
+		"result":         result.ResponsePacketData.Result,
 	}
 	app.Write("UPDATE_REQUEST", dict)
 }
