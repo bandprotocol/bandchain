@@ -194,13 +194,13 @@ func TestUpdateReportInfos(t *testing.T) {
 	k.UpdateReportInfos(ctx, types.RequestID(1))
 	cases := []struct {
 		validator simapp.Account
-		info      types.ValidatorReportInfo
+		info      types.ReportInfo
 	}{
-		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, 0)},
-		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, 0)},
+		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0)},
+		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0)},
 	}
 	for _, tc := range cases {
-		info := k.GetValidatorReportInfoWithDefault(ctx, tc.validator.ValAddress)
+		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.info, info)
 	}
 
@@ -215,13 +215,13 @@ func TestUpdateReportInfos(t *testing.T) {
 	k.UpdateReportInfos(ctx, types.RequestID(2))
 	cases = []struct {
 		validator simapp.Account
-		info      types.ValidatorReportInfo
+		info      types.ReportInfo
 	}{
-		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, 0)},
-		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, 1)},
+		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0)},
+		{Validator2, types.NewReportInfo(Validator2.ValAddress, 1)},
 	}
 	for _, tc := range cases {
-		info := k.GetValidatorReportInfoWithDefault(ctx, tc.validator.ValAddress)
+		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.info, info)
 	}
 
@@ -235,13 +235,13 @@ func TestUpdateReportInfos(t *testing.T) {
 	k.UpdateReportInfos(ctx, types.RequestID(3))
 	cases = []struct {
 		validator simapp.Account
-		info      types.ValidatorReportInfo
+		info      types.ReportInfo
 	}{
-		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, 1)},
-		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, 0)},
+		{Validator1, types.NewReportInfo(Validator1.ValAddress, 1)},
+		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0)},
 	}
 	for _, tc := range cases {
-		info := k.GetValidatorReportInfoWithDefault(ctx, tc.validator.ValAddress)
+		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.info, info)
 	}
 
@@ -250,13 +250,13 @@ func TestUpdateReportInfos(t *testing.T) {
 	k.UpdateReportInfos(ctx, types.RequestID(4))
 	cases = []struct {
 		validator simapp.Account
-		info      types.ValidatorReportInfo
+		info      types.ReportInfo
 	}{
-		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, 2)},
-		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, 1)},
+		{Validator1, types.NewReportInfo(Validator1.ValAddress, 2)},
+		{Validator2, types.NewReportInfo(Validator2.ValAddress, 1)},
 	}
 	for _, tc := range cases {
-		info := k.GetValidatorReportInfoWithDefault(ctx, tc.validator.ValAddress)
+		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.info, info)
 	}
 }
@@ -294,14 +294,14 @@ func TestGetJailedUpdateReportInfos(t *testing.T) {
 
 	cases := []struct {
 		validator simapp.Account
-		info      types.ValidatorReportInfo
+		info      types.ReportInfo
 		jailed    bool
 	}{
-		{Validator1, types.NewValidatorReportInfo(Validator1.ValAddress, 0), false},
-		{Validator2, types.NewValidatorReportInfo(Validator2.ValAddress, 0), true},
+		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0), false},
+		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0), true},
 	}
 	for _, tc := range cases {
-		info := k.GetValidatorReportInfoWithDefault(ctx, tc.validator.ValAddress)
+		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.info, info)
 		validator := app.StakingKeeper.Validator(ctx, tc.validator.ValAddress)
 		require.Equal(t, tc.jailed, validator.IsJailed())

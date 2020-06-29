@@ -257,11 +257,11 @@ func NewReport(
 	}
 }
 
-func NewValidatorReportInfo(
+func NewReportInfo(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	ConsecutiveMissed uint64,
-) ValidatorReportInfo {
-	return ValidatorReportInfo{
+) ReportInfo {
+	return ReportInfo{
 		Validator:         Validator,
 		ConsecutiveMissed: ConsecutiveMissed,
 	}
