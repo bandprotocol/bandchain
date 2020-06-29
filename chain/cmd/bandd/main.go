@@ -40,7 +40,6 @@ func main() {
 	config := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(config)
 	config.Seal()
-
 	ctx := server.NewDefaultContext()
 	cobra.EnableCommandSorting = false
 	rootCmd := &cobra.Command{
@@ -48,7 +47,7 @@ func main() {
 		Short:             "BandChain Daemon (server)",
 		PersistentPreRunE: server.PersistentPreRunEFn(ctx),
 	}
-
+	// Add subcommands to bandd root cmd.
 	rootCmd.AddCommand(InitCmd(ctx, cdc, app.NewDefaultGenesisState(), app.DefaultNodeHome))
 	rootCmd.AddCommand(genutilcli.CollectGenTxsCmd(ctx, cdc, auth.GenesisAccountIterator{}, app.DefaultNodeHome))
 	rootCmd.AddCommand(genutilcli.MigrateGenesisCmd(ctx, cdc))
@@ -58,23 +57,13 @@ func main() {
 	rootCmd.AddCommand(AddGenesisDataSourceCmd(ctx, cdc, app.DefaultNodeHome))
 	rootCmd.AddCommand(AddGenesisOracleScriptCmd(ctx, cdc, app.DefaultNodeHome))
 	rootCmd.AddCommand(flags.NewCompletionCmd(rootCmd, true))
-	// rootCmd.AddCommand(testnetCmd(ctx, cdc, app.ModuleBasics, bank.GenesisBalancesIterator{}))
-	// rootCmd.AddCommand(replayCmd())
 	rootCmd.AddCommand(debug.Cmd(cdc))
-
 	server.AddCommands(ctx, cdc, rootCmd, newApp, exportAppStateAndTMValidators)
-
-	// prepare and add flags
+	// Prepare and add persistent flags.
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-
-	rootCmd.PersistentFlags().UintVar(
-		&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks",
-	)
-	rootCmd.PersistentFlags().String(
-		flagWithDB, "", "[Experimental] Flush blockchain state to SQL database",
-	)
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
-
 	err := executor.Execute()
 	if err != nil {
 		panic(err)

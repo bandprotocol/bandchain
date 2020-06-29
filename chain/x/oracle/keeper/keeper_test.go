@@ -56,7 +56,8 @@ func TestGetSetParams(t *testing.T) {
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 10)
 	k.SetParam(ctx, types.KeyBaseRequestGas, 50000)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 3000)
-	require.Equal(t, types.NewParams(1, 10, 30, 10, 50000, 3000), k.GetParams(ctx))
+	k.SetParam(ctx, types.KeySamplingTryCount, 3)
+	require.Equal(t, types.NewParams(1, 10, 30, 10, 50000, 3000, 3), k.GetParams(ctx))
 
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 	k.SetParam(ctx, types.KeyMaxAskCount, 20)
@@ -64,5 +65,6 @@ func TestGetSetParams(t *testing.T) {
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 7)
 	k.SetParam(ctx, types.KeyBaseRequestGas, 150000)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 30000)
-	require.Equal(t, types.NewParams(2, 20, 40, 7, 150000, 30000), k.GetParams(ctx))
+	k.SetParam(ctx, types.KeySamplingTryCount, 5)
+	require.Equal(t, types.NewParams(2, 20, 40, 7, 150000, 30000, 5), k.GetParams(ctx))
 }
