@@ -106,7 +106,6 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 			"description": ds.Description,
 			"owner":       ds.Owner.String(),
 			"executable":  app.OracleKeeper.GetFile(ds.Filename),
-			"tx_hash":     nil,
 		})
 	}
 	for idx, os := range oracleState.OracleScripts {
@@ -118,7 +117,6 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 			"schema":          os.Schema,
 			"codehash":        os.Filename,
 			"source_code_url": os.SourceCodeURL,
-			"tx_hash":         nil,
 		})
 	}
 	app.FlushMessages()
