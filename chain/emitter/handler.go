@@ -39,7 +39,7 @@ func (app *App) handleEndBlock(event abci.Event) {
 	evMap := parseEvents(events)
 	switch event.Type {
 	case oracle.EventTypeRequestExecute:
-		app.handleRequestExecute(evMap)
+		app.handleEventRequestExecute(evMap)
 	default:
 		break
 	}

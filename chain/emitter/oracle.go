@@ -99,8 +99,10 @@ func (app *App) handleMsgCreateOracleScript(
 		"tx_hash":         txHash,
 	})
 	extra["id"] = id
-// handleRequestExecuteimplements emitter handler for EventRequestExecute.
-func (app *App) handleRequestExecute(evMap EvMap) {
+}
+
+// handleEventRequestExecute implements emitter handler for EventRequestExecute.
+func (app *App) handleEventRequestExecute(evMap EvMap) {
 	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
 	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
 	resolveStatus := result.ResponsePacketData.ResolveStatus
