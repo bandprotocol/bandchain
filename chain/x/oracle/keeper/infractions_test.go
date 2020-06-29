@@ -20,25 +20,25 @@ func TestHandleValidatorReport(t *testing.T) {
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
 
 	// This validator hasn't been jailed because consecutive misses doesn't reach maximum misses.
-	info := k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 2), info)
+	info := k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 2), info)
 
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, true)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
+	info = k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 0), info)
 
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 2), info)
+	info = k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 2), info)
 	v := k.StakingKeeper.Validator(ctx, Validator1.ValAddress)
 	require.NotNil(t, v)
 	require.False(t, v.IsJailed())
 
 	// Miss one more report, so he will be jailed (3 consecutive misses)
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
+	info = k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 0), info)
 	v = k.StakingKeeper.Validator(ctx, Validator1.ValAddress)
 	require.NotNil(t, v)
 	require.True(t, v.IsJailed())
@@ -49,16 +49,16 @@ func TestHandleValidatorReportOnNonValidator(t *testing.T) {
 
 	// Must not found report info on non-validator
 	k.HandleValidatorReport(ctx, Alice.ValAddress, false)
-	info := k.GetValidatorReportInfoWithDefault(ctx, Alice.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Alice.ValAddress, 0), info)
+	info := k.GetReportInfoWithDefault(ctx, Alice.ValAddress)
+	require.Equal(t, types.NewReportInfo(Alice.ValAddress, 0), info)
 
-	emptyReportInfo := types.NewValidatorReportInfo(Alice.ValAddress, 0)
-	k.SetValidatorReportInfo(ctx, Alice.ValAddress, emptyReportInfo)
+	emptyReportInfo := types.NewReportInfo(Alice.ValAddress, 0)
+	k.SetReportInfo(ctx, Alice.ValAddress, emptyReportInfo)
 
 	// If report info has existed, but this validator doesn't be validator anymore.
 	// This function should ignore it.
 	k.HandleValidatorReport(ctx, Alice.ValAddress, false)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Alice.ValAddress)
+	info = k.GetReportInfoWithDefault(ctx, Alice.ValAddress)
 	require.Equal(t, emptyReportInfo, info)
 }
 
@@ -70,16 +70,16 @@ func TestHandleValidatorReportOnJailedValidator(t *testing.T) {
 
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, true)
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
-	info := k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 1), info)
+	info := k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 1), info)
 
 	validator := app.StakingKeeper.Validator(ctx, Validator1.ValAddress)
 	app.StakingKeeper.Jail(ctx, validator.GetConsAddr())
 
 	// Jailed validator report info should be reset.
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 0), info)
+	info = k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 0), info)
 
 	// Try to unjail via slashing module
 	err := app.SlashingKeeper.Unjail(ctx, Validator1.ValAddress)
@@ -88,6 +88,6 @@ func TestHandleValidatorReportOnJailedValidator(t *testing.T) {
 	require.False(t, validator.IsJailed())
 
 	k.HandleValidatorReport(ctx, Validator1.ValAddress, false)
-	info = k.GetValidatorReportInfoWithDefault(ctx, Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Validator1.ValAddress, 1), info)
+	info = k.GetReportInfoWithDefault(ctx, Validator1.ValAddress)
+	require.Equal(t, types.NewReportInfo(Validator1.ValAddress, 1), info)
 }

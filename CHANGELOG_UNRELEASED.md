@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (chore) [\#2084](https://github.com/bandprotocol/bandchain/pull/2084) Rename ValidatorReportInto to ReportInfo.
 - (chore) [\#2082](https://github.com/bandprotocol/bandchain/pull/2082) Reorder, reword, and remove unused error codes.
 - (impv) [\2080](https://github.com/bandprotocol/bandchain/pull/2080) Set count state on genesis.go and remove default values from getters.
 - (feat) [\#2022](https://github.com/bandprotocol/bandchain/pull/2022) Initial implementation of BandChain emitter/flusher.
