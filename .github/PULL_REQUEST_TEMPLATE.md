@@ -8,17 +8,17 @@ v    If a checkbox is n/a - please still include it but + a little note why
 are the most critical to review.
 -->
 
-fixed: #XXXX
+Fixed: #XXXX
 
 ## Implementation details
 
 ---
 
-These is check lists that we must to make sure everthing have done.
+Please ensure the following requirements are met before submitting a pull request:
 
-- [ ] Targeted PR against correct branch.
-- [ ] Linked to Github issue with discussion and accepted design OR link to spec that describes this work.
-- [ ] Describe implementation details.
-- [ ] Wrote unit and integration test
-- [ ] Added a relevant changelog entry to the `CHANGELOG_UNRELEASED.md`
-- [ ] Re-reviewed `Files changed` in the Github PR explorer
+- [ ] The pull request is targeted against the correct target branch
+- [ ] The pull request is linked to an issue with appropriate discussion and an accepted design OR is linked to a spec that describes the work.
+- [ ] The pull request includes a description of the implementation/work done in detail.
+- [ ] The pull request includes any and all appropriate unit/integration tests
+- [ ] You have added a relevant changelog entry to `CHANGELOG_UNRELEASED.md`
+- [ ] You have re-reviewed the files affected by the pull request (e.g. using the `Files changed` tab in the Github PR explorer)
