@@ -10,32 +10,32 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func TestGetSetValidatorReportInfo(t *testing.T) {
+func TestGetSetReportInfo(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	found := k.HasValidatorReportInfo(ctx, Alice.ValAddress)
+	found := k.HasReportInfo(ctx, Alice.ValAddress)
 	require.False(t, found)
-	newInfo := types.NewValidatorReportInfo(Alice.ValAddress, 5)
-	k.SetValidatorReportInfo(ctx, Alice.ValAddress, newInfo)
-	info := k.GetValidatorReportInfoWithDefault(ctx, Alice.ValAddress)
+	newInfo := types.NewReportInfo(Alice.ValAddress, 5)
+	k.SetReportInfo(ctx, Alice.ValAddress, newInfo)
+	info := k.GetReportInfoWithDefault(ctx, Alice.ValAddress)
 	require.Equal(t, uint64(5), info.ConsecutiveMissed)
 
-	info = k.GetValidatorReportInfoWithDefault(ctx, Bob.ValAddress)
-	require.Equal(t, types.NewValidatorReportInfo(Bob.ValAddress, 0), info)
+	info = k.GetReportInfoWithDefault(ctx, Bob.ValAddress)
+	require.Equal(t, types.NewReportInfo(Bob.ValAddress, 0), info)
 }
 
-func TestGetAllValidatorReportInfos(t *testing.T) {
+func TestGetAllReportInfos(t *testing.T) {
 	_, ctx, k := createTestInput()
 
-	k.SetValidatorReportInfo(ctx, Validator1.ValAddress, types.NewValidatorReportInfo(Validator1.ValAddress, 3))
-	k.SetValidatorReportInfo(ctx, Validator2.ValAddress, types.NewValidatorReportInfo(Validator2.ValAddress, 6))
+	k.SetReportInfo(ctx, Validator1.ValAddress, types.NewReportInfo(Validator1.ValAddress, 3))
+	k.SetReportInfo(ctx, Validator2.ValAddress, types.NewReportInfo(Validator2.ValAddress, 6))
 
-	expectedInfos := []types.ValidatorReportInfo{
-		types.NewValidatorReportInfo(Validator1.ValAddress, 3),
-		types.NewValidatorReportInfo(Validator2.ValAddress, 6),
+	expectedInfos := []types.ReportInfo{
+		types.NewReportInfo(Validator1.ValAddress, 3),
+		types.NewReportInfo(Validator2.ValAddress, 6),
 	}
 
 	sort.Slice(expectedInfos, func(i, j int) bool { return bytes.Compare(expectedInfos[i].Validator, expectedInfos[j].Validator) < 0 })
-	infos := k.GetAllValidatorReportInfos(ctx)
+	infos := k.GetAllReportInfos(ctx)
 	require.Equal(t, expectedInfos, infos)
 }

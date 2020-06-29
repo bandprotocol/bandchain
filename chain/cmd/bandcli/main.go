@@ -115,8 +115,6 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		authcmd.GetEncodeCommand(cdc),
 		authcmd.GetDecodeCommand(cdc),
 		flags.LineBreak,
-		multiDelegateCommand(cdc),
-		flags.LineBreak,
 	)
 
 	// add modules' tx commands
@@ -140,7 +138,6 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	// TODO: Bring back full bandclient from client folder
 	bandclient.RegisterRoutes(rs.CliCtx, rs.Mux)
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)
