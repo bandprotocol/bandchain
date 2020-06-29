@@ -13,7 +13,6 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
-	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 )
@@ -42,7 +41,8 @@ func runImpl(c *Context, l *Logger) error {
 	for {
 		select {
 		case ev := <-eventChan:
-			go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
+			l.Info("Tx coming", ev)
+			// go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
 		}
 	}
 }
