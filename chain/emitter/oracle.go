@@ -64,3 +64,35 @@ func (app *App) handleMsgReportData(
 		})
 	}
 }
+
+// handleMsgCreateDataSource implements emitter handler for MsgCreateDataSource.
+func (app *App) handleMsgCreateDataSource(
+	txHash []byte, msg oracle.MsgCreateDataSource, evMap EvMap,
+) {
+	app.Write("NEW_DATA_SOURCE", JsDict{
+		"id":          atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]),
+		"name":        msg.Name,
+		"description": msg.Description,
+		"owner":       msg.Owner.String(),
+		"executable":  msg.Executable,
+		"tx_hash":     txHash,
+	})
+}
+
+// handleMsgCreateOracleScript implements emitter handler for MsgCreateOracleScript.
+func (app *App) handleMsgCreateOracleScript(
+	txHash []byte, msg oracle.MsgCreateOracleScript, evMap EvMap,
+) {
+	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
+	ds := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
+	app.Write("NEW_ORACLE_SCRIPT", JsDict{
+		"id":              atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]),
+		"name":            msg.Name,
+		"description":     msg.Description,
+		"owner":           msg.Owner.String(),
+		"schema":          msg.Schema,
+		"codehash":        ds.Filename,
+		"source_code_url": msg.SourceCodeURL,
+		"tx_hash":         txHash,
+	})
+}

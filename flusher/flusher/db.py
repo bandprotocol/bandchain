@@ -21,6 +21,17 @@ class CustomBase64(sa.types.TypeDecorator):
         return b64.decodestring(value.encode())
 
 
+class CustomOptionBase64(sa.types.TypeDecorator):
+    """Custom String type that accepts base64-encoded string."""
+
+    impl = sa.String
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
+        return b64.decodestring(value.encode())
+
+
 def Column(*args, **kwargs):
     """Forward into SQLAlchemy's Column construct, but with 'nullable' default to False."""
     if "nullable" not in kwargs:
@@ -83,6 +94,7 @@ data_sources = sa.Table(
     Column("description", sa.String),
     Column("owner", sa.String),
     Column("executable", CustomBase64),
+    Column("tx_hash", CustomOptionBase64, sa.ForeignKey("transactions.hash"), nullable=True),
 )
 
 oracle_scripts = sa.Table(
@@ -95,6 +107,7 @@ oracle_scripts = sa.Table(
     Column("schema", sa.String),
     Column("codehash", sa.String),
     Column("source_code_url", sa.String),
+    Column("tx_hash", CustomOptionBase64, sa.ForeignKey("transactions.hash"), nullable=True),
 )
 
 requests = sa.Table(
@@ -147,4 +160,3 @@ raw_reports = sa.Table(
         ["request_id", "validator"], ["reports.request_id", "reports.validator"]
     ),
 )
-
