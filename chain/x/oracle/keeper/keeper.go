@@ -75,12 +75,7 @@ func (k Keeper) SetRollingSeed(ctx sdk.Context, rollingSeed []byte) {
 
 // GetRollingSeed returns the current rolling seed value.
 func (k Keeper) GetRollingSeed(ctx sdk.Context) []byte {
-	bz := ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
-	if bz == nil {
-		// If RollingSeedStoreKey is not yet set, we initialize it to a zero'ed slice.
-		return make([]byte, RollingSeedSizeInBytes)
-	}
-	return bz
+	return ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
 }
 
 // SetRequestCount sets the number of request count to the given value. Useful for genesis state.
