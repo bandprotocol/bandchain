@@ -132,5 +132,5 @@ func queryReportInfo(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	if err != nil {
 		return types.QueryBadRequest(err.Error())
 	}
-	return types.QueryOK(k.GetValidatorReportInfoWithDefault(ctx, validatorAddress))
+	return types.QueryOK(k.GetReportInfoWithDefault(ctx, validatorAddress))
 }
