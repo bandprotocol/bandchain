@@ -110,9 +110,8 @@ func (app *App) handleRequestExecute(evMap EvMap) {
 		"resolve_status": resolveStatus,
 	}
 	if resolveStatus == types.ResolveStatus_Success {
-		result := []byte(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResult][0])
-		dict["result"] = result
-		app.OracleKeeper.GetResult(app.DeliverContext, id)
+		result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
+		dict["result"] = result.ResponsePacketData.Result
 	}
 	app.Write("UPDATE_REQUEST", dict)
 }
