@@ -274,6 +274,7 @@ func NewParams(
 	MaxConsecutiveMisses uint64,
 	BaseRequestGas uint64,
 	PerValidatorRequestGas uint64,
+	SamplingTryCount uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:     MaxRawRequestCount,
@@ -282,5 +283,6 @@ func NewParams(
 		MaxConsecutiveMisses:   MaxConsecutiveMisses,
 		BaseRequestGas:         BaseRequestGas,
 		PerValidatorRequestGas: PerValidatorRequestGas,
+		SamplingTryCount:       SamplingTryCount,
 	}
 }

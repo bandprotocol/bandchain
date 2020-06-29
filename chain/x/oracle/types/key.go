@@ -16,6 +16,8 @@ const (
 var (
 	// GlobalStoreKeyPrefix is the prefix for global primitive state variables.
 	GlobalStoreKeyPrefix = []byte{0x00}
+	// RollingSeedStoreKey is the key that keeps the seed based on the first 8-bit of the most recent 32 block hashes.
+	RollingSeedStoreKey = append(GlobalStoreKeyPrefix, []byte("RollingSeed")...)
 	// RequestCountStoreKey is the key that keeps the total request count.
 	RequestCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestCount")...)
 	// RequestLastExpiredStoreKey is the key that keeps the ID of the last expired request, or 0 if none.
