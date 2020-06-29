@@ -2,7 +2,6 @@ package main
 
 import (
 	"strconv"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -32,6 +31,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 		}
 
 		if messageType == (otypes.MsgRequestData{}).Type() {
+			l.Info(":car: Request is coming!!")
 			go handleRequestLog(c, l, log)
 		} else {
 			l.Debug(":ghost: Skipping non-{request/packet} type: %s", messageType)
@@ -79,35 +79,35 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 
 	l.Info(":delivery_truck: Processing incoming request event")
 
-	reqs, err := GetRawRequests(log)
-	if err != nil {
-		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
-	}
+	// reqs, err := GetRawRequests(log)
+	// if err != nil {
+	// 	l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
+	// }
 
-	reportsChan := make(chan otypes.RawReport, len(reqs))
-	for _, req := range reqs {
-		go func(l *Logger, req rawRequest) {
-			exec, err := GetExecutable(c, l, req.dataSourceHash)
-			if err != nil {
-				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(
-					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
-				)
-				return
-			}
-			result, exitCode := c.executor.Execute(l, exec, 3*time.Second, req.calldata)
-			l.Debug(
-				":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
-				req.calldata, result, exitCode,
-			)
-			reportsChan <- otypes.NewRawReport(req.externalID, exitCode, result)
-		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
-	}
+	// reportsChan := make(chan otypes.RawReport, len(reqs))
+	// for _, req := range reqs {
+	// 	go func(l *Logger, req rawRequest) {
+	// 		exec, err := GetExecutable(c, l, req.dataSourceHash)
+	// 		if err != nil {
+	// 			l.Error(":skull: Failed to load data source with error: %s", err.Error())
+	// 			reportsChan <- otypes.NewRawReport(
+	// 				req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
+	// 			)
+	// 			return
+	// 		}
+	// 		result, exitCode := c.executor.Execute(l, exec, 3*time.Second, req.calldata)
+	// 		l.Debug(
+	// 			":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
+	// 			req.calldata, result, exitCode,
+	// 		)
+	// 		reportsChan <- otypes.NewRawReport(req.externalID, exitCode, result)
+	// 	}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
+	// }
 
-	reports := make([]otypes.RawReport, 0)
-	for range reqs {
-		reports = append(reports, <-reportsChan)
-	}
+	// reports := make([]otypes.RawReport, 0)
+	// for range reqs {
+	// 	reports = append(reports, <-reportsChan)
+	// }
 
-	SubmitReport(c, l, otypes.RequestID(id), reports)
+	// SubmitReport(c, l, otypes.RequestID(id), reports)
 }
