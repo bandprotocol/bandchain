@@ -5,7 +5,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func parseEvents(events sdk.StringEvents) EvMap {
@@ -39,19 +38,8 @@ func (app *App) handleEndBlock(event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := parseEvents(events)
 	switch event.Type {
-	case types.EventTypeRequestExecute:
-		resolveStatus := types.ResolveStatus(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResolveStatus][0]))
-		dict := JsDict{
-			"id":             atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]),
-			"request_time":   atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestTime][0]),
-			"resolve_time":   atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResolveTime][0]),
-			"resolve_status": resolveStatus,
-		}
-		app.Write("UPDATE_REQUEST", dict)
-		if resolveStatus == types.ResolveStatus_Success {
-			result := []byte(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResult][0])
-			dict["result"] = result
-		}
+	case oracle.EventTypeRequestExecute:
+		app.handleRequestExecute(evMap)
 	default:
 		break
 	}

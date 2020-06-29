@@ -99,4 +99,20 @@ func (app *App) handleMsgCreateOracleScript(
 		"tx_hash":         txHash,
 	})
 	extra["id"] = id
+// handleRequestExecuteimplements emitter handler for EventRequestExecute.
+func (app *App) handleRequestExecute(evMap EvMap) {
+	resolveStatus := types.ResolveStatus(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResolveStatus][0]))
+	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
+	dict := JsDict{
+		"id":             id,
+		"request_time":   atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestTime][0]),
+		"resolve_time":   atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResolveTime][0]),
+		"resolve_status": resolveStatus,
+	}
+	if resolveStatus == types.ResolveStatus_Success {
+		result := []byte(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyResult][0])
+		dict["result"] = result
+		app.OracleKeeper.GetResult(app.DeliverContext, id)
+	}
+	app.Write("UPDATE_REQUEST", dict)
 }
