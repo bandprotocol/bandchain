@@ -33,6 +33,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, data.Params.MaxConsecutiveMisses)
 	k.SetParam(ctx, types.KeyBaseRequestGas, data.Params.BaseRequestGas)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, data.Params.PerValidatorRequestGas)
+	k.SetDataSourceCount(ctx, 0)
+	k.SetOracleScriptCount(ctx, 0)
+	k.SetRequestCount(ctx, 0)
+	k.SetRequestLastExpired(ctx, 0)
 	for _, dataSource := range data.DataSources {
 		_ = k.AddDataSource(ctx, dataSource)
 	}
