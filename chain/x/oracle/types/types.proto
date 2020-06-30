@@ -281,7 +281,7 @@ message Report {
 message ValidatorStatus {
   option (gogoproto.equal) = true;
   bool is_active = 1;
-  google.protobuf.Timestamp since = 4
+  google.protobuf.Timestamp since = 2
       [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 

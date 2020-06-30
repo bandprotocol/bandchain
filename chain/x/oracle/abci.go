@@ -11,6 +11,8 @@ import (
 func handleBeginBlock(ctx sdk.Context, k Keeper, req abci.RequestBeginBlock) {
 	rollingSeed := k.GetRollingSeed(ctx)
 	k.SetRollingSeed(ctx, append(rollingSeed[1:], req.GetHash()[0]))
+
+	k.AllocateTokens(ctx, req.LastCommitInfo.GetVotes())
 }
 
 // handleEndBlock cleans up the state during end block. See comment in the implementation!
