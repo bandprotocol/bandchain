@@ -18,6 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
+	"github.com/bandprotocol/bandchain/chain/x/bridge"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
@@ -61,5 +62,6 @@ func NewDefaultGenesisState() GenesisState {
 		upgrade.ModuleName:  upgrade.AppModuleBasic{}.DefaultGenesis(),
 		evidence.ModuleName: evidence.AppModuleBasic{}.DefaultGenesis(),
 		oracle.ModuleName:   oracle.AppModuleBasic{}.DefaultGenesis(),
+		bridge.ModuleName:   bridge.AppModuleBasic{}.DefaultGenesis(),
 	}
 }

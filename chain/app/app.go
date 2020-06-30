@@ -34,6 +34,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	"github.com/bandprotocol/bandchain/chain/x/bridge"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
@@ -69,6 +70,7 @@ var (
 		upgrade.AppModuleBasic{},
 		evidence.AppModuleBasic{},
 		oracle.AppModuleBasic{},
+		bridge.AppModuleBasic{},
 	)
 
 	// module account permissions
@@ -110,6 +112,7 @@ type BandApp struct {
 	UpgradeKeeper  upgrade.Keeper
 	EvidenceKeeper evidence.Keeper
 	OracleKeeper   oracle.Keeper
+	BridgeKeeper   bridge.Keeper
 
 	// Decoder for unmarshaling []byte into sdk.Tx
 	TxDecoder sdk.TxDecoder
@@ -158,7 +161,7 @@ func NewBandApp(
 	keys := sdk.NewKVStoreKeys(
 		bam.MainStoreKey, auth.StoreKey, supply.StoreKey, staking.StoreKey, mint.StoreKey,
 		distr.StoreKey, slashing.StoreKey, gov.StoreKey, params.StoreKey, upgrade.StoreKey,
-		evidence.StoreKey, oracle.StoreKey,
+		evidence.StoreKey, oracle.StoreKey, bridge.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
 
@@ -214,6 +217,7 @@ func NewBandApp(
 
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], cdc)
 	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), app.subspaces[oracle.ModuleName], stakingKeeper)
+	app.BridgeKeeper = bridge.NewKeeper(cdc, keys[bridge.StoreKey])
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
@@ -235,6 +239,7 @@ func NewBandApp(
 		upgrade.NewAppModule(app.UpgradeKeeper),
 		evidence.NewAppModule(app.EvidenceKeeper),
 		oracle.NewAppModule(app.OracleKeeper),
+		bridge.NewAppModule(app.BridgeKeeper),
 	)
 	// During begin block slashing happens after distr.BeginBlocker so that
 	// there is nothing left over in the validator fee pool, so as to keep the
@@ -248,7 +253,7 @@ func NewBandApp(
 	app.mm.SetOrderInitGenesis(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName, bank.ModuleName, supply.ModuleName,
 		slashing.ModuleName, gov.ModuleName, mint.ModuleName, crisis.ModuleName,
-		genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
+		genutil.ModuleName, evidence.ModuleName, oracle.ModuleName, bridge.ModuleName,
 	)
 
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
