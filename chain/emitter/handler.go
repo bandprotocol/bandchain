@@ -26,7 +26,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgCreateDataSource(txHash, msg, evMap, extra)
 	case oracle.MsgCreateOracleScript:
 		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
-  case staking.MsgCreateValidator:
-		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
+	case staking.MsgCreateValidator:
+		app.handleMsgCreateValidator(msg)
 	}
 }

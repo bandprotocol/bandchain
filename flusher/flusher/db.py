@@ -157,6 +157,7 @@ validators = sa.Table(
     Column("consensus_address", CustomBase64, unique=True),
     Column("consensus_pubkey", sa.String),
     Column("moniker", sa.String),
+    Column("identity", sa.String),
     Column("website", sa.String),
     Column("details", sa.String),
     Column("commission_rate", sa.String),

@@ -104,7 +104,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		app.Codec().MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
-				app.Write("NEW_VALIDATOR", createValidator(createMsg, app.DeliverContext.BlockHeight()))
+				app.SetValidator(createMsg.ValidatorAddress, app.DeliverContext.BlockHeight())
 			}
 		}
 	}
