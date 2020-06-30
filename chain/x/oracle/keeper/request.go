@@ -47,14 +47,16 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 	ctx.KVStore(k.storeKey).Delete(types.RequestStoreKey(id))
 }
 
-// GetRandomValidators returns a pseudorandom list of active validators. Each validator has
+// GetRandomValidators returns a pseudorandom subset of active validators. Each validator has
 // chance of getting selected directly proportional to the amount of voting power it has.
 func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
 	valOperators := []sdk.ValAddress{}
 	valPowers := []uint64{}
 	k.StakingKeeper.IterateBondedValidatorsByPower(ctx, func(idx int64, val exported.ValidatorI) (stop bool) {
-		valOperators = append(valOperators, val.GetOperator())
-		valPowers = append(valPowers, val.GetTokens().Uint64())
+		if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
+			valOperators = append(valOperators, val.GetOperator())
+			valPowers = append(valPowers, val.GetTokens().Uint64())
+		}
 		return false
 	})
 	if len(valOperators) < size {
@@ -126,8 +128,13 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
 			k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, nil)
 		}
-		// Update report info for requested validators.
-		k.UpdateReportInfos(ctx, currentReqID)
+		// Deactivate all validators that do not report to this request.
+		for _, val := range req.RequestedValidators {
+			if !k.HasReport(ctx, currentReqID, val) {
+				// TODO: Change req.requestTime to time.Time and use that value.
+				k.MissReport(ctx, val, ctx.BlockHeader().Time)
+			}
+		}
 		// Set last expired request ID to be this current request.
 		k.SetRequestLastExpired(ctx, int64(currentReqID))
 	}

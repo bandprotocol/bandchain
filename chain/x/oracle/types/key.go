@@ -39,8 +39,8 @@ var (
 	OracleScriptStoreKeyPrefix = []byte{0x04}
 	// ReporterStoreKeyPrefix is the prefix for reporter store.
 	ReporterStoreKeyPrefix = []byte{0x05}
-	// ReportInfoKeyPrefix is the prefix for validator report info store.
-	ReportInfoKeyPrefix = []byte{0x06}
+	// ValidatorStatusKeyPrefix is the prefix for validator status store.
+	ValidatorStatusKeyPrefix = []byte{0x06}
 	// ResultStoreKeyPrefix is the prefix for request result store.
 	ResultStoreKeyPrefix = []byte{0xff}
 )
@@ -79,9 +79,9 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 	return buf
 }
 
-// ReportInfoStoreKey returns the key to a validator's report info.
-func ReportInfoStoreKey(v sdk.ValAddress) []byte {
-	return append(ReportInfoKeyPrefix, v.Bytes()...)
+// ValidatorStatusStoreKey returns the key to a validator's status.
+func ValidatorStatusStoreKey(v sdk.ValAddress) []byte {
+	return append(ValidatorStatusKeyPrefix, v.Bytes()...)
 }
 
 // ResultStoreKey returns the key to a request result in the store.
