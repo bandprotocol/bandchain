@@ -167,7 +167,4 @@ validators = sa.Table(
     Column("jailed", sa.Boolean),
     Column("tokens", sa.Integer),
     Column("delegator_shares", sa.String),
-    Column("bonded_height", sa.Integer),
-    Column("current_reward", sa.String),
-    Column("current_ratio", sa.String),
 )

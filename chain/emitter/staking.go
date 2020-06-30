@@ -6,10 +6,7 @@ import (
 )
 
 func (app *App) SetValidator(addrs sdk.ValAddress, blockHeight int64) {
-	val, found := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
-	if !found {
-		panic("expected validator, not found")
-	}
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addrs.String(),
 		"consensus_address":     sdk.ConsAddress(val.ConsPubKey.Address()).String(),
@@ -25,9 +22,6 @@ func (app *App) SetValidator(addrs sdk.ValAddress, blockHeight int64) {
 		"tokens":                val.Tokens.Uint64(),
 		"jailed":                false,
 		"delegator_shares":      val.DelegatorShares.String(),
-		"bonded_height":         blockHeight,
-		"current_reward":        "0",
-		"current_ratio":         "0",
 	})
 }
 
