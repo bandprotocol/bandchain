@@ -85,7 +85,7 @@ func (k Keeper) Activate(ctx sdk.Context, val sdk.ValAddress) error {
 		return types.ErrValidatorAlreadyActive
 	}
 	penaltyDuration := time.Duration(k.GetParam(ctx, types.KeyInactivePenaltyDuration))
-	if status.Since.Add(penaltyDuration).After(ctx.BlockHeader().Time) {
+	if !status.Since.IsZero() && status.Since.Add(penaltyDuration).After(ctx.BlockHeader().Time) {
 		return types.ErrTooSoonToActivate
 	}
 	k.SetValidatorStatus(ctx, val, types.NewValidatorStatus(true, ctx.BlockHeader().Time))

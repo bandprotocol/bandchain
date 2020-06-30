@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (feat) [\#2111](https://github.com/bandprotocol/bandchain/pull/2111) Introduce the notion of active validators who are performing oracle tasks.
 - (impv) [\#2074](https://github.com/bandprotocol/bandchain/pull/2074) Use rolling block hash as seed for validator sampling.
 - (impv) [\#2104](https://github.com/bandprotocol/bandchain/pull/2104) Update default gas/size consensus params and clean up cmd code.
 - (chore) [\#2084](https://github.com/bandprotocol/bandchain/pull/2084) Rename ValidatorReportInto to ReportInfo.
