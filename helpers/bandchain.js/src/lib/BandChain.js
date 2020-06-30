@@ -3,18 +3,6 @@ const { Obi } = require('@bandprotocol/obi.js')
 const cosmosjs = require('@cosmostation/cosmosjs')
 const delay = require('delay')
 
-/* function convertSignedMsg(signedMsg) {
-  for (const sig of signedMsg.tx.signatures) {
-    sig.pub_key = Buffer.from(
-      `eb5ae98721${Buffer.from(sig.pub_key.value, 'base64').toString('hex')}`,
-      'hex',
-    ).toString('base64')
-  }
-} */
-
-const proofSchema =
-  '{client_id:string,oracle_script_id:u64,calldata:bytes,ask_count:u64,min_count:u64}/{client_id:string,request_id:u64,ans_count:u64,request_time:u64,resolve_time:u64,resolve_status:u8,result:bytes}'
-
 async function createRequestMsg(
   cosmos,
   sender,
@@ -172,6 +160,9 @@ class BandChain {
   }
 
   async getRequestNonEVMProof(requestID, retryTimeout = 200) {
+    const proofSchema =
+      '{client_id:string,oracle_script_id:u64,calldata:bytes,ask_count:u64,min_count:u64}/{client_id:string,request_id:u64,ans_count:u64,request_time:u64,resolve_time:u64,resolve_status:u8,result:bytes}'
+
     let result = await this.getRequestProof(requestID, retryTimeout)
     let requestPacket = result.jsonProof.oracleDataProof.requestPacket
     let responsePacket = result.jsonProof.oracleDataProof.responsePacket
