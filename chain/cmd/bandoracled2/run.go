@@ -33,7 +33,7 @@ func runImpl(c *Context, l *Logger) error {
 	defer cxl()
 
 	l.Info(":ear: Subscribing to events with query: %s...", TxQuery)
-	eventChan, err := c.client.Subscribe(ctx, "", TxQuery)
+	eventChan, err := c.client.Subscribe(ctx, "", TxQuery, 30)
 	if err != nil {
 		return err
 	}
