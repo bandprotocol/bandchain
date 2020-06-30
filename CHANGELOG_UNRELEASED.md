@@ -10,6 +10,12 @@
 
 ### Chain
 
+- (impv) [\#2074](https://github.com/bandprotocol/bandchain/pull/2074) Use rolling block hash as seed for validator sampling.
+- (impv) [\#2104](https://github.com/bandprotocol/bandchain/pull/2104) Update default gas/size consensus params and clean up cmd code.
+- (chore) [\#2084](https://github.com/bandprotocol/bandchain/pull/2084) Rename ValidatorReportInto to ReportInfo.
+- (chore) [\#2082](https://github.com/bandprotocol/bandchain/pull/2082) Reorder, reword, and remove unused error codes.
+- (impv) [\2080](https://github.com/bandprotocol/bandchain/pull/2080) Set count state on genesis.go and remove default values from getters.
+- (feat) [\#2022](https://github.com/bandprotocol/bandchain/pull/2022) Initial implementation of BandChain emitter/flusher.
 - (chore) [\#2060](https://github.com/bandprotocol/bandchain/pull/2060) Remove unused /bandchain/file endpoints and custom swagger from bandcli REST.
 
 ### Scan
@@ -22,10 +28,17 @@
 
 ### Bridges
 
+- (feat) [\#2055](https://github.com/bandprotocol/bandchain/pull/2055) Implement BridgeWithCache to keep the latest response for any unique request packet
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
 
+- (impv) [#1947](https://github.com/bandprotocol/bandchain/pull/2065) Remove obi.js build process
+
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2105](https://github.com/bandprotocol/bandchain/pull/2105) Add pull request template to describe PR.
+- (chore) [\#2068](https://github.com/bandprotocol/bandchain/pull/2068) Remove `band-consumer` from repository.

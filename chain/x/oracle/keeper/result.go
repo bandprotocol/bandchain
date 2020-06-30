@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"encoding/binary"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -43,25 +41,4 @@ func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result 
 		panic(err)
 	}
 	return result
-}
-
-// GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
-func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.ResultStoreKeyPrefix)
-	var previousReqID types.RequestID
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		currentReqID := types.RequestID(binary.BigEndian.Uint64(iterator.Key()[1:]))
-		diffReqIDCount := int(currentReqID - previousReqID)
-
-		// Insert nil for each request without result.
-		for i := 0; i < diffReqIDCount-1; i++ {
-			results = append(results, nil)
-		}
-
-		results = append(results, iterator.Value())
-		previousReqID = currentReqID
-	}
-	return results
 }

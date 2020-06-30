@@ -240,7 +240,7 @@ func NewBandApp(
 	// there is nothing left over in the validator fee pool, so as to keep the
 	// CanWithdrawInvariant invariant.
 
-	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
+	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName, oracle.ModuleName, staking.ModuleName)
 	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, oracle.ModuleName, staking.ModuleName)
 
 	// NOTE: The genutils module must occur after staking so that pools are
@@ -296,6 +296,7 @@ func (app *BandApp) Commit() (res abci.ResponseCommit) {
 func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
+	app.DeliverContext = ctx // NOTE: This will be reset at the beginning of the first block.
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 

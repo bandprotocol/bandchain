@@ -5,6 +5,8 @@ import (
 	"encoding/binary"
 )
 
+// Rng implements a simple determinisic random number generator. Starting from an initial seed,
+// random uint64 numbers are produced from the first 8 bytes of sha256 results, repeatedly.
 type Rng struct {
 	seed [sha256.Size]byte
 }

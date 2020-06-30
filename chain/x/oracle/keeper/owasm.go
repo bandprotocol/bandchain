@@ -10,12 +10,6 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-// nolint
-const (
-	PrepareFunc = "prepare"
-	ExecuteFunc = "execute"
-)
-
 // PrepareRequest takes an request specification object, performs the prepare call, and saves
 // the request object to store. Also emits events related to the request.
 func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
@@ -91,9 +85,7 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	code := k.GetFile(script.Filename)
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
-		k.Logger(ctx).Info(fmt.Sprintf(
-			"failed to execute request id: %d with error: %s", reqID, err.Error(),
-		))
+		k.Logger(ctx).Info(fmt.Sprintf("failed to execute request id: %d with error: %s", reqID, err.Error()))
 		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
 	} else {
 		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
