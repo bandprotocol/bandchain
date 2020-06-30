@@ -13,13 +13,15 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 )
 
 const (
 	// TODO: We can subscribe only for txs that contain request messages
-	TxQuery = "tm.event = 'Tx'"
+	TxQuery        = "tm.event = 'Tx'"
+	OutChannelSize = 2000
 )
 
 func runImpl(c *Context, l *Logger) error {
@@ -33,7 +35,7 @@ func runImpl(c *Context, l *Logger) error {
 	defer cxl()
 
 	l.Info(":ear: Subscribing to events with query: %s...", TxQuery)
-	eventChan, err := c.client.Subscribe(ctx, "", TxQuery, 30)
+	eventChan, err := c.client.Subscribe(ctx, "", TxQuery, OutChannelSize)
 	if err != nil {
 		return err
 	}
@@ -41,8 +43,7 @@ func runImpl(c *Context, l *Logger) error {
 	for {
 		select {
 		case ev := <-eventChan:
-			l.Info("Tx coming", ev)
-			// go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
+			go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
 		}
 	}
 }
