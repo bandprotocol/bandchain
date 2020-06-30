@@ -42,6 +42,7 @@ def main(path):
         w.write("package {}\n".format(os.path.basename(path)))
         w.write("\n")
         w.write('import github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"\n')
+        w.write('import "time"\n')
 
         for filename in os.listdir(path):
             if filename.endswith(".pb.go"):

@@ -260,6 +260,30 @@ func (msg MsgEditOracleScript) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 
+// Route implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) Type() string { return "activate" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) ValidateBasic() error {
+	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
 // Route implements the sdk.Msg interface for MsgAddReporter.
 func (msg MsgAddReporter) Route() string { return RouterKey }
 

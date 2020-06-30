@@ -2,7 +2,7 @@ syntax = "proto3";
 package bandchain.chain.x.oracle.v1;
 
 import "third_party/proto/gogoproto/gogo.proto";
-
+import "google/protobuf/timestamp.proto";
 option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
 
 // MsgRequestData is a message for sending a new data request.
@@ -99,6 +99,13 @@ message MsgEditOracleScript {
   string source_code_url = 7 [(gogoproto.customname) = "SourceCodeURL"];
   bytes sender = 8
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+}
+
+message MsgActivate {
+  option (gogoproto.equal) = true;
+
+  bytes validator = 1
+      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
 }
 
 // MsgAddReporter is a message for adding an agent authorized to submit
@@ -270,14 +277,12 @@ message Report {
   repeated RawReport raw_reports = 3 [(gogoproto.nullable) = false];
 }
 
-// ReportInfo defines the report info for a validator
-message ReportInfo {
+// ValidatorStatus maintains whether a validator is an active oracle provider.
+message ValidatorStatus {
   option (gogoproto.equal) = true;
-
-  bytes validator = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  // field to count consecutive missed report
-  uint64 consecutive_missed = 2;
+  bool is_active = 1;
+  google.protobuf.Timestamp since = 4
+      [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 // Params - used for initializing default parameter for oracle at genesis.
@@ -288,8 +293,9 @@ message Params {
   uint64 max_raw_request_count = 1;
   uint64 max_ask_count = 2;
   uint64 expiration_block_count = 3;
-  uint64 max_consecutive_misses = 4;
-  uint64 base_request_gas = 5;
-  uint64 per_validator_request_gas = 6;
-  uint64 sampling_try_count = 7;
+  uint64 base_request_gas = 4;
+  uint64 per_validator_request_gas = 5;
+  uint64 sampling_try_count = 6;
+  uint64 oracle_reward_percentage = 7;
+  uint64 inactive_penalty_duration = 8;
 }
