@@ -72,7 +72,7 @@ func (k Keeper) GetValidatorStatus(ctx sdk.Context, val sdk.ValAddress) types.Va
 	return status
 }
 
-// SetReportInfo sets the validator status for the given validator.
+// SetValidatorStatus sets the validator status for the given validator.
 func (k Keeper) SetValidatorStatus(ctx sdk.Context, val sdk.ValAddress, status types.ValidatorStatus) {
 	ctx.KVStore(k.storeKey).Set(types.ValidatorStatusStoreKey(val), k.cdc.MustMarshalBinaryBare(status))
 }
