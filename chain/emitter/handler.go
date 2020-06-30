@@ -2,6 +2,7 @@ package emitter
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
@@ -21,5 +22,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgRequestData(txHash, msg, evMap, extra)
 	case oracle.MsgReportData:
 		app.handleMsgReportData(txHash, msg, evMap, extra)
+	case staking.MsgCreateValidator:
+		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
 	}
 }

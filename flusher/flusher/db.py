@@ -148,3 +148,23 @@ raw_reports = sa.Table(
     ),
 )
 
+validators = sa.Table(
+    "validators",
+    metadata,
+    Column("operator_address", sa.String, primary_key=True),
+    Column("consensus_address", sa.String, unique=True),
+    Column("consensus_pubkey", sa.String),
+    Column("moniker", sa.String),
+    Column("website", sa.String),
+    Column("details", sa.String),
+    Column("commission_rate", sa.String),
+    Column("commission_max_rate", sa.String),
+    Column("commission_max_change", sa.String),
+    Column("min_self_delegation", sa.String),
+    Column("jailed", sa.Boolean),
+    Column("tokens", sa.Integer),
+    Column("delegator_shares", sa.String),
+    Column("bonded_height", sa.Integer),
+    Column("current_reward", sa.String),
+    Column("current_ratio", sa.String),
+)

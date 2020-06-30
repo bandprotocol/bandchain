@@ -9,6 +9,8 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/segmentio/kafka-go"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -95,7 +97,18 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		})
 	}
 	// Staking module
-	// TODO
+	var genutilState genutil.GenesisState
+	app.Codec().MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	for _, genTx := range genutilState.GenTxs {
+		var tx auth.StdTx
+		app.Codec().MustUnmarshalJSON(genTx, &tx)
+		for _, msg := range tx.Msgs {
+			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
+				app.Write("NEW_VALIDATOR", createValidator(createMsg, app.DeliverContext.BlockHeight()))
+			}
+		}
+	}
+
 	// Oracle module
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
