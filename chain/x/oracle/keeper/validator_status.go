@@ -37,20 +37,20 @@ func (k Keeper) AllocateTokens(ctx sdk.Context, previousVotes []abci.VoteInfo) {
 	totalFee := sdk.NewDecCoinsFromCoins(feeCollector.GetCoins()...)
 	// Compute the fee allocated for oracle module to distribute to active validators.
 	oracleRewardRatio := sdk.NewDecWithPrec(int64(k.GetParam(ctx, types.KeyOracleRewardPercentage)), 2)
-	oracleFeeInt, _ := totalFee.MulDecTruncate(oracleRewardRatio).TruncateDecimal()
-	// Transfer the oracle fee portion from fee collector to distr module.
-	err := k.SupplyKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, distr.ModuleName, oracleFeeInt)
+	oracleRewardInt, _ := totalFee.MulDecTruncate(oracleRewardRatio).TruncateDecimal()
+	// Transfer the oracle reward portion from fee collector to distr module.
+	err := k.SupplyKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, distr.ModuleName, oracleRewardInt)
 	if err != nil {
 		panic(err)
 	}
 	// Convert the transfered tokens back to DecCoins for internal distr allocations.
-	oracleFee := sdk.NewDecCoinsFromCoins(oracleFeeInt...)
-	remaining := oracleFee
+	oracleReward := sdk.NewDecCoinsFromCoins(oracleRewardInt...)
+	remaining := oracleReward
 	rewardMultiplier := sdk.OneDec().Sub(k.DistrKeeper.GetCommunityTax(ctx))
 	// Allocate non-community pool tokens to active validators weighted by voting power.
 	for _, each := range toReward {
 		powerFraction := sdk.NewDec(each.power).QuoTruncate(sdk.NewDec(totalPower))
-		reward := oracleFee.MulDecTruncate(rewardMultiplier).MulDecTruncate(powerFraction)
+		reward := oracleReward.MulDecTruncate(rewardMultiplier).MulDecTruncate(powerFraction)
 		k.DistrKeeper.AllocateTokensToValidator(ctx, each.val, reward)
 		remaining = remaining.Sub(reward)
 	}
