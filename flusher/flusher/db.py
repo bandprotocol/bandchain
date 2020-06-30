@@ -83,6 +83,7 @@ data_sources = sa.Table(
     Column("description", sa.String),
     Column("owner", sa.String),
     Column("executable", CustomBase64),
+    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash"), nullable=True),
 )
 
 oracle_scripts = sa.Table(
@@ -95,6 +96,7 @@ oracle_scripts = sa.Table(
     Column("schema", sa.String),
     Column("codehash", sa.String),
     Column("source_code_url", sa.String),
+    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash"), nullable=True),
 )
 
 requests = sa.Table(
