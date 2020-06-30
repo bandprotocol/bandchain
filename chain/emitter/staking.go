@@ -12,7 +12,7 @@ func (app *App) SetValidator(addrs sdk.ValAddress, blockHeight int64) {
 	}
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addrs.String(),
-		"consensus_address":     val.ConsPubKey.Address().Bytes(),
+		"consensus_address":     sdk.ConsAddress(val.ConsPubKey.Address()).String(),
 		"consensus_pubkey":      sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, val.ConsPubKey),
 		"moniker":               val.Description.Moniker,
 		"identity":              val.Description.Identity,

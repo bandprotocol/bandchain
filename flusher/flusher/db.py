@@ -45,7 +45,7 @@ blocks = sa.Table(
     metadata,
     Column("height", sa.Integer, primary_key=True),
     Column("timestamp", CustomDateTime),
-    Column("proposer", CustomBase64, sa.ForeignKey("validators.consensus_address")),
+    Column("proposer", sa.String, sa.ForeignKey("validators.consensus_address")),
     Column("hash", CustomBase64),
     Column("inflation", sa.Float),
     Column("supply", sa.String),  # uband suffix
@@ -154,7 +154,7 @@ validators = sa.Table(
     "validators",
     metadata,
     Column("operator_address", sa.String, primary_key=True),
-    Column("consensus_address", CustomBase64, unique=True),
+    Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
     Column("moniker", sa.String),
     Column("identity", sa.String),

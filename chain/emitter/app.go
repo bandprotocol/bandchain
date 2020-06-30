@@ -145,7 +145,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
 		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
-		"proposer":  req.Header.GetProposerAddress(),
+		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
 		"hash":      req.GetHash(),
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
