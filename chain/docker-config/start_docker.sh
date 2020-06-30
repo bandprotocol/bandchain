@@ -124,6 +124,12 @@ do
     bandoracled2 config chain-rest-server http://172.18.0.20:1317
     bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
 
+    # activate validator
+    echo "y" | bandcli tx oracle activate --from validator$v --keyring-backend test
+
+    # wait for activation transaction success
+    sleep 2
+
     for i in $(eval echo {1..5})
     do
     # add reporter key
