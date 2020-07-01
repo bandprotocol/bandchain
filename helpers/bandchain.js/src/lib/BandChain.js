@@ -3,15 +3,6 @@ const { Obi } = require('@bandprotocol/obi.js')
 const cosmosjs = require('@cosmostation/cosmosjs')
 const delay = require('delay')
 
-function convertSignedMsg(signedMsg) {
-  for (const sig of signedMsg.tx.signatures) {
-    sig.pub_key = Buffer.from(
-      `eb5ae98721${Buffer.from(sig.pub_key.value, 'base64').toString('hex')}`,
-      'hex',
-    ).toString('base64')
-  }
-}
-
 async function createRequestMsg(
   cosmos,
   sender,
@@ -45,10 +36,20 @@ async function createRequestMsg(
 }
 
 class BandChain {
-  constructor(chainID, endpoint) {
-    /* TODO: Get chainID from REST endpoint in the next release of Guan Yu */
-    this.chainID = chainID
+  constructor(endpoint) {
     this.endpoint = endpoint
+  }
+
+  async _getChainID() {
+    if (!this._chainID) {
+      try {
+        const res = await axios.get(`${this.endpoint}/bandchain/genesis`)
+        this._chainID = res.data.chain_id
+      } catch {
+        throw new Error('Cannot retrieve chainID')
+      }
+    }
+    return this._chainID
   }
 
   async getOracleScript(oracleScriptID) {
@@ -71,10 +72,11 @@ class BandChain {
     gasAmount = 0,
     gasLimit = 1000000,
   ) {
+    const chainID = await this._getChainID()
     const obiObj = new Obi(oracleScript.schema)
     const calldata = obiObj.encodeInput(parameters)
 
-    const cosmos = cosmosjs.network(this.endpoint, this.chainID)
+    const cosmos = cosmosjs.network(this.endpoint, chainID)
     cosmos.setPath("m/44'/494'/0'/0/0")
     cosmos.setBech32MainPrefix('band')
     const ecpairPriv = cosmos.getECPairPriv(mnemonic)
@@ -86,7 +88,7 @@ class BandChain {
       oracleScript.id,
       validatorCounts,
       calldata,
-      this.chainID,
+      chainID,
       {
         amount: [{ amount: `${gasAmount}`, denom: 'uband' }],
         gas: `${gasLimit}`,
@@ -94,9 +96,9 @@ class BandChain {
     )
 
     let signedTx = cosmos.sign(requestMsg, ecpairPriv, 'block')
-    convertSignedMsg(signedTx)
 
     const broadcastResponse = await cosmos.broadcast(signedTx)
+
     return this.getRequestID(broadcastResponse.txhash)
   }
 
@@ -138,31 +140,58 @@ class BandChain {
     // Try and wait for proof
     while (true) {
       try {
-        const requestEndpoint = `${this.endpoint}/bandchain/proof/${requestID}`
+        const requestEndpoint = `${this.endpoint}/oracle/proof/${requestID}`
         let res = await axios.get(requestEndpoint)
-        if (res.status == 200 && res.data.result.evmProofBytes) {
-          let evmProof = res.data.result.evmProofBytes
-          return evmProof
-        } else if (res.status == 200 && !res.data.result.evmProofBytes) {
+        if (res.status == 200 && res.data.result.evmProofBytes != null) {
+          let result = res.data.result
+          return result
+        } else if (res.status == 200 && res.data.result.evmProofBytes == null) {
           throw new Error('No proof found for the specified requestID')
         }
-      } catch (e) {
+      } catch {
         await delay(retryTimeout)
       }
     }
   }
 
+  async getRequestEVMProof(requestID, retryTimeout = 200) {
+    let result = await this.getRequestProof(requestID, retryTimeout)
+    return result.evmProofBytes
+  }
+
+  async getRequestNonEVMProof(requestID, retryTimeout = 200) {
+    const proofSchema =
+      '{client_id:string,oracle_script_id:u64,calldata:bytes,ask_count:u64,min_count:u64}/{client_id:string,request_id:u64,ans_count:u64,request_time:u64,resolve_time:u64,resolve_status:u8,result:bytes}'
+
+    let result = await this.getRequestProof(requestID, retryTimeout)
+    let requestPacket = result.jsonProof.oracleDataProof.requestPacket
+    let responsePacket = result.jsonProof.oracleDataProof.responsePacket
+
+    requestPacket.calldata = Buffer.from(requestPacket.calldata, 'base64')
+    responsePacket.result = Buffer.from(responsePacket.result, 'base64')
+
+    const obiObj = new Obi(proofSchema)
+    let proof = Buffer.concat([
+      obiObj.encodeInput(requestPacket),
+      obiObj.encodeOutput(responsePacket),
+    ]).toString('hex')
+
+    return proof
+  }
+
   async getRequestResult(requestID) {
-    try {
-      const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
-      let res = await axios.get(requestEndpoint)
-      if (res.status == 200 && res.data.result.result) {
-        return res.data.result.result
-      } else if (res.status == 200 && !res.data.result.result) {
-        throw new Error('No result found for the specified requestID')
+    while (true) {
+      try {
+        const requestEndpoint = `${this.endpoint}/oracle/requests/${requestID}`
+        let res = await axios.get(requestEndpoint)
+        if (res.status == 200 && res.data.result.result != null) {
+          return res.data.result.result
+        } else if (res.status == 200 && res.data.result.request == null) {
+          throw new Error('No result found for the specified requestID')
+        }
+      } catch {
+        throw new Error('Error querying the request result')
       }
-    } catch {
-      throw new Error('Error querying the request result')
     }
   }
 
@@ -177,7 +206,7 @@ class BandChain {
 
     try {
       let res = await axios.get(requestEndpoint)
-      if (res.status == 200 && res.data.result.result) {
+      if (res.status == 200 && res.data.result.result != null) {
         let response = res.data.result.result.ResponsePacketData
         response.result = obiObj.decodeOutput(
           Buffer.from(response.result, 'base64'),
