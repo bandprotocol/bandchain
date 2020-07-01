@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (feat) [\#2114](https://github.com/bandprotocol/bandchain/pull/2114) Add more unit test coverage and enhance code comments in pkg.
 - (feat) [\#2111](https://github.com/bandprotocol/bandchain/pull/2111) Introduce the notion of active validators who are performing oracle tasks.
 - (bug) [\#2110](https://github.com/bandprotocol/bandchain/pull/2074) Set `bandoracled` max capacity of event subscription channel.
 - (impv) [\#2106](https://github.com/bandprotocol/bandchain/pull/2106) Implement emitter handle MsgCreateDataSource/OracleScript.
