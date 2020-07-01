@@ -52,7 +52,7 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
 	valOperators := []sdk.ValAddress{}
 	valPowers := []uint64{}
-	k.StakingKeeper.IterateBondedValidatorsByPower(ctx, func(idx int64, val exported.ValidatorI) (stop bool) {
+	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(idx int64, val exported.ValidatorI) (stop bool) {
 		if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
 			valOperators = append(valOperators, val.GetOperator())
 			valPowers = append(valPowers, val.GetTokens().Uint64())
