@@ -45,15 +45,11 @@ const (
 )
 
 var (
-	// DefaultCLIHome default home directories for bandcli
+	// DefaultCLIHome is the default home directories for bandcli.
 	DefaultCLIHome = os.ExpandEnv("$HOME/.bandcli")
-
-	// DefaultNodeHome default home directories for bandd
+	// DefaultNodeHome is the default home directories for bandd.
 	DefaultNodeHome = os.ExpandEnv("$HOME/.bandd")
-
-	// ModuleBasics The module BasicManager is in charge of setting up basic,
-	// non-dependant module elements, such as codec registration
-	// and genesis verification.
+	// ModuleBasics is in charge of setting up basic, non-dependant module elements.
 	ModuleBasics = module.NewBasicManager(
 		genutil.AppModuleBasic{},
 		auth.AppModuleBasic{},
@@ -70,7 +66,6 @@ var (
 		evidence.AppModuleBasic{},
 		oracle.AppModuleBasic{},
 	)
-
 	// module account permissions
 	maccPerms = map[string][]string{
 		auth.FeeCollectorName:     nil,
@@ -80,23 +75,21 @@ var (
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		gov.ModuleName:            {supply.Burner},
 	}
+	// module accounts that are allowed to receive tokens.
+	allowedReceivingModAcc = map[string]bool{
+		distr.ModuleName: true,
+	}
 )
 
-// BandApp extended ABCI application
+// BandApp is the application of BandChain, extended base ABCI application.
 type BandApp struct {
 	*bam.BaseApp
-	cdc *codec.Codec
-
+	cdc            *codec.Codec
 	invCheckPeriod uint
-
-	// keys to access the substores
+	// Keys to access the substores.
 	keys  map[string]*sdk.KVStoreKey
 	tKeys map[string]*sdk.TransientStoreKey
-
-	// subspaces
-	subspaces map[string]params.Subspace
-
-	// keepers
+	// Module keepers, publicly accessible to facilate testing and extending (see emitter).
 	AccountKeeper  auth.AccountKeeper
 	BankKeeper     bank.Keeper
 	SupplyKeeper   supply.Keeper
@@ -110,16 +103,14 @@ type BandApp struct {
 	UpgradeKeeper  upgrade.Keeper
 	EvidenceKeeper evidence.Keeper
 	OracleKeeper   oracle.Keeper
-
-	// Decoder for unmarshaling []byte into sdk.Tx
-	TxDecoder sdk.TxDecoder
-	// Deliver Context that is set during BeginBlock and unset during EndBlock; primarily for gas refund
+	// Deliver context, set during InitGenesis/BeginBlock and cleared during Commit. It allows
+	// anyone with access to BandApp to read/mutate consensus state anytime. USE WITH CARE!
 	DeliverContext sdk.Context
-
-	// the module manager
+	// Module manager.
 	mm *module.Manager
 }
 
+// MakeCodec returns BandChain codec.
 func MakeCodec() *codec.Codec {
 	var cdc = codec.New()
 	ModuleBasics.RegisterCodec(cdc)
@@ -129,19 +120,14 @@ func MakeCodec() *codec.Codec {
 	return cdc.Seal()
 }
 
+// SetBech32AddressPrefixesAndBip44CoinType sets the global Bech32 prefixes and HD wallet coin type.
 func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
-	config.SetBech32PrefixForAccount(
-		Bech32MainPrefix,
-		Bech32MainPrefix+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForValidator(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic,
-	)
-	config.SetBech32PrefixForConsensusNode(
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus,
-		Bech32MainPrefix+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic,
-	)
+	accountPrefix := Bech32MainPrefix
+	validatorPrefix := Bech32MainPrefix + sdk.PrefixValidator + sdk.PrefixOperator
+	consensusPrefix := Bech32MainPrefix + sdk.PrefixValidator + sdk.PrefixConsensus
+	config.SetBech32PrefixForAccount(accountPrefix, accountPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForValidator(validatorPrefix, validatorPrefix+sdk.PrefixPublic)
+	config.SetBech32PrefixForConsensusNode(consensusPrefix, consensusPrefix+sdk.PrefixPublic)
 	config.SetCoinType(Bip44CoinType)
 }
 
@@ -161,66 +147,56 @@ func NewBandApp(
 		evidence.StoreKey, oracle.StoreKey,
 	)
 	tKeys := sdk.NewTransientStoreKeys(params.TStoreKey)
-
 	app := &BandApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tKeys:          tKeys,
-		subspaces:      make(map[string]params.Subspace),
-		TxDecoder:      auth.DefaultTxDecoder(cdc),
 	}
-
-	// init params keeper and subspaces
+	// Initialize params keeper and module subspaces.
 	app.ParamsKeeper = params.NewKeeper(cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
-	app.subspaces[auth.ModuleName] = app.ParamsKeeper.Subspace(auth.DefaultParamspace)
-	app.subspaces[bank.ModuleName] = app.ParamsKeeper.Subspace(bank.DefaultParamspace)
-	app.subspaces[staking.ModuleName] = app.ParamsKeeper.Subspace(staking.DefaultParamspace)
-	app.subspaces[mint.ModuleName] = app.ParamsKeeper.Subspace(mint.DefaultParamspace)
-	app.subspaces[distr.ModuleName] = app.ParamsKeeper.Subspace(distr.DefaultParamspace)
-	app.subspaces[slashing.ModuleName] = app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
-	app.subspaces[evidence.ModuleName] = app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
-	app.subspaces[gov.ModuleName] = app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
-	app.subspaces[crisis.ModuleName] = app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
-	app.subspaces[oracle.ModuleName] = app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
-
-	// add keepers
-	app.AccountKeeper = auth.NewAccountKeeper(cdc, keys[auth.StoreKey], app.subspaces[auth.ModuleName], auth.ProtoBaseAccount)
-	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, app.subspaces[bank.ModuleName], app.ModuleAccountAddrs())
+	authSubspace := app.ParamsKeeper.Subspace(auth.DefaultParamspace)
+	bankSubspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
+	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
+	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
+	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
+	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
+	evidenceSubspace := app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
+	govSubspace := app.ParamsKeeper.Subspace(gov.DefaultParamspace).WithKeyTable(gov.ParamKeyTable())
+	crisisSubspace := app.ParamsKeeper.Subspace(crisis.DefaultParamspace)
+	oracleSubspace := app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
+	// Add module keepers.
+	app.AccountKeeper = auth.NewAccountKeeper(cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
+	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, app.BlacklistedAccAddrs())
 	app.SupplyKeeper = supply.NewKeeper(cdc, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms)
-	// Wrapped supply keeper allows burned tokens to be transferred to community pool
+	// wrappedSupplyKeeper overrides burn token behavior to instead transfer to community pool.
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
-	stakingKeeper := staking.NewKeeper(cdc, keys[staking.StoreKey], &wrappedSupplyKeeper, app.subspaces[staking.ModuleName])
-	app.MintKeeper = mint.NewKeeper(cdc, keys[mint.StoreKey], app.subspaces[mint.ModuleName], &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
-	app.CrisisKeeper = crisis.NewKeeper(app.subspaces[crisis.ModuleName], invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
-	app.DistrKeeper = distr.NewKeeper(cdc, keys[distr.StoreKey], app.subspaces[distr.ModuleName], &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
-	// DistrKeeper must be set afterward due to the circular reference of supply-staking-distr
+	stakingKeeper := staking.NewKeeper(cdc, keys[staking.StoreKey], &wrappedSupplyKeeper, stakingSubspace)
+	app.MintKeeper = mint.NewKeeper(cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
+	app.DistrKeeper = distr.NewKeeper(cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	// DistrKeeper must be set afterward due to the circular reference between supply-staking-distr.
 	wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
-	app.SlashingKeeper = slashing.NewKeeper(cdc, keys[slashing.StoreKey], &stakingKeeper, app.subspaces[slashing.ModuleName])
-
-	// register the proposal types
+	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
+	app.SlashingKeeper = slashing.NewKeeper(cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace)
+	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], cdc)
+	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), auth.FeeCollectorName, oracleSubspace, app.SupplyKeeper, &stakingKeeper, app.DistrKeeper)
+	// Register the proposal types.
 	govRouter := gov.NewRouter()
-	govRouter.AddRoute(gov.RouterKey, gov.ProposalHandler).
+	govRouter.
+		AddRoute(gov.RouterKey, gov.ProposalHandler).
+		AddRoute(params.RouterKey, params.NewParamChangeProposalHandler(app.ParamsKeeper)).
 		AddRoute(distr.RouterKey, distr.NewCommunityPoolSpendProposalHandler(app.DistrKeeper)).
 		AddRoute(upgrade.RouterKey, upgrade.NewSoftwareUpgradeProposalHandler(app.UpgradeKeeper))
-	app.GovKeeper = gov.NewKeeper(cdc, keys[gov.StoreKey], app.subspaces[gov.ModuleName], app.SupplyKeeper, &stakingKeeper, govRouter)
-
-	// create evidence keeper with evidence router
-	evidenceKeeper := evidence.NewKeeper(cdc, keys[evidence.StoreKey], app.subspaces[evidence.ModuleName], &stakingKeeper, app.SlashingKeeper)
+	app.GovKeeper = gov.NewKeeper(cdc, keys[gov.StoreKey], govSubspace, app.SupplyKeeper, &stakingKeeper, govRouter)
+	// Create evidence keeper with evidence router.
+	evidenceKeeper := evidence.NewKeeper(cdc, keys[evidence.StoreKey], evidenceSubspace, &stakingKeeper, app.SlashingKeeper)
 	evidenceRouter := evidence.NewRouter()
 	evidenceKeeper.SetRouter(evidenceRouter)
 	app.EvidenceKeeper = *evidenceKeeper
-
-	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], cdc)
-	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), auth.FeeCollectorName, app.subspaces[oracle.ModuleName], app.SupplyKeeper, &stakingKeeper, app.DistrKeeper)
-
-	// register the staking hooks
-	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
+	// Register the staking hooks. NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks.
 	app.StakingKeeper = *stakingKeeper.SetHooks(staking.NewMultiStakingHooks(app.DistrKeeper.Hooks(), app.SlashingKeeper.Hooks()))
-
-	// NOTE: Any module instantiated in the module manager that is later modified
-	// must be passed by reference here.
+	// Create the module manager. NOTE: Any module instantiated in the module manager that is later modified must be passed by reference here.
 	app.mm = module.NewManager(
 		genutil.NewAppModule(app.AccountKeeper, app.StakingKeeper, app.DeliverTx),
 		auth.NewAppModule(app.AccountKeeper),
@@ -236,35 +212,34 @@ func NewBandApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		oracle.NewAppModule(app.OracleKeeper),
 	)
-	// During begin block slashing happens after distr.BeginBlocker so that
-	// there is nothing left over in the validator fee pool, so as to keep the
-	// CanWithdrawInvariant invariant.
-
-	// NOTE: oracle module intercepts fee pool and must run between mint and distr.
-	app.mm.SetOrderBeginBlockers(upgrade.ModuleName, mint.ModuleName, oracle.ModuleName, distr.ModuleName, slashing.ModuleName, staking.ModuleName)
-	app.mm.SetOrderEndBlockers(crisis.ModuleName, gov.ModuleName, staking.ModuleName, oracle.ModuleName)
-
+	// During begin block slashing happens after distr.BeginBlocker so that there is nothing left
+	// over in the validator fee pool, so as to keep the CanWithdrawInvariant invariant.
+	app.mm.SetOrderBeginBlockers(
+		upgrade.ModuleName, mint.ModuleName, oracle.ModuleName, distr.ModuleName, slashing.ModuleName,
+		evidence.ModuleName, staking.ModuleName,
+	)
+	// NOTE: The oracle module must occur before staking so that jailed validators due to report
+	// downtime will not get included in staking module's ValidatorUpdate set.
+	app.mm.SetOrderEndBlockers(
+		crisis.ModuleName, gov.ModuleName, staking.ModuleName, oracle.ModuleName,
+	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.
 	app.mm.SetOrderInitGenesis(
 		auth.ModuleName, distr.ModuleName, staking.ModuleName, bank.ModuleName, supply.ModuleName,
-		slashing.ModuleName, gov.ModuleName, mint.ModuleName, crisis.ModuleName,
-		genutil.ModuleName, evidence.ModuleName, oracle.ModuleName,
+		slashing.ModuleName, gov.ModuleName, mint.ModuleName, oracle.ModuleName, crisis.ModuleName,
+		genutil.ModuleName, evidence.ModuleName,
 	)
-
 	app.mm.RegisterInvariants(&app.CrisisKeeper)
 	app.mm.RegisterRoutes(app.Router(), app.QueryRouter())
-
-	// initialize stores
+	// Initialize stores.
 	app.MountKVStores(keys)
 	app.MountTransientStores(tKeys)
-
-	// initialize BaseApp
+	// initialize BaseApp.
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
 	app.SetAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, ante.DefaultSigVerificationGasConsumer))
 	app.SetEndBlocker(app.EndBlocker)
-
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
 		if err != nil {
@@ -274,20 +249,21 @@ func NewBandApp(
 	return app
 }
 
-// Name returns the name of the App
+// Name returns the name of the App.
 func (app *BandApp) Name() string { return app.BaseApp.Name() }
 
-// BeginBlocker application updates every begin block
+// BeginBlocker application updates every begin block.
 func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.DeliverContext = ctx
 	return app.mm.BeginBlock(ctx, req)
 }
 
-// EndBlocker application updates every end block
+// EndBlocker application updates every end block.
 func (app *BandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
+// Commit overrides the default BaseApp's ABCI commit by adding DeliverContext clearing.
 func (app *BandApp) Commit() (res abci.ResponseCommit) {
 	app.DeliverContext = sdk.Context{}
 	return app.BaseApp.Commit()
@@ -313,6 +289,15 @@ func (app *BandApp) ModuleAccountAddrs() map[string]bool {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
 	}
 	return modAccAddrs
+}
+
+// BlacklistedAccAddrs returns all the app's module account addresses black listed for receiving tokens.
+func (app *BandApp) BlacklistedAccAddrs() map[string]bool {
+	blacklistedAddrs := make(map[string]bool)
+	for acc := range maccPerms {
+		blacklistedAddrs[supply.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
+	}
+	return blacklistedAddrs
 }
 
 // Codec returns the application's sealed codec.

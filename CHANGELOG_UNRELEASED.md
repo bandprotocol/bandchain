@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2093](https://github.com/bandprotocol/bandchain/pull/2093) Add missing pieces on app.go + some refactor and comments.
 - (feat) [\#2114](https://github.com/bandprotocol/bandchain/pull/2114) Add more unit test coverage and enhance code comments in pkg.
 - (impv) [\#2072](https://github.com/bandprotocol/bandchain/pull/2072) Handle resolve request for emitter/flusher.
 - (feat) [\#2111](https://github.com/bandprotocol/bandchain/pull/2111) Introduce the notion of active validators who are performing oracle tasks.
