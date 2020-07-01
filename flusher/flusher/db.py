@@ -61,7 +61,7 @@ blocks = sa.Table(
     metadata,
     Column("height", sa.Integer, primary_key=True),
     Column("timestamp", CustomDateTime),
-    Column("proposer", CustomBase64),
+    Column("proposer", sa.String, sa.ForeignKey("validators.consensus_address")),
     Column("hash", CustomBase64),
     Column("inflation", sa.Float),
     Column("supply", sa.String),  # uband suffix
@@ -145,14 +145,14 @@ val_requests = sa.Table(
     "val_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validator", sa.String, primary_key=True),  # Add FK to validators
+    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
 )
 
 reports = sa.Table(
     "reports",
     metadata,
     Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
-    Column("validator", sa.String, primary_key=True),  # Add FK to validators
+    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
     Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
     Column("reporter", sa.String),
 )
@@ -168,4 +168,23 @@ raw_reports = sa.Table(
     sa.ForeignKeyConstraint(
         ["request_id", "validator"], ["reports.request_id", "reports.validator"]
     ),
+)
+
+validators = sa.Table(
+    "validators",
+    metadata,
+    Column("operator_address", sa.String, primary_key=True),
+    Column("consensus_address", sa.String, unique=True),
+    Column("consensus_pubkey", sa.String),
+    Column("moniker", sa.String),
+    Column("identity", sa.String),
+    Column("website", sa.String),
+    Column("details", sa.String),
+    Column("commission_rate", sa.String),
+    Column("commission_max_rate", sa.String),
+    Column("commission_max_change", sa.String),
+    Column("min_self_delegation", sa.String),
+    Column("jailed", sa.Boolean),
+    Column("tokens", sa.Integer),
+    Column("delegator_shares", sa.String),
 )

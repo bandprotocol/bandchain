@@ -13,6 +13,7 @@ from .db import (
     val_requests,
     reports,
     raw_reports,
+    validators,
 )
 
 
@@ -59,3 +60,10 @@ class Handler(object):
 
     def handle_new_raw_report(self, msg):
         self.conn.execute(raw_reports.insert(), msg)
+
+    def handle_set_validator(self, msg):
+        self.conn.execute(
+            insert(validators)
+            .values(**msg)
+            .on_conflict_do_update(constraint="validators_pkey", set_=msg)
+        )
