@@ -445,6 +445,9 @@ func (b *BandDB) HandleMessage(txHash []byte, msg sdk.Msg, events map[string][]s
 			rawReports = append(rawReports, rawReport)
 		}
 		jsonMap["raw_reports"] = rawReports
+	case oracle.MsgActivate:
+		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
+		jsonMap["validator_moniker"] = val.Description.Moniker
 	case oracle.MsgAddReporter:
 		val, _ := b.StakingKeeper.GetValidator(b.ctx, msg.Validator)
 		jsonMap["validator_moniker"] = val.Description.Moniker
@@ -537,6 +540,7 @@ func (b *BandDB) GetInvolvedAccountsFromTx(tx auth.StdTx) []sdk.AccAddress {
 		case oracle.MsgEditDataSource:
 		case oracle.MsgCreateOracleScript:
 		case oracle.MsgEditOracleScript:
+		case oracle.MsgActivate:
 		case oracle.MsgAddReporter:
 		case oracle.MsgRemoveReporter:
 		case oracle.MsgRequestData:

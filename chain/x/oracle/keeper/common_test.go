@@ -49,6 +49,10 @@ var (
 func createTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	app := simapp.NewSimApp(ChainID, log.NewNopLogger())
 	ctx := app.BaseApp.NewContext(false, abci.Header{})
+	// TODO: Test activate properly
+	app.OracleKeeper.Activate(ctx, simapp.Validator1.ValAddress)
+	app.OracleKeeper.Activate(ctx, simapp.Validator2.ValAddress)
+	app.OracleKeeper.Activate(ctx, simapp.Validator3.ValAddress)
 	return app, ctx, app.OracleKeeper
 }
 
