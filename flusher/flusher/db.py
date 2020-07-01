@@ -1,6 +1,22 @@
 import base64 as b64
 from datetime import datetime
 import sqlalchemy as sa
+import enum
+
+
+class ResolveStatus(enum.Enum):
+    Open = 0
+    Success = 1
+    Failure = 2
+    Expired = 3
+
+
+class CustomResolveStatus(sa.types.TypeDecorator):
+
+    impl = sa.Enum(ResolveStatus)
+
+    def process_bind_param(self, value, dialect):
+        return ResolveStatus(value)
 
 
 class CustomDateTime(sa.types.TypeDecorator):
@@ -110,6 +126,10 @@ requests = sa.Table(
     Column("min_count", sa.Integer),
     Column("sender", sa.String),
     Column("client_id", sa.String),
+    Column("request_time", sa.Integer, nullable=True),
+    Column("resolve_status", CustomResolveStatus),
+    Column("resolve_time", sa.Integer, nullable=True),
+    Column("result", CustomBase64, nullable=True),
 )
 
 raw_requests = sa.Table(
