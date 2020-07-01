@@ -43,6 +43,7 @@ func TestMsgRoute(t *testing.T) {
 	require.Equal(t, "oracle", MsgEditOracleScript{}.Route())
 	require.Equal(t, "oracle", MsgRequestData{}.Route())
 	require.Equal(t, "oracle", MsgReportData{}.Route())
+	require.Equal(t, "oracle", MsgActivate{}.Route())
 	require.Equal(t, "oracle", MsgAddReporter{}.Route())
 	require.Equal(t, "oracle", MsgRemoveReporter{}.Route())
 }
@@ -54,6 +55,7 @@ func TestMsgType(t *testing.T) {
 	require.Equal(t, "edit_oracle_script", MsgEditOracleScript{}.Type())
 	require.Equal(t, "request", MsgRequestData{}.Type())
 	require.Equal(t, "report", MsgReportData{}.Type())
+	require.Equal(t, "activate", MsgActivate{}.Type())
 	require.Equal(t, "add_reporter", MsgAddReporter{}.Type())
 	require.Equal(t, "remove_reporter", MsgRemoveReporter{}.Type())
 }
@@ -70,12 +72,15 @@ func TestMsgGetSigners(t *testing.T) {
 	require.Equal(t, signers, NewMsgEditOracleScript(1, anotherAcc, "name", "desc", []byte("code"), "schema", "url", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", signerAcc).GetSigners())
 	require.Equal(t, signers, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, anotherVal, signerAcc).GetSigners())
+	require.Equal(t, signers, NewMsgActivate(signerVal).GetSigners())
 	require.Equal(t, signers, NewMsgAddReporter(signerVal, anotherAcc).GetSigners())
 	require.Equal(t, signers, NewMsgRemoveReporter(signerVal, anotherAcc).GetSigners())
 }
 
 func TestMsgGetSignBytes(t *testing.T) {
 	sdk.GetConfig().SetBech32PrefixForAccount("band", "band"+sdk.PrefixPublic)
+	sdk.GetConfig().SetBech32PrefixForValidator("band"+sdk.PrefixValidator+sdk.PrefixOperator, "band"+sdk.PrefixValidator+sdk.PrefixOperator+sdk.PrefixPublic)
+	sdk.GetConfig().SetBech32PrefixForConsensusNode("band"+sdk.PrefixValidator+sdk.PrefixConsensus, "band"+sdk.PrefixValidator+sdk.PrefixConsensus+sdk.PrefixPublic)
 	require.Equal(t,
 		`{"type":"oracle/CreateDataSource","value":{"description":"desc","executable":"ZXhlYw==","name":"name","owner":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","sender":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4"}}`,
 		string(NewMsgCreateDataSource(GoodTestAddr, "name", "desc", []byte("exec"), GoodTestAddr).GetSignBytes()),
@@ -97,15 +102,19 @@ func TestMsgGetSignBytes(t *testing.T) {
 		string(NewMsgRequestData(1, []byte("calldata"), 10, 5, "client-id", GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/Report","value":{"raw_reports":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		`{"type":"oracle/Report","value":{"raw_reports":[{"data":"ZGF0YTE=","exit_code":1,"external_id":"1"},{"data":"ZGF0YTI=","exit_code":2,"external_id":"2"}],"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","request_id":"1","validator":"bandvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqx6y767"}}`,
 		string(NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/AddReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		`{"type":"oracle/Activate","value":{"validator":"bandvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqx6y767"}}`,
+		string(NewMsgActivate(GoodTestValAddr).GetSignBytes()),
+	)
+	require.Equal(t,
+		`{"type":"oracle/AddReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"bandvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqx6y767"}}`,
 		string(NewMsgAddReporter(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 	require.Equal(t,
-		`{"type":"oracle/RemoveReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"cosmosvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqkh52tw"}}`,
+		`{"type":"oracle/RemoveReporter","value":{"reporter":"band1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq2vqal4","validator":"bandvaloper1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqx6y767"}}`,
 		string(NewMsgRemoveReporter(GoodTestValAddr, GoodTestAddr).GetSignBytes()),
 	)
 }
@@ -183,6 +192,13 @@ func TestMsgReportDataValidation(t *testing.T) {
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {1, 1, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, BadTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, BadTestAddr)},
+	})
+}
+
+func TestMsgActivateValidation(t *testing.T) {
+	performValidateTests(t, []validateTestCase{
+		{true, NewMsgActivate(GoodTestValAddr)},
+		{false, NewMsgActivate(BadTestValAddr)},
 	})
 }
 

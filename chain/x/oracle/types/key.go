@@ -57,13 +57,6 @@ func ReportStoreKey(requestID RequestID) []byte {
 	return append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
 
-// ReportStoreKeyPerValidator returns the key to retrieve the data report from a validator to a request.
-func ReportStoreKeyPerValidator(reqID RequestID, val sdk.ValAddress) []byte {
-	buf := append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(reqID))...)
-	buf = append(buf, val.Bytes()...)
-	return buf
-}
-
 // DataSourceStoreKey returns the key to retrieve a specific data source from the store.
 func DataSourceStoreKey(dataSourceID DataSourceID) []byte {
 	return append(DataSourceStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(dataSourceID))...)
@@ -91,7 +84,14 @@ func ResultStoreKey(requestID RequestID) []byte {
 	return append(ResultStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
 
-// ValidatorReporterPrefixKey returns the key to a validator's reporters.
-func ValidatorReporterPrefixKey(val sdk.ValAddress) []byte {
+// ReportsOfValidatorPrefixKey returns the prefix key to get all reports for a request from a validator.
+func ReportsOfValidatorPrefixKey(reqID RequestID, val sdk.ValAddress) []byte {
+	buf := append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(reqID))...)
+	buf = append(buf, val.Bytes()...)
+	return buf
+}
+
+// ReportersOfValidatorPrefixKey returns the prefix key to get all reporters of a validator.
+func ReportersOfValidatorPrefixKey(val sdk.ValAddress) []byte {
 	return append(ReporterStoreKeyPrefix, val.Bytes()...)
 }
