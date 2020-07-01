@@ -46,19 +46,21 @@ func TestVerify(t *testing.T) {
 	_, err = bridge.NewHandler(keeper)(ctx, msg)
 
 	prt := rootmulti.DefaultProofRuntime()
-	h, _ := hex.DecodeString("8607165AC131C8A53EF624E8B86FF8F4E5F27E326FD137F323A0B1A9746C0A21")
+	appHash, _ := hex.DecodeString("8607165AC131C8A53EF624E8B86FF8F4E5F27E326FD137F323A0B1A9746C0A21")
 	kp := merkle.KeyPath{}
 	kp = kp.AppendKey([]byte("oracle"), merkle.KeyEncodingURL)
 	kp = kp.AppendKey(msg.Proof.Ops[0].Key, merkle.KeyEncodingURL)
 	fmt.Println("kp", kp.String())
 	value, _ := hex.DecodeString("0000000c62616e64636861696e2e6a730000000000000001000000100000000442414e4400000000000f4240000000000000000400000000000000020000000c62616e64636861696e2e6a7300000000000000020000000000000004000000005ef32bd3000000005ef32bd80000000100000008000000000013d0e6")
-	err = prt.VerifyValue(&msg.Proof, h, kp.String(), value)
+	err = prt.VerifyValue(&msg.Proof, appHash, kp.String(), value)
 	require.NoError(t, err)
 
 	cdc := makeCodec()
 	proofJson, err := cdc.MarshalJSON(proof)
 	require.NoError(t, err)
 	fmt.Printf("proofJson: %v\n", string(proofJson))
+
+	require.Equal(t, 0, 1)
 }
 
 func makeCodec() *codec.Codec {
@@ -128,6 +130,7 @@ func TestRelay(t *testing.T) {
 	sumPower := int64(0)
 
 	for idx, signature := range header.Commit.Signatures {
+		//TODO: Add logic to check that commit is not use the same validator in multiple time
 		for _, validator := range validators {
 			if signature.ValidatorAddress.String() == validator.PubKey.Address().String() {
 				msg := header.Commit.VoteSignBytes("band-guanyu-devnet-3", idx)
@@ -150,6 +153,8 @@ func TestRelay(t *testing.T) {
 	} else {
 		fmt.Println(false)
 	}
+
+	//save validator
 
 	require.Equal(t, 0, 1)
 }
