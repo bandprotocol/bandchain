@@ -42,6 +42,12 @@ class Handler(object):
     def handle_new_request(self, msg):
         self.conn.execute(requests.insert(), msg)
 
+    def handle_update_request(self, msg):
+        condition = True
+        for col in requests.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(requests.update().where(condition).values(**msg))
+
     def handle_new_raw_request(self, msg):
         self.conn.execute(raw_requests.insert(), msg)
 
