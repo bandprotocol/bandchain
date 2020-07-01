@@ -13,6 +13,7 @@ from .db import (
     val_requests,
     reports,
     raw_reports,
+    validators,
 )
 
 
@@ -42,6 +43,12 @@ class Handler(object):
     def handle_new_request(self, msg):
         self.conn.execute(requests.insert(), msg)
 
+    def handle_update_request(self, msg):
+        condition = True
+        for col in requests.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(requests.update().where(condition).values(**msg))
+
     def handle_new_raw_request(self, msg):
         self.conn.execute(raw_requests.insert(), msg)
 
@@ -53,3 +60,10 @@ class Handler(object):
 
     def handle_new_raw_report(self, msg):
         self.conn.execute(raw_reports.insert(), msg)
+
+    def handle_set_validator(self, msg):
+        self.conn.execute(
+            insert(validators)
+            .values(**msg)
+            .on_conflict_do_update(constraint="validators_pkey", set_=msg)
+        )

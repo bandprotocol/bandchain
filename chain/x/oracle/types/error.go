@@ -19,8 +19,8 @@ var (
 	ErrInvalidReportSize        = sdkerrors.Register(ModuleName, 12, "invalid report size")
 	ErrReporterNotAuthorized    = sdkerrors.Register(ModuleName, 13, "reporter not authorized")
 	ErrEditorNotAuthorized      = sdkerrors.Register(ModuleName, 14, "editor not authorized")
-	ErrReportInfoNotFound       = sdkerrors.Register(ModuleName, 16, "validator report info not found")
-	ErrUncompressionFailed      = sdkerrors.Register(ModuleName, 17, "uncompression failed")
+	ErrValidatorAlreadyActive   = sdkerrors.Register(ModuleName, 16, "validator already active")
+	ErrTooSoonToActivate        = sdkerrors.Register(ModuleName, 17, "too soon to activate")
 	ErrTooLongName              = sdkerrors.Register(ModuleName, 18, "too long name")
 	ErrTooLongDescription       = sdkerrors.Register(ModuleName, 19, "too long description")
 	ErrEmptyExecutable          = sdkerrors.Register(ModuleName, 20, "empty executable")
@@ -40,6 +40,7 @@ var (
 	ErrCreateWithDoNotModify    = sdkerrors.Register(ModuleName, 34, "cannot create with [do-not-modify] content")
 	ErrSelfReferenceAsReporter  = sdkerrors.Register(ModuleName, 35, "cannot reference self as reporter")
 	ErrOBIDecode                = sdkerrors.Register(ModuleName, 36, "obi decode failed")
+	ErrUncompressionFailed      = sdkerrors.Register(ModuleName, 37, "uncompression failed")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.

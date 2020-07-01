@@ -169,19 +169,37 @@ func TestExpiredRequestOracleData(t *testing.T) {
 		expectRequest.ClientID, types.RequestID(1), 0, expectRequest.RequestTime, ctx.BlockTime().Unix(),
 		types.ResolveStatus_Expired, []byte{},
 	)
-	expectEvents := []abci.Event{{Type: types.EventTypeRequestExecute, Attributes: []kv.Pair{
-		{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
-		{Key: []byte(types.AttributeKeyOracleScriptID), Value: parseEventAttribute(reqPacket.OracleScriptID)},
-		{Key: []byte(types.AttributeKeyCalldata), Value: expectRequest.Calldata},
-		{Key: []byte(types.AttributeKeyAskCount), Value: parseEventAttribute(reqPacket.AskCount)},
-		{Key: []byte(types.AttributeKeyMinCount), Value: parseEventAttribute(reqPacket.MinCount)},
-		{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
-		{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
-		{Key: []byte(types.AttributeKeyAnsCount), Value: parseEventAttribute(resPacket.AnsCount)},
-		{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
-		{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
-		{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
-	}}}
+	expectEvents := []abci.Event{{
+		Type: types.EventTypeRequestExecute,
+		Attributes: []kv.Pair{
+			{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
+			{Key: []byte(types.AttributeKeyOracleScriptID), Value: parseEventAttribute(reqPacket.OracleScriptID)},
+			{Key: []byte(types.AttributeKeyCalldata), Value: expectRequest.Calldata},
+			{Key: []byte(types.AttributeKeyAskCount), Value: parseEventAttribute(reqPacket.AskCount)},
+			{Key: []byte(types.AttributeKeyMinCount), Value: parseEventAttribute(reqPacket.MinCount)},
+			{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
+			{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
+			{Key: []byte(types.AttributeKeyAnsCount), Value: parseEventAttribute(resPacket.AnsCount)},
+			{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
+			{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
+			{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
+		},
+	}, {
+		Type: types.EventTypeDeactivate,
+		Attributes: []kv.Pair{
+			{Key: []byte(types.AttributeKeyValidator), Value: parseEventAttribute(Validator3.ValAddress.String())},
+		},
+	}, {
+		Type: types.EventTypeDeactivate,
+		Attributes: []kv.Pair{
+			{Key: []byte(types.AttributeKeyValidator), Value: parseEventAttribute(Validator1.ValAddress.String())},
+		},
+	}, {
+		Type: types.EventTypeDeactivate,
+		Attributes: []kv.Pair{
+			{Key: []byte(types.AttributeKeyValidator), Value: parseEventAttribute(Validator2.ValAddress.String())},
+		},
+	}}
 
 	require.Equal(t, expectEvents, result.GetEvents())
 }

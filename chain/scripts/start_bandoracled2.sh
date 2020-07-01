@@ -8,6 +8,11 @@ bandoracled2 config chain-id bandchain
 # add validator to bandoracled2 config
 bandoracled2 config validator $(bandcli keys show $1 -a --bech val --keyring-backend test)
 
+echo "y" | bandcli tx oracle activate --from $1 --keyring-backend test
+
+# wait for activation transaction success
+sleep 2
+
 for i in $(eval echo {1..$2})
 do
   # add reporter key

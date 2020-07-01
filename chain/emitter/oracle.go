@@ -20,6 +20,7 @@ func (app *App) handleMsgRequestData(
 		"min_count":        msg.MinCount,
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
+		"resolve_status":   types.ResolveStatus_Open,
 	})
 	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
 	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]
@@ -63,4 +64,52 @@ func (app *App) handleMsgReportData(
 			"exit_code":   data.ExitCode,
 		})
 	}
+}
+
+// handleMsgCreateDataSource implements emitter handler for MsgCreateDataSource.
+func (app *App) handleMsgCreateDataSource(
+	txHash []byte, msg oracle.MsgCreateDataSource, evMap EvMap, extra JsDict,
+) {
+	id := atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0])
+	app.Write("NEW_DATA_SOURCE", JsDict{
+		"id":          id,
+		"name":        msg.Name,
+		"description": msg.Description,
+		"owner":       msg.Owner.String(),
+		"executable":  msg.Executable,
+		"tx_hash":     txHash,
+	})
+	extra["id"] = id
+}
+
+// handleMsgCreateOracleScript implements emitter handler for MsgCreateOracleScript.
+func (app *App) handleMsgCreateOracleScript(
+	txHash []byte, msg oracle.MsgCreateOracleScript, evMap EvMap, extra JsDict,
+) {
+	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
+	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
+	app.Write("NEW_ORACLE_SCRIPT", JsDict{
+		"id":              id,
+		"name":            msg.Name,
+		"description":     msg.Description,
+		"owner":           msg.Owner.String(),
+		"schema":          msg.Schema,
+		"codehash":        os.Filename,
+		"source_code_url": msg.SourceCodeURL,
+		"tx_hash":         txHash,
+	})
+	extra["id"] = id
+}
+
+// handleEventRequestExecute implements emitter handler for EventRequestExecute.
+func (app *App) handleEventRequestExecute(evMap EvMap) {
+	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
+	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
+	app.Write("UPDATE_REQUEST", JsDict{
+		"id":             id,
+		"request_time":   result.ResponsePacketData.RequestTime,
+		"resolve_time":   result.ResponsePacketData.ResolveTime,
+		"resolve_status": result.ResponsePacketData.ResolveStatus,
+		"result":         result.ResponsePacketData.Result,
+	})
 }

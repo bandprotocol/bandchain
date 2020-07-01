@@ -9,12 +9,12 @@ import (
 
 // HasReport checks if the report of this ID triple exists in the storage.
 func (k Keeper) HasReport(ctx sdk.Context, rid types.RequestID, val sdk.ValAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.ReportStoreKeyPerValidator(rid, val))
+	return ctx.KVStore(k.storeKey).Has(types.ReportsOfValidatorPrefixKey(rid, val))
 }
 
 // SetDataReport saves the report to the storage without performing validation.
 func (k Keeper) SetReport(ctx sdk.Context, rid types.RequestID, rep types.Report) {
-	key := types.ReportStoreKeyPerValidator(rid, rep.Validator)
+	key := types.ReportsOfValidatorPrefixKey(rid, rep.Validator)
 	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
 }
 
