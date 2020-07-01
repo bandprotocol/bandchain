@@ -43,13 +43,6 @@ func TestOracleScriptStoreKey(t *testing.T) {
 	require.Equal(t, expectKeyByte, OracleScriptStoreKey(oracleScriptID))
 }
 
-func TestValidatorReportInfoStoreKey(t *testing.T) {
-	v, _ := sdk.ValAddressFromHex("b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-	expectKeyByte, _ := hex.DecodeString("06b80f2a5df7d5710b15622d1a9f1e3830ded5bda8")
-
-	require.Equal(t, expectKeyByte, ValidatorReportInfoStoreKey(v))
-}
-
 func TestReportStoreKey(t *testing.T) {
 	requestID := RequestID(12)
 	expectKeyByte, _ := hex.DecodeString("02000000000000000c")

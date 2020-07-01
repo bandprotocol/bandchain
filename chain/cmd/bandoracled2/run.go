@@ -21,6 +21,8 @@ import (
 const (
 	// TODO: We can subscribe only for txs that contain request messages
 	TxQuery = "tm.event = 'Tx'"
+	// EventChannelCapacity is a buffer size of channel between node and this program
+	EventChannelCapacity = 2000
 )
 
 func runImpl(c *Context, l *Logger) error {
@@ -34,7 +36,7 @@ func runImpl(c *Context, l *Logger) error {
 	defer cxl()
 
 	l.Info(":ear: Subscribing to events with query: %s...", TxQuery)
-	eventChan, err := c.client.Subscribe(ctx, "", TxQuery)
+	eventChan, err := c.client.Subscribe(ctx, "", TxQuery, EventChannelCapacity)
 	if err != nil {
 		return err
 	}

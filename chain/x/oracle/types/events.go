@@ -9,6 +9,7 @@ const (
 	EventTypeRequest            = "request"
 	EventTypeRawRequest         = "raw_request"
 	EventTypeReport             = "report"
+	EventTypeActivate           = "activate"
 	EventTypeAddReporter        = "add_reporter"
 	EventTypeRemoveReporter     = "remove_reporter"
 	EventTypeRequestExecute     = "request_execute"

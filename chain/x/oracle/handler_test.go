@@ -525,8 +525,8 @@ func TestRequestDataSuccess(t *testing.T) {
 			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
 			sdk.NewAttribute(types.AttributeKeyAskCount, "2"),
 			sdk.NewAttribute(types.AttributeKeyMinCount, "2"),
-			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
 			sdk.NewAttribute(types.AttributeKeyValidator, Validator3.ValAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,

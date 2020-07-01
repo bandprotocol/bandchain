@@ -26,6 +26,8 @@ func NewHandler(k Keeper) sdk.Handler {
 			return handleMsgRequestData(ctx, k, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, k, msg)
+		case MsgActivate:
+			return handleMsgActivate(ctx, k, msg)
 		case MsgAddReporter:
 			return handleMsgAddReporter(ctx, k, msg)
 		case MsgRemoveReporter:
@@ -37,8 +39,8 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Executable) {
+		var err error
 		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
@@ -154,6 +156,18 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeReport,
 		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
+	))
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
+func handleMsgActivate(ctx sdk.Context, k Keeper, m MsgActivate) (*sdk.Result, error) {
+	err := k.Activate(ctx, m.Validator)
+	if err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeActivate,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 	))
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil

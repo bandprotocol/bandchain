@@ -4,26 +4,20 @@ import (
 	"math"
 )
 
-// addUint64Overflow performs the addition operation on two uint64 integers and
-// returns a boolean on whether or not the result overflows.
-func addUint64Overflow(a, b uint64) (uint64, bool) {
+// safeAdd performs the addition operation on two uint64 integers, but panics if overflow.
+func safeAdd(a, b uint64) uint64 {
 	if math.MaxUint64-a < b {
-		return 0, true
+		panic("bandrng::safeAdd: overflow addition")
 	}
-
-	return a + b, false
+	return a + b
 }
 
 // ChooseOne randomly picks an index between 0 and len(weights)-1 inclusively. Each index has
 // the probability of getting selected based on its weight.
 func ChooseOne(rng *Rng, weights []uint64) int {
 	sum := uint64(0)
-	var overflow bool
 	for _, weight := range weights {
-		sum, overflow = addUint64Overflow(sum, weight)
-		if overflow {
-			panic("sum of weights exceed max uint64")
-		}
+		sum = safeAdd(sum, weight)
 	}
 
 	luckyNumber := rng.NextUint64() % sum
@@ -34,60 +28,45 @@ func ChooseOne(rng *Rng, weights []uint64) int {
 			return idx
 		}
 	}
-	// Should never happen because the sum of weights is more than the lucky number
-	panic("error")
+	// We should never reach here since the sum of weights is greater than the lucky number.
+	panic("bandrng::ChooseOne: reaching the unreachable")
 }
 
-// GetCandidateSize return candidate size that base on current round and total round
-// currentRound must in range [0,totalRound)
-// totalRound must be more than 0 and totalCount <= totalRound
-// if currentRound is 0 the function will return totalCount
-// candidate size will decrease every round
-// candidate size calculate by function
-// size = floor((totalCount-1)**((totalRound-currentRound-1)/(totalRound-1))) + 1
-// so size must in range [2,totalCount]
-func GetCandidateSize(currentRound, totalRound, totalCount int) int {
-	if currentRound < 0 || currentRound >= totalRound {
-		panic("currentRound must in range [0,totalRound)")
+// ChooseSome randomly picks non-duplicate "cnt" indexes between 0 and len(weights)-1 inclusively.
+// The function calls ChooseOne to get an index based on the given weights. When an index is
+// chosen, it gets removed from the pool. The process gets repeated until "cnt" indexes are chosen.
+func ChooseSome(rng *Rng, weights []uint64, cnt int) []int {
+	chosenIndexes := make([]int, cnt)
+	availableWeights := make([]uint64, len(weights))
+	availableIndexes := make([]int, len(weights))
+	for idx, weight := range weights {
+		availableWeights[idx] = weight
+		availableIndexes[idx] = idx
 	}
-	if totalCount < totalRound {
-		panic("error: totalCount < totalRound")
+	for round := 0; round < cnt; round++ {
+		chosen := ChooseOne(rng, availableWeights)
+		chosenIndexes[round] = availableIndexes[chosen]
+		availableWeights = append(availableWeights[:chosen], availableWeights[chosen+1:]...)
+		availableIndexes = append(availableIndexes[:chosen], availableIndexes[chosen+1:]...)
 	}
-
-	if currentRound == 0 {
-		return totalCount
-	}
-	if totalCount == currentRound+1 {
-		return 1
-	}
-
-	base := float64(totalCount - 1)                                        // base > 0
-	exponent := float64(totalRound-1-currentRound) / float64(totalRound-1) // 0 <= exponent <= 1
-
-	size := int(math.Pow(base, exponent)) + 1
-	return size
+	return chosenIndexes
 }
 
-// ChooseK randomly picks an array of index(size=k) between 0 and len(weights)-1 inclusively. Each index has
-// the probability of getting selected based on its weight.
-func ChooseK(rng *Rng, weights []uint64, k int) []int {
-	var luckies []int
-	totalCount := len(weights)
-	weightValues := make([]uint64, totalCount)
-	copy(weightValues, weights)
-	weightIndexes := make([]int, totalCount)
-	for idx := range weightIndexes {
-		weightIndexes[idx] = idx
+// ChooseSomeMaxWeight performs ChooseSome "tries" times and returns the sampling with the
+// highest weight sum among all tries.
+func ChooseSomeMaxWeight(rng *Rng, weights []uint64, cnt int, tries int) []int {
+	var maxWeightSum uint64 = 0
+	var maxWeightResult []int = nil
+	for each := 0; each < tries; each++ {
+		candidate := ChooseSome(rng, weights, cnt)
+		candidateWeightSum := uint64(0)
+		for _, idx := range candidate {
+			candidateWeightSum += weights[idx]
+		}
+		if candidateWeightSum > maxWeightSum {
+			maxWeightSum = candidateWeightSum
+			maxWeightResult = candidate
+		}
 	}
-
-	for round := 0; round < k; round++ {
-		candidateSize := GetCandidateSize(round, k, totalCount)
-		luckyNumber := ChooseOne(rng, weightValues[:candidateSize])
-		luckies = append(luckies, weightIndexes[luckyNumber])
-
-		weightIndexes = append(weightIndexes[:luckyNumber], weightIndexes[luckyNumber+1:]...)
-		weightValues = append(weightValues[:luckyNumber], weightValues[luckyNumber+1:]...)
-	}
-
-	return luckies
+	return maxWeightResult
 }

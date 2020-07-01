@@ -180,7 +180,7 @@ func NewBandApp(
 	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
 	app.SlashingKeeper = slashing.NewKeeper(cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace)
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], cdc)
-	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), oracleSubspace, stakingKeeper)
+	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), auth.FeeCollectorName, oracleSubspace, app.SupplyKeeper, &stakingKeeper, app.DistrKeeper)
 	// Register the proposal types.
 	govRouter := gov.NewRouter()
 	govRouter.
@@ -215,13 +215,13 @@ func NewBandApp(
 	// During begin block slashing happens after distr.BeginBlocker so that there is nothing left
 	// over in the validator fee pool, so as to keep the CanWithdrawInvariant invariant.
 	app.mm.SetOrderBeginBlockers(
-		upgrade.ModuleName, mint.ModuleName, distr.ModuleName, slashing.ModuleName,
+		upgrade.ModuleName, mint.ModuleName, oracle.ModuleName, distr.ModuleName, slashing.ModuleName,
 		evidence.ModuleName, staking.ModuleName,
 	)
 	// NOTE: The oracle module must occur before staking so that jailed validators due to report
 	// downtime will not get included in staking module's ValidatorUpdate set.
 	app.mm.SetOrderEndBlockers(
-		crisis.ModuleName, gov.ModuleName, oracle.ModuleName, staking.ModuleName,
+		crisis.ModuleName, gov.ModuleName, staking.ModuleName, oracle.ModuleName,
 	)
 	// NOTE: The genutils module must occur after staking so that pools are
 	// properly initialized with tokens from genesis accounts.

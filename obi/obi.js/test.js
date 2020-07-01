@@ -6,7 +6,7 @@ const {
   ObiStruct,
   ObiString,
   ObiBytes,
-} = require('./lib/index.js')
+} = require('./src/index.js')
 const _ = require('lodash')
 
 const check = (desc, fn) => console.log(`${fn() ? '✅' : '⛔️'} ${desc}`)

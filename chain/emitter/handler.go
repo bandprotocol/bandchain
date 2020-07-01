@@ -21,5 +21,9 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgRequestData(txHash, msg, evMap, extra)
 	case oracle.MsgReportData:
 		app.handleMsgReportData(txHash, msg, evMap, extra)
+	case oracle.MsgCreateDataSource:
+		app.handleMsgCreateDataSource(txHash, msg, evMap, extra)
+	case oracle.MsgCreateOracleScript:
+		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
 	}
 }
