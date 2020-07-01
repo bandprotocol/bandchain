@@ -218,7 +218,18 @@ let make = (~chainID, ~ledgerApp) => {
          </div>
        : <div
            className={Styles.connectBtn(~isLoading=false, ())}
-           onClick={_ => createLedger(accountIndex)}>
+           onClick={_ => {
+             switch (Os.isWindow(), Os.checkHID()) {
+             | (true, false) =>
+               let isConfirm =
+                 Window.confirm(
+                   {j|To use Ledger Nano on Windows 10, please enable "Experimental Web Platform Features" by copy-paste "chrome://flags/#enable-experimental-web-platform-features". Click OK to copy.|j},
+                 );
+               isConfirm
+                 ? Copy.copy("chrome://flags/#enable-experimental-web-platform-features") : ();
+             | (_, _) => createLedger(accountIndex)
+             }
+           }}>
            <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
          </div>}
   </div>;

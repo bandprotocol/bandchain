@@ -1,4 +1,5 @@
 type t = {
+  transport: LedgerJS.transport_t,
   app: LedgerJS.t,
   path: array(int),
   prefix: string,
@@ -31,7 +32,10 @@ let create = (ledgerApp, accountIndex) => {
   let timeout = 10000;
   let path = getPath(ledgerApp, accountIndex);
   let prefix = "band";
-  let%Promise transport = LedgerJS.createTransportWebUSB(timeout);
+
+  let%Promise transport =
+    Os.isWindow()
+      ? LedgerJS.createTransportWebHID(timeout) : LedgerJS.createTransportWebUSB(timeout);
 
   let app = LedgerJS.createApp(transport);
   let%Promise pubKeyInfo = LedgerJS.publicKey(app, path);
@@ -68,7 +72,7 @@ let create = (ledgerApp, accountIndex) => {
     Js.Console.log3("test mode is not supported", pubKeyInfo, version);
     Js.Promise.reject(Not_found);
   } else {
-    Promise.ret({app, path, prefix});
+    Promise.ret({transport, app, path, prefix});
   };
 };
 
