@@ -3,10 +3,11 @@ package oracle
 import (
 	"encoding/json"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	abci "github.com/tendermint/tendermint/abci/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // GenesisState is the oracle state that must be provided at genesis.
@@ -39,6 +40,7 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetOracleScriptCount(ctx, 0)
 	k.SetRequestCount(ctx, 0)
 	k.SetRequestLastExpired(ctx, 0)
+	k.SetRollingSeed(ctx, make([]byte, types.RollingSeedSizeInBytes))
 	for _, dataSource := range data.DataSources {
 		_ = k.AddDataSource(ctx, dataSource)
 	}
