@@ -39,8 +39,8 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Executable) {
+		var err error
 		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
