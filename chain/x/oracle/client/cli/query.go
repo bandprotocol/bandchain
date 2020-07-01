@@ -173,7 +173,7 @@ func GetQueryCmdReportInfo(route string, cdc *codec.Codec) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			return printOutput(cliCtx, cdc, bz, &types.ValidatorReportInfo{})
+			return printOutput(cliCtx, cdc, bz, &types.ReportInfo{})
 		},
 	}
 }

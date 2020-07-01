@@ -28,13 +28,15 @@ type GenesisState map[string]json.RawMessage
 func NewDefaultGenesisState() GenesisState {
 	cdc := MakeCodec()
 	denom := "uband"
-
+	// Get default genesis states of the modules we are to override.
+	authGenesis := auth.DefaultGenesisState()
 	stakingGenesis := staking.DefaultGenesisState()
 	mintGenesis := mint.DefaultGenesisState()
 	govGenesis := gov.DefaultGenesisState()
 	crisisGenesis := crisis.DefaultGenesisState()
 	slashingGenesis := slashing.DefaultGenesisState()
-
+	// Override the genesis parameters.
+	authGenesis.Params.TxSizeCostPerByte = 5
 	stakingGenesis.Params.BondDenom = denom
 	stakingGenesis.Params.HistoricalEntries = 1000
 	mintGenesis.Params.BlocksPerYear = 10519200 // target 3-second block time
@@ -46,10 +48,9 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis.Params.DowntimeJailDuration = 60 * 10 * time.Second       // 10 minutes
 	slashingGenesis.Params.SlashFractionDoubleSign = sdk.NewDecWithPrec(5, 2) // 5%
 	slashingGenesis.Params.SlashFractionDowntime = sdk.NewDecWithPrec(1, 4)   // 0.01%
-
 	return GenesisState{
 		genutil.ModuleName:  genutil.AppModuleBasic{}.DefaultGenesis(),
-		auth.ModuleName:     auth.AppModuleBasic{}.DefaultGenesis(),
+		auth.ModuleName:     cdc.MustMarshalJSON(authGenesis),
 		bank.ModuleName:     bank.AppModuleBasic{}.DefaultGenesis(),
 		supply.ModuleName:   supply.AppModuleBasic{}.DefaultGenesis(),
 		staking.ModuleName:  cdc.MustMarshalJSON(stakingGenesis),

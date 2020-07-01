@@ -257,11 +257,11 @@ func NewReport(
 	}
 }
 
-func NewValidatorReportInfo(
+func NewReportInfo(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	ConsecutiveMissed uint64,
-) ValidatorReportInfo {
-	return ValidatorReportInfo{
+) ReportInfo {
+	return ReportInfo{
 		Validator:         Validator,
 		ConsecutiveMissed: ConsecutiveMissed,
 	}
@@ -274,6 +274,7 @@ func NewParams(
 	MaxConsecutiveMisses uint64,
 	BaseRequestGas uint64,
 	PerValidatorRequestGas uint64,
+	SamplingTryCount uint64,
 ) Params {
 	return Params{
 		MaxRawRequestCount:     MaxRawRequestCount,
@@ -282,5 +283,6 @@ func NewParams(
 		MaxConsecutiveMisses:   MaxConsecutiveMisses,
 		BaseRequestGas:         BaseRequestGas,
 		PerValidatorRequestGas: PerValidatorRequestGas,
+		SamplingTryCount:       SamplingTryCount,
 	}
 }
