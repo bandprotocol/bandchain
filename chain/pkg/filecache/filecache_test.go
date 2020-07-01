@@ -200,3 +200,45 @@ func TesGetFileBadContent(t *testing.T) {
 	_, err = f.GetFile(filename)
 	require.Error(t, err)
 }
+
+func TestMustGetFileInconsistentContent(t *testing.T) {
+	dir, err := ioutil.TempDir("", "filecache")
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		err := os.RemoveAll(dir)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	f := filecache.New(dir)
+	filename := "b20727a9b7cc4198d8785b0ef1fa4c774eb9a360e1563dd4f095ddc7af02bd55"
+	filepath := filepath.Join(dir, filename)
+	err = ioutil.WriteFile(filepath, []byte("INCONSISTENT"), 0666) // Not consistent with name
+	require.NoError(t, err)
+	require.Panics(t, func() {
+		_ = f.MustGetFile(filename)
+	})
+}
+
+func TestGetFileInconsistentContent(t *testing.T) {
+	dir, err := ioutil.TempDir("", "filecache")
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		err := os.RemoveAll(dir)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	f := filecache.New(dir)
+	filename := "b20727a9b7cc4198d8785b0ef1fa4c774eb9a360e1563dd4f095ddc7af02bd55"
+	filepath := filepath.Join(dir, filename)
+	err = ioutil.WriteFile(filepath, []byte("INCONSISTENT"), 0666) // Not consistent with name
+	_, err = f.GetFile(filename)
+	require.Error(t, err)
+}
