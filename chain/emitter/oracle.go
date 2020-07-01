@@ -20,6 +20,7 @@ func (app *App) handleMsgRequestData(
 		"min_count":        msg.MinCount,
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
+		"resolve_status":   types.ResolveStatus_Open,
 	})
 	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
 	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]
@@ -98,4 +99,17 @@ func (app *App) handleMsgCreateOracleScript(
 		"tx_hash":         txHash,
 	})
 	extra["id"] = id
+}
+
+// handleEventRequestExecute implements emitter handler for EventRequestExecute.
+func (app *App) handleEventRequestExecute(evMap EvMap) {
+	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
+	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
+	app.Write("UPDATE_REQUEST", JsDict{
+		"id":             id,
+		"request_time":   result.ResponsePacketData.RequestTime,
+		"resolve_time":   result.ResponsePacketData.ResolveTime,
+		"resolve_status": result.ResponsePacketData.ResolveStatus,
+		"result":         result.ResponsePacketData.Result,
+	})
 }

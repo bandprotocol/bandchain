@@ -37,26 +37,23 @@ func (c Cache) AddFile(data []byte) string {
 	return filename
 }
 
-// MustGetFile loads the file from the file storage. Panics if the file does not exist.
-func (c Cache) MustGetFile(filename string) []byte {
-	data, err := c.fileCache.Read(filename)
-	if err != nil {
-		panic(err)
-	}
-	if getFilename(data) != filename { // Perform integrity check for safety. NEVER EXPECT TO HIT.
-		panic("Inconsistent filecache content")
-	}
-	return data
-}
-
 // GetFile loads the file from the file storage. Returns error if the file does not exist.
 func (c Cache) GetFile(filename string) ([]byte, error) {
 	data, err := c.fileCache.Read(filename)
 	if err != nil {
 		return nil, err
 	}
-	if getFilename(data) != filename {
+	if getFilename(data) != filename { // Perform integrity check for safety. NEVER EXPECT TO HIT.
 		return nil, errors.New("Inconsistent filecache content")
 	}
 	return data, nil
+}
+
+// MustGetFile loads the file from the file storage. Panics if the file does not exist.
+func (c Cache) MustGetFile(filename string) []byte {
+	data, err := c.GetFile(filename)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
