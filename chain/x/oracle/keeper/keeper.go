@@ -37,13 +37,14 @@ func NewKeeper(
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		fileCache:     filecache.New(fileDir),
-		paramSpace:    paramSpace,
-		supplyKeeper:  supplyKeeper,
-		stakingKeeper: stakingKeeper,
-		distrKeeper:   distrKeeper,
+		storeKey:         key,
+		cdc:              cdc,
+		fileCache:        filecache.New(fileDir),
+		feeCollectorName: feeCollectorName,
+		paramSpace:       paramSpace,
+		supplyKeeper:     supplyKeeper,
+		stakingKeeper:    stakingKeeper,
+		distrKeeper:      distrKeeper,
 	}
 }
 
