@@ -17,17 +17,21 @@ const (
 )
 
 type Keeper struct {
-	storeKey      sdk.StoreKey
-	cdc           *codec.Codec
-	fileCache     filecache.Cache
-	ParamSpace    params.Subspace
-	StakingKeeper types.StakingKeeper
+	storeKey         sdk.StoreKey
+	cdc              *codec.Codec
+	fileCache        filecache.Cache
+	feeCollectorName string
+	ParamSpace       params.Subspace
+	SupplyKeeper     types.SupplyKeeper
+	StakingKeeper    types.StakingKeeper
+	DistrKeeper      types.DistrKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string, paramSpace params.Subspace,
-	stakingKeeper types.StakingKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string, feeCollectorName string,
+	paramSpace params.Subspace, supplyKeeper types.SupplyKeeper,
+	stakingKeeper types.StakingKeeper, distrKeeper types.DistrKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -37,7 +41,9 @@ func NewKeeper(
 		cdc:           cdc,
 		fileCache:     filecache.New(fileDir),
 		ParamSpace:    paramSpace,
+		SupplyKeeper:  supplyKeeper,
 		StakingKeeper: stakingKeeper,
+		DistrKeeper:   distrKeeper,
 	}
 }
 

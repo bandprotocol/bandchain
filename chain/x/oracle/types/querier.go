@@ -16,7 +16,6 @@ const (
 	QueryOracleScripts = "oracle_scripts"
 	QueryRequests      = "requests"
 	QueryReporters     = "reporters"
-	QueryReportInfo    = "report_info"
 )
 
 // QueryResult wraps querier result with HTTP status to return to application.
