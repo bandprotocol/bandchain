@@ -47,6 +47,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdReport(cdc),
+		GetCmdActivate(cdc),
 		GetCmdAddReporter(cdc),
 		GetCmdRemoveReporter(cdc),
 	)...)
@@ -510,6 +511,37 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	cmd.Flags().String(flagOwner, "", "Owner of this oracle script")
 	cmd.Flags().String(flagSchema, types.DoNotModify, "Schema of this oracle script")
 	cmd.Flags().String(flagSourceCodeURL, types.DoNotModify, "URL for the source code of this oracle script")
+
+	return cmd
+}
+
+// GetCmdActivate implements the activate command handler.
+func GetCmdActivate(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "activate",
+		Short: "Activate myself to become an oracle validator.",
+		Args:  cobra.NoArgs,
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Activate myself to become an oracle validator.
+Example:
+$ %s tx oracle activate --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			msg := types.NewMsgActivate(validator)
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
 
 	return cmd
 }

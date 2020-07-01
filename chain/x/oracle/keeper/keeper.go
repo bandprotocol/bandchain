@@ -17,17 +17,21 @@ const (
 )
 
 type Keeper struct {
-	storeKey      sdk.StoreKey
-	cdc           *codec.Codec
-	fileCache     filecache.Cache
-	ParamSpace    params.Subspace
-	StakingKeeper types.StakingKeeper
+	storeKey         sdk.StoreKey
+	cdc              *codec.Codec
+	fileCache        filecache.Cache
+	feeCollectorName string
+	ParamSpace       params.Subspace
+	SupplyKeeper     types.SupplyKeeper
+	StakingKeeper    types.StakingKeeper
+	DistrKeeper      types.DistrKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string, paramSpace params.Subspace,
-	stakingKeeper types.StakingKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string, feeCollectorName string,
+	paramSpace params.Subspace, supplyKeeper types.SupplyKeeper,
+	stakingKeeper types.StakingKeeper, distrKeeper types.DistrKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
@@ -37,7 +41,9 @@ func NewKeeper(
 		cdc:           cdc,
 		fileCache:     filecache.New(fileDir),
 		ParamSpace:    paramSpace,
+		SupplyKeeper:  supplyKeeper,
 		StakingKeeper: stakingKeeper,
+		DistrKeeper:   distrKeeper,
 	}
 }
 
@@ -75,12 +81,7 @@ func (k Keeper) SetRollingSeed(ctx sdk.Context, rollingSeed []byte) {
 
 // GetRollingSeed returns the current rolling seed value.
 func (k Keeper) GetRollingSeed(ctx sdk.Context) []byte {
-	bz := ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
-	if bz == nil {
-		// If RollingSeedStoreKey is not yet set, we initialize it to a zero'ed slice.
-		return make([]byte, RollingSeedSizeInBytes)
-	}
-	return bz
+	return ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
 }
 
 // SetRequestCount sets the number of request count to the given value. Useful for genesis state.
