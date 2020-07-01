@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
-func (app *App) SetValidator(addrs sdk.ValAddress, blockHeight int64) {
+func (app *App) emitSetValidator(addrs sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addrs.String(),
@@ -20,12 +20,12 @@ func (app *App) SetValidator(addrs sdk.ValAddress, blockHeight int64) {
 		"commission_max_change": val.Commission.MaxChangeRate.String(),
 		"min_self_delegation":   val.MinSelfDelegation.String(),
 		"tokens":                val.Tokens.Uint64(),
-		"jailed":                false,
+		"jailed":                val.Jailed,
 		"delegator_shares":      val.DelegatorShares.String(),
 	})
 }
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
-	app.SetValidator(msg.ValidatorAddress, app.DeliverContext.BlockHeight())
+	app.emitSetValidator(msg.ValidatorAddress)
 }
