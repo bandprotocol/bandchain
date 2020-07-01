@@ -190,3 +190,13 @@ validators = sa.Table(
     Column("current_reward", sa.DECIMAL),
     Column("current_ratio", sa.DECIMAL),
 )
+
+delegations = sa.Table(
+    "delegations",
+    metadata,
+    Column("delegator_address", sa.String, primary_key=True),
+    Column("operator_address", sa.String, primary_key=True),
+    Column("shares", sa.String),
+    Column("last_ratio", sa.String),
+    Column("active", sa.Boolean),
+)

@@ -14,6 +14,7 @@ from .db import (
     reports,
     raw_reports,
     validators,
+    delegations,
 )
 
 
@@ -73,3 +74,16 @@ class Handler(object):
         for col in validators.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(validators.update().where(condition).values(**msg))
+
+    def handle_set_delegation(self, msg):
+        self.conn.execute(
+            insert(delegations)
+            .values(**msg)
+            .on_conflict_do_update(constraint="delegations_pkey", set_=msg)
+        )
+
+    def handle_remove_delegation(self, msg):
+        condition = True
+        for col in delegations.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(delegations.update().where(condition).values(**msg))

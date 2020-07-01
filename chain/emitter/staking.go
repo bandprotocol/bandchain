@@ -28,6 +28,15 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	})
 }
 
+func (app *App) emitUpdateValidator(addrs sdk.ValAddress) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address": addrs.String(),
+		"tokens":           val.Tokens.Uint64(),
+		"delegator_shares": val.DelegatorShares.String(),
+	})
+}
+
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
 	app.emitSetValidator(msg.ValidatorAddress)
