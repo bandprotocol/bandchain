@@ -109,7 +109,7 @@ func TestGetRandomValidatorsSuccess(t *testing.T) {
 	})
 	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
 	vals, err := k.GetRandomValidators(ctx, 3, int64(1))
-	expect := []sdk.ValAddress{Validator1.ValAddress, Validator3.ValAddress, Validator2.ValAddress}
+	expect := []sdk.ValAddress{Validator3.ValAddress, Validator1.ValAddress, Validator2.ValAddress}
 
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
@@ -119,7 +119,7 @@ func TestGetRandomValidatorsSuccess(t *testing.T) {
 		LastBlockId: abci.BlockID{Hash: hash[:32]},
 	})
 	vals, err = k.GetRandomValidators(ctx, 3, int64(2))
-	expect = []sdk.ValAddress{Validator1.ValAddress, Validator3.ValAddress, Validator2.ValAddress}
+	expect = []sdk.ValAddress{Validator3.ValAddress, Validator1.ValAddress, Validator2.ValAddress}
 	require.NoError(t, err)
 	require.Equal(t, vals, expect)
 

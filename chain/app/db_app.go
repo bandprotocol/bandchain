@@ -20,8 +20,9 @@ import (
 
 type dbBandApp struct {
 	*BandApp
-	dbBand *db.BandDB
-	txNum  int64
+	txDecoder sdk.TxDecoder
+	dbBand    *db.BandDB
+	txNum     int64
 }
 
 func NewDBBandApp(
@@ -37,7 +38,7 @@ func NewDBBandApp(
 	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
-	return &dbBandApp{BandApp: app, dbBand: dbBand}
+	return &dbBandApp{BandApp: app, txDecoder: auth.DefaultTxDecoder(app.Codec()), dbBand: dbBand}
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
@@ -151,7 +152,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		return res
 	}
 
-	tx, err := app.TxDecoder(req.Tx)
+	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		panic(err)
 	}

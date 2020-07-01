@@ -2,6 +2,7 @@
 package types
 
 import github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+import "time"
 
 func NewMsgRequestData(
 	OracleScriptID OracleScriptID,
@@ -108,6 +109,14 @@ func NewMsgEditOracleScript(
 		Schema:         Schema,
 		SourceCodeURL:  SourceCodeURL,
 		Sender:         Sender,
+	}
+}
+
+func NewMsgActivate(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+) MsgActivate {
+	return MsgActivate{
+		Validator: Validator,
 	}
 }
 
@@ -257,13 +266,13 @@ func NewReport(
 	}
 }
 
-func NewValidatorReportInfo(
-	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
-	ConsecutiveMissed uint64,
-) ValidatorReportInfo {
-	return ValidatorReportInfo{
-		Validator:         Validator,
-		ConsecutiveMissed: ConsecutiveMissed,
+func NewValidatorStatus(
+	IsActive bool,
+	Since time.Time,
+) ValidatorStatus {
+	return ValidatorStatus{
+		IsActive: IsActive,
+		Since:    Since,
 	}
 }
 
@@ -271,16 +280,20 @@ func NewParams(
 	MaxRawRequestCount uint64,
 	MaxAskCount uint64,
 	ExpirationBlockCount uint64,
-	MaxConsecutiveMisses uint64,
 	BaseRequestGas uint64,
 	PerValidatorRequestGas uint64,
+	SamplingTryCount uint64,
+	OracleRewardPercentage uint64,
+	InactivePenaltyDuration uint64,
 ) Params {
 	return Params{
-		MaxRawRequestCount:     MaxRawRequestCount,
-		MaxAskCount:            MaxAskCount,
-		ExpirationBlockCount:   ExpirationBlockCount,
-		MaxConsecutiveMisses:   MaxConsecutiveMisses,
-		BaseRequestGas:         BaseRequestGas,
-		PerValidatorRequestGas: PerValidatorRequestGas,
+		MaxRawRequestCount:      MaxRawRequestCount,
+		MaxAskCount:             MaxAskCount,
+		ExpirationBlockCount:    ExpirationBlockCount,
+		BaseRequestGas:          BaseRequestGas,
+		PerValidatorRequestGas:  PerValidatorRequestGas,
+		SamplingTryCount:        SamplingTryCount,
+		OracleRewardPercentage:  OracleRewardPercentage,
+		InactivePenaltyDuration: InactivePenaltyDuration,
 	}
 }

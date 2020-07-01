@@ -14,8 +14,12 @@ const (
 )
 
 var (
+	// RollingSeedSizeInBytes is the size of rolling block hash for random seed.
+	RollingSeedSizeInBytes = 32
 	// GlobalStoreKeyPrefix is the prefix for global primitive state variables.
 	GlobalStoreKeyPrefix = []byte{0x00}
+	// RollingSeedStoreKey is the key that keeps the seed based on the first 8-bit of the most recent 32 block hashes.
+	RollingSeedStoreKey = append(GlobalStoreKeyPrefix, []byte("RollingSeed")...)
 	// RequestCountStoreKey is the key that keeps the total request count.
 	RequestCountStoreKey = append(GlobalStoreKeyPrefix, []byte("RequestCount")...)
 	// RequestLastExpiredStoreKey is the key that keeps the ID of the last expired request, or 0 if none.
@@ -37,8 +41,8 @@ var (
 	OracleScriptStoreKeyPrefix = []byte{0x04}
 	// ReporterStoreKeyPrefix is the prefix for reporter store.
 	ReporterStoreKeyPrefix = []byte{0x05}
-	// ValidatorReportInfoKeyPrefix is the prefix for validator report info store.
-	ValidatorReportInfoKeyPrefix = []byte{0x06}
+	// ValidatorStatusKeyPrefix is the prefix for validator status store.
+	ValidatorStatusKeyPrefix = []byte{0x06}
 	// ResultStoreKeyPrefix is the prefix for request result store.
 	ResultStoreKeyPrefix = []byte{0xff}
 )
@@ -77,9 +81,9 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 	return buf
 }
 
-// ValidatorReportInfoStoreKey returns the key to a validator's report info.
-func ValidatorReportInfoStoreKey(v sdk.ValAddress) []byte {
-	return append(ValidatorReportInfoKeyPrefix, v.Bytes()...)
+// ValidatorStatusStoreKey returns the key to a validator's status.
+func ValidatorStatusStoreKey(v sdk.ValAddress) []byte {
+	return append(ValidatorStatusKeyPrefix, v.Bytes()...)
 }
 
 // ResultStoreKey returns the key to a request result in the store.
