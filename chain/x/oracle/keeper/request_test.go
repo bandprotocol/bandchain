@@ -100,7 +100,7 @@ func TestAddPendingResolveList(t *testing.T) {
 }
 
 func TestProcessExpiredRequests(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
 	currentTime := time.Unix(1000, 0)
@@ -146,7 +146,7 @@ func TestProcessExpiredRequests(t *testing.T) {
 }
 
 func TestProcessSuccessRequests(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
 	currentTime := time.Unix(1000, 0)

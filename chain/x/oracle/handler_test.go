@@ -589,7 +589,7 @@ func TestReportFailed(t *testing.T) {
 }
 
 func TestReportOnExpiredRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
