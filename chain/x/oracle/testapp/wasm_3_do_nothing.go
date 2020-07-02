@@ -4,7 +4,7 @@ package testapp
 //   PREPARE:
 //	   DO NOTHING
 //   EXECUTE:
-//     CALL set_return_date with RETDATE "beeb"
+//	   DO NOTHING
 var Wasm3 []byte = wat2wasm([]byte(`
 (module
 	(type $t0 (func))
@@ -13,11 +13,7 @@ var Wasm3 []byte = wat2wasm([]byte(`
 	(import "env" "ask_external_data" (func $ask_external_data (type $t1)))
 	(import "env" "set_return_data" (func $set_return_data (type $t2)))
 	(func $prepare (export "prepare") (type $t0))
-	(func $execute (export "execute") (type $t0)
-	  i32.const 1024
-	  i64.extend_u/i32
-	  i64.const 4
-	  call $set_return_data)
+	(func $execute (export "execute") (type $t0))
 	(table $T0 1 1 anyfunc)
 	(memory $memory (export "memory") 17)
 	(data (i32.const 1024) "beeb"))

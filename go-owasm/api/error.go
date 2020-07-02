@@ -40,7 +40,7 @@ func toCError(err error) C.Error {
 	case ErrTooManyExternalData:
 		return C.Error_TooManyExternalDataError
 	case ErrDuplicateExternalID:
-		return C.Error_DuplicateExternalID
+		return C.Error_DuplicateExternalIDError
 	case ErrBadValidatorIndex:
 		return C.Error_BadValidatorIndexError
 	case ErrBadExternalID:
