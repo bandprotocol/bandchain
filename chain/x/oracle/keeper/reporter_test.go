@@ -3,7 +3,6 @@ package keeper_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
@@ -48,21 +47,18 @@ func TestRemoveReporter(t *testing.T) {
 
 func TestGetReporters(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
-	aliceReporters := []sdk.AccAddress{
-		testapp.Alice.Address, //self reporter of validator
-		testapp.Bob.Address,
-		testapp.Carol.Address,
-	}
-
-	// Adds Alice validator
-	err := k.AddReporter(ctx, testapp.Alice.ValAddress, aliceReporters[1])
-	require.NoError(t, err)
-	err = k.AddReporter(ctx, testapp.Alice.ValAddress, aliceReporters[2])
-	require.NoError(t, err)
-
-	err = k.AddReporter(ctx, testapp.Bob.ValAddress, testapp.Alice.Address)
-	require.NoError(t, err)
-
+	// Initially, only Alice should be the reporter of Alice.
 	reporters := k.GetReporters(ctx, testapp.Alice.ValAddress)
-	require.Equal(t, len(reporters), len(aliceReporters))
+	require.Equal(t, 1, len(reporters))
+	require.Contains(t, reporters, testapp.Alice.Address)
+	// After we add Bob and Carol, they should also appear in GetReporters.
+	err := k.AddReporter(ctx, testapp.Alice.ValAddress, testapp.Bob.Address)
+	require.NoError(t, err)
+	err = k.AddReporter(ctx, testapp.Alice.ValAddress, testapp.Carol.Address)
+	require.NoError(t, err)
+	reporters = k.GetReporters(ctx, testapp.Alice.ValAddress)
+	require.Equal(t, 3, len(reporters))
+	require.Contains(t, reporters, testapp.Alice.Address)
+	require.Contains(t, reporters, testapp.Bob.Address)
+	require.Contains(t, reporters, testapp.Carol.Address)
 }

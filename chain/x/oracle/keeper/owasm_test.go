@@ -12,6 +12,44 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+func TestGetRandomValidatorsSuccess(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+	// Getting 3 validators using ROLLING_SEED_1
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err := k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_A
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1 again should return the same result as the first one.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1 but for a different request ID.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err = k.GetRandomValidators(ctx, 3, 2)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+}
+
+func TestGetRandomValidatorsTooBigSize(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+	_, err := k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 2, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 4, 1)
+	require.Error(t, err)
+	_, err = k.GetRandomValidators(ctx, 9999, 1)
+	require.Error(t, err)
+}
+
 func TestPrepareRequestSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
