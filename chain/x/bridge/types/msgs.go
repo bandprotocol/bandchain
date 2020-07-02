@@ -22,7 +22,7 @@ func NewMsgVerifyProof(
 	}
 }
 
-// RouterKey is the name of the oracle module
+// RouterKey is the name of the bridge module
 const RouterKey = ModuleName
 
 // Route implements the sdk.Msg interface for MsgVerifyProof.
