@@ -36,9 +36,7 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 }
 
 // SaveResult saves the result packets for the given request and returns back the response packet.
-func (k Keeper) SaveResult(
-	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
-) types.OracleResponsePacketData {
+func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) {
 	r := k.MustGetRequest(ctx, id)
 	req := types.NewOracleRequestPacketData(
 		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
@@ -62,7 +60,6 @@ func (k Keeper) SaveResult(
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
 		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 	))
-	return res
 }
 
 // MustGetResult returns the result for the given request ID. Panics on error.
