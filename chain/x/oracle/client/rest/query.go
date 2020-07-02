@@ -18,7 +18,7 @@ func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 		if !ok {
 			return
 		}
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryParams))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -33,7 +33,7 @@ func getCountsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 		if !ok {
 			return
 		}
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -49,7 +49,7 @@ func getDataByHashHandler(cliCtx context.CLIContext, route string) http.HandlerF
 			return
 		}
 		vars := mux.Vars(r)
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryData, vars[dataHashTag]), nil)
+		res, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryData, vars[dataHashTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -67,7 +67,7 @@ func getDataSourceByIDHandler(cliCtx context.CLIContext, route string) http.Hand
 			return
 		}
 		vars := mux.Vars(r)
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -83,7 +83,7 @@ func getOracleScriptByIDHandler(cliCtx context.CLIContext, route string) http.Ha
 			return
 		}
 		vars := mux.Vars(r)
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -99,7 +99,7 @@ func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.Handler
 			return
 		}
 		vars := mux.Vars(r)
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -126,6 +126,22 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 	}
 }
 
+func getValidatorStatusHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		vars := mux.Vars(r)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryValidatorStatus, vars[validatorAddressTag]))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
 func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
@@ -133,7 +149,7 @@ func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFu
 			return
 		}
 		vars := mux.Vars(r)
-		bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
