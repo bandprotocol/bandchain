@@ -27,10 +27,12 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgUpdateChainID(ctx sdk.Context, k Keeper, m MsgUpdateChainID) (*sdk.Result, error) {
+	// TODO: Add validate only owner
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgUpdateValidators(ctx sdk.Context, k Keeper, m MsgUpdateValidators) (*sdk.Result, error) {
+	// TODO: Add validate only owner
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
