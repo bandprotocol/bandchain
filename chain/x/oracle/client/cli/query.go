@@ -32,6 +32,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdOracleScript(storeKey, cdc),
 		GetQueryCmdRequest(storeKey, cdc),
 		GetQueryCmdRequestSearch(storeKey, cdc),
+		GetQueryCmdValidatorStatus(storeKey, cdc),
 		GetQueryCmdReporters(storeKey, cdc),
 	)...)
 	return oracleCmd
@@ -141,6 +142,22 @@ func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			return printOutput(cliCtx, cdc, bz, &types.QueryRequestResult{})
+		},
+	}
+}
+
+// GetQueryCmdValidatorStatus implements the query reporter list of validator command.
+func GetQueryCmdValidatorStatus(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "validator [validator]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryValidatorStatus, args[0]), nil)
+			if err != nil {
+				return err
+			}
+			return printOutput(cliCtx, cdc, bz, &types.ValidatorStatus{})
 		},
 	}
 }
