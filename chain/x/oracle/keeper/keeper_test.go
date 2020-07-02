@@ -5,18 +5,19 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestGetRequestCount(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 
 	// Initial request count must be 0
 	require.Equal(t, int64(0), k.GetRequestCount(ctx))
 }
 
 func TestGetSetRequestLastExpiredID(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// Initial last expired request must be 0
 	require.Equal(t, int64(0), k.GetRequestLastExpired(ctx))
 	k.SetRequestLastExpired(ctx, 20)
@@ -24,7 +25,7 @@ func TestGetSetRequestLastExpiredID(t *testing.T) {
 }
 
 func TestGetNextRequestID(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 
 	// First request id must be 1
 	require.Equal(t, types.RequestID(1), k.GetNextRequestID(ctx))
@@ -40,7 +41,7 @@ func TestGetNextRequestID(t *testing.T) {
 }
 
 func TestGetSetMaxRawRequestCount(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 	require.Equal(t, uint64(1), k.GetParam(ctx, types.KeyMaxRawRequestCount))
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
@@ -48,7 +49,7 @@ func TestGetSetMaxRawRequestCount(t *testing.T) {
 }
 
 func TestGetSetParams(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 	k.SetParam(ctx, types.KeyMaxAskCount, 10)
