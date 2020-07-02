@@ -1,10 +1,12 @@
 package types
 
 import (
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	tmmerkle "github.com/tendermint/tendermint/crypto/merkle"
 	tmtypes "github.com/tendermint/tendermint/types"
+
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // RouterKey is the name of the bridge module
@@ -31,11 +33,13 @@ func NewMsgUpdateChainID(
 func (msg MsgUpdateChainID) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface for MsgUpdateChainID.
-func (msg MsgUpdateChainID) Type() string { return "updateChainID" }
+func (msg MsgUpdateChainID) Type() string { return "update_chain_id" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgUpdateChainID.
 func (msg MsgUpdateChainID) ValidateBasic() error {
-	// TODO: Add validate only owner
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
+	}
 	return nil
 }
 
@@ -70,11 +74,13 @@ func NewMsgUpdateValidators(
 func (msg MsgUpdateValidators) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface for MsgUpdateValidators.
-func (msg MsgUpdateValidators) Type() string { return "updateValidators" }
+func (msg MsgUpdateValidators) Type() string { return "update_validators" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgUpdateValidators.
 func (msg MsgUpdateValidators) ValidateBasic() error {
-	// TODO: Add validate only owner
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
+	}
 	return nil
 }
 
@@ -113,6 +119,9 @@ func (msg MsgRelay) Type() string { return "relay" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgRelay.
 func (msg MsgRelay) ValidateBasic() error {
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
+	}
 	return nil
 }
 
@@ -153,10 +162,13 @@ func NewMsgVerifyProof(
 func (msg MsgVerifyProof) Route() string { return RouterKey }
 
 // Type implements the sdk.Msg interface for MsgVerifyProof.
-func (msg MsgVerifyProof) Type() string { return "verifyProof" }
+func (msg MsgVerifyProof) Type() string { return "verify_proof" }
 
 // ValidateBasic implements the sdk.Msg interface for MsgVerifyProof.
 func (msg MsgVerifyProof) ValidateBasic() error {
+	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
+	}
 	return nil
 }
 
