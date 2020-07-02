@@ -7,14 +7,14 @@ USER_GROUP = $(shell id -g)
 docker-image-linux:
 	docker build . -t owasm/go-ext-builder:$(DOCKER_TAG)-linux -f ./Dockerfile.linux
 
-# docker-image-osx:
-# 	docker build . -t owasm/go-ext-builder:$(DOCKER_TAG)-osx -f ./Dockerfile.osx
+docker-image-osx:
+	docker build . -t owasm/go-ext-builder:$(DOCKER_TAG)-osx -f ./Dockerfile.osx
 
-# docker-images: docker-image-linux docker-image-osx
-docker-images: docker-image-linux
+docker-images: docker-image-linux docker-image-osx
 
 # and use them to compile release builds
 release:
-	# docker run --rm -u $(USER_ID):$(USER_GROUP) -v $(shell pwd):/code owasm/go-ext-builder:$(DOCKER_TAG)-osx
-	# rm -rf target/release
+	rm -rf target/release
+	docker run --rm -u $(USER_ID):$(USER_GROUP) -v $(shell pwd):/code owasm/go-ext-builder:$(DOCKER_TAG)-osx
+	rm -rf target/release
 	docker run --rm -u $(USER_ID):$(USER_GROUP) -v $(shell pwd):/code owasm/go-ext-builder:$(DOCKER_TAG)-linux

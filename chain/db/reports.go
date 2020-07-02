@@ -22,9 +22,10 @@ func (b *BandDB) handleMsgReportData(
 
 	for _, data := range msg.RawReports {
 		var rawDataRequest RawDataRequests
+		externalID := int64(data.ExternalID)
 		err := b.tx.Where(&RawDataRequests{
 			RequestID:  int64(msg.RequestID),
-			ExternalID: int64(data.ExternalID),
+			ExternalID: &externalID,
 		}).First(&rawDataRequest).Error
 		if err != nil {
 			return err
@@ -33,7 +34,7 @@ func (b *BandDB) handleMsgReportData(
 		err = b.tx.Create(&ReportDetail{
 			RequestID:    int64(msg.RequestID),
 			Validator:    msg.Validator.String(),
-			ExternalID:   int64(data.ExternalID),
+			ExternalID:   &externalID,
 			DataSourceID: rawDataRequest.DataSourceID,
 			Data:         data.Data,
 			Exitcode:     data.ExitCode,

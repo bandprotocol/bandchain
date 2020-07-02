@@ -2,11 +2,7 @@ FROM rustlang/rust:nightly
 
 RUN apt-get update
 RUN apt install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
-RUN apt install -y build-essential wget
-
-# INSTALL CMAKE
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.0-rc1/cmake-3.18.0-rc1.tar.gz \
-    && tar xvfz cmake-3.18.0-rc1.tar.gz && cd cmake-3.18.0-rc1 && ./bootstrap && make && make install
+RUN apt install -y build-essential wget cmake
 
 # PRE-FETCH MANY DEPS
 WORKDIR /scratch

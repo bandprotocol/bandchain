@@ -102,6 +102,7 @@ func getGenesisOracleScripts() []types.OracleScript {
 	wasms := [][]byte{
 		Wasm1,
 		Wasm2,
+		Wasm3,
 	}
 	for idx := 0; idx < len(wasms); idx++ {
 		idxStr := fmt.Sprintf("%d", idx+1)

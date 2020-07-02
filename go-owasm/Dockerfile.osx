@@ -5,11 +5,8 @@ FROM rustlang/rust:nightly
 
 RUN apt-get update
 RUN apt install -y clang gcc g++ zlib1g-dev libmpc-dev libmpfr-dev libgmp-dev
-RUN apt install -y build-essential wget
+RUN apt install -y build-essential wget cmake
 
-# INSTALL CMAKE
-RUN wget https://github.com/Kitware/CMake/releases/download/v3.18.0-rc1/cmake-3.18.0-rc1.tar.gz \
-    && tar xvfz cmake-3.18.0-rc1.tar.gz && cd cmake-3.18.0-rc1 && ./bootstrap && make && make install
 
 # add some llvm configs for later - how to cross-compile this in wasmer-llvm-backend???
 RUN echo deb http://deb.debian.org/debian buster-backports main >> /etc/apt/sources.list
