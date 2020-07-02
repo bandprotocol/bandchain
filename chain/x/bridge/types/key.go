@@ -1,7 +1,9 @@
 package types
 
 import (
+	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const (
@@ -29,7 +31,17 @@ var (
 	LatestResponseStoreKeyPrefix = []byte{0x03}
 )
 
-//AppHashStoreKey returns the key to retrieve the app hash from block height.
+// AppHashStoreKey returns the key to retrieve the app hash from block height.
 func AppHashStoreKey(height int64) []byte {
 	return append(AppHashStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(height))...)
+}
+
+// LastestResponseStoreKey returns the key to retrieve the latest response packet from the given request packet
+func LastestResponseStoreKey(requestPacket otypes.OracleRequestPacketData) []byte {
+	return append(LatestResponseStoreKeyPrefix, requestPacket.GetBytes()...)
+}
+
+// ValidatorStoreKey returns the key to retrieve the validator from the validator address
+func ValidatorStoreKey(validator tmtypes.Validator) []byte {
+	return append(ValidatorStoreKeyPrefix, []byte(validator.Address)...)
 }
