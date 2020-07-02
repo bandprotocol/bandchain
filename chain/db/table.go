@@ -143,7 +143,7 @@ type RequestedValidator struct {
 
 type RawDataRequests struct {
 	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
-	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
+	ExternalID   *int64 `gorm:"primary_key;auto_increment:false"`
 	DataSourceID int64  `gorm:"not null"`
 	Calldata     []byte `gorm:"not null"`
 }
@@ -158,7 +158,7 @@ type Report struct {
 type ReportDetail struct {
 	RequestID    int64  `gorm:"primary_key;auto_increment:false"`
 	Validator    string `gorm:"primary_key"`
-	ExternalID   int64  `gorm:"primary_key;auto_increment:false"`
+	ExternalID   *int64 `gorm:"primary_key;auto_increment:false"`
 	DataSourceID int64  `gorm:"not null"`
 	Data         []byte `gorm:"not null"`
 	Exitcode     uint32 `gorm:"not null"`

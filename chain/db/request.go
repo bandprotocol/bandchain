@@ -161,7 +161,7 @@ func createRawDataRequests(
 ) RawDataRequests {
 	return RawDataRequests{
 		RequestID:    requestID,
-		ExternalID:   externalID,
+		ExternalID:   &externalID,
 		DataSourceID: dataSourceID,
 		Calldata:     calldata,
 	}

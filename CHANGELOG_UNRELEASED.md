@@ -11,6 +11,7 @@
 ### Chain
 
 - (impv) [\#2128](https://github.com/bandprotocol/bandchain/pull/2128) Add expired request check when report and change type of `requestTime`.
+- (bug) [\#2075](https://github.com/bandprotocol/bandchain/pull/2075) Add height check when sync on db and fix external id can be zero.
 - (bug) [\#2125](https://github.com/bandprotocol/bandchain/pull/2125) Fix request with duplicate external id and empty raw request bug.
 - (chore) [\#2126](https://github.com/bandprotocol/bandchain/pull/2126) More test cleanups in request and result keepers.
 - (impv) [\#2121](https://github.com/bandprotocol/bandchain/pull/2121) Add handle edit validator msg for emitter
