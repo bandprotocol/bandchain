@@ -27,9 +27,10 @@ enum Error {
   Error_MemoryOutOfBoundError = 14,
   Error_WrongPeriodActionError = 128,
   Error_TooManyExternalDataError = 129,
-  Error_BadValidatorIndexError = 130,
-  Error_BadExternalIDError = 131,
-  Error_UnavailableExternalDataError = 132,
+  Error_DuplicateExternalID = 130,
+  Error_BadValidatorIndexError = 131,
+  Error_BadExternalIDError = 132,
+  Error_UnavailableExternalDataError = 133,
   Error_UnknownError = 255,
 };
 typedef int32_t Error;

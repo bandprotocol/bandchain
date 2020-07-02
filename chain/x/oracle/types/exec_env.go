@@ -74,6 +74,11 @@ func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error 
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
 		return api.ErrTooManyExternalData
 	}
+	for _, raw := range env.rawRequests {
+		if raw.ExternalID == ExternalID(eid) {
+			return api.ErrDuplicateExternalID
+		}
+	}
 	env.rawRequests = append(env.rawRequests, NewRawRequest(
 		ExternalID(eid), DataSourceID(did), data,
 	))

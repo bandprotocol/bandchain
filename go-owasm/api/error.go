@@ -23,6 +23,7 @@ var (
 	ErrMemoryOutOfBound        = errors.New("out-of-bound memory access while executing the wasm script")
 	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available")
 	ErrTooManyExternalData     = errors.New("too many external data requests")
+	ErrDuplicateExternalID     = errors.New("wasm code asks data with duplicate external id")
 	ErrBadValidatorIndex       = errors.New("bad validator index parameter")
 	ErrBadExternalID           = errors.New("bad external ID parameter")
 	ErrUnavailableExternalData = errors.New("external data is not available")
@@ -38,6 +39,8 @@ func toCError(err error) C.Error {
 		return C.Error_WrongPeriodActionError
 	case ErrTooManyExternalData:
 		return C.Error_TooManyExternalDataError
+	case ErrDuplicateExternalID:
+		return C.Error_DuplicateExternalID
 	case ErrBadValidatorIndex:
 		return C.Error_BadValidatorIndexError
 	case ErrBadExternalID:
@@ -89,6 +92,8 @@ func toGoError(code C.Error) error {
 		return ErrWrongPeriodAction
 	case C.Error_TooManyExternalDataError:
 		return ErrTooManyExternalData
+	case C.Error_DuplicateExternalID:
+		return ErrDuplicateExternalID
 	case C.Error_BadValidatorIndexError:
 		return ErrBadValidatorIndex
 	case C.Error_BadExternalIDError:
