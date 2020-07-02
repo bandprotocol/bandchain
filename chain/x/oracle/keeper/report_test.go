@@ -23,7 +23,7 @@ func defaultRequest() types.Request {
 }
 
 func TestHasReport(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a report to request ID 42 from Alice without setting it.
 	require.False(t, k.HasReport(ctx, 42, testapp.Alice.ValAddress))
 	// After we set it, we should be able to find it.
@@ -32,7 +32,7 @@ func TestHasReport(t *testing.T) {
 }
 
 func TestAddReportSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Validator1.ValAddress, true, []types.RawReport{
@@ -50,7 +50,7 @@ func TestAddReportSuccess(t *testing.T) {
 }
 
 func TestReportOnNonExistingRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Validator1.ValAddress, true, []types.RawReport{
 			types.NewRawReport(42, 0, []byte("data1/1")),
@@ -61,7 +61,7 @@ func TestReportOnNonExistingRequest(t *testing.T) {
 }
 
 func TestReportByNotRequestedValidator(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Alice.ValAddress, true, []types.RawReport{
@@ -73,7 +73,7 @@ func TestReportByNotRequestedValidator(t *testing.T) {
 }
 
 func TestDuplicateReport(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Validator1.ValAddress, true, []types.RawReport{
@@ -92,7 +92,7 @@ func TestDuplicateReport(t *testing.T) {
 }
 
 func TestReportInvalidDataSourceCount(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Validator1.ValAddress, true, []types.RawReport{
@@ -103,7 +103,7 @@ func TestReportInvalidDataSourceCount(t *testing.T) {
 }
 
 func TestReportInvalidExternalIDs(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
 		testapp.Validator1.ValAddress, true, []types.RawReport{
@@ -115,7 +115,7 @@ func TestReportInvalidExternalIDs(t *testing.T) {
 }
 
 func TestGetReportCount(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We start by setting some aribrary reports.
 	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
 	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))
@@ -128,7 +128,7 @@ func TestGetReportCount(t *testing.T) {
 }
 
 func TestDeleteReports(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We start by setting some arbitrary reports.
 	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
 	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))

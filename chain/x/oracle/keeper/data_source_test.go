@@ -10,7 +10,7 @@ import (
 )
 
 func TestHasDataSource(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a data source ID 42 without setting it.
 	require.False(t, k.HasDataSource(ctx, 42))
 	// After we set it, we should be able to find it.
@@ -21,7 +21,7 @@ func TestHasDataSource(t *testing.T) {
 }
 
 func TestSetterGetterDataSource(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Getting a non-existent data source should return error.
 	_, err := k.GetDataSource(ctx, 42)
 	require.Error(t, err)
@@ -48,7 +48,7 @@ func TestSetterGetterDataSource(t *testing.T) {
 }
 
 func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic data sources.
 	dataSource1 := types.NewDataSource(testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1")
 	dataSource2 := types.NewDataSource(testapp.Bob.Address, "NAME2", "DESCRIPTION2", "FILENAME2")
@@ -65,7 +65,7 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 }
 
 func TestEditDataSourceDoNotModify(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic data sources.
 	dataSource1 := types.NewDataSource(testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1")
 	dataSource2 := types.NewDataSource(testapp.Bob.Address, types.DoNotModify, types.DoNotModify, "FILENAME2")
@@ -85,7 +85,7 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 }
 
 func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially we expect the data source count to be what we have on genesis state.
 	genesisCount := int64(len(testapp.DataSources)) - 1
 	require.Equal(t, genesisCount, k.GetDataSourceCount(ctx))
@@ -100,18 +100,18 @@ func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
 }
 
 func TestEditDataSourceNonExistentDataSource(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	require.Panics(t, func() { k.MustEditDataSource(ctx, 9999, testapp.DataSources[1]) })
 }
 
 func TestGetAllDataSources(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should be able to get all genesis data sources.
 	require.Equal(t, testapp.DataSources[1:], k.GetAllDataSources(ctx))
 }
 
 func TestAddExecutableFile(t *testing.T) {
-	_, _, k := testapp.CreateTestInput()
+	_, _, k := testapp.CreateTestInput(true)
 	// Adding do-not-modify should simply return do-not-modify.
 	require.Equal(t, types.DoNotModify, k.AddExecutableFile(types.DoNotModifyBytes))
 	// After we add an executable file, we should be able to retrieve it back.
