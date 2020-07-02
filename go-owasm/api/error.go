@@ -92,7 +92,7 @@ func toGoError(code C.Error) error {
 		return ErrWrongPeriodAction
 	case C.Error_TooManyExternalDataError:
 		return ErrTooManyExternalData
-	case C.Error_DuplicateExternalID:
+	case C.Error_DuplicateExternalIDError:
 		return ErrDuplicateExternalID
 	case C.Error_BadValidatorIndexError:
 		return ErrBadValidatorIndex
