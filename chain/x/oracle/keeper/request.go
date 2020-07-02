@@ -1,14 +1,9 @@
 package keeper
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -47,65 +42,11 @@ func (k Keeper) DeleteRequest(ctx sdk.Context, id types.RequestID) {
 	ctx.KVStore(k.storeKey).Delete(types.RequestStoreKey(id))
 }
 
-// GetRandomValidators returns a pseudorandom subset of active validators. Each validator has
-// chance of getting selected directly proportional to the amount of voting power it has.
-func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, nextReqID int64) ([]sdk.ValAddress, error) {
-	valOperators := []sdk.ValAddress{}
-	valPowers := []uint64{}
-	k.stakingKeeper.IterateBondedValidatorsByPower(ctx, func(idx int64, val exported.ValidatorI) (stop bool) {
-		if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
-			valOperators = append(valOperators, val.GetOperator())
-			valPowers = append(valPowers, val.GetTokens().Uint64())
-		}
-		return false
-	})
-	if len(valOperators) < size {
-		return nil, sdkerrors.Wrapf(types.ErrInsufficientValidators, "%d < %d", len(valOperators), size)
-	}
-	seed := fmt.Sprintf("%x:%d", k.GetRollingSeed(ctx), nextReqID)
-	tryCount := int(k.GetParam(ctx, types.KeySamplingTryCount))
-	chosenValIndexes := bandrng.ChooseSomeMaxWeight(bandrng.NewRng(seed), valPowers, size, tryCount)
-	validators := make([]sdk.ValAddress, size)
-	for i, idx := range chosenValIndexes {
-		validators[i] = valOperators[idx]
-	}
-	return validators, nil
-}
-
 // AddRequest attempts to create and save a new request.
 func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 	id := k.GetNextRequestID(ctx)
 	k.SetRequest(ctx, id, req)
 	return id
-}
-
-// SaveResult updates the request with resolve status and result, and saves the commitment
-// pair of oracle request/response packets to the store. Returns back the response packet.
-func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) types.OracleResponsePacketData {
-	r := k.MustGetRequest(ctx, id)
-	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
-	)
-	res := types.NewOracleResponsePacketData(
-		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
-		ctx.BlockTime().Unix(), status, result,
-	)
-	k.SetResult(ctx, id, obi.MustEncode(req, res))
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRequestExecute,
-		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
-		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
-		sdk.NewAttribute(types.AttributeKeyCalldata, string(req.Calldata)),
-		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
-		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
-		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
-		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", res.RequestTime)),
-		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
-		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
-	))
-	return res
 }
 
 // ProcessExpiredRequests resolves and sends response packets for all expired-but-unresolved requests.
