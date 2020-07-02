@@ -19,7 +19,7 @@ func fromHex(hexStr string) []byte {
 }
 
 func TestRollingSeedCorrect(t *testing.T) {
-	app, ctx, k := testapp.CreateTestInput()
+	app, ctx, k := testapp.CreateTestInput(false)
 	// Initially rolling seed should be all zeros.
 	require.Equal(t, fromHex("0000000000000000000000000000000000000000000000000000000000000000"), k.GetRollingSeed(ctx))
 	// Every begin block, the rolling seed should get updated.

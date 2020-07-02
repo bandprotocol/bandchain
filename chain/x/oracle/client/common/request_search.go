@@ -12,7 +12,7 @@ import (
 )
 
 func queryRequest(route string, cliCtx context.CLIContext, rid string) (types.QueryRequestResult, int64, error) {
-	bz, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid), nil)
+	bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid))
 	if err != nil {
 		return types.QueryRequestResult{}, 0, err
 	}

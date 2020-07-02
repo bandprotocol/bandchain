@@ -18,7 +18,7 @@ import (
 )
 
 func TestCreateDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	owner := testapp.Owner.Address
 	name := "data_source_1"
@@ -41,7 +41,7 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 }
 
 func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	owner := testapp.Owner.Address
 	name := "data_source_1"
@@ -72,7 +72,7 @@ func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
 }
 
 func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	owner := testapp.Owner.Address
 	name := "data_source_1"
@@ -94,7 +94,7 @@ func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
 }
 
 func TestEditDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	name := "data_source_1"
 	description := "description"
@@ -123,7 +123,7 @@ func TestEditDataSourceSuccess(t *testing.T) {
 }
 
 func TestEditDataSourceFail(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	name := "data_source_1"
 	description := "description"
@@ -165,7 +165,7 @@ func TestEditDataSourceFail(t *testing.T) {
 }
 
 func TestCreateOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	nextID := keeper.GetOracleScriptCount(ctx) + 1
 	name := "os_1"
 	description := "beeb"
@@ -194,7 +194,7 @@ func TestCreateOracleScriptSuccess(t *testing.T) {
 }
 
 func TestCreateOracleScriptFailed(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := []byte("non wasm code")
@@ -207,7 +207,7 @@ func TestCreateOracleScriptFailed(t *testing.T) {
 	require.Error(t, err)
 }
 func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	nextID := keeper.GetOracleScriptCount(ctx) + 1
 	name := "os_1"
 	description := "beeb"
@@ -240,7 +240,7 @@ func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
 }
 
 func TestCreateGzippedOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := testapp.WasmExtra1
@@ -262,7 +262,7 @@ func TestCreateGzippedOracleScriptFail(t *testing.T) {
 }
 
 func TestEditOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := testapp.WasmExtra1
@@ -304,7 +304,7 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 }
 
 func TestEditOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := testapp.WasmExtra1
@@ -350,7 +350,7 @@ func TestEditOracleScriptFail(t *testing.T) {
 }
 
 func TestEditGzippedOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := testapp.WasmExtra1
@@ -398,7 +398,7 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 }
 
 func TestEditGzippedOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := testapp.CreateTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := testapp.WasmExtra1
@@ -433,7 +433,7 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 }
 
 func TestRequestDataSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
@@ -483,7 +483,7 @@ func TestRequestDataSuccess(t *testing.T) {
 }
 
 func TestRequestDataFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
@@ -514,7 +514,7 @@ func TestRequestDataFail(t *testing.T) {
 
 func TestReportSuccess(t *testing.T) {
 	// Setup test environment
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
@@ -557,7 +557,7 @@ func TestReportSuccess(t *testing.T) {
 
 func TestReportFailed(t *testing.T) {
 	// Setup test environment
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockHeight(2)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
@@ -613,7 +613,7 @@ func TestReportOnExpiredRequest(t *testing.T) {
 }
 
 func TestAddReporterSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	validatorAddress := testapp.Alice.ValAddress
 	reporterAddress := testapp.Bob.Address
@@ -638,7 +638,7 @@ func TestAddReporterSuccess(t *testing.T) {
 }
 
 func TestAddReporterFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	validatorAddress := testapp.Alice.ValAddress
 	reporterAddress := testapp.Alice.Address
@@ -651,7 +651,7 @@ func TestAddReporterFail(t *testing.T) {
 }
 
 func TestRemoveReporterSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	validatorAddress := testapp.Alice.ValAddress
 	reporterAddress := testapp.Bob.Address
@@ -678,7 +678,7 @@ func TestRemoveReporterSuccess(t *testing.T) {
 }
 
 func TestRemoveReporterFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	validatorAddress := testapp.Alice.ValAddress
 	reporterAddress := testapp.Bob.Address

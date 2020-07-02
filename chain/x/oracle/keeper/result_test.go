@@ -11,7 +11,7 @@ import (
 )
 
 func TestResultBasicFunctions(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We start by setting result of request#1.
 	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
@@ -33,7 +33,7 @@ func TestResultBasicFunctions(t *testing.T) {
 }
 
 func TestResultDecodeFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetResult(ctx, 1, []byte("NOT_VALID_OBI"))
 	require.True(t, k.HasResult(ctx, 1))
 	_, err := k.GetResult(ctx, 1)

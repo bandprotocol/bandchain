@@ -20,7 +20,7 @@ func parseEventAttribute(attr interface{}) []byte {
 }
 
 func TestSuccessRequestOracleData(t *testing.T) {
-	app, ctx, k := testapp.CreateTestInput()
+	app, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(1581589790, 0))
 	handler := oracle.NewHandler(k)
@@ -119,7 +119,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 }
 
 func TestExpiredRequestOracleData(t *testing.T) {
-	app, ctx, k := testapp.CreateTestInput()
+	app, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(1581589790, 0))
 	handler := oracle.NewHandler(k)

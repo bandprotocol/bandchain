@@ -1,10 +1,10 @@
 package testapp
 
-// A simple Owasm script with the following specification:
+// A silly oracle script, primarily to test that you must make at least one raw request:
 //   PREPARE:
-//	   DO NOTHING
+//     DO NOTHING
 //   EXECUTE:
-//	   DO NOTHING
+//     DO NOTHING
 var Wasm3 []byte = wat2wasm([]byte(`
 (module
 	(type $t0 (func))
