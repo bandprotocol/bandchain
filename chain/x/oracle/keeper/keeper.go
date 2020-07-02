@@ -21,10 +21,10 @@ type Keeper struct {
 	cdc              *codec.Codec
 	fileCache        filecache.Cache
 	feeCollectorName string
-	ParamSpace       params.Subspace
-	SupplyKeeper     types.SupplyKeeper
-	StakingKeeper    types.StakingKeeper
-	DistrKeeper      types.DistrKeeper
+	paramSpace       params.Subspace
+	supplyKeeper     types.SupplyKeeper
+	stakingKeeper    types.StakingKeeper
+	distrKeeper      types.DistrKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
@@ -37,13 +37,14 @@ func NewKeeper(
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		fileCache:     filecache.New(fileDir),
-		ParamSpace:    paramSpace,
-		SupplyKeeper:  supplyKeeper,
-		StakingKeeper: stakingKeeper,
-		DistrKeeper:   distrKeeper,
+		storeKey:         key,
+		cdc:              cdc,
+		fileCache:        filecache.New(fileDir),
+		feeCollectorName: feeCollectorName,
+		paramSpace:       paramSpace,
+		supplyKeeper:     supplyKeeper,
+		stakingKeeper:    stakingKeeper,
+		distrKeeper:      distrKeeper,
 	}
 }
 
@@ -59,18 +60,18 @@ func ParamKeyTable() params.KeyTable {
 
 // GetParam returns the parameter as specified by key as an uint64.
 func (k Keeper) GetParam(ctx sdk.Context, key []byte) (res uint64) {
-	k.ParamSpace.Get(ctx, key, &res)
+	k.paramSpace.Get(ctx, key, &res)
 	return res
 }
 
 // SetParam saves the given key-value parameter to the store.
 func (k Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
-	k.ParamSpace.Set(ctx, key, value)
+	k.paramSpace.Set(ctx, key, value)
 }
 
 // GetParams returns all current parameters as a types.Params instance.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	k.ParamSpace.GetParamSet(ctx, &params)
+	k.paramSpace.GetParamSet(ctx, &params)
 	return params
 }
 
@@ -134,7 +135,7 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 	return dataSourceCount
 }
 
-// GetNextDataSourceID increments and returns the current number of data source.
+// GetNextDataSourceID increments and returns the current number of data sources.
 func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	k.SetDataSourceCount(ctx, dataSourceCount+1)
@@ -155,7 +156,7 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 	return oracleScriptCount
 }
 
-// GetNextOracleScriptID increments and returns the current number of oracle script.
+// GetNextOracleScriptID increments and returns the current number of oracle scripts.
 func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
 	k.SetOracleScriptCount(ctx, oracleScriptCount+1)

@@ -174,15 +174,22 @@ func TestAskExternalData(t *testing.T) {
 	require.Equal(t, expectRawReq, rawReq)
 }
 
-func TestAskExternalDataFailed(t *testing.T) {
+func TestAskExternalDataOnTooSmallSpan(t *testing.T) {
 	penv := mockFreshPrepareEnv()
 
-	penv.AskExternalData(1, 3, make([]byte, MaxDataSize+1))
+	err := penv.AskExternalData(1, 3, make([]byte, MaxDataSize+1))
+	require.Equal(t, api.ErrSpanTooSmall, err)
 	require.Equal(t, []RawRequest(nil), penv.GetRawRequests())
+}
+func TestAskTooManyExternalData(t *testing.T) {
+	penv := mockFreshPrepareEnv()
 
-	penv.AskExternalData(1, 1, []byte("CALLDATA1"))
-	penv.AskExternalData(2, 2, []byte("CALLDATA2"))
-	penv.AskExternalData(3, 3, []byte("CALLDATA3"))
+	err := penv.AskExternalData(1, 1, []byte("CALLDATA1"))
+	require.NoError(t, err)
+	err = penv.AskExternalData(2, 2, []byte("CALLDATA2"))
+	require.NoError(t, err)
+	err = penv.AskExternalData(3, 3, []byte("CALLDATA3"))
+	require.NoError(t, err)
 
 	expectRawReq := []RawRequest{
 		NewRawRequest(1, 1, []byte("CALLDATA1")),
@@ -191,8 +198,21 @@ func TestAskExternalDataFailed(t *testing.T) {
 	}
 	require.Equal(t, expectRawReq, penv.GetRawRequests())
 
-	penv.AskExternalData(4, 4, []byte("CALLDATA4"))
+	err = penv.AskExternalData(4, 4, []byte("CALLDATA4"))
+	require.Equal(t, api.ErrTooManyExternalData, err)
 	require.Equal(t, expectRawReq, penv.GetRawRequests())
+}
+
+func TestAskDuplicateExternalID(t *testing.T) {
+	penv := mockFreshPrepareEnv()
+
+	err := penv.AskExternalData(1, 1, []byte("CALLDATA1"))
+	require.NoError(t, err)
+	err = penv.AskExternalData(2, 1, []byte("CALLDATA2"))
+	require.NoError(t, err)
+
+	err = penv.AskExternalData(1, 3, []byte("CALLDATA3"))
+	require.Equal(t, api.ErrDuplicateExternalID, err)
 }
 
 func TestAskExternalDataOnExecEnv(t *testing.T) {

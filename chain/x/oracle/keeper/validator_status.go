@@ -23,7 +23,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context, previousVotes []abci.VoteInfo) {
 	toReward := []valWithPower{}
 	totalPower := int64(0)
 	for _, vote := range previousVotes {
-		val := k.StakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
+		val := k.stakingKeeper.ValidatorByConsAddr(ctx, vote.Validator.Address)
 		if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
 			toReward = append(toReward, valWithPower{val: val, power: vote.Validator.Power})
 			totalPower += vote.Validator.Power
@@ -33,31 +33,31 @@ func (k Keeper) AllocateTokens(ctx sdk.Context, previousVotes []abci.VoteInfo) {
 		// No active validators performing oracle tasks, nothing needs to be done here.
 		return
 	}
-	feeCollector := k.SupplyKeeper.GetModuleAccount(ctx, k.feeCollectorName)
+	feeCollector := k.supplyKeeper.GetModuleAccount(ctx, k.feeCollectorName)
 	totalFee := sdk.NewDecCoinsFromCoins(feeCollector.GetCoins()...)
 	// Compute the fee allocated for oracle module to distribute to active validators.
 	oracleRewardRatio := sdk.NewDecWithPrec(int64(k.GetParam(ctx, types.KeyOracleRewardPercentage)), 2)
 	oracleRewardInt, _ := totalFee.MulDecTruncate(oracleRewardRatio).TruncateDecimal()
 	// Transfer the oracle reward portion from fee collector to distr module.
-	err := k.SupplyKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, distr.ModuleName, oracleRewardInt)
+	err := k.supplyKeeper.SendCoinsFromModuleToModule(ctx, k.feeCollectorName, distr.ModuleName, oracleRewardInt)
 	if err != nil {
 		panic(err)
 	}
 	// Convert the transfered tokens back to DecCoins for internal distr allocations.
 	oracleReward := sdk.NewDecCoinsFromCoins(oracleRewardInt...)
 	remaining := oracleReward
-	rewardMultiplier := sdk.OneDec().Sub(k.DistrKeeper.GetCommunityTax(ctx))
+	rewardMultiplier := sdk.OneDec().Sub(k.distrKeeper.GetCommunityTax(ctx))
 	// Allocate non-community pool tokens to active validators weighted by voting power.
 	for _, each := range toReward {
 		powerFraction := sdk.NewDec(each.power).QuoTruncate(sdk.NewDec(totalPower))
 		reward := oracleReward.MulDecTruncate(rewardMultiplier).MulDecTruncate(powerFraction)
-		k.DistrKeeper.AllocateTokensToValidator(ctx, each.val, reward)
+		k.distrKeeper.AllocateTokensToValidator(ctx, each.val, reward)
 		remaining = remaining.Sub(reward)
 	}
 	// Allocate the remaining coins to the community pool.
-	feePool := k.DistrKeeper.GetFeePool(ctx)
+	feePool := k.distrKeeper.GetFeePool(ctx)
 	feePool.CommunityPool = feePool.CommunityPool.Add(remaining...)
-	k.DistrKeeper.SetFeePool(ctx, feePool)
+	k.distrKeeper.SetFeePool(ctx, feePool)
 }
 
 // GetValidatorStatus returns the validator status for the given validator. Note that validator
@@ -98,5 +98,9 @@ func (k Keeper) MissReport(ctx sdk.Context, val sdk.ValAddress, requestTime time
 	status := k.GetValidatorStatus(ctx, val)
 	if status.IsActive && status.Since.Before(requestTime) {
 		k.SetValidatorStatus(ctx, val, types.NewValidatorStatus(false, ctx.BlockHeader().Time))
+		ctx.EventManager().EmitEvent(sdk.NewEvent(
+			types.EventTypeDeactivate,
+			sdk.NewAttribute(types.AttributeKeyValidator, val.String()),
+		))
 	}
 }

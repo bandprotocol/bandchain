@@ -4,11 +4,41 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	owasm "github.com/bandprotocol/bandchain/go-owasm/api"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	owasm "github.com/bandprotocol/bandchain/go-owasm/api"
 )
+
+// GetRandomValidators returns a pseudorandom subset of active validators. Each validator has
+// chance of getting selected directly proportional to the amount of voting power it has.
+func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, id int64) ([]sdk.ValAddress, error) {
+	valOperators := []sdk.ValAddress{}
+	valPowers := []uint64{}
+	k.stakingKeeper.IterateBondedValidatorsByPower(ctx,
+		func(idx int64, val exported.ValidatorI) (stop bool) {
+			if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
+				valOperators = append(valOperators, val.GetOperator())
+				valPowers = append(valPowers, val.GetTokens().Uint64())
+			}
+			return false
+		})
+	if len(valOperators) < size {
+		return nil, sdkerrors.Wrapf(
+			types.ErrInsufficientValidators, "%d < %d", len(valOperators), size)
+	}
+	rng := bandrng.NewRng(fmt.Sprintf("%x:%d", k.GetRollingSeed(ctx), id))
+	tryCount := int(k.GetParam(ctx, types.KeySamplingTryCount))
+	chosenValIndexes := bandrng.ChooseSomeMaxWeight(rng, valPowers, size, tryCount)
+	validators := make([]sdk.ValAddress, size)
+	for i, idx := range chosenValIndexes {
+		validators[i] = valOperators[idx]
+	}
+	return validators, nil
+}
 
 // PrepareRequest takes an request specification object, performs the prepare call, and saves
 // the request object to store. Also emits events related to the request.
@@ -43,6 +73,9 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	}
 	// Preparation complete! It's time to collect raw request ids.
 	req.RawRequests = env.GetRawRequests()
+	if len(req.RawRequests) == 0 {
+		return types.ErrEmptyRawRequests
+	}
 	// We now have everything we need to the request, so let's add it to the store.
 	id := k.AddRequest(ctx, req)
 	// Emit an event describing a data request and asked validators.

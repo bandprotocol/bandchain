@@ -1,19 +1,16 @@
 package keeper_test
 
 import (
-	"crypto/sha256"
 	"testing"
-	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestHasRequest(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// We should not have a request ID 42 without setting it.
 	require.False(t, k.HasRequest(ctx, 42))
 	// After we set it, we should be able to find it.
@@ -22,7 +19,7 @@ func TestHasRequest(t *testing.T) {
 }
 
 func TestDeleteRequest(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// After we set it, we should be able to find it.
 	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil))
 	require.True(t, k.HasRequest(ctx, 42))
@@ -35,7 +32,7 @@ func TestDeleteRequest(t *testing.T) {
 }
 
 func TestSetterGetterRequest(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// Getting a non-existent request should return error.
 	_, err := k.GetRequest(ctx, 42)
 	require.Error(t, err)
@@ -62,7 +59,7 @@ func TestSetterGetterRequest(t *testing.T) {
 }
 
 func TestSetterGettterPendingResolveList(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// Initially, we should get an empty list of pending resolves.
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// After we set something, we should get that thing back.
@@ -77,10 +74,10 @@ func TestSetterGettterPendingResolveList(t *testing.T) {
 }
 
 func TestAddDataSourceBasic(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// We start by setting an oracle request available at ID 42.
 	k.SetOracleScript(ctx, 42, types.NewOracleScript(
-		Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
+		testapp.Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	// Adding the first request should return ID 1.
 	id := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil))
@@ -91,7 +88,7 @@ func TestAddDataSourceBasic(t *testing.T) {
 }
 
 func TestAddPendingResolveList(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 	// Initially, we should get an empty list of pending resolves.
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// Everytime we append a new request ID, it should show up.
@@ -99,39 +96,4 @@ func TestAddPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42})
 	k.AddPendingRequest(ctx, 43)
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42, 43})
-}
-
-func TestGetRandomValidatorsSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
-	hash := sha256.Sum256([]byte("Hello"))
-	ctx = ctx.WithBlockHeader(abci.Header{
-		LastBlockId: abci.BlockID{Hash: hash[:32]},
-	})
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	vals, err := k.GetRandomValidators(ctx, 3, int64(1))
-	expect := []sdk.ValAddress{Validator3.ValAddress, Validator1.ValAddress, Validator2.ValAddress}
-
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-	hash = sha256.Sum256([]byte("Ni Hao"))
-	ctx = ctx.WithBlockHeader(abci.Header{
-		LastBlockId: abci.BlockID{Hash: hash[:32]},
-	})
-	vals, err = k.GetRandomValidators(ctx, 3, int64(2))
-	expect = []sdk.ValAddress{Validator3.ValAddress, Validator1.ValAddress, Validator2.ValAddress}
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-	vals, err = k.GetRandomValidators(ctx, 1, int64(2))
-	expect = []sdk.ValAddress{Validator1.ValAddress}
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-}
-
-func TestGetRandomValidatorsTooBigSize(t *testing.T) {
-	_, ctx, k := createTestInput()
-	_, err := k.GetRandomValidators(ctx, 9999, int64(1))
-	require.Error(t, err)
 }

@@ -5,51 +5,38 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestGetRequestCount(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	// Initial request count must be 0
+	_, ctx, k := testapp.CreateTestInput()
+	// Initially request count must be 0.
 	require.Equal(t, int64(0), k.GetRequestCount(ctx))
 }
 
+func TestGetNextRequestID(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+	// First request id must be 1.
+	require.Equal(t, types.RequestID(1), k.GetNextRequestID(ctx))
+	// After we add new requests, the request count must increase accordingly.
+	require.Equal(t, int64(1), k.GetRequestCount(ctx))
+	require.Equal(t, types.RequestID(2), k.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(3), k.GetNextRequestID(ctx))
+	require.Equal(t, types.RequestID(4), k.GetNextRequestID(ctx))
+	require.Equal(t, int64(4), k.GetRequestCount(ctx))
+}
+
 func TestGetSetRequestLastExpiredID(t *testing.T) {
-	_, ctx, k := createTestInput()
-	// Initial last expired request must be 0
+	_, ctx, k := testapp.CreateTestInput()
+	// Initially last expired request must be 0.
 	require.Equal(t, int64(0), k.GetRequestLastExpired(ctx))
 	k.SetRequestLastExpired(ctx, 20)
 	require.Equal(t, int64(20), k.GetRequestLastExpired(ctx))
 }
 
-func TestGetNextRequestID(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	// First request id must be 1
-	require.Equal(t, types.RequestID(1), k.GetNextRequestID(ctx))
-
-	// After add new request, request count must be 1
-	require.Equal(t, int64(1), k.GetRequestCount(ctx))
-
-	require.Equal(t, types.RequestID(2), k.GetNextRequestID(ctx))
-	require.Equal(t, types.RequestID(3), k.GetNextRequestID(ctx))
-	require.Equal(t, types.RequestID(4), k.GetNextRequestID(ctx))
-
-	require.Equal(t, int64(4), k.GetRequestCount(ctx))
-}
-
-func TestGetSetMaxRawRequestCount(t *testing.T) {
-	_, ctx, k := createTestInput()
-	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
-	require.Equal(t, uint64(1), k.GetParam(ctx, types.KeyMaxRawRequestCount))
-	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
-	require.Equal(t, uint64(2), k.GetParam(ctx, types.KeyMaxRawRequestCount))
-}
-
 func TestGetSetParams(t *testing.T) {
-	_, ctx, k := createTestInput()
-
+	_, ctx, k := testapp.CreateTestInput()
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 	k.SetParam(ctx, types.KeyMaxAskCount, 10)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 30)
@@ -59,7 +46,6 @@ func TestGetSetParams(t *testing.T) {
 	k.SetParam(ctx, types.KeyOracleRewardPercentage, 50)
 	k.SetParam(ctx, types.KeyInactivePenaltyDuration, 1000)
 	require.Equal(t, types.NewParams(1, 10, 30, 50000, 3000, 3, 50, 1000), k.GetParams(ctx))
-
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 2)
 	k.SetParam(ctx, types.KeyMaxAskCount, 20)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 40)

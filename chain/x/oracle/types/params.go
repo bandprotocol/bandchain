@@ -11,7 +11,7 @@ const (
 	DefaultParamspace              = ModuleName
 	DefaultMaxRawRequestCount      = uint64(16)
 	DefaultMaxAskCount             = uint64(16)
-	DefaultExpirationBlockCount    = uint64(20)
+	DefaultExpirationBlockCount    = uint64(100)
 	DefaultBaseRequestGas          = uint64(150000)
 	DefaultPerValidatorRequestGas  = uint64(30000)
 	DefaultSamplingTryCount        = uint64(3)
