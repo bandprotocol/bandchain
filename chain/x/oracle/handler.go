@@ -144,7 +144,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 		return nil, types.ErrReporterNotAuthorized
 	}
 	if m.RequestID <= k.GetRequestLastExpired(ctx) {
-		return nil, types.ErrRequestExpired
+		return nil, types.ErrRequestAlreadyExpired
 	}
 	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, !k.HasResult(ctx, m.RequestID), m.RawReports))
 	if err != nil {

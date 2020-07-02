@@ -609,7 +609,7 @@ func TestReportOnExpiredRequest(t *testing.T) {
 		types.NewRawReport(42, 0, []byte("data1")),
 	}, testapp.Validator1.ValAddress, testapp.Validator1.Address)
 	_, err := oracle.NewHandler(k)(ctx, msg)
-	require.Equal(t, types.ErrRequestExpired, err)
+	require.Equal(t, types.ErrRequestAlreadyExpired, err)
 }
 
 func TestAddReporterSuccess(t *testing.T) {
