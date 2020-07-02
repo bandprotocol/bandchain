@@ -22,7 +22,7 @@ pub enum Error {
   // Go-generated errors while interacting with OEI.
   WrongPeriodActionError = 128,       // OEI action to invoke is not available.
   TooManyExternalDataError = 129,     // Too many external data requests.
-  DuplicateExternalIDError = 130,     // Wasm code asks data with duplicate external id
+  DuplicateExternalIDError = 130,     // Wasm code asks data with duplicate external id.
   BadValidatorIndexError = 131,       // Bad validator index parameter.
   BadExternalIDError = 132,           // Bad external ID parameter.
   UnavailableExternalDataError = 133, // External data is not available.
