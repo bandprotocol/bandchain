@@ -18,7 +18,7 @@ jobs:
         path: scan/node_modules
         key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
-    - name: Run yarn
+    - name: Run yarn --registry https://registry.npmjs.org
       if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
       run: yarn
       working-directory: ${{env.working-directory}}
