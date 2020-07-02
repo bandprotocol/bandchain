@@ -34,6 +34,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		app.handleMsgCreateValidator(msg)
+	case staking.MsgEditValidator:
+		app.handleMsgEditValidator(msg)
 	}
 }
 
