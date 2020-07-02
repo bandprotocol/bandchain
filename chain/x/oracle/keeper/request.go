@@ -72,12 +72,11 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// Deactivate all validators that do not report to this request.
 		for _, val := range req.RequestedValidators {
 			if !k.HasReport(ctx, currentReqID, val) {
-				// TODO: Change req.requestTime to time.Time and use that value.
-				k.MissReport(ctx, val, ctx.BlockHeader().Time)
+				k.MissReport(ctx, val, req.RequestTime)
 			}
 		}
 		// Set last expired request ID to be this current request.
-		k.SetRequestLastExpired(ctx, int64(currentReqID))
+		k.SetRequestLastExpired(ctx, currentReqID)
 	}
 }
 
