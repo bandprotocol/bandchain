@@ -29,3 +29,8 @@ func (app *App) emitSetValidator(addrs sdk.ValAddress) {
 func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
+
+// handleMsgEditValidator implements emitter handler for MsgEditValidator.
+func (app *App) handleMsgEditValidator(msg staking.MsgEditValidator) {
+	app.emitSetValidator(msg.ValidatorAddress)
+}
