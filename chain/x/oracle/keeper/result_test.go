@@ -6,11 +6,12 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestResultBasicFunctions(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput()
 
 	req := types.NewOracleRequestPacketData("alice", 1, BasicCalldata, 1, 1)
 	res := types.NewOracleResponsePacketData("alice", 1, 1, 1589535020, 1589535022, 1, BasicCalldata)
