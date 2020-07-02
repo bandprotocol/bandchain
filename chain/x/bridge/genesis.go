@@ -23,6 +23,9 @@ func DefaultGenesisState() GenesisState {
 }
 
 func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorUpdate {
+	k.SetChainID(ctx, "bandchain")
+	k.SetLatestRelayBlockHeight(ctx, 0)
+	k.SetLatestValidatorsUpdateBlockHeight(ctx, 0)
 	return []abci.ValidatorUpdate{}
 }
 
