@@ -10,7 +10,7 @@ import (
 )
 
 func TestHasRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a request ID 42 without setting it.
 	require.False(t, k.HasRequest(ctx, 42))
 	// After we set it, we should be able to find it.
@@ -19,7 +19,7 @@ func TestHasRequest(t *testing.T) {
 }
 
 func TestDeleteRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// After we set it, we should be able to find it.
 	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil))
 	require.True(t, k.HasRequest(ctx, 42))
@@ -32,7 +32,7 @@ func TestDeleteRequest(t *testing.T) {
 }
 
 func TestSetterGetterRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Getting a non-existent request should return error.
 	_, err := k.GetRequest(ctx, 42)
 	require.Error(t, err)
@@ -59,7 +59,7 @@ func TestSetterGetterRequest(t *testing.T) {
 }
 
 func TestSetterGettterPendingResolveList(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially, we should get an empty list of pending resolves.
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// After we set something, we should get that thing back.
@@ -74,7 +74,7 @@ func TestSetterGettterPendingResolveList(t *testing.T) {
 }
 
 func TestAddDataSourceBasic(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We start by setting an oracle request available at ID 42.
 	k.SetOracleScript(ctx, 42, types.NewOracleScript(
 		testapp.Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
@@ -88,7 +88,7 @@ func TestAddDataSourceBasic(t *testing.T) {
 }
 
 func TestAddPendingResolveList(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially, we should get an empty list of pending resolves.
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{})
 	// Everytime we append a new request ID, it should show up.
