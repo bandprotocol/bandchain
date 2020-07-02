@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (chore) [\#2129](https://github.com/bandprotocol/bandchain/pull/2129) Add unit tests for validator status keeper.
 - (chore) [\#2126](https://github.com/bandprotocol/bandchain/pull/2126) More test cleanups in request and result keepers.
 - (impv) [\#2121](https://github.com/bandprotocol/bandchain/pull/2121) Add handle edit validator msg for emitter
 - (impv/chore) [\#2124](https://github.com/bandprotocol/bandchain/pull/2124) Add genesis ds and os and move same test logic to testapp.
