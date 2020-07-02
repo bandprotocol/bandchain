@@ -12,8 +12,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func TestGetRandomValidatorsSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+func TestGetRandomValidatorsSuccessActivateAll(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Getting 3 validators using ROLLING_SEED_1
 	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
 	vals, err := k.GetRandomValidators(ctx, 3, 1)
@@ -37,7 +37,7 @@ func TestGetRandomValidatorsSuccess(t *testing.T) {
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	_, err := k.GetRandomValidators(ctx, 1, 1)
 	require.NoError(t, err)
 	_, err = k.GetRandomValidators(ctx, 2, 1)
@@ -50,8 +50,34 @@ func TestGetRandomValidatorsTooBigSize(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestGetRandomValidatorsWithActivate(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(false)
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED"))
+	// If no validators are active, you must not be able to get random validators
+	_, err := k.GetRandomValidators(ctx, 1, 1)
+	require.Error(t, err)
+	// If we activate 2 validators, we should be able to get at most 2 from the function.
+	k.Activate(ctx, testapp.Validator1.ValAddress)
+	k.Activate(ctx, testapp.Validator2.ValAddress)
+	vals, err := k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress}, vals)
+	vals, err = k.GetRandomValidators(ctx, 2, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	_, err = k.GetRandomValidators(ctx, 3, 1)
+	require.Error(t, err)
+	// After we deactivate 1 validator due to missing a report, we can only get at most 1 validator.
+	k.MissReport(ctx, testapp.Validator1.ValAddress, time.Now())
+	vals, err = k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator2.ValAddress}, vals)
+	_, err = k.GetRandomValidators(ctx, 2, 1)
+	require.Error(t, err)
+}
+
 func TestPrepareRequestSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(1)
@@ -111,7 +137,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	k.SetParam(ctx, types.KeyMaxAskCount, 1000) // Set MaxAskCount 1000
 
@@ -127,7 +153,7 @@ func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 }
 
 func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(90000)) // Set Gas Meter 90000
 
@@ -150,7 +176,7 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 }
 
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000)) //Set Gas Meter 150000
 
@@ -174,7 +200,7 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 }
 
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(1)
@@ -190,7 +216,7 @@ func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
 }
 
 func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
@@ -204,7 +230,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 }
 
 func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(3)
@@ -219,7 +245,7 @@ func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
 }
 
 func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(2)
@@ -234,7 +260,7 @@ func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 }
 
 func TestPrepareRequestGetDataSourceFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
@@ -248,7 +274,7 @@ func TestPrepareRequestGetDataSourceFail(t *testing.T) {
 }
 
 func TestResolveRequestSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(1)
@@ -298,7 +324,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 // TODO: Patch to "Bad" wasm code that is a valid wasm code.
 // func TestResolveRequestFail(t *testing.T) {
-// 	_, ctx, k := testapp.CreateTestInput()
+// 	_, ctx, k := testapp.CreateTestInput(true)
 // 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 // 	ds1, clear1 := getTestDataSource("code1")
