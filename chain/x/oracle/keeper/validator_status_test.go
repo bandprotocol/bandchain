@@ -156,12 +156,12 @@ func TestMissReportSuccess(t *testing.T) {
 
 func TestMissReportTooSoonNoop(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(false)
-	now := time.Now().UTC()
-	next := now.Add(time.Duration(10))
-	k.SetValidatorStatus(ctx, testapp.Validator1.ValAddress, types.NewValidatorStatus(true, next))
-	k.MissReport(ctx.WithBlockTime(now), testapp.Validator1.ValAddress, now)
+	prev := time.Now().UTC()
+	now := prev.Add(time.Duration(10))
+	k.SetValidatorStatus(ctx, testapp.Validator1.ValAddress, types.NewValidatorStatus(true, now))
+	k.MissReport(ctx.WithBlockTime(prev), testapp.Validator1.ValAddress, prev)
 	vs := k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress)
-	require.Equal(t, types.NewValidatorStatus(true, next), vs)
+	require.Equal(t, types.NewValidatorStatus(true, now), vs)
 }
 
 func TestMissReportAlreadyInactiveNoop(t *testing.T) {
