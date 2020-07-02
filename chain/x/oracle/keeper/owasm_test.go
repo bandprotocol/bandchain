@@ -230,7 +230,7 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 }
 
 func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(3)
