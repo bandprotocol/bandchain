@@ -3,7 +3,7 @@ package cli
 import (
 	"bufio"
 	"fmt"
-	"strings"
+	"io/ioutil"
 
 	"github.com/bandprotocol/bandchain/chain/x/bridge/types"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 	"github.com/spf13/cobra"
@@ -19,7 +18,7 @@ import (
 )
 
 const (
-	flagName = "name"
+	flagProof = "proof"
 )
 
 // GetTxCmd returns the transaction commands for this module
@@ -32,52 +31,46 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 	bridgeCmd.AddCommand(flags.PostCommands(
-		GetCmdRelayAndVerify(cdc),
+		GetCmdVerifyProof(cdc),
 	)...)
 
 	return bridgeCmd
 }
 
-// GetCmdRelayAndVerify implements the relay and verify command handler.
-func GetCmdRelayAndVerify(cdc *codec.Codec) *cobra.Command {
+// GetCmdVerifyProof implements the verify proof command handler.
+func GetCmdVerifyProof(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "relay-verify",
-		Short: "Make a test",
+		Use:   "verify",
+		Short: "Verify a proof",
 		Args:  cobra.ExactArgs(0),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`test
-`,
-				version.ClientName, version.ClientName,
-			),
-		),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			inBuf := bufio.NewReader(cmd.InOrStdin())
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			proof := tmmerkle.Proof{
-				Ops: []tmmerkle.ProofOp{
-					{
-						Type: "test",
-						Key:  []byte("apple"),
-						Data: []byte("appleData"),
-					},
-					{
-						Type: "test2",
-						Key:  []byte("kiwi"),
-						Data: []byte("kiwiData"),
-					},
-				},
+			// Read file from path
+			proofPath, err := cmd.Flags().GetString(flagProof)
+			if err != nil {
+				return err
 			}
 
-			// fmt.Println(proof.)
+			proofData, err := ioutil.ReadFile(proofPath)
+			if err != nil {
+				return err
+			}
 
-			msg := types.NewMsgRelayAndVerify(
+			var proof tmmerkle.Proof
+			// aminoCdc := makeCodec()
+			_ = cdc.UnmarshalJSON([]byte(proofData), &proof)
+
+			fmt.Println("proof", proof)
+
+			msg := types.NewMsgVerifyProof(
 				proof,
 				cliCtx.GetFromAddress(),
 			)
 
-			err := msg.ValidateBasic()
+			err = msg.ValidateBasic()
 			if err != nil {
 				return err
 			}
@@ -86,5 +79,15 @@ func GetCmdRelayAndVerify(cdc *codec.Codec) *cobra.Command {
 		},
 	}
 
+	cmd.Flags().String(flagProof, "", "path to proof")
 	return cmd
 }
+
+// func makeCodec() *codec.Codec {
+// 	var cdc = codec.New()
+// 	sdk.RegisterCodec(cdc)
+// 	codec.RegisterCrypto(cdc)
+// 	authtypes.RegisterCodec(cdc)
+// 	// cdc.RegisterConcrete(sdk.StdTx{}, "cosmos-sdk/StdTx", nil)
+// 	return cdc
+// }

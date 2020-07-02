@@ -13,5 +13,5 @@ func init() {
 
 // RegisterCodec registers the module's concrete types on the codec.
 func RegisterCodec(cdc *codec.Codec) {
-	cdc.RegisterConcrete(MsgRelayAndVerify{}, "bridge/RelayAndVerify", nil)
+	cdc.RegisterConcrete(MsgVerifyProof{}, "bridge/VerifyProof", nil)
 }

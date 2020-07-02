@@ -19,6 +19,6 @@ var (
 )
 
 type (
-	Keeper            = keeper.Keeper
-	MsgRelayAndVerify = types.MsgRelayAndVerify
+	Keeper         = keeper.Keeper
+	MsgVerifyProof = types.MsgVerifyProof
 )

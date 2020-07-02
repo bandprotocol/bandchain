@@ -12,15 +12,15 @@ func NewHandler(k Keeper) sdk.Handler {
 	return func(ctx sdk.Context, msg sdk.Msg) (*sdk.Result, error) {
 		ctx = ctx.WithEventManager(sdk.NewEventManager())
 		switch msg := msg.(type) {
-		case MsgRelayAndVerify:
-			return handleMsgRelayAndVerify(ctx, k, msg)
+		case MsgVerifyProof:
+			return handleMsgVerifyProof(ctx, k, msg)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unrecognized %s message type: %T", ModuleName, msg)
 		}
 	}
 }
 
-func handleMsgRelayAndVerify(ctx sdk.Context, k Keeper, m MsgRelayAndVerify) (*sdk.Result, error) {
+func handleMsgVerifyProof(ctx sdk.Context, k Keeper, m MsgVerifyProof) (*sdk.Result, error) {
 	fmt.Printf("handle relay and verify packet %v\n", m)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }

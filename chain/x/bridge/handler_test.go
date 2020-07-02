@@ -42,7 +42,7 @@ func TestVerify(t *testing.T) {
 		},
 	}
 
-	msg := types.NewMsgRelayAndVerify(proof, nil)
+	msg := types.NewMsgVerifyProof(proof, nil)
 	_, err = bridge.NewHandler(keeper)(ctx, msg)
 
 	prt := rootmulti.DefaultProofRuntime()
