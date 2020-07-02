@@ -588,6 +588,10 @@ func TestReportFailed(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestReportOnExpiredRequest(t *testing.T) {
+	// TODO
+}
+
 func TestAddReporterSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 

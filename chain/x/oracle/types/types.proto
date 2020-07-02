@@ -264,7 +264,7 @@ message Request {
   int64 request_height = 5;
   int64 request_time = 6;
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
-  repeated RawRequest raw_requests = 9 [(gogoproto.nullable) = false];
+  repeated RawRequest raw_requests = 8 [(gogoproto.nullable) = false];
 }
 
 // Report is a report that contains operator address in struct

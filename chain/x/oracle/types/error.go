@@ -42,6 +42,7 @@ var (
 	ErrSelfReferenceAsReporter  = sdkerrors.Register(ModuleName, 36, "cannot reference self as reporter")
 	ErrOBIDecode                = sdkerrors.Register(ModuleName, 37, "obi decode failed")
 	ErrUncompressionFailed      = sdkerrors.Register(ModuleName, 38, "uncompression failed")
+	ErrRequestExpired           = sdkerrors.Register(ModuleName, 39, "request already expired")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.
