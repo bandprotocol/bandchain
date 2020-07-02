@@ -203,6 +203,21 @@ func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
 	require.Error(t, err)
 }
 
+func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+
+	oracleScriptID := types.OracleScriptID(3)
+	calldata := []byte("test")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
+
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "empty raw requests")
+}
+
 func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
