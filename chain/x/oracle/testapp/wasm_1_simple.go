@@ -4,7 +4,7 @@ package testapp
 //   PREPARE:
 //     CALL ask_external_data with EID 1 DID 1 CALLDATA "beeb"
 //     CALL ask_external_data with EID 2 DID 2 CALLDATA "beeb"
-//     CALL ask_external_data with EID 2 DID 2 CALLDATA "beeb"
+//     CALL ask_external_data with EID 3 DID 3 CALLDATA "beeb"
 //   EXECUTE:
 //     CALL set_return_date with RETDATE "beeb"
 var Wasm1 []byte = wat2wasm([]byte(`

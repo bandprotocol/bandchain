@@ -4,7 +4,7 @@ package testapp
 //   PREPARE:
 //     CALL set_return_data with RETDATA "beeb" -- Not allowed during prepare
 //   EXECUTE:
-//	   DO NOTHING
+//     DO NOTHING
 var Wasm2 []byte = wat2wasm([]byte(`
 (module
 	(type $t0 (func))
@@ -15,5 +15,6 @@ var Wasm2 []byte = wat2wasm([]byte(`
 		i64.const 4
 		call $set_return_data)
 	(func $execute (export "execute"))
-	(memory $memory (export "memory") 17))
+	(memory $memory (export "memory") 17)
+	(data (i32.const 1024) "beeb"))
 `))
