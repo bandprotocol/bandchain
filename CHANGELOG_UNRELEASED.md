@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2128](https://github.com/bandprotocol/bandchain/pull/2128) Add expired request check when report and change type of `requestTime`.
 - (feat) [\#2131](https://github.com/bandprotocol/bandchain/pull/2131) Add validator status querier.
 - (chore) [\#2129](https://github.com/bandprotocol/bandchain/pull/2129) Add unit tests for validator status keeper.
 - (chore) [\#2130](https://github.com/bandprotocol/bandchain/pull/2130) Add ABCI begin block rolling seed test.

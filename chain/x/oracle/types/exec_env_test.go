@@ -2,6 +2,7 @@ package types
 
 import (
 	"testing"
+	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
@@ -28,7 +29,7 @@ func mockExecEnv() *ExecuteEnv {
 	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
 	minCount := uint64(1)
 	requestHeight := int64(999)
-	requestTime := int64(1581589700)
+	requestTime := time.Unix(1581589700, 0)
 	clientID := "beeb"
 	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, nil)
 	env := NewExecuteEnv(request)
@@ -50,7 +51,7 @@ func mockFreshPrepareEnv() *PrepareEnv {
 	valAddresses := []sdk.ValAddress{validatorAddress1, validatorAddress2, validatorAddress3}
 	minCount := uint64(1)
 	requestHeight := int64(999)
-	requestTime := int64(1581589700)
+	requestTime := time.Unix(1581589700, 0)
 	clientID := "beeb"
 	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, nil)
 	env := NewPrepareEnv(request, 3)
