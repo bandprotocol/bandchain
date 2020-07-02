@@ -140,7 +140,7 @@ func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int
 	}
 	valReport, ok := valReports[ExternalID(eid)]
 	if !ok {
-		return nil, -1, api.ErrBadExternalID
+		return nil, 0, api.ErrBadExternalID
 	}
 	return valReport.Data, int64(valReport.ExitCode), nil
 }
