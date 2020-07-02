@@ -137,6 +137,7 @@ func (msg MsgRelay) GetSignBytes() []byte {
 
 // MsgVerifyProof is a message for verify proof
 type MsgVerifyProof struct {
+	Height         int64
 	Proof          tmmerkle.Proof
 	RequestPacket  otypes.OracleRequestPacketData
 	ResponsePacket otypes.OracleResponsePacketData
@@ -145,12 +146,14 @@ type MsgVerifyProof struct {
 
 // NewMsgVerifyProof creates a new MsgVerifyProof instance.
 func NewMsgVerifyProof(
+	height int64,
 	proof tmmerkle.Proof,
 	requestPacket otypes.OracleRequestPacketData,
 	responsePacket otypes.OracleResponsePacketData,
 	sender sdk.AccAddress,
 ) MsgVerifyProof {
 	return MsgVerifyProof{
+		Height:         height,
 		Proof:          proof,
 		RequestPacket:  requestPacket,
 		ResponsePacket: responsePacket,
