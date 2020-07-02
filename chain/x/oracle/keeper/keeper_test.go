@@ -30,9 +30,9 @@ func TestGetNextRequestID(t *testing.T) {
 func TestGetSetRequestLastExpiredID(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 	// Initially last expired request must be 0.
-	require.Equal(t, int64(0), k.GetRequestLastExpired(ctx))
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
 	k.SetRequestLastExpired(ctx, 20)
-	require.Equal(t, int64(20), k.GetRequestLastExpired(ctx))
+	require.Equal(t, types.RequestID(20), k.GetRequestLastExpired(ctx))
 }
 
 func TestGetSetParams(t *testing.T) {

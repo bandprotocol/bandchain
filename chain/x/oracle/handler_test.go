@@ -435,7 +435,7 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 func TestRequestDataSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("beeb")
@@ -485,7 +485,7 @@ func TestRequestDataSuccess(t *testing.T) {
 func TestRequestDataFail(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 	wrongOracleScript := 42
 
@@ -517,12 +517,12 @@ func TestReportSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 
 	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", []types.RawRequest{
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{
 			types.NewRawRequest(1, 1, []byte("beeb")),
 			types.NewRawRequest(42, 2, []byte("beeb")),
 		},
@@ -530,7 +530,7 @@ func TestReportSuccess(t *testing.T) {
 	k.SetRequest(ctx, 1, request)
 
 	ctx = ctx.WithBlockHeight(5)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589800, 0))
 
 	msg := types.NewMsgReportData(1, []types.RawReport{
 		types.NewRawReport(1, 0, []byte("data1")),
@@ -559,12 +559,12 @@ func TestReportFailed(t *testing.T) {
 	// Setup test environment
 	_, ctx, k := testapp.CreateTestInput()
 	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
 
 	request := types.NewRequest(1, calldata,
 		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
 	)
 	k.SetRequest(ctx, 1, request)
 
@@ -589,7 +589,27 @@ func TestReportFailed(t *testing.T) {
 }
 
 func TestReportOnExpiredRequest(t *testing.T) {
-	// TODO
+	_, ctx, k := testapp.CreateTestInput()
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	calldata := []byte("calldata")
+
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
+	)
+	k.SetRequest(ctx, 1, request)
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	k.SetRequestLastExpired(ctx, 1)
+
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
+	}, testapp.Validator1.ValAddress, testapp.Validator1.Address)
+	_, err := oracle.NewHandler(k)(ctx, msg)
+	require.Equal(t, types.ErrRequestExpired, err)
 }
 
 func TestAddReporterSuccess(t *testing.T) {

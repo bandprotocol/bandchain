@@ -22,7 +22,7 @@ func parseEventAttribute(attr interface{}) []byte {
 func TestSuccessRequestOracleData(t *testing.T) {
 	app, ctx, k := testapp.CreateTestInput()
 
-	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(1581589790, 0))
 	handler := oracle.NewHandler(k)
 	requestMsg := types.NewMsgRequestData(types.OracleScriptID(1), []byte("calldata"), 3, 2, "app_test", testapp.Alice.Address)
 	res, err := handler(ctx, requestMsg)
@@ -32,7 +32,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 	expectRequest := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress},
-		2, 4, 1581589790, "app_test", []types.RawRequest{
+		2, 4, testapp.ParseTime(1581589790), "app_test", []types.RawRequest{
 			types.NewRawRequest(1, 1, []byte("beeb")),
 			types.NewRawRequest(2, 2, []byte("beeb")),
 			types.NewRawRequest(3, 3, []byte("beeb")),
@@ -64,7 +64,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 
 	require.Equal(t, expectEvents, result.GetEvents())
 
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589795), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589795, 0))
 	reportMsg2 := types.NewMsgReportData(
 		types.RequestID(1), []types.RawReport{
 			types.NewRawReport(1, 0, []byte("answer1")),
@@ -88,7 +88,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 		uint64(len(expectRequest.RequestedValidators)), expectRequest.MinCount,
 	)
 	resPacket := types.NewOracleResponsePacketData(
-		expectRequest.ClientID, types.RequestID(1), 2, expectRequest.RequestTime, 1581589795,
+		expectRequest.ClientID, types.RequestID(1), 2, expectRequest.RequestTime.Unix(), 1581589795,
 		types.ResolveStatus_Success, []byte("beeb"),
 	)
 	expectEvents = []abci.Event{{Type: types.EventTypeRequestExecute, Attributes: []kv.Pair{
@@ -121,7 +121,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 func TestExpiredRequestOracleData(t *testing.T) {
 	app, ctx, k := testapp.CreateTestInput()
 
-	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockHeight(4).WithBlockTime(time.Unix(1581589790, 0))
 	handler := oracle.NewHandler(k)
 	requestMsg := types.NewMsgRequestData(types.OracleScriptID(1), []byte("calldata"), 3, 2, "app_test", testapp.Alice.Address)
 	res, err := handler(ctx, requestMsg)
@@ -131,7 +131,7 @@ func TestExpiredRequestOracleData(t *testing.T) {
 	expectRequest := types.NewRequest(
 		types.OracleScriptID(1), []byte("calldata"),
 		[]sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress},
-		2, 4, 1581589790, "app_test", []types.RawRequest{
+		2, 4, testapp.ParseTime(1581589790), "app_test", []types.RawRequest{
 			types.NewRawRequest(1, 1, []byte("beeb")),
 			types.NewRawRequest(2, 2, []byte("beeb")),
 			types.NewRawRequest(3, 3, []byte("beeb")),
@@ -149,7 +149,7 @@ func TestExpiredRequestOracleData(t *testing.T) {
 		uint64(len(expectRequest.RequestedValidators)), expectRequest.MinCount,
 	)
 	resPacket := types.NewOracleResponsePacketData(
-		expectRequest.ClientID, types.RequestID(1), 0, expectRequest.RequestTime, ctx.BlockTime().Unix(),
+		expectRequest.ClientID, types.RequestID(1), 0, expectRequest.RequestTime.Unix(), ctx.BlockTime().Unix(),
 		types.ResolveStatus_Expired, []byte{},
 	)
 	expectEvents := []abci.Event{{

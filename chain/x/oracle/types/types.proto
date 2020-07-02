@@ -262,7 +262,8 @@ message Request {
       [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
   uint64 min_count = 4;
   int64 request_height = 5;
-  int64 request_time = 6;
+  google.protobuf.Timestamp request_time = 6
+      [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
   repeated RawRequest raw_requests = 8 [(gogoproto.nullable) = false];
 }

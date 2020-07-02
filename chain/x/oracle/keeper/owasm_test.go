@@ -73,7 +73,7 @@ func TestPrepareRequestSuccess(t *testing.T) {
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
 	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{testapp.Validator1.ValAddress}, minCount,
-		requestHeight, int64(1581589790), clientID, rawRequests)
+		requestHeight, testapp.ParseTime(1581589790), clientID, rawRequests)
 	require.Equal(t, expectReq, req)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(
@@ -262,7 +262,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	}
 	vals := []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress, testapp.Validator3.ValAddress}
 	requestHeight := int64(4000)
-	requestTime := int64(1581589700)
+	requestTime := testapp.ParseTime(1581589700)
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
@@ -289,7 +289,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	)
 
 	resPacket := types.NewOracleResponsePacketData(
-		clientID, reqID, 1, requestTime,
+		clientID, reqID, 1, requestTime.Unix(),
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
 	require.Equal(t, types.Result{RequestPacketData: reqPacket, ResponsePacketData: resPacket}, res)

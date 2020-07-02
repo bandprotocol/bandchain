@@ -14,14 +14,14 @@ func TestHasRequest(t *testing.T) {
 	// We should not have a request ID 42 without setting it.
 	require.False(t, k.HasRequest(ctx, 42))
 	// After we set it, we should be able to find it.
-	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil))
+	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil))
 	require.True(t, k.HasRequest(ctx, 42))
 }
 
 func TestDeleteRequest(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput()
 	// After we set it, we should be able to find it.
-	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil))
+	k.SetRequest(ctx, 42, types.NewRequest(1, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil))
 	require.True(t, k.HasRequest(ctx, 42))
 	// After we delete it, we should not find it anymore.
 	k.DeleteRequest(ctx, 42)
@@ -38,8 +38,8 @@ func TestSetterGetterRequest(t *testing.T) {
 	require.Error(t, err)
 	require.Panics(t, func() { _ = k.MustGetRequest(ctx, 42) })
 	// Creates some basic requests.
-	req1 := types.NewRequest(1, BasicCalldata, nil, 1, 1, 1, "", nil)
-	req2 := types.NewRequest(2, BasicCalldata, nil, 1, 1, 1, "", nil)
+	req1 := types.NewRequest(1, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil)
+	req2 := types.NewRequest(2, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil)
 	// Sets id 42 with request 1 and id 42 with request 2.
 	k.SetRequest(ctx, 42, req1)
 	k.SetRequest(ctx, 43, req2)
@@ -80,10 +80,10 @@ func TestAddDataSourceBasic(t *testing.T) {
 		testapp.Owner.Address, BasicName, BasicDesc, BasicFilename, BasicSchema, BasicSourceCodeURL,
 	))
 	// Adding the first request should return ID 1.
-	id := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil))
+	id := k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil))
 	require.Equal(t, id, types.RequestID(1))
 	// Adding another request should return ID 2.
-	id = k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, 1, "", nil))
+	id = k.AddRequest(ctx, types.NewRequest(42, BasicCalldata, nil, 1, 1, testapp.ParseTime(0), "", nil))
 	require.Equal(t, id, types.RequestID(2))
 }
 

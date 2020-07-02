@@ -58,7 +58,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	// Create a request object. Note that RawRequestIDs will be populated after preparation is done.
 	req := types.NewRequest(
 		r.GetOracleScriptID(), r.GetCalldata(), validators, r.GetMinCount(),
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), nil,
+		ctx.BlockHeight(), ctx.BlockTime(), r.GetClientID(), nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
 	env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
