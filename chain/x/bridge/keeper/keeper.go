@@ -158,7 +158,6 @@ func (k Keeper) GetTotalValidatorsVotingPower(ctx sdk.Context) (totalPower int64
 
 // Relay - relay the block on BandChain, set app hash to the given height if relay block is valid, or return err if relay block is invalid.
 func (k Keeper) Relay(ctx sdk.Context, signedHeader tmtypes.SignedHeader) error {
-
 	// Check relay block height, returns err if block height is older than the latest update validators set block height
 	latestUpdateValidatorBlockHeight := k.GetLatestValidatorsUpdateBlockHeight(ctx)
 	if signedHeader.Height < latestUpdateValidatorBlockHeight {
@@ -168,7 +167,6 @@ func (k Keeper) Relay(ctx sdk.Context, signedHeader tmtypes.SignedHeader) error 
 	chainID := k.GetChainID(ctx)
 	validators := k.GetValidators(ctx)
 	totalVotingPower := k.GetTotalValidatorsVotingPower(ctx)
-
 	sumVotingPower := int64(0)
 	valsMap := make(map[string]tmtypes.Validator)
 	for _, val := range validators {
@@ -197,6 +195,10 @@ func (k Keeper) VerifyProof(ctx sdk.Context, height int64, proof tmmerkle.Proof,
 	// Verify given proof
 	prt := rootmulti.DefaultProofRuntime()
 	appHash := k.GetAppHash(ctx, height)
+	if appHash == nil {
+		return sdkerrors.Wrapf(types.ErrAppHashNotFound, "height: %d", height)
+	}
+
 	kp := merkle.KeyPath{}
 	kp = kp.AppendKey([]byte("oracle"), tmmerkle.KeyEncodingURL)
 	kp = kp.AppendKey(proof.Ops[0].Key, tmmerkle.KeyEncodingURL)
