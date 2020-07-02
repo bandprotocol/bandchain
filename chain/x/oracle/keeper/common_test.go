@@ -12,6 +12,7 @@ var (
 	BasicFilename      = "BASIC_FILENAME"
 	BasicCalldata      = []byte("BASIC_CALLDATA")
 	BasicClientID      = "BASIC_CLIENT_ID"
+	BasicReport        = []byte("BASIC_REPORT")
 	CoinsZero          = sdk.NewCoins()
 	Coins10uband       = sdk.NewCoins(sdk.NewInt64Coin("uband", 10))
 	Coins20uband       = sdk.NewCoins(sdk.NewInt64Coin("uband", 20))

@@ -2,6 +2,7 @@ package keeper_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/require"
 
@@ -96,4 +97,94 @@ func TestAddPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42})
 	k.AddPendingRequest(ctx, 43)
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42, 43})
+}
+
+func TestProcessExpiredRequests(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+
+	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
+	currentTime := time.Unix(1000, 0)
+	currentBlock := int64(1)
+	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
+	r := defaultRequest()
+	r.RequestHeight = currentBlock
+	r.RequestTime = currentTime
+	k.SetRequest(ctx, 1, r)
+	k.SetRequestCount(ctx, 1)
+
+	currentTime = currentTime.Add(3 * time.Second)
+	currentBlock += 1
+	k.AddReport(ctx, 1, types.NewReport(testapp.Validator1.ValAddress, true, []types.RawReport{
+		types.NewRawReport(42, 0, BasicReport),
+		types.NewRawReport(43, 0, BasicReport),
+	}))
+
+	// Nothing happen
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
+	require.False(t, k.HasResult(ctx, 1))
+
+	currentTime = currentTime.Add(7 * time.Second)
+	currentBlock += 2
+	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
+	k.ProcessExpiredRequests(ctx)
+
+	result, err := k.GetResult(ctx, 1)
+	require.NoError(t, err)
+	req := types.NewOracleRequestPacketData(
+		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
+	)
+	res := types.NewOracleResponsePacketData(
+		r.ClientID, 1, 1, r.RequestTime.Unix(),
+		currentTime.Unix(), types.ResolveStatus_Expired, []byte{},
+	)
+	require.Equal(t, types.NewResult(req, res), result)
+
+	// Check validator status
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
+	require.False(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+}
+
+func TestProcessSuccessRequests(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput()
+
+	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
+	currentTime := time.Unix(1000, 0)
+	currentBlock := int64(1)
+	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
+	r := defaultRequest()
+	r.RequestHeight = currentBlock
+	r.RequestTime = currentTime
+	k.SetRequest(ctx, 1, r)
+	k.SetRequestCount(ctx, 1)
+
+	currentTime = currentTime.Add(3 * time.Second)
+	currentBlock += 1
+	k.AddReport(ctx, 1, types.NewReport(testapp.Validator1.ValAddress, true, []types.RawReport{
+		types.NewRawReport(42, 0, BasicReport),
+		types.NewRawReport(43, 0, BasicReport),
+	}))
+
+	k.AddReport(ctx, 1, types.NewReport(testapp.Validator2.ValAddress, true, []types.RawReport{
+		types.NewRawReport(42, 0, BasicReport),
+		types.NewRawReport(43, 0, BasicReport),
+	}))
+
+	// Nothing happen
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
+	require.False(t, k.HasResult(ctx, 1))
+
+	currentTime = currentTime.Add(7 * time.Second)
+	currentBlock += 2
+	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
+	k.ProcessExpiredRequests(ctx)
+
+	// Expired status must not be saved in store.
+	require.False(t, k.HasResult(ctx, 1))
+
+	// Check validator status
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+	require.Equal(t, types.RequestID(1), k.GetRequestLastExpired(ctx))
 }
