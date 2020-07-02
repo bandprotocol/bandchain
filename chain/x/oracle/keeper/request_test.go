@@ -1,13 +1,9 @@
 package keeper_test
 
 import (
-	"crypto/sha256"
 	"testing"
-	"time"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -100,39 +96,4 @@ func TestAddPendingResolveList(t *testing.T) {
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42})
 	k.AddPendingRequest(ctx, 43)
 	require.Equal(t, k.GetPendingResolveList(ctx), []types.RequestID{42, 43})
-}
-
-func TestGetRandomValidatorsSuccess(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
-	hash := sha256.Sum256([]byte("Hello"))
-	ctx = ctx.WithBlockHeader(abci.Header{
-		LastBlockId: abci.BlockID{Hash: hash[:32]},
-	})
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
-	vals, err := k.GetRandomValidators(ctx, 3, int64(1))
-	expect := []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}
-
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-	hash = sha256.Sum256([]byte("Ni Hao"))
-	ctx = ctx.WithBlockHeader(abci.Header{
-		LastBlockId: abci.BlockID{Hash: hash[:32]},
-	})
-	vals, err = k.GetRandomValidators(ctx, 3, int64(2))
-	expect = []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-	vals, err = k.GetRandomValidators(ctx, 1, int64(2))
-	expect = []sdk.ValAddress{testapp.Validator1.ValAddress}
-	require.NoError(t, err)
-	require.Equal(t, vals, expect)
-
-}
-
-func TestGetRandomValidatorsTooBigSize(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
-	_, err := k.GetRandomValidators(ctx, 9999, int64(1))
-	require.Error(t, err)
 }
