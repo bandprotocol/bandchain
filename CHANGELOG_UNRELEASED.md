@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2141](https://github.com/bandprotocol/bandchain/pull/2141/files) Increased oracle script execution gas limit
 - (impv) [\#2132](https://github.com/bandprotocol/bandchain/pull/2132) Implement emitter handler for bank messages.
 - (patch) [\#2135](https://github.com/bandprotocol/bandchain/pull/2135) Bump Cosmos-SDK to version 0.38.5.
 - (impv) [\#2128](https://github.com/bandprotocol/bandchain/pull/2128) Add expired request check when report and change type of `requestTime`.
