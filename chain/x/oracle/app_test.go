@@ -83,26 +83,13 @@ func TestSuccessRequestOracleData(t *testing.T) {
 	require.Error(t, err)
 
 	result = app.EndBlocker(ctx, abci.RequestEndBlock{Height: 8})
-	reqPacket := types.NewOracleRequestPacketData(
-		expectRequest.ClientID, types.OracleScriptID(1), expectRequest.Calldata,
-		uint64(len(expectRequest.RequestedValidators)), expectRequest.MinCount,
-	)
 	resPacket := types.NewOracleResponsePacketData(
 		expectRequest.ClientID, types.RequestID(1), 2, expectRequest.RequestTime.Unix(), 1581589795,
 		types.ResolveStatus_Success, []byte("beeb"),
 	)
-	expectEvents = []abci.Event{{Type: types.EventTypeRequestExecute, Attributes: []kv.Pair{
-		{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
-		{Key: []byte(types.AttributeKeyOracleScriptID), Value: parseEventAttribute(reqPacket.OracleScriptID)},
-		{Key: []byte(types.AttributeKeyCalldata), Value: expectRequest.Calldata},
-		{Key: []byte(types.AttributeKeyAskCount), Value: parseEventAttribute(reqPacket.AskCount)},
-		{Key: []byte(types.AttributeKeyMinCount), Value: parseEventAttribute(reqPacket.MinCount)},
-		{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
+	expectEvents = []abci.Event{{Type: types.EventTypeResolve, Attributes: []kv.Pair{
+		{Key: []byte(types.AttributeKeyID), Value: parseEventAttribute(resPacket.RequestID)},
 		{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
-		{Key: []byte(types.AttributeKeyAnsCount), Value: parseEventAttribute(resPacket.AnsCount)},
-		{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
-		{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
-		{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
 	}}}
 
 	require.Equal(t, expectEvents, result.GetEvents())
@@ -143,29 +130,15 @@ func TestExpiredRequestOracleData(t *testing.T) {
 
 	ctx = ctx.WithBlockHeight(132).WithBlockTime(ctx.BlockTime().Add(time.Minute))
 	result := app.EndBlocker(ctx, abci.RequestEndBlock{Height: 132})
-
-	reqPacket := types.NewOracleRequestPacketData(
-		expectRequest.ClientID, types.OracleScriptID(1), expectRequest.Calldata,
-		uint64(len(expectRequest.RequestedValidators)), expectRequest.MinCount,
-	)
 	resPacket := types.NewOracleResponsePacketData(
 		expectRequest.ClientID, types.RequestID(1), 0, expectRequest.RequestTime.Unix(), ctx.BlockTime().Unix(),
 		types.ResolveStatus_Expired, []byte{},
 	)
 	expectEvents := []abci.Event{{
-		Type: types.EventTypeRequestExecute,
+		Type: types.EventTypeResolve,
 		Attributes: []kv.Pair{
-			{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
-			{Key: []byte(types.AttributeKeyOracleScriptID), Value: parseEventAttribute(reqPacket.OracleScriptID)},
-			{Key: []byte(types.AttributeKeyCalldata), Value: expectRequest.Calldata},
-			{Key: []byte(types.AttributeKeyAskCount), Value: parseEventAttribute(reqPacket.AskCount)},
-			{Key: []byte(types.AttributeKeyMinCount), Value: parseEventAttribute(reqPacket.MinCount)},
-			{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
+			{Key: []byte(types.AttributeKeyID), Value: parseEventAttribute(resPacket.RequestID)},
 			{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
-			{Key: []byte(types.AttributeKeyAnsCount), Value: parseEventAttribute(resPacket.AnsCount)},
-			{Key: []byte(types.AttributeKeyRequestTime), Value: parseEventAttribute(resPacket.RequestTime)},
-			{Key: []byte(types.AttributeKeyResolveTime), Value: parseEventAttribute(resPacket.ResolveTime)},
-			{Key: []byte(types.AttributeKeyResult), Value: resPacket.Result},
 		},
 	}, {
 		Type: types.EventTypeDeactivate,

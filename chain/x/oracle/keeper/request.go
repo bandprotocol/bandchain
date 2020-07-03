@@ -67,7 +67,7 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		// If the number of reports still doesn't reach the minimum, that means this request
 		// is never resolved. Here we process the response as EXPIRED.
 		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
-			k.SaveResult(ctx, currentReqID, types.ResolveStatus_Expired, []byte{})
+			k.Resolve(ctx, currentReqID, types.ResolveStatus_Expired, []byte{})
 		}
 		// Deactivate all validators that do not report to this request.
 		for _, val := range req.RequestedValidators {

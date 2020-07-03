@@ -13,10 +13,9 @@ const (
 	EventTypeDeactivate         = "deactivate"
 	EventTypeAddReporter        = "add_reporter"
 	EventTypeRemoveReporter     = "remove_reporter"
-	EventTypeRequestExecute     = "request_execute"
+	EventTypeResolve            = "resolve"
 
 	AttributeKeyID             = "id"
-	AttributeKeyRequestID      = "request_id"
 	AttributeKeyDataSourceID   = "data_source_id"
 	AttributeKeyOracleScriptID = "oracle_script_id"
 	AttributeKeyExternalID     = "external_id"
@@ -27,9 +26,5 @@ const (
 	AttributeKeyClientID       = "client_id"
 	AttributeKeyAskCount       = "ask_count"
 	AttributeKeyMinCount       = "min_count"
-	AttributeKeyAnsCount       = "ans_count"
-	AttributeKeyRequestTime    = "request_time"
-	AttributeKeyResolveTime    = "resolve_time"
 	AttributeKeyResolveStatus  = "resolve_status"
-	AttributeKeyResult         = "result"
 )

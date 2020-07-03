@@ -82,6 +82,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	event := sdk.NewEvent(types.EventTypeRequest)
 	event = event.AppendAttributes(
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", askCount)),
@@ -119,8 +120,8 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
 		k.Logger(ctx).Info(fmt.Sprintf("failed to execute request id: %d with error: %s", reqID, err.Error()))
-		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, []byte{})
+		k.Resolve(ctx, reqID, types.ResolveStatus_Failure, []byte{})
 	} else {
-		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.Resolve(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
 	}
 }

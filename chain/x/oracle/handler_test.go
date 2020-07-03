@@ -449,6 +449,7 @@ func TestRequestDataSuccess(t *testing.T) {
 		sdk.NewEvent(
 			types.EventTypeRequest,
 			sdk.NewAttribute(types.AttributeKeyID, "1"),
+			sdk.NewAttribute(types.AttributeKeyClientID, "alice"),
 			sdk.NewAttribute(types.AttributeKeyOracleScriptID, "1"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
 			sdk.NewAttribute(types.AttributeKeyAskCount, "2"),
