@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (chore) [\#2139](https://github.com/bandprotocol/bandchain/pull/2139) Remove db in favor of emitter.
 - (chore) [\#2108](https://github.com/bandprotocol/bandchain/pull/2108) Add script to run bandchain with emitter and flusher locally.
 - (impv) [\#2132](https://github.com/bandprotocol/bandchain/pull/2132) Implement emitter handler for bank messages.
 - (patch) [\#2135](https://github.com/bandprotocol/bandchain/pull/2135) Bump Cosmos-SDK to version 0.38.5.
