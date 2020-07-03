@@ -214,6 +214,6 @@ validator_votes = sa.Table(
         sa.ForeignKey("validators.consensus_address"),
         primary_key=True,
     ),
-    Column("block_height", sa.Integer, primary_key=True),
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), primary_key=True),
     Column("voted", sa.Boolean),
 )
