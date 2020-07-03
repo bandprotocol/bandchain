@@ -27,4 +27,5 @@ const (
 	AttributeKeyAskCount       = "ask_count"
 	AttributeKeyMinCount       = "min_count"
 	AttributeKeyResolveStatus  = "resolve_status"
+	AttributeKeyReason         = "reason"
 )

@@ -119,9 +119,8 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	code := k.GetFile(script.Filename)
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
-		k.Logger(ctx).Info(fmt.Sprintf("failed to execute request id: %d with error: %s", reqID, err.Error()))
-		k.Resolve(ctx, reqID, types.ResolveStatus_Failure, []byte{})
+		k.ResolveFailure(ctx, reqID, err.Error())
 	} else {
-		k.Resolve(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.ResolveSuccess(ctx, reqID, env.Retdata)
 	}
 }

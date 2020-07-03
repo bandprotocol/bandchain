@@ -41,8 +41,41 @@ func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result 
 	return result
 }
 
-// Resolve saves the result packets for the given request and emits the resolve event.
-func (k Keeper) Resolve(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) {
+// ResolveSuccess resolves the given request as success with the given result.
+func (k Keeper) ResolveSuccess(ctx sdk.Context, id types.RequestID, result []byte) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Success, result)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+	))
+}
+
+// ResolveSuccess resolves the given request as failure with the given reason.
+func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason string) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Failure, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyReason, reason),
+	))
+}
+
+// ResolveSuccess resolves the given request as expired.
+func (k Keeper) ResolveExpired(ctx sdk.Context, id types.RequestID) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Expired, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Expired)),
+	))
+}
+
+// SaveResult saves the result packets for the request with the given resolve status and result.
+func (k Keeper) SaveResult(
+	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
+) {
 	r := k.MustGetRequest(ctx, id)
 	reqPacket := types.NewOracleRequestPacketData(
 		r.ClientID,                         // ClientID
@@ -61,9 +94,4 @@ func (k Keeper) Resolve(ctx sdk.Context, id types.RequestID, status types.Resolv
 		result,                    // Result
 	)
 	k.SetResult(ctx, id, types.NewResult(reqPacket, resPacket))
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeResolve,
-		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
-	))
 }
