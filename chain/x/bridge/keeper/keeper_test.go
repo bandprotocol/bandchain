@@ -342,6 +342,128 @@ func TestVerifyProofSuccess(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestVerifyProofFailInvalidAppHash(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	height := int64(169986)
+	appHash, _ := hex.DecodeString("60D59112137B7FFC6AE6DD663F0B3C7AC4BA60CA91ECB38BD7BB28E60B63F1F4")
+	k.SetAppHash(ctx, height, appHash)
+
+	iavlKey, _ := base64.StdEncoding.DecodeString("/wAAAAAAAAAC")
+	iavlData, _ := base64.StdEncoding.DecodeString("gAYK/QUKLAgkEMawBRiBsAoiIEwLLEW2S35vBmktv/Dl5RpV4fbq2GI89+Z+vpedfbSaCiwIIBDV9wIYgbAKIiB4C1HDQ3u/bQmlKqCT3E+lwq3Yi1MExyCuBavHbTtZdAosCB4Qh7sBGIGwCiIgPM78BG5L8Dkk2wd4GDv62h4btWl7IOD1tGiP2HLq0FEKKwgcEMVzGIGwCiogellLzKQ455Sk1c6F0xw+Qt2Q45uXJySbe9au3Uo7YGsKKwgaEMY+GP6vCiognMTlA8jSJe2gYvHWTSbXJO2xlhxrh4aX+6PmOctZU1QKKwgYEMYeGP6vCiogwFP8iQC+uMZuOrAfCsofJu1eYBjuvuODsdxdk4U/N9cKKwgWEMYOGP6vCiogWKG87K6MxIaXRKm3aYeCoY1ZuvfXP7ycm46czWk/95oKKwgUEOMGGP6vCiogrMJT4wURudOa0O2juC7lBa2itZ630yJvUN6zd2Wd7KwKKwgSEPACGP6vCiogh3NfDJ9Elj7hWT9xQYrUeW/GIycbUZjdoBwZ4ioWxw8KKggQEHoY/q8KIiAdNzzcOVlBusFhtx1J2VtaV9aoryZdwAVKHRYiOmeejQoqCAwQMhj+rwoiIMzEvYwc948XgQoZY7+2YyFs+QOlV1aVmWZz3LdwjjjBCioIChAfGP6vCiogfIpePFoJ5uZiNec7kpAnsRu8MOdMGEtdW8WB8kebZ74KKggIEA8Y/q8KIiBt3MObnVsKDJw7t25na2TZeF+11pAIMQ8JP1wj846V3goqCAYQCBj+rwoiIMCYX8YFsRa5yAkXW115CZ4L23ChWV/U3MIdS4Ws2LVnCioIBBAEGP6vCiIg9SiO/5CeqqCTMfcrlUnOLNHbxcbVZQV3FRlWaW5o9agKKQgCEAIY6xgiIH8HskF3HxoJKvTbymVhpGEwRGP3JmnNnkC/kNw79uSLGjAKCf8AAAAAAAAAAhIgChSHwDyFueESepA4eVyBEPp83N5DiQWuM3S75+kBjc8Y9hM=")
+
+	multiStoreKey, _ := base64.StdEncoding.DecodeString("b3JhY2xl")
+	multiStoreData, _ := base64.StdEncoding.DecodeString("sQQKrgQKNAoIc2xhc2hpbmcSKAomCIGwChIgg+D8AwR1oaxS4Od9f3ZH1XG8m+1gRaxYJGe3HJX6jJAKMAoEbWFpbhIoCiYIgbAKEiAjmXfb2YDKqg/X5EeV386YpNoE9Zr01JqJ9noPdoLJuwoyCgZvcmFjbGUSKAomCIGwChIgHk8J1UShxanOZPZUuKkKF5pcwUIurM7KaowmfWIoR3wKLwoDZ292EigKJgiBsAoSIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0CjIKBnBhcmFtcxIoCiYIgbAKEiC3FYwM8YX5JLzL2tSCZ+JKcbKRnduKueSxdIktWwqCfwovCgNhY2MSKAomCIGwChIg2yfvEwM5jeOsOVuhu7GJjG0s0U3vifgN6gR0AATWPtAKOAoMZGlzdHJpYnV0aW9uEigKJgiBsAoSIBcgbbDh8vDUcxu7sOeBuE97xNZksojsaz9mi6CA4TKTChIKCGV2aWRlbmNlEgYKBAiBsAoKEQoHdXBncmFkZRIGCgQIgbAKCjIKBnN1cHBseRIoCiYIgbAKEiB5vOlNfaFwJr9dyspWHXTvUu0u9P2oO4dRwOTsrvqx1wowCgRtaW50EigKJgiBsAoSIBBkXH0x54SErnFsawHA1BeSX2BHKFxiaY/jys8hTaZrCjMKB3N0YWtpbmcSKAomCIGwChIgAWQd1+QThGQIgplzNoKWduHHnL+lCmSEp0MMFu4i3hI=")
+
+	proof := tmmerkle.Proof{
+		Ops: []tmmerkle.ProofOp{
+			{
+				Type: "iavl:v",
+				Key:  iavlKey,
+				Data: iavlData,
+			},
+			{
+				Type: "multistore",
+				Key:  multiStoreKey,
+				Data: multiStoreData,
+			},
+		},
+	}
+
+	callData, _ := hex.DecodeString("0000000442414e4400000000000f4240")
+	result, _ := hex.DecodeString("000000000013d0e6")
+
+	requestPacket := otypes.NewOracleRequestPacketData("bandchain.js", 1, callData, 4, 2)
+	responsePacket := otypes.NewOracleResponsePacketData("bandchain.js", 2, 4, 1592994771, 1592994776, 1, result)
+
+	err := k.VerifyProof(ctx, height, proof, requestPacket, responsePacket)
+	require.Error(t, err)
+}
+
+func TestVerifyProofFailInvalidProof(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	height := int64(169986)
+	appHash, _ := hex.DecodeString("60D59112137B7FFC6AE6DD663F0B3C7AC4BA60CA91ECB38BD7BB28E60B63F1F4")
+	k.SetAppHash(ctx, height, appHash)
+
+	iavlKey, _ := base64.StdEncoding.DecodeString("/wAAAAAAAAAC")
+	// Invalid IAVL Data
+	iavlData, _ := base64.StdEncoding.DecodeString("wYKqAYKLAgkEMznCBiSpQ8iIKiZaK3MCPmdwPU59/5rddRk+1ciCRStgABgQvC8BnWpCiwIIhDG5QUYsaQPIiCxsK8bHfG5IIcIexdoGTe1AcgEWZ+TPc7kaX4XPfKDEQosCCAQyKsDGLGkDyIgah9sKQ0VP3/tErBI15sBtAg4E5KNXfPdoMnzocAqRIsKLAgeEIS9ARixpA8qINYC8cVsUcJseekfXJ9pfD8l9jB+OABTobi6Gy8FMfGpCisIGhDwPhixpA8qIJzE5QPI0iXtoGLx1k0m1yTtsZYca4eGl/uj5jnLWVNUCisIGBDwHhixpA8qIMBT/IkAvrjGbjqwHwrKHybtXmAY7r7jg7HcXZOFPzfXCisIFhDwDhixpA8qIFihvOyujMSGl0Spt2mHgqGNWbr31z+8nJuOnM1pP/eaCisIFBCNBxixpA8qIKzCU+MFEbnTmtDto7gu5QWtorWet9Mib1Des3dlneysCisIEhCaAxixpA8qIIdzXwyfRJY+4Vk/cUGK1HlvxiMnG1GY3aAcGeIqFscPCisIEBCkARixpA8iINyxX+kCQaXL9bfWWCdmGPwgR6oPHIDjoeMsGOODmrjqCioIDhBYGLGkDyIgkPQgFZaaBHbxtxelfFPCI976RHVeFWaBGJM4ANaVhv4KKggMEDIYsaQPIiDMxL2MHPePF4EKGWO/tmMhbPkDpVdWlZlmc9y3cI44wQoqCAoQHxixpA8iIE/cApXOT3URJtSQLKE3pQTqa8L/ltONEXfGVsWs1qSACikICBAQGJErKiAzEy0MxJ0fyDFFY+gnxPoFA7khiRmjkkQ/J4t/Y2knvQopCAYQCBinKCoghPx5YCAIHshvunMqXsgjKxxL8UyIW0ccX3nhJhE/hnYKKQgEEAQYiRoiIHjKKAUOeLXAa/5MWiwcuq254rWqsky/eRBoaFNTVSx2CikIAhACGIIaKiCqUNit0KJn+WK5zvDiFD7sNFAW/8fp2IanY1yGv5Zb8BowCgn/AAAAAAAAAAUSIAAAjBGeJZvSYhlxGiyQBCTRhlz8S6k1WG+e3aJXoKzBGLsZ")
+
+	multiStoreKey, _ := base64.StdEncoding.DecodeString("b3JhY2xl")
+	multiStoreData, _ := base64.StdEncoding.DecodeString("sQQKrgQKNAoIc2xhc2hpbmcSKAomCIGwChIgg+D8AwR1oaxS4Od9f3ZH1XG8m+1gRaxYJGe3HJX6jJAKMAoEbWFpbhIoCiYIgbAKEiAjmXfb2YDKqg/X5EeV386YpNoE9Zr01JqJ9noPdoLJuwoyCgZvcmFjbGUSKAomCIGwChIgHk8J1UShxanOZPZUuKkKF5pcwUIurM7KaowmfWIoR3wKLwoDZ292EigKJgiBsAoSIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0CjIKBnBhcmFtcxIoCiYIgbAKEiC3FYwM8YX5JLzL2tSCZ+JKcbKRnduKueSxdIktWwqCfwovCgNhY2MSKAomCIGwChIg2yfvEwM5jeOsOVuhu7GJjG0s0U3vifgN6gR0AATWPtAKOAoMZGlzdHJpYnV0aW9uEigKJgiBsAoSIBcgbbDh8vDUcxu7sOeBuE97xNZksojsaz9mi6CA4TKTChIKCGV2aWRlbmNlEgYKBAiBsAoKEQoHdXBncmFkZRIGCgQIgbAKCjIKBnN1cHBseRIoCiYIgbAKEiB5vOlNfaFwJr9dyspWHXTvUu0u9P2oO4dRwOTsrvqx1wowCgRtaW50EigKJgiBsAoSIBBkXH0x54SErnFsawHA1BeSX2BHKFxiaY/jys8hTaZrCjMKB3N0YWtpbmcSKAomCIGwChIgAWQd1+QThGQIgplzNoKWduHHnL+lCmSEp0MMFu4i3hI=")
+
+	proof := tmmerkle.Proof{
+		Ops: []tmmerkle.ProofOp{
+			{
+				Type: "iavl:v",
+				Key:  iavlKey,
+				Data: iavlData,
+			},
+			{
+				Type: "multistore",
+				Key:  multiStoreKey,
+				Data: multiStoreData,
+			},
+		},
+	}
+
+	callData, _ := hex.DecodeString("0000000442414e4400000000000f4240")
+	result, _ := hex.DecodeString("000000000013d0e6")
+
+	requestPacket := otypes.NewOracleRequestPacketData("bandchain.js", 1, callData, 4, 2)
+	responsePacket := otypes.NewOracleResponsePacketData("bandchain.js", 2, 4, 1592994771, 1592994776, 1, result)
+
+	err := k.VerifyProof(ctx, height, proof, requestPacket, responsePacket)
+	require.Error(t, err)
+}
+
+func TestVerifyProofFailResponsePacketOutdated(t *testing.T) {
+	_, ctx, k := createTestInput()
+
+	callData, _ := hex.DecodeString("0000000442414e4400000000000f4240")
+	result, _ := hex.DecodeString("000000000013d0e6")
+
+	//Set previous request and response packet with lastest packet
+	previousRequestPacket := otypes.NewOracleRequestPacketData("bandchain.js", 1, callData, 4, 2)
+	previousResponsePacket := otypes.NewOracleResponsePacketData("bandchain.js", 2, 4, 1592994771, 1592994800, 1, result)
+	k.SetLatestResponse(ctx, previousRequestPacket, previousResponsePacket)
+
+	// Send an outdated packet (resolve time less than previous packet)
+	height := int64(169986)
+	appHash, _ := hex.DecodeString("8607165AC131C8A53EF624E8B86FF8F4E5F27E326FD137F323A0B1A9746C0A21")
+	k.SetAppHash(ctx, height, appHash)
+
+	iavlKey, _ := base64.StdEncoding.DecodeString("/wAAAAAAAAAC")
+	iavlData, _ := base64.StdEncoding.DecodeString("gAYK/QUKLAgkEMawBRiBsAoiIEwLLEW2S35vBmktv/Dl5RpV4fbq2GI89+Z+vpedfbSaCiwIIBDV9wIYgbAKIiB4C1HDQ3u/bQmlKqCT3E+lwq3Yi1MExyCuBavHbTtZdAosCB4Qh7sBGIGwCiIgPM78BG5L8Dkk2wd4GDv62h4btWl7IOD1tGiP2HLq0FEKKwgcEMVzGIGwCiogellLzKQ455Sk1c6F0xw+Qt2Q45uXJySbe9au3Uo7YGsKKwgaEMY+GP6vCiognMTlA8jSJe2gYvHWTSbXJO2xlhxrh4aX+6PmOctZU1QKKwgYEMYeGP6vCiogwFP8iQC+uMZuOrAfCsofJu1eYBjuvuODsdxdk4U/N9cKKwgWEMYOGP6vCiogWKG87K6MxIaXRKm3aYeCoY1ZuvfXP7ycm46czWk/95oKKwgUEOMGGP6vCiogrMJT4wURudOa0O2juC7lBa2itZ630yJvUN6zd2Wd7KwKKwgSEPACGP6vCiogh3NfDJ9Elj7hWT9xQYrUeW/GIycbUZjdoBwZ4ioWxw8KKggQEHoY/q8KIiAdNzzcOVlBusFhtx1J2VtaV9aoryZdwAVKHRYiOmeejQoqCAwQMhj+rwoiIMzEvYwc948XgQoZY7+2YyFs+QOlV1aVmWZz3LdwjjjBCioIChAfGP6vCiogfIpePFoJ5uZiNec7kpAnsRu8MOdMGEtdW8WB8kebZ74KKggIEA8Y/q8KIiBt3MObnVsKDJw7t25na2TZeF+11pAIMQ8JP1wj846V3goqCAYQCBj+rwoiIMCYX8YFsRa5yAkXW115CZ4L23ChWV/U3MIdS4Ws2LVnCioIBBAEGP6vCiIg9SiO/5CeqqCTMfcrlUnOLNHbxcbVZQV3FRlWaW5o9agKKQgCEAIY6xgiIH8HskF3HxoJKvTbymVhpGEwRGP3JmnNnkC/kNw79uSLGjAKCf8AAAAAAAAAAhIgChSHwDyFueESepA4eVyBEPp83N5DiQWuM3S75+kBjc8Y9hM=")
+
+	multiStoreKey, _ := base64.StdEncoding.DecodeString("b3JhY2xl")
+	multiStoreData, _ := base64.StdEncoding.DecodeString("sQQKrgQKNAoIc2xhc2hpbmcSKAomCIGwChIgg+D8AwR1oaxS4Od9f3ZH1XG8m+1gRaxYJGe3HJX6jJAKMAoEbWFpbhIoCiYIgbAKEiAjmXfb2YDKqg/X5EeV386YpNoE9Zr01JqJ9noPdoLJuwoyCgZvcmFjbGUSKAomCIGwChIgHk8J1UShxanOZPZUuKkKF5pcwUIurM7KaowmfWIoR3wKLwoDZ292EigKJgiBsAoSIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0CjIKBnBhcmFtcxIoCiYIgbAKEiC3FYwM8YX5JLzL2tSCZ+JKcbKRnduKueSxdIktWwqCfwovCgNhY2MSKAomCIGwChIg2yfvEwM5jeOsOVuhu7GJjG0s0U3vifgN6gR0AATWPtAKOAoMZGlzdHJpYnV0aW9uEigKJgiBsAoSIBcgbbDh8vDUcxu7sOeBuE97xNZksojsaz9mi6CA4TKTChIKCGV2aWRlbmNlEgYKBAiBsAoKEQoHdXBncmFkZRIGCgQIgbAKCjIKBnN1cHBseRIoCiYIgbAKEiB5vOlNfaFwJr9dyspWHXTvUu0u9P2oO4dRwOTsrvqx1wowCgRtaW50EigKJgiBsAoSIBBkXH0x54SErnFsawHA1BeSX2BHKFxiaY/jys8hTaZrCjMKB3N0YWtpbmcSKAomCIGwChIgAWQd1+QThGQIgplzNoKWduHHnL+lCmSEp0MMFu4i3hI=")
+
+	proof := tmmerkle.Proof{
+		Ops: []tmmerkle.ProofOp{
+			{
+				Type: "iavl:v",
+				Key:  iavlKey,
+				Data: iavlData,
+			},
+			{
+				Type: "multistore",
+				Key:  multiStoreKey,
+				Data: multiStoreData,
+			},
+		},
+	}
+
+	requestPacket := otypes.NewOracleRequestPacketData("bandchain.js", 1, callData, 4, 2)
+	responsePacket := otypes.NewOracleResponsePacketData("bandchain.js", 2, 4, 1592994771, 1592994776, 1, result)
+
+	err := k.VerifyProof(ctx, height, proof, requestPacket, responsePacket)
+
+	require.EqualError(t, err, "response packet is outdated: lastest packet resolve time: 1592994800")
+}
+
 func TestVerifyProofFailAppHashNotFound(t *testing.T) {
 	_, ctx, k := createTestInput()
 
