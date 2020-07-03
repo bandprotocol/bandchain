@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/bandprotocol/bandchain/chain/x/bridge"
-	"github.com/bandprotocol/bandchain/chain/x/bridge/types"
 	"github.com/cosmos/cosmos-sdk/codec"
 	rootmulti "github.com/cosmos/cosmos-sdk/store/rootmulti"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -19,7 +17,6 @@ import (
 )
 
 func TestVerify(t *testing.T) {
-	_, ctx, keeper := createTestInput()
 
 	multiStoreKey, err := base64.StdEncoding.DecodeString("b3JhY2xl")
 	multiStoreData, err := base64.StdEncoding.DecodeString("sQQKrgQKNAoIc2xhc2hpbmcSKAomCIGwChIgg+D8AwR1oaxS4Od9f3ZH1XG8m+1gRaxYJGe3HJX6jJAKMAoEbWFpbhIoCiYIgbAKEiAjmXfb2YDKqg/X5EeV386YpNoE9Zr01JqJ9noPdoLJuwoyCgZvcmFjbGUSKAomCIGwChIgHk8J1UShxanOZPZUuKkKF5pcwUIurM7KaowmfWIoR3wKLwoDZ292EigKJgiBsAoSIGDNE3wZYuysYWOJ1oA0gz8pIVCcLShapfUVOZfOlop0CjIKBnBhcmFtcxIoCiYIgbAKEiC3FYwM8YX5JLzL2tSCZ+JKcbKRnduKueSxdIktWwqCfwovCgNhY2MSKAomCIGwChIg2yfvEwM5jeOsOVuhu7GJjG0s0U3vifgN6gR0AATWPtAKOAoMZGlzdHJpYnV0aW9uEigKJgiBsAoSIBcgbbDh8vDUcxu7sOeBuE97xNZksojsaz9mi6CA4TKTChIKCGV2aWRlbmNlEgYKBAiBsAoKEQoHdXBncmFkZRIGCgQIgbAKCjIKBnN1cHBseRIoCiYIgbAKEiB5vOlNfaFwJr9dyspWHXTvUu0u9P2oO4dRwOTsrvqx1wowCgRtaW50EigKJgiBsAoSIBBkXH0x54SErnFsawHA1BeSX2BHKFxiaY/jys8hTaZrCjMKB3N0YWtpbmcSKAomCIGwChIgAWQd1+QThGQIgplzNoKWduHHnL+lCmSEp0MMFu4i3hI=")
@@ -42,25 +39,19 @@ func TestVerify(t *testing.T) {
 		},
 	}
 
-	msg := types.NewMsgVerifyProof(proof, nil)
-	_, err = bridge.NewHandler(keeper)(ctx, msg)
-
 	prt := rootmulti.DefaultProofRuntime()
 	appHash, _ := hex.DecodeString("8607165AC131C8A53EF624E8B86FF8F4E5F27E326FD137F323A0B1A9746C0A21")
 	kp := merkle.KeyPath{}
 	kp = kp.AppendKey([]byte("oracle"), merkle.KeyEncodingURL)
-	kp = kp.AppendKey(msg.Proof.Ops[0].Key, merkle.KeyEncodingURL)
-	fmt.Println("kp", kp.String())
+	kp = kp.AppendKey(proof.Ops[0].Key, merkle.KeyEncodingURL)
 	value, _ := hex.DecodeString("0000000c62616e64636861696e2e6a730000000000000001000000100000000442414e4400000000000f4240000000000000000400000000000000020000000c62616e64636861696e2e6a7300000000000000020000000000000004000000005ef32bd3000000005ef32bd80000000100000008000000000013d0e6")
-	err = prt.VerifyValue(&msg.Proof, appHash, kp.String(), value)
+	err = prt.VerifyValue(&proof, appHash, kp.String(), value)
 	require.NoError(t, err)
 
 	cdc := makeCodec()
 	proofJson, err := cdc.MarshalJSON(proof)
 	require.NoError(t, err)
 	fmt.Printf("proofJson: %v\n", string(proofJson))
-
-	require.Equal(t, 0, 1)
 }
 
 func makeCodec() *codec.Codec {

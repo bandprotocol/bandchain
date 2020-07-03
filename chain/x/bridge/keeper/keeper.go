@@ -92,6 +92,9 @@ func (k Keeper) SetLatestResponse(ctx sdk.Context, requestPacket otypes.OracleRe
 func (k Keeper) GetLatestResponse(ctx sdk.Context, requestPacket otypes.OracleRequestPacketData) otypes.OracleResponsePacketData {
 	var responsePacket otypes.OracleResponsePacketData
 	bz := ctx.KVStore(k.storeKey).Get(types.LastestResponseStoreKey(requestPacket))
+	if len(bz) == 0 {
+		return otypes.OracleResponsePacketData{}
+	}
 	k.cdc.MustUnmarshalBinaryBare(bz, &responsePacket)
 	return responsePacket
 }
@@ -206,7 +209,7 @@ func (k Keeper) VerifyProof(ctx sdk.Context, height int64, proof tmmerkle.Proof,
 	value := obi.MustEncode(requestPacket, responsePacket)
 	err := prt.VerifyValue(&proof, appHash, kp.String(), value)
 	if err != nil {
-		return types.ErrVerifyProofFail
+		return sdkerrors.Wrapf(types.ErrVerifyProofFail, "err: %s", err.Error())
 	}
 
 	// Check the lastest response packet is newer than the previous packet

@@ -1,12 +1,11 @@
 package bridge_test
 
 import (
-	abci "github.com/tendermint/tendermint/abci/types"
-
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/simapp"
 	me "github.com/bandprotocol/bandchain/chain/x/bridge/keeper"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/libs/log"
 )
 
