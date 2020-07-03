@@ -1,8 +1,8 @@
 
 ## Prepare environment
 
-1. Install Kafka `brew install kafka`
-2. Install Java `brew cask install java`
+1. Install Java `brew cask install java`
+2. Install Kafka `brew install kafka`
 3. Start Zookeeper services `brew services start zookeeper`
 4. Start Kafka services `brew services start kafka`
 5. run `python3 -m venv venv && source venv/bin/activate`
@@ -24,3 +24,8 @@
 
 1. run `source venv/bin/activate`
 2. run `python main.py sync --db localhost:5432/my_db`
+
+### Log consumer
+
+kafka-console-consumer --bootstrap-server localhost:9092 --topic <topic_name> --from-beginning
+
