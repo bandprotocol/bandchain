@@ -35,7 +35,8 @@ func (app *App) emitUpdateValidatorReward(addr sdk.ValAddress) {
 func (app *App) handleMsgWithdrawDelegatorReward(
 	txHash []byte, msg dist.MsgWithdrawDelegatorReward, evMap EvMap, extra JsDict,
 ) {
-	app.AddAccountsInTx(msg.DelegatorAddress.String())
+	delegatorAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, msg.DelegatorAddress)
+	app.AddAccountsInTx(delegatorAddr.String())
 	app.emitUpdateValidatorReward(msg.ValidatorAddress)
 }
 
@@ -43,5 +44,5 @@ func (app *App) handleMsgWithdrawDelegatorReward(
 func (app *App) handleMsgSetWithdrawAddress(
 	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap EvMap, extra JsDict,
 ) {
-	app.AddAccountsInTx(msg.WithdrawAddress.String(), msg.DelegatorAddress.String())
+	app.AddAccountsInTx(msg.WithdrawAddress.String())
 }

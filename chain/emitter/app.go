@@ -3,7 +3,6 @@ package emitter
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -35,8 +34,8 @@ type App struct {
 	// Temporary variables that are reset on every block.
 	txIdx       int             // The current transaction's index on the current block starting from 1.
 	accsInBlock map[string]bool // The accounts that need balance update at the end of block.
-	accsInTx    map[string]bool
-	msgs        []Message // The list of all messages to publish for this block.
+	accsInTx    map[string]bool // The accounts related to the current processing transaction.
+	msgs        []Message       // The list of all messages to publish for this block.
 }
 
 // NewBandAppWithEmitter creates a new App instance.
@@ -213,7 +212,7 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 		})
 	}
 
-	accsInTx := make([]string, len(app.accsInTx))
+	accsInTx := []string{}
 	accMap := make(map[string]bool)
 
 	for acc, _ := range app.accsInTx {
@@ -222,8 +221,6 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	}
 
 	txDict["account_transcations"] = accsInTx
-
-	fmt.Println("!!", accsInTx, "!!")
 	app.AddAccountsInBlock(accsInTx...)
 	app.accsInTx = make(map[string]bool)
 	txDict["messages"] = messages
