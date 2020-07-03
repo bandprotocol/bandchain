@@ -25,7 +25,7 @@ func (app *App) handleMsgRequestData(
 	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
 	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]
 	cs := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyCalldata]
-	for idx, _ := range es {
+	for idx := range es {
 		app.Write("NEW_RAW_REQUEST", JsDict{
 			"request_id":     id,
 			"external_id":    es[idx],
