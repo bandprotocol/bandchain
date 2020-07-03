@@ -1,8 +1,6 @@
 package bridge
 
 import (
-	"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -28,19 +26,28 @@ func NewHandler(k Keeper) sdk.Handler {
 
 func handleMsgUpdateChainID(ctx sdk.Context, k Keeper, m MsgUpdateChainID) (*sdk.Result, error) {
 	// TODO: Add validate only owner
+	k.SetChainID(ctx, m.ChainID)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgUpdateValidators(ctx sdk.Context, k Keeper, m MsgUpdateValidators) (*sdk.Result, error) {
 	// TODO: Add validate only owner
+	k.UpdateValidators(ctx, m.Validators)
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgRelay(ctx sdk.Context, k Keeper, m MsgRelay) (*sdk.Result, error) {
+	err := k.Relay(ctx, m.SignedHeader)
+	if err != nil {
+		return nil, err
+	}
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
 
 func handleMsgVerifyProof(ctx sdk.Context, k Keeper, m MsgVerifyProof) (*sdk.Result, error) {
-	fmt.Printf("handle relay and verify packet %v\n", m)
+	err := k.VerifyProof(ctx, m.Height, m.Proof, m.RequestPacket, m.ResponsePacket)
+	if err != nil {
+		return nil, err
+	}
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
 }
