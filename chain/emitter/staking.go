@@ -28,12 +28,15 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	})
 }
 
-func (app *App) emitUpdateValidator(addrs sdk.ValAddress) {
-	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
+func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
+	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	app.Write("UPDATE_VALIDATOR", JsDict{
-		"operator_address": addrs.String(),
+		"operator_address": addr.String(),
 		"tokens":           val.Tokens.Uint64(),
 		"delegator_shares": val.DelegatorShares.String(),
+		"current_reward":   currentReward,
+		"current_ratio":    currentRatio,
 	})
 }
 
