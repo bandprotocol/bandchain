@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -23,13 +22,11 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	banddb "github.com/bandprotocol/bandchain/chain/db"
 	"github.com/bandprotocol/bandchain/chain/emitter"
 )
 
 const (
 	flagInvCheckPeriod = "inv-check-period"
-	flagWithDB         = "with-db"
 	flagWithEmitter    = "with-emitter"
 )
 
@@ -62,7 +59,6 @@ func main() {
 	// Prepare and add persistent flags.
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
-	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	err := executor.Execute()
 	if err != nil {
@@ -81,26 +77,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
 		skipUpgradeHeights[int64(h)] = true
 	}
-
-	if viper.IsSet(flagWithDB) {
-		dbSplit := strings.SplitN(viper.GetString(flagWithDB), ":", 2)
-		if len(dbSplit) != 2 {
-			panic("Invalid DB string format")
-		}
-		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1])
-		if err != nil {
-			panic(err)
-		}
-		return app.NewDBBandApp(
-			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-			viper.GetString(flags.FlagHome), bandDB,
-			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-			baseapp.SetInterBlockCache(cache),
-		)
-	} else if viper.IsSet(flagWithEmitter) {
+	if viper.IsSet(flagWithEmitter) {
 		return emitter.NewBandAppWithEmitter(
 			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			skipUpgradeHeights, viper.GetString(flags.FlagHome),
