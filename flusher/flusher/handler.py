@@ -89,9 +89,5 @@ class Handler(object):
             condition = (col == msg[col.name]) & condition
         self.conn.execute(delegations.delete().where(condition))
 
-    def handle_set_validator_vote(self, msg):
-        self.conn.execute(
-            insert(validator_votes)
-            .values(**msg)
-            .on_conflict_do_update(constraint="validator_votes_pkey", set_=msg)
-        )
+    def handle_new_validator_vote(self, msg):
+        self.conn.execute(insert(validator_votes).values(**msg))
