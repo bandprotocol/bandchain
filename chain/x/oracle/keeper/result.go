@@ -57,7 +57,7 @@ func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason strin
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeResolve,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Failure)),
 		sdk.NewAttribute(types.AttributeKeyReason, reason),
 	))
 }
