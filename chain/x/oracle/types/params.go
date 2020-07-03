@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
@@ -16,7 +17,7 @@ const (
 	DefaultPerValidatorRequestGas  = uint64(30000)
 	DefaultSamplingTryCount        = uint64(3)
 	DefaultOracleRewardPercentage  = uint64(80)
-	DefaultInactivePenaltyDuration = uint64(600000000000)
+	DefaultInactivePenaltyDuration = uint64(10 * time.Minute)
 )
 
 // nolint
