@@ -67,12 +67,16 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 }
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
-func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
+func (app *App) handleMsgCreateValidator(
+	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
+) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
-func (app *App) handleMsgEditValidator(msg staking.MsgEditValidator) {
+func (app *App) handleMsgEditValidator(
+	txHash []byte, msg staking.MsgEditValidator, evMap EvMap, extra JsDict,
+) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
 

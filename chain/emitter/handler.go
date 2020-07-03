@@ -40,10 +40,14 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgEditDataSource(txHash, msg, evMap, extra)
 	case oracle.MsgEditOracleScript:
 		app.handleMsgEditOracleScript(txHash, msg, evMap, extra)
+	case oracle.MsgAddReporter:
+		app.handleMsgAddReporter(txHash, msg, evMap, extra)
+	case oracle.MsgRemoveReporter:
+		app.handleMsgRemoveReporter(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
-		app.handleMsgCreateValidator(msg)
+		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
 	case staking.MsgEditValidator:
-		app.handleMsgEditValidator(msg)
+		app.handleMsgEditValidator(txHash, msg, evMap, extra)
 	case staking.MsgDelegate:
 		app.handleMsgDelegate(msg)
 	case staking.MsgUndelegate:
@@ -51,13 +55,15 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case staking.MsgBeginRedelegate:
 		app.handleMsgBeginRedelegate(txHash, msg, evMap, extra)
 	case bank.MsgSend:
-		app.handleMsgSend(msg)
+		app.handleMsgSend(txHash, msg, evMap, extra)
 	case bank.MsgMultiSend:
-		app.handleMsgMultiSend(msg)
+		app.handleMsgMultiSend(txHash, msg, evMap, extra)
 	case dist.MsgWithdrawDelegatorReward:
 		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
 	case slashing.MsgUnjail:
 		app.handleMsgUnjail(msg)
+	case dist.MsgSetWithdrawAddress:
+		break
 	}
 }
 

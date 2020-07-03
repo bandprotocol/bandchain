@@ -32,9 +32,10 @@ type App struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	txIdx int              // The current transaction's index on the current block starting from 1.
-	accs  []sdk.AccAddress // The accounts that need balance update at the end of block.
-	msgs  []Message        // The list of all messages to publish for this block.
+	txIdx       int              // The current transaction's index on the current block starting from 1.
+	accsInBlock []sdk.AccAddress // The accounts that need balance update at the end of block.
+	accsInTx    []sdk.AccAddress
+	msgs        []Message // The list of all messages to publish for this block.
 }
 
 // NewBandAppWithEmitter creates a new App instance.
@@ -61,9 +62,14 @@ func NewBandAppWithEmitter(
 	}
 }
 
-// AddAccounts adds the given accounts to the list of accounts to update balances end-of-block.
-func (app *App) AddAccounts(acc ...sdk.AccAddress) {
-	app.accs = append(app.accs, acc...)
+// AddAccountsBlock adds the given accounts to the list of accounts to update balances end-of-block.
+func (app *App) AddAccountsInBlock(acc ...sdk.AccAddress) {
+	app.accsInBlock = append(app.accsInBlock, acc...)
+}
+
+// AddAccountsInTx adds the given accounts to the list of accounts to track related account in transaction.
+func (app *App) AddAccountsInTx(acc ...sdk.AccAddress) {
+	app.accsInTx = append(app.accsInTx, acc...)
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
@@ -128,7 +134,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
 	app.txIdx = 0
-	app.accs = []sdk.AccAddress{}
+	app.accsInBlock = []sdk.AccAddress{}
 	app.msgs = []Message{}
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
@@ -200,8 +206,23 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 			"extra": extra,
 		})
 	}
+
+	accsInTx := make([]string, len(app.accsInTx))
+	accMap := make(map[string]bool)
+
+	for _, acc := range app.accsInTx {
+		accStr := acc.String()
+		if _, value := accMap[accStr]; !value {
+			accsInTx = append(accsInTx, accStr)
+			accMap[accStr] = true
+		}
+	}
+	txDict["account_transcations"] = accsInTx
+
+	app.AddAccountsInBlock(app.accsInTx...)
+	app.accsInTx = []sdk.AccAddress{}
 	txDict["messages"] = messages
-	app.AddAccounts(stdTx.GetSigners()[0])
+	app.AddAccountsInBlock(stdTx.GetSigners()[0])
 	return res
 }
 
@@ -210,7 +231,7 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.BandApp.EndBlock(req)
 	// Update balances of all affected accounts on this block.
 	accMap := make(map[string]bool)
-	for _, acc := range app.accs {
+	for _, acc := range app.accsInBlock {
 		accStr := string(acc)
 		if accMap[accStr] {
 			continue
