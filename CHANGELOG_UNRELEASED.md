@@ -10,7 +10,7 @@
 
 ### Chain
 
-- (chore) [\#2108](https://github.com/bandprotocol/bandchain/pull/2108) Add script to run bandchain with emiiter and flusher locally.
+- (chore) [\#2108](https://github.com/bandprotocol/bandchain/pull/2108) Add script to run bandchain with emitter and flusher locally.
 - (impv) [\#2128](https://github.com/bandprotocol/bandchain/pull/2128) Add expired request check when report and change type of `requestTime`.
 - (feat) [\#2131](https://github.com/bandprotocol/bandchain/pull/2131) Add validator status querier.
 - (chore) [\#2129](https://github.com/bandprotocol/bandchain/pull/2129) Add unit tests for validator status keeper.
