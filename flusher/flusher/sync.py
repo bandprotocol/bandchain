@@ -25,14 +25,17 @@ from .handler import Handler
     default="localhost:5432/postgres",
     show_default=True,
 )
+@click.option(
+    "-s", "--servers", help="Kafka bootstrap servers.", default="localhost:9092", show_default=True,
+)
 @click.option("-e", "--echo-sqlalchemy", "echo_sqlalchemy", is_flag=True)
-def sync(commit_interval, db, echo_sqlalchemy):
+def sync(commit_interval, db, servers, echo_sqlalchemy):
     """Subscribe to Kafka and push the updates to the database."""
     # Set up Kafka connection
     engine = create_engine("postgresql+psycopg2://" + db, echo=echo_sqlalchemy)
     tracking_info = engine.execute(tracking.select()).fetchone()
     topic = tracking_info.topic
-    consumer = KafkaConsumer(topic)
+    consumer = KafkaConsumer(topic, bootstrap_servers=servers)
     partitions = consumer.partitions_for_topic(topic)
     if len(partitions) != 1:
         raise Exception("Only exact 1 partition is supported.")
@@ -49,7 +52,9 @@ def sync(commit_interval, db, echo_sqlalchemy):
                     if value["height"] % commit_interval == 0:
                         conn.execute(tracking.update().values(kafka_offset=msg.offset))
                         logger.info(
-                            "Committed at block {} and Kafka offset {}", value["height"], msg.offset
+                            "Committed at block {} and Kafka offset {}",
+                            value["height"],
+                            msg.offset,
                         )
                         break
                     continue
