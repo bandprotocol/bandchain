@@ -117,7 +117,6 @@ func (app *App) handleMsgEditDataSource(
 	id := types.DataSourceID(atoi(evMap[types.EventTypeEditDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
 	app.emitSetDataSource(id, ds, txHash)
-	extra["id"] = id
 }
 
 // handleMsgEditOracleScript implements emitter handler for MsgEditOracleScript.
@@ -127,7 +126,6 @@ func (app *App) handleMsgEditOracleScript(
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeEditOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
 	app.emitSetOracleScript(id, os, txHash)
-	extra["id"] = id
 }
 
 // handleEventRequestExecute implements emitter handler for EventRequestExecute.
