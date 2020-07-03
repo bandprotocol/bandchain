@@ -114,7 +114,7 @@ func (app *App) handleMsgCreateOracleScript(
 func (app *App) handleMsgEditDataSource(
 	txHash []byte, msg oracle.MsgEditDataSource, evMap EvMap, extra JsDict,
 ) {
-	id := types.DataSourceID(atoi(evMap[types.EventTypeEditDataSource+"."+types.AttributeKeyID][0]))
+	id := msg.DataSourceID
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
 	app.emitSetDataSource(id, ds, txHash)
 }
@@ -123,7 +123,7 @@ func (app *App) handleMsgEditDataSource(
 func (app *App) handleMsgEditOracleScript(
 	txHash []byte, msg oracle.MsgEditOracleScript, evMap EvMap, extra JsDict,
 ) {
-	id := types.OracleScriptID(atoi(evMap[types.EventTypeEditOracleScript+"."+types.AttributeKeyID][0]))
+	id := msg.OracleScriptID
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
 	app.emitSetOracleScript(id, os, txHash)
 }
