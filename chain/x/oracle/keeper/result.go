@@ -32,6 +32,15 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 	return result, nil
 }
 
+// MustGetResult returns the result for the given request ID. Panics on error.
+func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result {
+	result, err := k.GetResult(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return result
+}
+
 // SaveResult saves the result packets for the given request and returns back the response packet.
 func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) {
 	r := k.MustGetRequest(ctx, id)
@@ -57,13 +66,4 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
 		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
 	))
-}
-
-// MustGetResult returns the result for the given request ID. Panics on error.
-func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result {
-	result, err := k.GetResult(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return result
 }
