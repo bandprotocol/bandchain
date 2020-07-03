@@ -15,13 +15,11 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 			"operator_address":  operatorAddress,
 			"shares":            delegation.Shares.String(),
 			"last_ratio":        latestReward.CumulativeRewardRatio[0].Amount.String(),
-			"active":            true,
 		})
 	} else {
 		app.Write("REMOVE_DELEGATION", JsDict{
 			"delegator_address": delegatorAddress,
 			"operator_address":  operatorAddress,
-			"active":            false,
 		})
 	}
 }

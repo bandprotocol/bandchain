@@ -86,4 +86,4 @@ class Handler(object):
         condition = True
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
-        self.conn.execute(delegations.update().where(condition).values(**msg))
+        self.conn.execute(delegations.delete().where(condition))

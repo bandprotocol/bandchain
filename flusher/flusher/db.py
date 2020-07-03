@@ -202,6 +202,5 @@ delegations = sa.Table(
         primary_key=True,
     ),
     Column("shares", sa.DECIMAL),
-    Column("last_ratio", sa.String),
-    Column("active", sa.Boolean),
+    Column("last_ratio", sa.DECIMAL),
 )
