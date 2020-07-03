@@ -58,9 +58,9 @@ func NewBandAppWithEmitter(
 	}
 }
 
-// AddAccount adds the given account to the list of accounts to update balances end-of-block.
-func (app *App) AddAccount(acc sdk.AccAddress) {
-	app.accs = append(app.accs, acc)
+// AddAccounts adds the given accounts to the list of accounts to update balances end-of-block.
+func (app *App) AddAccounts(acc ...sdk.AccAddress) {
+	app.accs = append(app.accs, acc...)
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
@@ -199,7 +199,7 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 		})
 	}
 	txDict["messages"] = messages
-	app.AddAccount(stdTx.GetSigners()[0])
+	app.AddAccounts(stdTx.GetSigners()[0])
 	return res
 }
 
