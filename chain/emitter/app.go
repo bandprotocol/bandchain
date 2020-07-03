@@ -151,6 +151,11 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	})
 	for _, val := range req.GetLastCommitInfo().Votes {
 		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		app.Write("SET_VALIDATOR_VOTE", JsDict{
+			"consensus_address": validator.GetConsAddr().String(),
+			"block_height":      req.Header.GetHeight() - 1,
+			"voted":             val.GetSignedLastBlock(),
+		})
 		app.emitUpdateValidatorReward(validator.GetOperator())
 	}
 	// TODO: Handle begin block event
