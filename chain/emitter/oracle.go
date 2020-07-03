@@ -5,7 +5,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func (app *App) SetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
+func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
 	app.Write("SET_DATA_SOURCE", JsDict{
 		"id":          id,
 		"name":        ds.Name,
@@ -16,7 +16,7 @@ func (app *App) SetDataSource(id types.DataSourceID, ds types.DataSource, txHash
 	})
 }
 
-func (app *App) SetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
+func (app *App) emitSetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
 	app.Write("SET_ORACLE_SCRIPT", JsDict{
 		"id":              id,
 		"name":            os.Name,
