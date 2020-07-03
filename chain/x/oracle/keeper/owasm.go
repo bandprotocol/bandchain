@@ -82,6 +82,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	event := sdk.NewEvent(types.EventTypeRequest)
 	event = event.AppendAttributes(
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", askCount)),

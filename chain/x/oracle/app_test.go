@@ -88,8 +88,7 @@ func TestSuccessRequestOracleData(t *testing.T) {
 		types.ResolveStatus_Success, []byte("beeb"),
 	)
 	expectEvents = []abci.Event{{Type: types.EventTypeResolve, Attributes: []kv.Pair{
-		{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
-		{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
+		{Key: []byte(types.AttributeKeyID), Value: parseEventAttribute(resPacket.RequestID)},
 		{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
 	}}}
 
@@ -138,8 +137,7 @@ func TestExpiredRequestOracleData(t *testing.T) {
 	expectEvents := []abci.Event{{
 		Type: types.EventTypeResolve,
 		Attributes: []kv.Pair{
-			{Key: []byte(types.AttributeKeyRequestID), Value: parseEventAttribute(resPacket.RequestID)},
-			{Key: []byte(types.AttributeKeyClientID), Value: parseEventAttribute(reqPacket.ClientID)},
+			{Key: []byte(types.AttributeKeyID), Value: parseEventAttribute(resPacket.RequestID)},
 			{Key: []byte(types.AttributeKeyResolveStatus), Value: parseEventAttribute(uint32(resPacket.ResolveStatus))},
 		},
 	}, {

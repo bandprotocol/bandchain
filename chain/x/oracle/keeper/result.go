@@ -63,7 +63,7 @@ func (k Keeper) Resolve(ctx sdk.Context, id types.RequestID, status types.Resolv
 	k.SetResult(ctx, id, types.NewResult(reqPacket, resPacket))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeResolve,
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
 	))
 }

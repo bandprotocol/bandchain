@@ -158,7 +158,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeReport,
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.RequestID)),
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 	))
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
