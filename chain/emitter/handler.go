@@ -63,7 +63,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case slashing.MsgUnjail:
 		app.handleMsgUnjail(msg)
 	case dist.MsgSetWithdrawAddress:
-		break
+		app.handleMsgSetWithdrawAddress(txHash, msg, evMap, extra)
 	}
 }
 

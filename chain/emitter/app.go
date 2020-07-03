@@ -3,6 +3,7 @@ package emitter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"strings"
 	"time"
@@ -32,9 +33,9 @@ type App struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	txIdx       int              // The current transaction's index on the current block starting from 1.
-	accsInBlock []sdk.AccAddress // The accounts that need balance update at the end of block.
-	accsInTx    []sdk.AccAddress
+	txIdx       int             // The current transaction's index on the current block starting from 1.
+	accsInBlock map[string]bool // The accounts that need balance update at the end of block.
+	accsInTx    map[string]bool
 	msgs        []Message // The list of all messages to publish for this block.
 }
 
@@ -63,13 +64,17 @@ func NewBandAppWithEmitter(
 }
 
 // AddAccountsBlock adds the given accounts to the list of accounts to update balances end-of-block.
-func (app *App) AddAccountsInBlock(acc ...sdk.AccAddress) {
-	app.accsInBlock = append(app.accsInBlock, acc...)
+func (app *App) AddAccountsInBlock(accs ...string) {
+	for _, acc := range accs {
+		app.accsInBlock[acc] = true
+	}
 }
 
 // AddAccountsInTx adds the given accounts to the list of accounts to track related account in transaction.
-func (app *App) AddAccountsInTx(acc ...sdk.AccAddress) {
-	app.accsInTx = append(app.accsInTx, acc...)
+func (app *App) AddAccountsInTx(accs ...string) {
+	for _, acc := range accs {
+		app.accsInTx[acc] = true
+	}
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
@@ -134,7 +139,8 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
 	app.txIdx = 0
-	app.accsInBlock = []sdk.AccAddress{}
+	app.accsInBlock = make(map[string]bool)
+	app.accsInTx = make(map[string]bool)
 	app.msgs = []Message{}
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
@@ -210,19 +216,18 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	accsInTx := make([]string, len(app.accsInTx))
 	accMap := make(map[string]bool)
 
-	for _, acc := range app.accsInTx {
-		accStr := acc.String()
-		if _, value := accMap[accStr]; !value {
-			accsInTx = append(accsInTx, accStr)
-			accMap[accStr] = true
-		}
+	for acc, _ := range app.accsInTx {
+		accsInTx = append(accsInTx, acc)
+		accMap[acc] = true
 	}
+
 	txDict["account_transcations"] = accsInTx
 
-	app.AddAccountsInBlock(app.accsInTx...)
-	app.accsInTx = []sdk.AccAddress{}
+	fmt.Println("!!", accsInTx, "!!")
+	app.AddAccountsInBlock(accsInTx...)
+	app.accsInTx = make(map[string]bool)
 	txDict["messages"] = messages
-	app.AddAccountsInBlock(stdTx.GetSigners()[0])
+	app.AddAccountsInBlock(stdTx.GetSigners()[0].String())
 	return res
 }
 
@@ -230,13 +235,8 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.BandApp.EndBlock(req)
 	// Update balances of all affected accounts on this block.
-	accMap := make(map[string]bool)
-	for _, acc := range app.accsInBlock {
-		accStr := string(acc)
-		if accMap[accStr] {
-			continue
-		}
-		accMap[accStr] = true
+	for accStr, _ := range app.accsInBlock {
+		acc, _ := sdk.AccAddressFromBech32(accStr)
 		app.Write("SET_ACCOUNT", JsDict{
 			"address": acc,
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),

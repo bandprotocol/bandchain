@@ -35,6 +35,13 @@ func (app *App) emitUpdateValidatorReward(addr sdk.ValAddress) {
 func (app *App) handleMsgWithdrawDelegatorReward(
 	txHash []byte, msg dist.MsgWithdrawDelegatorReward, evMap EvMap, extra JsDict,
 ) {
-	// TODO: Add the beneficiary to related accounts
+	app.AddAccountsInTx(msg.DelegatorAddress.String())
 	app.emitUpdateValidatorReward(msg.ValidatorAddress)
+}
+
+// handleMsgSetWithdrawAddress implements emitter handler for MsgSetWithdrawAddress.
+func (app *App) handleMsgSetWithdrawAddress(
+	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap EvMap, extra JsDict,
+) {
+	app.AddAccountsInTx(msg.WithdrawAddress.String(), msg.DelegatorAddress.String())
 }
