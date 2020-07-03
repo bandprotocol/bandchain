@@ -55,7 +55,7 @@ func (msg MsgUpdateChainID) GetSignBytes() []byte {
 
 // MsgUpdateValidators is a message for update chain ID of BandChain.
 type MsgUpdateValidators struct {
-	Validators []tmtypes.Validator
+	Validators []tmtypes.Validator `json:"validators"`
 	Sender     sdk.AccAddress
 }
 
@@ -96,7 +96,7 @@ func (msg MsgUpdateValidators) GetSignBytes() []byte {
 
 // MsgRelay is a message for relay block on BandChain.
 type MsgRelay struct {
-	SignedHeader tmtypes.SignedHeader
+	SignedHeader tmtypes.SignedHeader `json:"signed_header"`
 	Sender       sdk.AccAddress
 }
 
@@ -137,10 +137,10 @@ func (msg MsgRelay) GetSignBytes() []byte {
 
 // MsgVerifyProof is a message for verify proof
 type MsgVerifyProof struct {
-	Height         int64
-	Proof          tmmerkle.Proof
-	RequestPacket  otypes.OracleRequestPacketData
-	ResponsePacket otypes.OracleResponsePacketData
+	Height         int64                           `json:"height"`
+	Proof          tmmerkle.Proof                  `json:"proof"`
+	RequestPacket  otypes.OracleRequestPacketData  `json:"request"`
+	ResponsePacket otypes.OracleResponsePacketData `json:"response"`
 	Sender         sdk.AccAddress
 }
 
