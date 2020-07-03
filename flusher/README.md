@@ -29,3 +29,9 @@
 
 kafka-console-consumer --bootstrap-server localhost:9092 --topic <topic_name> --from-beginning
 
+### Troubleshooting
+
+If you experience problems while trying to start Kafka, you can try to examine Kafka and ZooKeeper logs using the following commands:
+
+1. run `tail -f /usr/local/var/log/zookeeper/zookeeper.log`
+2. run `tail -f /usr/local/var/log/kafka/kafka.log`
