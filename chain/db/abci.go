@@ -21,7 +21,7 @@ func (b *BandDB) HandleBeginAndEndblockEvent(event abci.Event) {
 	}
 
 	switch event.Type {
-	case otypes.EventTypeRequestExecute:
+	case otypes.EventTypeResolve:
 		id, err := strconv.ParseInt(kvMap[otypes.AttributeKeyRequestID], 10, 64)
 		if err != nil {
 			panic(err)
