@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"strings"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
@@ -38,7 +39,7 @@ type App struct {
 
 // NewBandAppWithEmitter creates a new App instance.
 func NewBandAppWithEmitter(
-	topic string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	baseAppOptions ...func(*bam.BaseApp),
 ) *App {
@@ -46,12 +47,13 @@ func NewBandAppWithEmitter(
 		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
 		home, baseAppOptions...,
 	)
+	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &App{
 		BandApp:   app,
 		txDecoder: auth.DefaultTxDecoder(app.Codec()),
 		writer: kafka.NewWriter(kafka.WriterConfig{
-			Brokers:      []string{"localhost:9092"}, // TODO: Remove hardcode
-			Topic:        topic,
+			Brokers:      paths[1:],
+			Topic:        paths[0],
 			Balancer:     &kafka.LeastBytes{},
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
@@ -140,7 +142,11 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
 		app.emitUpdateValidatorReward(validator.GetOperator())
 	}
-	// TODO: Handle begin block event
+
+	for _, event := range res.Events {
+		app.handleBeginBlockEndBlockEvent(event)
+	}
+
 	return res
 }
 

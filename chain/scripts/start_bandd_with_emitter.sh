@@ -1,6 +1,10 @@
 cp ./docker-config/single-validator/priv_validator_key.json ~/.bandd/config/priv_validator_key.json
 cp ./docker-config/single-validator/node_key.json ~/.bandd/config/node_key.json
 
+# Clear and create a new fresh DB.
+dropdb my_db
+createdb my_db
+
 # Delete old kafka topic
 kafka-topics --zookeeper localhost:2181 --delete --topic test
 
@@ -13,5 +17,5 @@ python ../flusher/main.py init bandchain test --db localhost:5432/my_db
 
 
 # start bandchain
-bandd start --with-emitter test \
+bandd start --with-emitter test@localhost:9092 \
   --rpc.laddr tcp://0.0.0.0:26657 --pruning=nothing
