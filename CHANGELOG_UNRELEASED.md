@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (patch) [\#2135](https://github.com/bandprotocol/bandchain/pull/2135) Bump Cosmos-SDK to version 0.38.5.
 - (impv) [\#2128](https://github.com/bandprotocol/bandchain/pull/2128) Add expired request check when report and change type of `requestTime`.
 - (feat) [\#2131](https://github.com/bandprotocol/bandchain/pull/2131) Add validator status querier.
 - (chore) [\#2129](https://github.com/bandprotocol/bandchain/pull/2129) Add unit tests for validator status keeper.
