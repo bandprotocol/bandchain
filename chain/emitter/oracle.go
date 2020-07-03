@@ -96,7 +96,7 @@ func (app *App) handleMsgCreateDataSource(
 ) {
 	id := types.DataSourceID(atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
-	app.SetDataSource(id, ds, txHash)
+	app.emitSetDataSource(id, ds, txHash)
 	extra["id"] = id
 }
 
@@ -106,7 +106,7 @@ func (app *App) handleMsgCreateOracleScript(
 ) {
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
-	app.SetOracleScript(id, os, txHash)
+	app.emitSetOracleScript(id, os, txHash)
 	extra["id"] = id
 }
 
@@ -116,7 +116,7 @@ func (app *App) handleMsgEditDataSource(
 ) {
 	id := types.DataSourceID(atoi(evMap[types.EventTypeEditDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
-	app.SetDataSource(id, ds, txHash)
+	app.emitSetDataSource(id, ds, txHash)
 	extra["id"] = id
 }
 
@@ -126,7 +126,7 @@ func (app *App) handleMsgEditOracleScript(
 ) {
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeEditOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
-	app.SetOracleScript(id, os, txHash)
+	app.emitSetOracleScript(id, os, txHash)
 	extra["id"] = id
 }
 
