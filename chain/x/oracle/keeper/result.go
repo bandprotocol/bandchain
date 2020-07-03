@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -48,10 +49,11 @@ func (k Keeper) ResolveSuccess(ctx sdk.Context, id types.RequestID, result []byt
 		types.EventTypeResolve,
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyResult, hex.EncodeToString(result)),
 	))
 }
 
-// ResolveSuccess resolves the given request as failure with the given reason.
+// ResolveFailure resolves the given request as failure with the given reason.
 func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason string) {
 	k.SaveResult(ctx, id, types.ResolveStatus_Failure, []byte{})
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
@@ -62,7 +64,7 @@ func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason strin
 	))
 }
 
-// ResolveSuccess resolves the given request as expired.
+// ResolveExpired resolves the given request as expired.
 func (k Keeper) ResolveExpired(ctx sdk.Context, id types.RequestID) {
 	k.SaveResult(ctx, id, types.ResolveStatus_Expired, []byte{})
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
