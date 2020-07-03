@@ -149,6 +149,13 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
 	})
+	for _, val := range req.GetLastCommitInfo().Votes {
+		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		app.Write("UPDATE_VALIDATOR_REWARD", JsDict{
+			"operator_address": validator.GetOperator().String(),
+			"current_reward":   app.getCurrentReward(validator.GetOperator()),
+		})
+	}
 	// TODO: Handle begin block event
 	return res
 }

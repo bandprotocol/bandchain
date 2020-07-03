@@ -67,3 +67,9 @@ class Handler(object):
             .values(**msg)
             .on_conflict_do_update(constraint="validators_pkey", set_=msg)
         )
+
+    def handle_update_validator_reward(self, msg):
+        condition = True
+        for col in validators.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(validators.update().where(condition).values(**msg))

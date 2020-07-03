@@ -5,6 +5,14 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 )
 
+func (app *App) getCurrentReward(addrs sdk.ValAddress) string {
+	reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, addrs)
+	if !reward.Rewards.IsZero() {
+		return reward.Rewards[0].Amount.String()
+	}
+	return "0"
+}
+
 func (app *App) emitSetValidator(addrs sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
 	app.Write("SET_VALIDATOR", JsDict{
@@ -22,6 +30,7 @@ func (app *App) emitSetValidator(addrs sdk.ValAddress) {
 		"tokens":                val.Tokens.Uint64(),
 		"jailed":                val.Jailed,
 		"delegator_shares":      val.DelegatorShares.String(),
+		"current_reward":        app.getCurrentReward(addrs),
 	})
 }
 
