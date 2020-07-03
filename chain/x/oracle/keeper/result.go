@@ -16,9 +16,9 @@ func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 }
 
 // SetResult sets result to the store.
-func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
+func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result types.Result) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.ResultStoreKey(reqID), result)
+	store.Set(types.ResultStoreKey(reqID), obi.MustEncode(result))
 }
 
 // GetResult returns the result for the given request ID or error if not exists.
@@ -28,10 +28,7 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 		return types.Result{}, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
 	}
 	var result types.Result
-	err := obi.Decode(bz, &result)
-	if err != nil {
-		return types.Result{}, types.ErrOBIDecode
-	}
+	obi.MustDecode(bz, &result)
 	return result, nil
 }
 
@@ -45,7 +42,7 @@ func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.Res
 		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime.Unix(),
 		ctx.BlockTime().Unix(), status, result,
 	)
-	k.SetResult(ctx, id, obi.MustEncode(req, res))
+	k.SetResult(ctx, id, types.NewResult(req, res))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeRequestExecute,
 		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
