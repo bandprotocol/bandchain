@@ -38,12 +38,19 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgCreateValidator(msg)
 	case staking.MsgEditValidator:
 		app.handleMsgEditValidator(msg)
+	case staking.MsgDelegate:
+		app.handleMsgDelegate(msg)
+	case staking.MsgUndelegate:
+		app.handleMsgUndelegate(msg)
+	case staking.MsgBeginRedelegate:
+		app.handleMsgBeginRedelegate(msg)
 	case bank.MsgSend:
 		app.handleMsgSend(msg)
 	case bank.MsgMultiSend:
 		app.handleMsgMultiSend(msg)
 	case dist.MsgWithdrawDelegatorReward:
 		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
+
 	}
 }
 

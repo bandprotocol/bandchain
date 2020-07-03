@@ -28,6 +28,37 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	})
 }
 
+func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
+	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address": addr.String(),
+		"tokens":           val.Tokens.Uint64(),
+		"delegator_shares": val.DelegatorShares.String(),
+		"current_reward":   currentReward,
+		"current_ratio":    currentRatio,
+	})
+}
+
+func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
+	delegation, found := app.StakingKeeper.GetDelegation(app.DeliverContext, delegatorAddress, operatorAddress)
+	if found {
+		info := app.DistrKeeper.GetDelegatorStartingInfo(app.DeliverContext, operatorAddress, delegatorAddress)
+		latestReward := app.DistrKeeper.GetValidatorHistoricalRewards(app.DeliverContext, operatorAddress, info.PreviousPeriod)
+		app.Write("SET_DELEGATION", JsDict{
+			"delegator_address": delegatorAddress,
+			"operator_address":  operatorAddress,
+			"shares":            delegation.Shares.String(),
+			"last_ratio":        latestReward.CumulativeRewardRatio[0].Amount.String(),
+		})
+	} else {
+		app.Write("REMOVE_DELEGATION", JsDict{
+			"delegator_address": delegatorAddress,
+			"operator_address":  operatorAddress,
+		})
+	}
+}
+
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
 	app.emitSetValidator(msg.ValidatorAddress)
@@ -36,4 +67,26 @@ func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
 func (app *App) handleMsgEditValidator(msg staking.MsgEditValidator) {
 	app.emitSetValidator(msg.ValidatorAddress)
+}
+
+func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
+	app.emitUpdateValidator(operatorAddress)
+	app.emitDelegation(operatorAddress, delegatorAddress)
+}
+
+// handleMsgDelegate implements emitter handler for MsgDelegate
+func (app *App) handleMsgDelegate(msg staking.MsgDelegate) {
+	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+}
+
+// handleMsgUndelegate implements emitter handler for MsgUndelegate
+func (app *App) handleMsgUndelegate(msg staking.MsgUndelegate) {
+	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+
+}
+
+// handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
+func (app *App) handleMsgBeginRedelegate(msg staking.MsgBeginRedelegate) {
+	app.emitUpdateValidatorAndDelegation(msg.ValidatorSrcAddress, msg.DelegatorAddress)
+	app.emitUpdateValidatorAndDelegation(msg.ValidatorDstAddress, msg.DelegatorAddress)
 }
