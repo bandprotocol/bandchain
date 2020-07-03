@@ -6,39 +6,33 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
-	"path/filepath"
 	"testing"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestCreateDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
-	owner := Owner.Address
+	owner := testapp.Owner.Address
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
-	msg := types.NewMsgCreateDataSource(owner, name, description, executable, Alice.Address)
+	msg := types.NewMsgCreateDataSource(owner, name, description, executable, testapp.Alice.Address)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
-
-	filename := keeper.MustGetDataSource(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	require.NotNil(t, res)
 
-	dataSource, err := keeper.GetDataSource(ctx, 1)
+	dataSource, err := keeper.GetDataSource(ctx, 6)
 	require.Nil(t, err)
-	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, testapp.Owner.Address, dataSource.Owner)
 	require.Equal(t, name, dataSource.Name)
 	executableHash := sha256.Sum256(executable)
 	expectFilename := hex.EncodeToString(executableHash[:])
@@ -47,10 +41,9 @@ func TestCreateDataSourceSuccess(t *testing.T) {
 }
 
 func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
-	owner := Owner.Address
+	owner := testapp.Owner.Address
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
@@ -62,18 +55,16 @@ func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
 	zw.Close()
 	gzippedExecutable := buf.Bytes()
 
-	sender := Alice.Address
+	sender := testapp.Alice.Address
 	msg := types.NewMsgCreateDataSource(owner, name, description, gzippedExecutable, sender)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
-	filename := keeper.MustGetDataSource(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
-	dataSource, err := keeper.GetDataSource(ctx, 1)
+	dataSource, err := keeper.GetDataSource(ctx, 6)
 	require.Nil(t, err)
-	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, testapp.Owner.Address, dataSource.Owner)
 	require.Equal(t, name, dataSource.Name)
 	executableHash := sha256.Sum256(executable)
 	expectFilename := hex.EncodeToString(executableHash[:])
@@ -81,9 +72,9 @@ func TestCreateGzippedExecutableDataSourceSuccess(t *testing.T) {
 }
 
 func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
-	owner := Owner.Address
+	owner := testapp.Owner.Address
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
@@ -95,7 +86,7 @@ func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
 	zw.Close()
 	gzippedExecutable := buf.Bytes()[:5]
 
-	sender := Alice.Address
+	sender := testapp.Alice.Address
 	msg := types.NewMsgCreateDataSource(owner, name, description, gzippedExecutable, sender)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.Error(t, err)
@@ -103,35 +94,28 @@ func TestCreateGzippedExecutableDataSourceFail(t *testing.T) {
 }
 
 func TestEditDataSourceSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
-	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
+	msg := types.NewMsgCreateDataSource(testapp.Owner.Address, name, description, executable, testapp.Alice.Address)
 	oracle.NewHandler(keeper)(ctx, msg)
-
-	filename := keeper.MustGetDataSource(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	newName := "beeb"
 	newDescription := "new_description"
 	newExecutable := []byte("executable2")
 	msgEdit := types.NewMsgEditDataSource(
-		1, Owner.Address, newName, newDescription, newExecutable, Owner.Address,
+		1, testapp.Owner.Address, newName, newDescription, newExecutable, testapp.Owner.Address,
 	)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
-
-	filename = keeper.MustGetDataSource(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	require.NoError(t, err)
 	require.NotNil(t, res)
 
 	dataSource, err := keeper.GetDataSource(ctx, 1)
 	require.Nil(t, err)
-	require.Equal(t, Owner.Address, dataSource.Owner)
+	require.Equal(t, testapp.Owner.Address, dataSource.Owner)
 	require.Equal(t, newName, dataSource.Name)
 	executableHash := sha256.Sum256(newExecutable)
 	expectFilename := hex.EncodeToString(executableHash[:])
@@ -139,16 +123,13 @@ func TestEditDataSourceSuccess(t *testing.T) {
 }
 
 func TestEditDataSourceFail(t *testing.T) {
-	_, ctx, keeper := createTestInput()
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	_, ctx, keeper := testapp.CreateTestInput(true)
 
 	name := "data_source_1"
 	description := "description"
 	executable := []byte("executable")
-	msg := types.NewMsgCreateDataSource(Owner.Address, name, description, executable, Alice.Address)
+	msg := types.NewMsgCreateDataSource(testapp.Owner.Address, name, description, executable, testapp.Alice.Address)
 	oracle.NewHandler(keeper)(ctx, msg)
-	filename := keeper.MustGetDataSource(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	newName := "beeb"
 	newDescription := "new_description"
@@ -156,15 +137,15 @@ func TestEditDataSourceFail(t *testing.T) {
 	wrongDID := types.DataSourceID(99999)
 
 	msgEdit := types.NewMsgEditDataSource(
-		wrongDID, Owner.Address, newName, newDescription, newExecutable, Owner.Address,
+		wrongDID, testapp.Owner.Address, newName, newDescription, newExecutable, testapp.Owner.Address,
 	)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
 	require.Nil(t, res)
 
-	wrongSender := Bob.Address
+	wrongSender := testapp.Bob.Address
 	msgEdit = types.NewMsgEditDataSource(
-		1, Owner.Address, newName, newDescription, newExecutable, wrongSender,
+		1, testapp.Owner.Address, newName, newDescription, newExecutable, wrongSender,
 	)
 	res, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
@@ -176,7 +157,7 @@ func TestEditDataSourceFail(t *testing.T) {
 	zw.Close()
 	wrongGzippedExecutable := buf.Bytes()[:5]
 	msgEdit = types.NewMsgEditDataSource(
-		1, Owner.Address, newName, newDescription, wrongGzippedExecutable, Owner.Address,
+		1, testapp.Owner.Address, newName, newDescription, wrongGzippedExecutable, testapp.Owner.Address,
 	)
 	res, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
@@ -184,58 +165,53 @@ func TestEditDataSourceFail(t *testing.T) {
 }
 
 func TestCreateOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
+	nextID := keeper.GetOracleScriptCount(ctx) + 1
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	res, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.NoError(t, err)
 	expectEvents := sdk.Events{
-		sdk.NewEvent(types.EventTypeCreateOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
+		sdk.NewEvent(types.EventTypeCreateOracleScript, sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", nextID))),
 	}
 	require.Equal(t, expectEvents, res.Events)
-
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
-
 	require.NoError(t, err)
 
-	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	oracleScript, err := keeper.GetOracleScript(ctx, types.OracleScriptID(nextID))
 	require.NoError(t, err)
 
 	// Code is store must be compiled code.
-	codeHash := sha256.Sum256(mustCompileOwasm(code))
-	expectFilename := hex.EncodeToString(codeHash[:])
 	expectOracleScript := types.NewOracleScript(
-		Owner.Address, name, description, expectFilename, schema, url,
+		testapp.Owner.Address, name, description, testapp.WasmExtra1FileName, schema, url,
 	)
 	require.Equal(t, expectOracleScript, oracleScript)
 }
 
 func TestCreateOracleScriptFailed(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
 	code := []byte("non wasm code")
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.Error(t, err)
 }
 func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
+	nextID := keeper.GetOracleScriptCount(ctx) + 1
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 
@@ -247,33 +223,27 @@ func TestCreateGzippedOracleScriptSuccess(t *testing.T) {
 	gzippedCode := buf.Bytes()
 
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, gzippedCode, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, gzippedCode, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.NoError(t, err)
 
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
-
-	oracleScript, err := keeper.GetOracleScript(ctx, 1)
+	oracleScript, err := keeper.GetOracleScript(ctx, types.OracleScriptID(nextID))
 	require.NoError(t, err)
 
 	// Code is store must be compiled code.
-	codeHash := sha256.Sum256(mustCompileOwasm(code))
-	expectFilename := hex.EncodeToString(codeHash[:])
 	expectOracleScript := types.NewOracleScript(
-		Owner.Address, name, description, expectFilename, schema, url,
+		testapp.Owner.Address, name, description, testapp.WasmExtra1FileName, schema, url,
 	)
 
 	require.Equal(t, expectOracleScript, oracleScript)
 }
 
 func TestCreateGzippedOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 
@@ -285,45 +255,38 @@ func TestCreateGzippedOracleScriptFail(t *testing.T) {
 	gzippedCode := buf.Bytes()[:5]
 
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, gzippedCode, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, gzippedCode, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.Error(t, err)
 }
 
 func TestEditOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.NoError(t, err)
 
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
-
 	oracleScriptID := types.OracleScriptID(1)
 	newName := "os_2"
 	newDescription := "beebbeeb"
-	newCode := mustGetOwasmCode("edited_beeb.wat")
+	newCode := testapp.WasmExtra2
 	newSchema := "new_schema"
 	newURL := "new_url"
 
 	msgEdit := types.NewMsgEditOracleScript(
-		oracleScriptID, Owner.Address, newName, newDescription,
-		newCode, newSchema, newURL, Owner.Address,
+		oracleScriptID, testapp.Owner.Address, newName, newDescription,
+		newCode, newSchema, newURL, testapp.Owner.Address,
 	)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.NoError(t, err)
-
-	filename = keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	expectEvents := sdk.Events{
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
@@ -332,62 +295,54 @@ func TestEditOracleScriptSuccess(t *testing.T) {
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
-	// Code is store must be compiled code.
-	codeHash := sha256.Sum256(mustCompileOwasm(newCode))
-
-	expectFilename := hex.EncodeToString(codeHash[:])
 	expectOracleScript := types.NewOracleScript(
-		Owner.Address, newName, newDescription,
-		expectFilename, newSchema, newURL,
+		testapp.Owner.Address, newName, newDescription,
+		testapp.WasmExtra2FileName, newSchema, newURL,
 	)
 
 	require.Equal(t, expectOracleScript, oracleScript)
 }
 
 func TestEditOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.NoError(t, err)
 
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
-
 	oracleScriptID := types.OracleScriptID(1)
 	newName := "os_2"
 	newDescription := "beebbeeb"
-	newCode := mustGetOwasmCode("edited_beeb.wat")
+	newCode := testapp.WasmExtra2
 	newSchema := "new_schema"
 	newURL := "new_url"
 
 	// No oracle script id 99
 	msgEdit := types.NewMsgEditOracleScript(
-		types.OracleScriptID(99), Owner.Address, newName, newDescription,
-		newCode, newSchema, newURL, Alice.Address,
+		types.OracleScriptID(99), testapp.Owner.Address, newName, newDescription,
+		newCode, newSchema, newURL, testapp.Alice.Address,
 	)
 	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
 
-	// Alice can't edit oracle script
+	// testapp.Alice can't edit oracle script
 	msgEdit = types.NewMsgEditOracleScript(
-		oracleScriptID, Owner.Address, newName, newDescription,
-		newCode, newSchema, newURL, Alice.Address,
+		oracleScriptID, testapp.Owner.Address, newName, newDescription,
+		newCode, newSchema, newURL, testapp.Alice.Address,
 	)
 	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
 
 	// Cannot send bad owasm code
 	msgEdit = types.NewMsgEditOracleScript(
-		oracleScriptID, Owner.Address, newName, newDescription,
-		[]byte("code"), newSchema, newURL, Owner.Address,
+		oracleScriptID, testapp.Owner.Address, newName, newDescription,
+		[]byte("code"), newSchema, newURL, testapp.Owner.Address,
 	)
 	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
@@ -395,26 +350,22 @@ func TestEditOracleScriptFail(t *testing.T) {
 }
 
 func TestEditGzippedOracleScriptSuccess(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
 	require.NoError(t, err)
 
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
-
 	oracleScriptID := types.OracleScriptID(1)
 	newName := "os_2"
 	newDescription := "beebbeeb"
-	newCode := mustGetOwasmCode("edited_beeb.wat")
+	newCode := testapp.WasmExtra2
 	require.NoError(t, err)
 	newSchema := "new_schema"
 	newURL := "new_url"
@@ -427,8 +378,8 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 	gzippedCode := buf.Bytes()
 
 	msgEdit := types.NewMsgEditOracleScript(
-		oracleScriptID, Owner.Address, newName, newDescription,
-		gzippedCode, newSchema, newURL, Owner.Address,
+		oracleScriptID, testapp.Owner.Address, newName, newDescription,
+		gzippedCode, newSchema, newURL, testapp.Owner.Address,
 	)
 	res, err := oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.NoError(t, err)
@@ -436,40 +387,33 @@ func TestEditGzippedOracleScriptSuccess(t *testing.T) {
 		sdk.NewEvent(types.EventTypeEditOracleScript, sdk.NewAttribute(types.AttributeKeyID, "1")),
 	}
 	require.Equal(t, expectEvents, res.Events)
-	filename = keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	oracleScript, err := keeper.GetOracleScript(ctx, 1)
 	require.NoError(t, err)
 
-	codeHash := sha256.Sum256(mustCompileOwasm(newCode))
-	expectFilename := hex.EncodeToString(codeHash[:])
 	expectOracleScript := types.NewOracleScript(
-		Owner.Address, newName, newDescription, expectFilename, newSchema, newURL,
+		testapp.Owner.Address, newName, newDescription, testapp.WasmExtra2FileName, newSchema, newURL,
 	)
 	require.Equal(t, expectOracleScript, oracleScript)
 }
 
 func TestEditGzippedOracleScriptFail(t *testing.T) {
-	_, ctx, keeper := createTestInput()
+	_, ctx, keeper := testapp.CreateTestInput(true)
 	name := "os_1"
 	description := "beeb"
-	code := mustGetOwasmCode("beeb.wat")
+	code := testapp.WasmExtra1
 	schema := "schema"
 	url := "url"
 	msg := types.NewMsgCreateOracleScript(
-		Owner.Address, name, description, code, schema, url, Alice.Address,
+		testapp.Owner.Address, name, description, code, schema, url, testapp.Alice.Address,
 	)
 	_, err := oracle.NewHandler(keeper)(ctx, msg)
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := keeper.MustGetOracleScript(ctx, 1).Filename
-	defer deleteFile(filepath.Join(dir, filename))
 
 	require.Nil(t, err)
 	oracleScriptID := types.OracleScriptID(1)
 	newName := "os_2"
 	newDescription := "beebbeeb"
-	newCode := mustGetOwasmCode("edited_beeb.wat")
+	newCode := testapp.WasmExtra2
 	newSchema := "new_schema"
 	newURL := "new_url"
 
@@ -481,37 +425,21 @@ func TestEditGzippedOracleScriptFail(t *testing.T) {
 	gzippedCode := buf.Bytes()[:5]
 
 	msgEdit := types.NewMsgEditOracleScript(
-		oracleScriptID, Owner.Address, newName, newDescription,
-		gzippedCode, newSchema, newURL, Owner.Address,
+		oracleScriptID, testapp.Owner.Address, newName, newDescription,
+		gzippedCode, newSchema, newURL, testapp.Owner.Address,
 	)
 	_, err = oracle.NewHandler(keeper)(ctx, msgEdit)
 	require.Error(t, err)
 }
 
 func TestRequestDataSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
-
+	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("beeb")
-	msg := types.NewMsgRequestData(oracleScriptID, calldata, 2, 2, "alice", Alice.Address)
+	msg := types.NewMsgRequestData(oracleScriptID, calldata, 2, 2, "alice", testapp.Alice.Address)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.NoError(t, err)
@@ -525,27 +453,27 @@ func TestRequestDataSuccess(t *testing.T) {
 			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
 			sdk.NewAttribute(types.AttributeKeyAskCount, "2"),
 			sdk.NewAttribute(types.AttributeKeyMinCount, "2"),
-			sdk.NewAttribute(types.AttributeKeyValidator, Validator3.ValAddress.String()),
-			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator3.ValAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds1.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[1].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds2.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[2].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds3.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[3].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
@@ -555,46 +483,46 @@ func TestRequestDataSuccess(t *testing.T) {
 }
 
 func TestRequestDataFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	wrongOracleScript := 1
+	wrongOracleScript := 42
 
 	calldata := []byte("test")
 	msg := types.NewMsgRequestData(
-		types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", Alice.Address,
+		types.OracleScriptID(wrongOracleScript), calldata, 1, 1, "alice", testapp.Alice.Address,
 	)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, `oracle script not found: id: 1`)
+	require.EqualError(t, err, `oracle script not found: id: 42`)
 	require.Nil(t, result)
 
 	// Add Oracle Script
-	os, clear := getTestOracleScript()
-	defer clear()
+	// os, clear := getTestOracleScript()
+	// defer clear()
 
-	oracleScriptID := k.AddOracleScript(ctx, os)
-	msg = types.NewMsgRequestData(
-		types.OracleScriptID(oracleScriptID), calldata, 1, 1, "alice", Alice.Address,
-	)
+	// oracleScriptID := k.AddOracleScript(ctx, os)
+	// msg = types.NewMsgRequestData(
+	// 	types.OracleScriptID(oracleScriptID), calldata, 1, 1, "alice", testapp.Alice.Address,
+	// )
 
-	result, err = oracle.NewHandler(k)(ctx, msg)
-	require.EqualError(t, err, `data source not found: id: 1`)
-	require.Nil(t, result)
+	// result, err = oracle.NewHandler(k)(ctx, msg)
+	// require.EqualError(t, err, `data source not found: id: 1`)
+	// require.Nil(t, result)
 }
 
 func TestReportSuccess(t *testing.T) {
 	// Setup test environment
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
 	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
 
 	request := types.NewRequest(1, calldata,
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", []types.RawRequest{
+		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{
 			types.NewRawRequest(1, 1, []byte("beeb")),
 			types.NewRawRequest(42, 2, []byte("beeb")),
 		},
@@ -602,12 +530,12 @@ func TestReportSuccess(t *testing.T) {
 	k.SetRequest(ctx, 1, request)
 
 	ctx = ctx.WithBlockHeight(5)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589800, 0))
 
 	msg := types.NewMsgReportData(1, []types.RawReport{
 		types.NewRawReport(1, 0, []byte("data1")),
 		types.NewRawReport(42, 0, []byte("data2")),
-	}, Validator1.ValAddress, Validator1.Address)
+	}, testapp.Validator1.ValAddress, testapp.Validator1.Address)
 
 	_, err := oracle.NewHandler(k)(ctx, msg)
 	require.NoError(t, err)
@@ -618,7 +546,7 @@ func TestReportSuccess(t *testing.T) {
 	msg = types.NewMsgReportData(1, []types.RawReport{
 		types.NewRawReport(1, 0, []byte("data3")),
 		types.NewRawReport(42, 0, []byte("data4")),
-	}, Validator2.ValAddress, Validator2.Address)
+	}, testapp.Validator2.ValAddress, testapp.Validator2.Address)
 
 	_, err = oracle.NewHandler(k)(ctx, msg)
 	require.NoError(t, err)
@@ -629,14 +557,14 @@ func TestReportSuccess(t *testing.T) {
 
 func TestReportFailed(t *testing.T) {
 	// Setup test environment
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockHeight(2)
-	ctx = ctx.WithBlockTime(time.Unix(int64(1581589790), 0))
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	calldata := []byte("calldata")
 
 	request := types.NewRequest(1, calldata,
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress}, 2,
-		2, 1581589790, "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
+		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
 	)
 	k.SetRequest(ctx, 1, request)
 
@@ -646,26 +574,50 @@ func TestReportFailed(t *testing.T) {
 	// Report by unauthorized reporter
 	msg := types.NewMsgReportData(1, []types.RawReport{
 		types.NewRawReport(42, 0, []byte("data1")),
-	}, Validator1.ValAddress, Alice.Address)
+	}, testapp.Validator1.ValAddress, testapp.Alice.Address)
 	_, err := oracle.NewHandler(k)(ctx, msg)
 	require.Error(t, err)
 
 	// Send wrong external ids
 	msg = types.NewMsgReportData(1, []types.RawReport{
 		types.NewRawReport(41, 0, []byte("data1")),
-	}, Validator1.ValAddress, Validator1.Address)
+	}, testapp.Validator1.ValAddress, testapp.Validator1.Address)
 
 	// Test only 1 failed case, other case tested in keeper/report_test.go
 	_, err = oracle.NewHandler(k)(ctx, msg)
 	require.Error(t, err)
 }
 
-func TestAddReporterSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
+func TestReportOnExpiredRequest(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockHeight(2)
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+	calldata := []byte("calldata")
 
-	validatorAddress := Alice.ValAddress
-	reporterAddress := Bob.Address
-	// Add Bob reporter to Alice validator
+	request := types.NewRequest(1, calldata,
+		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 2,
+		2, testapp.ParseTime(1581589790), "clientID", []types.RawRequest{types.NewRawRequest(42, 1, []byte("beeb"))},
+	)
+	k.SetRequest(ctx, 1, request)
+
+	ctx = ctx.WithBlockHeight(5)
+	ctx = ctx.WithBlockTime(time.Unix(int64(1581589800), 0))
+
+	k.SetRequestLastExpired(ctx, 1)
+
+	msg := types.NewMsgReportData(1, []types.RawReport{
+		types.NewRawReport(42, 0, []byte("data1")),
+	}, testapp.Validator1.ValAddress, testapp.Validator1.Address)
+	_, err := oracle.NewHandler(k)(ctx, msg)
+	require.Equal(t, types.ErrRequestAlreadyExpired, err)
+}
+
+func TestAddReporterSuccess(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+
+	validatorAddress := testapp.Alice.ValAddress
+	reporterAddress := testapp.Bob.Address
+	// Add testapp.Bob reporter to testapp.Alice validator
 	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
 
 	result, err := oracle.NewHandler(k)(ctx, msg)
@@ -686,25 +638,25 @@ func TestAddReporterSuccess(t *testing.T) {
 }
 
 func TestAddReporterFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
-	validatorAddress := Alice.ValAddress
-	reporterAddress := Alice.Address
+	validatorAddress := testapp.Alice.ValAddress
+	reporterAddress := testapp.Alice.Address
 	msg := types.NewMsgAddReporter(validatorAddress, reporterAddress)
 
-	// Should fail, validator is always a reporter of himself so we can't add Alice reporter to Alice validator
+	// Should fail, validator is always a reporter of himself so we can't add testapp.Alice reporter to testapp.Alice validator
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.EqualError(t, err, fmt.Sprintf("reporter already exists: val: %s, addr: %s", validatorAddress.String(), reporterAddress.String()))
 	require.Nil(t, result)
 }
 
 func TestRemoveReporterSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
-	validatorAddress := Alice.ValAddress
-	reporterAddress := Bob.Address
+	validatorAddress := testapp.Alice.ValAddress
+	reporterAddress := testapp.Bob.Address
 
-	// Add Bob reporter to Alice validator
+	// Add testapp.Bob reporter to testapp.Alice validator
 	err := k.AddReporter(ctx, validatorAddress, reporterAddress)
 	require.NoError(t, err)
 
@@ -726,12 +678,12 @@ func TestRemoveReporterSuccess(t *testing.T) {
 }
 
 func TestRemoveReporterFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 
-	validatorAddress := Alice.ValAddress
-	reporterAddress := Bob.Address
+	validatorAddress := testapp.Alice.ValAddress
+	reporterAddress := testapp.Bob.Address
 
-	// Should fail, Bob isn't Alice validator's reporter
+	// Should fail, testapp.Bob isn't testapp.Alice validator's reporter
 	msg := types.NewMsgRemoveReporter(validatorAddress, reporterAddress)
 	result, err := oracle.NewHandler(k)(ctx, msg)
 	require.EqualError(t, err, fmt.Sprintf("reporter not found: val: %s, addr: %s", validatorAddress.String(), reporterAddress.String()))

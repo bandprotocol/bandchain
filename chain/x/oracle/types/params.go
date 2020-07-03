@@ -2,51 +2,56 @@ package types
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/x/params"
 )
 
 // nolint
 const (
-	DefaultParamspace             = ModuleName
-	DefaultMaxRawRequestCount     = uint64(16)
-	DefaultMaxAskCount            = uint64(16)
-	DefaultExpirationBlockCount   = uint64(20)
-	DefaultMaxConsecutiveMisses   = uint64(10)
-	DefaultBaseRequestGas         = uint64(150000)
-	DefaultPerValidatorRequestGas = uint64(30000)
-	DefaultSamplingTryCount       = uint64(3)
+	DefaultParamspace              = ModuleName
+	DefaultMaxRawRequestCount      = uint64(16)
+	DefaultMaxAskCount             = uint64(16)
+	DefaultExpirationBlockCount    = uint64(100)
+	DefaultBaseRequestGas          = uint64(150000)
+	DefaultPerValidatorRequestGas  = uint64(30000)
+	DefaultSamplingTryCount        = uint64(3)
+	DefaultOracleRewardPercentage  = uint64(80)
+	DefaultInactivePenaltyDuration = uint64(10 * time.Minute)
 )
 
 // nolint
 var (
-	KeyMaxRawRequestCount     = []byte("MaxRawRequestCount")
-	KeyMaxAskCount            = []byte("MaxAskCount")
-	KeyExpirationBlockCount   = []byte("ExpirationBlockCount")
-	KeyMaxConsecutiveMisses   = []byte("MaxConsecutiveMisses")
-	KeyBaseRequestGas         = []byte("BaseRequestGas")
-	KeyPerValidatorRequestGas = []byte("PerValidatorRequestGas")
-	KeySamplingTryCount       = []byte("SamplingTryCount")
+	KeyMaxRawRequestCount      = []byte("MaxRawRequestCount")
+	KeyMaxAskCount             = []byte("MaxAskCount")
+	KeyExpirationBlockCount    = []byte("ExpirationBlockCount")
+	KeyBaseRequestGas          = []byte("BaseRequestGas")
+	KeyPerValidatorRequestGas  = []byte("PerValidatorRequestGas")
+	KeySamplingTryCount        = []byte("SamplingTryCount")
+	KeyOracleRewardPercentage  = []byte("OracleRewardPercentage")
+	KeyInactivePenaltyDuration = []byte("InactivePenaltyDuration")
 )
 
 // String implements the stringer interface for Params.
 func (p Params) String() string {
 	return fmt.Sprintf(`oracle Params:
-  MaxRawRequestCount:     %d
-  MaxAskCount:            %d
-  ExpirationBlockCount:   %d
-  MaxConsecutiveMisses:   %d
-  BaseRequestGas          %d
-  PerValidatorRequestGas: %d
-  SamplingTryCount:       %d
+  MaxRawRequestCount:      %d
+  MaxAskCount:             %d
+  ExpirationBlockCount:    %d
+  BaseRequestGas           %d
+  PerValidatorRequestGas:  %d
+  SamplingTryCount:        %d
+  OracleRewardPercentage:  %d
+  InactivePenaltyDuration: %d
 `,
 		p.MaxRawRequestCount,
 		p.MaxAskCount,
 		p.ExpirationBlockCount,
-		p.MaxConsecutiveMisses,
 		p.BaseRequestGas,
 		p.PerValidatorRequestGas,
 		p.SamplingTryCount,
+		p.OracleRewardPercentage,
+		p.InactivePenaltyDuration,
 	)
 }
 
@@ -56,10 +61,11 @@ func (p *Params) ParamSetPairs() params.ParamSetPairs {
 		params.NewParamSetPair(KeyMaxRawRequestCount, &p.MaxRawRequestCount, validateUint64("max data source count", true)),
 		params.NewParamSetPair(KeyMaxAskCount, &p.MaxAskCount, validateUint64("max ask count", true)),
 		params.NewParamSetPair(KeyExpirationBlockCount, &p.ExpirationBlockCount, validateUint64("expiration block count", true)),
-		params.NewParamSetPair(KeyMaxConsecutiveMisses, &p.MaxConsecutiveMisses, validateUint64("max consecutive misses", false)),
 		params.NewParamSetPair(KeyBaseRequestGas, &p.BaseRequestGas, validateUint64("base request gas", false)),
 		params.NewParamSetPair(KeyPerValidatorRequestGas, &p.PerValidatorRequestGas, validateUint64("per validator request gas", false)),
 		params.NewParamSetPair(KeySamplingTryCount, &p.SamplingTryCount, validateUint64("sampling try count", true)),
+		params.NewParamSetPair(KeyOracleRewardPercentage, &p.OracleRewardPercentage, validateUint64("oracle reward percentage", false)),
+		params.NewParamSetPair(KeyInactivePenaltyDuration, &p.InactivePenaltyDuration, validateUint64("inactive penalty duration", false)),
 	}
 }
 
@@ -69,10 +75,11 @@ func DefaultParams() Params {
 		DefaultMaxRawRequestCount,
 		DefaultMaxAskCount,
 		DefaultExpirationBlockCount,
-		DefaultMaxConsecutiveMisses,
 		DefaultBaseRequestGas,
 		DefaultPerValidatorRequestGas,
 		DefaultSamplingTryCount,
+		DefaultOracleRewardPercentage,
+		DefaultInactivePenaltyDuration,
 	)
 }
 

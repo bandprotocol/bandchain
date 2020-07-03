@@ -19,14 +19,14 @@ npm install --save @bandprotocol/bandchain.js
 ```js
 const BandChain = require('@bandprotocol/bandchain.js')
 
-const chainId = 'band-guanyu-devnet-2'
 const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
 
-const bandchain = new BandChain(chainId, endpoint)
+const bandchain = new BandChain(endpoint)
 ...
 ```
 
 ## 🔍 Test
+
 ```
 npm run test
 ```
@@ -35,12 +35,10 @@ npm run test
 
 ```js
 const BandChain = require('@bandprotocol/bandchain.js')
-
-const chainId = 'band-guanyu-devnet-2'
 const endpoint = 'http://guanyu-devnet.bandchain.org/rest'
 
 // Instantiating BandChain with REST endpoint
-const bandchain = new BandChain(chainId, endpoint)
+const bandchain = new BandChain(endpoint)
 
 // Create an instance of OracleScript with the script ID
 const oracleScript = await bandchain.getOracleScript(1)

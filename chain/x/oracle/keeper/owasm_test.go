@@ -8,29 +8,79 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+func TestGetRandomValidatorsSuccessActivateAll(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	// Getting 3 validators using ROLLING_SEED_1
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err := k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_A
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1 again should return the same result as the first one.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1 but for a different request ID.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	vals, err = k.GetRandomValidators(ctx, 3, 2)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+}
+
+func TestGetRandomValidatorsTooBigSize(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	_, err := k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 2, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 3, 1)
+	require.NoError(t, err)
+	_, err = k.GetRandomValidators(ctx, 4, 1)
+	require.Error(t, err)
+	_, err = k.GetRandomValidators(ctx, 9999, 1)
+	require.Error(t, err)
+}
+
+func TestGetRandomValidatorsWithActivate(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(false)
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED"))
+	// If no validators are active, you must not be able to get random validators
+	_, err := k.GetRandomValidators(ctx, 1, 1)
+	require.Error(t, err)
+	// If we activate 2 validators, we should be able to get at most 2 from the function.
+	k.Activate(ctx, testapp.Validator1.ValAddress)
+	k.Activate(ctx, testapp.Validator2.ValAddress)
+	vals, err := k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress}, vals)
+	vals, err = k.GetRandomValidators(ctx, 2, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	_, err = k.GetRandomValidators(ctx, 3, 1)
+	require.Error(t, err)
+	// After we deactivate 1 validator due to missing a report, we can only get at most 1 validator.
+	k.MissReport(ctx, testapp.Validator1.ValAddress, time.Now())
+	vals, err = k.GetRandomValidators(ctx, 1, 1)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator2.ValAddress}, vals)
+	_, err = k.GetRandomValidators(ctx, 2, 1)
+	require.Error(t, err)
+}
+
 func TestPrepareRequestSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("beeb")
 	askCount := uint64(1)
 	minCount := uint64(1)
@@ -42,14 +92,14 @@ func TestPrepareRequestSuccess(t *testing.T) {
 		types.NewRawRequest(3, 3, []byte("beeb")),
 	}
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.NoError(t, err)
 
 	req, err := k.GetRequest(ctx, 1)
 	require.NoError(t, err)
-	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{Validator1.ValAddress}, minCount,
-		requestHeight, int64(1581589790), clientID, rawRequests)
+	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{testapp.Validator1.ValAddress}, minCount,
+		requestHeight, testapp.ParseTime(1581589790), clientID, rawRequests)
 	require.Equal(t, expectReq, req)
 	expectEvents := sdk.Events{
 		sdk.NewEvent(
@@ -59,26 +109,26 @@ func TestPrepareRequestSuccess(t *testing.T) {
 			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
 			sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
 			sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
-			sdk.NewAttribute(types.AttributeKeyValidator, Validator1.ValAddress.String()),
+			sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds1.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[1].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds2.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[2].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
 		sdk.NewEvent(
 			types.EventTypeRawRequest,
 			sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds3.Filename),
+			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[3].Filename),
 			sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
 			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
 		),
@@ -87,66 +137,36 @@ func TestPrepareRequestSuccess(t *testing.T) {
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	k.SetParam(ctx, types.KeyMaxAskCount, 1000) // Set MaxAskCount 1000
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	oracleScriptID := types.OracleScriptID(1)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(100000) // Set ask count 100000
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
 func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(90000)) // Set Gas Meter 90000
 
 	baseRequestGas := uint64(100000)
 	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas) // Set BaseRequestGas 100000
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	oracleScriptID := types.OracleScriptID(1)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	require.Panics(t, func() { k.PrepareRequest(ctx, &m) })
 
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000))
@@ -156,7 +176,7 @@ func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 }
 
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000)) //Set Gas Meter 150000
 
@@ -165,28 +185,13 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	perValidatorRequestGas := uint64(100000)
 	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas) // Set PerValidatorRequestGas 100000
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	oracleScriptID := types.OracleScriptID(1)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 
 	// PrepareRequest panics because set gas meter at 150000
 	// but PrepareRequest consume gas more than 200000
@@ -195,110 +200,84 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 }
 
 func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	oracleScriptID := types.OracleScriptID(1)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(15)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 
 	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
 func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	ds1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	k.AddDataSource(ctx, ds1)
-
-	ds2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	k.AddDataSource(ctx, ds2)
-
-	ds3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	k.AddDataSource(ctx, ds3)
-
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
-func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	os, clear4 := getBadOracleScript()
-	defer clear4()
+	oracleScriptID := types.OracleScriptID(3)
+	calldata := []byte("test")
+	askCount := uint64(1)
+	minCount := uint64(2)
+	clientID := "beeb"
 
-	oracleScriptID := k.AddOracleScript(ctx, os)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "empty raw requests")
+}
+
+func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+
+	oracleScriptID := types.OracleScriptID(2)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.EqualError(t, err, "bad wasm execution: failed to prepare request with error: OEI action to invoke is not available")
 }
 
 func TestPrepareRequestGetDataSourceFail(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	os, clear4 := getTestOracleScript()
-	defer clear4()
-
-	oracleScriptID := k.AddOracleScript(ctx, os)
 	calldata, _ := hex.DecodeString("030000004254436400000000000000")
 	askCount := uint64(1)
 	minCount := uint64(2)
 	clientID := "beeb"
 
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, Alice.Address)
+	m := types.NewMsgRequestData(2, calldata, askCount, minCount, clientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.Error(t, err)
 }
 
 func TestResolveRequestSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
-	os, clear := getTestOracleScript()
-	defer clear()
-	oracleScriptID := k.AddOracleScript(ctx, os)
-
+	oracleScriptID := types.OracleScriptID(1)
 	calldata := []byte("calldata")
 	minCount := uint64(1)
 	clientID := "owasm test"
@@ -307,9 +286,9 @@ func TestResolveRequestSuccess(t *testing.T) {
 		types.NewRawRequest(2, 2, []byte("beeb")),
 		types.NewRawRequest(3, 3, []byte("beeb")),
 	}
-	vals := []sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress, Validator3.ValAddress}
+	vals := []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress, testapp.Validator3.ValAddress}
 	requestHeight := int64(4000)
-	requestTime := int64(1581589700)
+	requestTime := testapp.ParseTime(1581589700)
 
 	req := types.NewRequest(
 		oracleScriptID, calldata, vals, minCount, requestHeight,
@@ -318,7 +297,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 	// Set report validator
 	k.AddReport(ctx, types.RequestID(1), types.NewReport(
-		Validator1.ValAddress,
+		testapp.Validator1.ValAddress,
 		true,
 		[]types.RawReport{
 			types.NewRawReport(1, 0, []byte("answer1")),
@@ -336,7 +315,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 	)
 
 	resPacket := types.NewOracleResponsePacketData(
-		clientID, reqID, 1, requestTime,
+		clientID, reqID, 1, requestTime.Unix(),
 		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
 	require.Equal(t, types.Result{RequestPacketData: reqPacket, ResponsePacketData: resPacket}, res)
@@ -345,7 +324,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 
 // TODO: Patch to "Bad" wasm code that is a valid wasm code.
 // func TestResolveRequestFail(t *testing.T) {
-// 	_, ctx, k := createTestInput()
+// 	_, ctx, k := testapp.CreateTestInput(true)
 // 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
 
 // 	ds1, clear1 := getTestDataSource("code1")

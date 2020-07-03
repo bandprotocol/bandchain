@@ -9,6 +9,8 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/segmentio/kafka-go"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -19,15 +21,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 )
 
-type Message struct {
-	Key   string
-	Value JsDict
-}
-
 // App extends the standard Band Cosmos-SDK application with Kafka emitter
 // functionality to act as an event producer for all events in the blockchains.
 type App struct {
 	*bandapp.BandApp
+	// Decoder for unmarshaling []byte into sdk.Tx.
+	txDecoder sdk.TxDecoder
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
@@ -42,11 +41,13 @@ func NewBandAppWithEmitter(
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	baseAppOptions ...func(*bam.BaseApp),
 ) *App {
+	app := bandapp.NewBandApp(
+		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
+		home, baseAppOptions...,
+	)
 	return &App{
-		BandApp: bandapp.NewBandApp(
-			logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-			home, baseAppOptions...,
-		),
+		BandApp:   app,
+		txDecoder: auth.DefaultTxDecoder(app.Codec()),
 		writer: kafka.NewWriter(kafka.WriterConfig{
 			Brokers:      []string{"localhost:9092"}, // TODO: Remove hardcode
 			Topic:        topic,
@@ -95,7 +96,18 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		})
 	}
 	// Staking module
-	// TODO
+	var genutilState genutil.GenesisState
+	app.Codec().MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	for _, genTx := range genutilState.GenTxs {
+		var tx auth.StdTx
+		app.Codec().MustUnmarshalJSON(genTx, &tx)
+		for _, msg := range tx.Msgs {
+			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
+				app.emitSetValidator(createMsg.ValidatorAddress)
+			}
+		}
+	}
+
 	// Oracle module
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
@@ -132,7 +144,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
 		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
-		"proposer":  req.Header.GetProposerAddress(),
+		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
 		"hash":      req.GetHash(),
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
@@ -144,7 +156,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 // DeliverTx calls into the underlying DeliverTx and emits relevant events to Kafka.
 func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	res := app.BandApp.DeliverTx(req)
-	tx, err := app.TxDecoder(req.Tx)
+	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		return res
 	}
@@ -207,7 +219,11 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 		})
 	}
-	// TODO: Handle end block events
+
+	for _, event := range res.Events {
+		app.handleBeginBlockEndBlockEvent(event)
+	}
+
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }

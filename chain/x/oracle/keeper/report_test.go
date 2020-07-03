@@ -6,304 +6,146 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
-	"github.com/bandprotocol/bandchain/chain/simapp"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+func defaultRequest() types.Request {
+	return types.NewRequest(
+		1, BasicCalldata,
+		[]sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress},
+		2, 0, testapp.ParseTime(0),
+		BasicClientID, []types.RawRequest{
+			types.NewRawRequest(42, 1, BasicCalldata),
+			types.NewRawRequest(43, 2, BasicCalldata),
+		},
+	)
+}
+
 func TestHasReport(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a report to request ID 42 from Alice without setting it.
-	require.False(t, k.HasReport(ctx, 42, Alice.ValAddress))
+	require.False(t, k.HasReport(ctx, 42, testapp.Alice.ValAddress))
 	// After we set it, we should be able to find it.
-	k.SetReport(ctx, 42, types.NewReport(Alice.ValAddress, true, nil))
-	require.True(t, k.HasReport(ctx, 42, Alice.ValAddress))
+	k.SetReport(ctx, 42, types.NewReport(testapp.Alice.ValAddress, true, nil))
+	require.True(t, k.HasReport(ctx, 42, testapp.Alice.ValAddress))
 }
 
 func TestAddReportSuccess(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
-			types.NewRawReport(10, 0, []byte("data2/1")),
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
 		},
 	))
-
 	require.NoError(t, err)
-	require.Equal(t, []types.Report{types.NewReport(Validator1.ValAddress, true, []types.RawReport{
-		types.NewRawReport(2, 1, []byte("data1/1")),
-		types.NewRawReport(10, 0, []byte("data2/1")),
-	})}, k.GetReports(ctx, 1))
+	require.Equal(t, []types.Report{
+		types.NewReport(testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
+		}),
+	}, k.GetReports(ctx, 1))
 }
 
-func TestReportOnInvalidRequest(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
-	err := k.AddReport(ctx, 2, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
-			types.NewRawReport(10, 0, []byte("data2/1")),
+func TestReportOnNonExistingRequest(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	err := k.AddReport(ctx, 1, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
 		},
 	))
-
 	require.Error(t, err)
 }
 
 func TestReportByNotRequestedValidator(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
-		Alice.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
-			types.NewRawReport(10, 0, []byte("data2/1")),
+		testapp.Alice.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
 		},
 	))
-
 	require.Error(t, err)
 }
 
 func TestDuplicateReport(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
-			types.NewRawReport(10, 0, []byte("data2/1")),
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
 		},
 	))
-
 	require.NoError(t, err)
 	err = k.AddReport(ctx, 1, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 0, []byte("new data 1")),
-			types.NewRawReport(10, 0, []byte("new data 2")),
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(43, 1, []byte("data2/1")),
 		},
 	))
 	require.Error(t, err)
 }
 
 func TestReportInvalidDataSourceCount(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
 		},
 	))
 	require.Error(t, err)
 }
 
 func TestReportInvalidExternalIDs(t *testing.T) {
-	_, ctx, k := createTestInput()
-	request := newDefaultRequest()
-	request.RawRequests = []types.RawRequest{
-		types.NewRawRequest(2, 1, []byte("calldata")),
-		types.NewRawRequest(10, 1, []byte("calldata")),
-	}
-	k.SetRequest(ctx, 1, request)
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRequest(ctx, 1, defaultRequest())
 	err := k.AddReport(ctx, 1, types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{
-			types.NewRawReport(2, 1, []byte("data1/1")),
-			types.NewRawReport(11, 1, []byte("data1/1")),
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(42, 0, []byte("data1/1")),
+			types.NewRawReport(44, 1, []byte("data2/1")), // BAD EXTERNAL ID!
 		},
 	))
 	require.Error(t, err)
 }
 
 func TestGetReportCount(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator1.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator2.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Alice.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Bob.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Carol.ValAddress, true, []types.RawReport{}))
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	// We start by setting some aribrary reports.
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Carol.ValAddress, true, []types.RawReport{}))
+	// GetReportCount should return the correct values.
 	require.Equal(t, uint64(2), k.GetReportCount(ctx, types.RequestID(1)))
 	require.Equal(t, uint64(3), k.GetReportCount(ctx, types.RequestID(2)))
 }
 
 func TestDeleteReports(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator1.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(Validator2.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Alice.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Bob.ValAddress, true, []types.RawReport{}))
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(Carol.ValAddress, true, []types.RawReport{}))
-
-	require.True(t, k.HasReport(ctx, types.RequestID(1), Validator1.ValAddress))
-	require.True(t, k.HasReport(ctx, types.RequestID(2), Alice.ValAddress))
-
+	_, ctx, k := testapp.CreateTestInput(true)
+	// We start by setting some arbitrary reports.
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(1), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Alice.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Bob.ValAddress, true, []types.RawReport{}))
+	k.SetReport(ctx, types.RequestID(2), types.NewReport(testapp.Carol.ValAddress, true, []types.RawReport{}))
+	// All reports should exist on the state.
+	require.True(t, k.HasReport(ctx, types.RequestID(1), testapp.Alice.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(1), testapp.Bob.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Alice.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Bob.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Carol.ValAddress))
+	// After we delete reports related to request#1, they must disappear.
 	k.DeleteReports(ctx, types.RequestID(1))
-	require.False(t, k.HasReport(ctx, types.RequestID(1), Validator1.ValAddress))
-	require.True(t, k.HasReport(ctx, types.RequestID(2), Alice.ValAddress))
-}
-func TestUpdateReportInfos(t *testing.T) {
-	_, ctx, k := createTestInput()
-
-	ctx = ctx.WithBlockHeight(100)
-	request := types.NewRequest(
-		types.OracleScriptID(1), []byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2, 100, 100, "test", nil,
-	)
-	k.SetRequest(ctx, types.RequestID(1), request)
-
-	// 2 Validators report
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{},
-	))
-
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(
-		Validator2.ValAddress, true, []types.RawReport{},
-	))
-
-	// Update report info
-	k.UpdateReportInfos(ctx, types.RequestID(1))
-	cases := []struct {
-		validator simapp.Account
-		info      types.ReportInfo
-	}{
-		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0)},
-		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0)},
-	}
-	for _, tc := range cases {
-		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.info, info)
-	}
-
-	k.SetRequest(ctx, types.RequestID(2), request)
-
-	// Only Validator1 report
-	k.SetReport(ctx, types.RequestID(2), types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{},
-	))
-
-	// Update report info
-	k.UpdateReportInfos(ctx, types.RequestID(2))
-	cases = []struct {
-		validator simapp.Account
-		info      types.ReportInfo
-	}{
-		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0)},
-		{Validator2, types.NewReportInfo(Validator2.ValAddress, 1)},
-	}
-	for _, tc := range cases {
-		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.info, info)
-	}
-
-	k.SetRequest(ctx, types.RequestID(3), request)
-	// Only Validator2 report
-	k.SetReport(ctx, types.RequestID(3), types.NewReport(
-		Validator2.ValAddress, true, []types.RawReport{},
-	))
-
-	// Update report info
-	k.UpdateReportInfos(ctx, types.RequestID(3))
-	cases = []struct {
-		validator simapp.Account
-		info      types.ReportInfo
-	}{
-		{Validator1, types.NewReportInfo(Validator1.ValAddress, 1)},
-		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0)},
-	}
-	for _, tc := range cases {
-		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.info, info)
-	}
-
-	k.SetRequest(ctx, types.RequestID(4), request)
-	// Noone reports
-	k.UpdateReportInfos(ctx, types.RequestID(4))
-	cases = []struct {
-		validator simapp.Account
-		info      types.ReportInfo
-	}{
-		{Validator1, types.NewReportInfo(Validator1.ValAddress, 2)},
-		{Validator2, types.NewReportInfo(Validator2.ValAddress, 1)},
-	}
-	for _, tc := range cases {
-		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.info, info)
-	}
-}
-
-func TestGetJailedUpdateReportInfos(t *testing.T) {
-	app, ctx, k := createTestInput()
-	k.SetParam(ctx, types.KeyMaxConsecutiveMisses, 3)
-
-	ctx = ctx.WithBlockHeight(100)
-	request := types.NewRequest(
-		types.OracleScriptID(1), []byte("calldata"),
-		[]sdk.ValAddress{Validator1.ValAddress, Validator2.ValAddress},
-		2, 100, 100, "test", nil,
-	)
-	k.SetRequest(ctx, types.RequestID(1), request)
-
-	// 2 Validators report
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(
-		Validator1.ValAddress, true, []types.RawReport{},
-	))
-
-	k.SetReport(ctx, types.RequestID(1), types.NewReport(
-		Validator2.ValAddress, true, []types.RawReport{},
-	))
-	k.UpdateReportInfos(ctx, types.RequestID(1))
-
-	// Validator2 reported downed
-	for i := 2; i <= 5; i++ {
-		k.SetRequest(ctx, types.RequestID(i), request)
-		k.SetReport(ctx, types.RequestID(i), types.NewReport(
-			Validator1.ValAddress, true, []types.RawReport{},
-		))
-		k.UpdateReportInfos(ctx, types.RequestID(i))
-	}
-
-	cases := []struct {
-		validator simapp.Account
-		info      types.ReportInfo
-		jailed    bool
-	}{
-		{Validator1, types.NewReportInfo(Validator1.ValAddress, 0), false},
-		{Validator2, types.NewReportInfo(Validator2.ValAddress, 0), true},
-	}
-	for _, tc := range cases {
-		info := k.GetReportInfoWithDefault(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.info, info)
-		validator := app.StakingKeeper.Validator(ctx, tc.validator.ValAddress)
-		require.Equal(t, tc.jailed, validator.IsJailed())
-	}
+	require.False(t, k.HasReport(ctx, types.RequestID(1), testapp.Alice.ValAddress))
+	require.False(t, k.HasReport(ctx, types.RequestID(1), testapp.Bob.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Alice.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Bob.ValAddress))
+	require.True(t, k.HasReport(ctx, types.RequestID(2), testapp.Carol.ValAddress))
 }

@@ -1,8 +1,10 @@
-package simapp
+package testapp
 
 import (
+	"fmt"
 	"io/ioutil"
 	"math/rand"
+	"path/filepath"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -21,6 +23,10 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	me "github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // Account is a data structure to store key of test account.
@@ -33,13 +39,15 @@ type Account struct {
 
 // nolint
 var (
-	Owner      Account
-	Alice      Account
-	Bob        Account
-	Carol      Account
-	Validator1 Account
-	Validator2 Account
-	Validator3 Account
+	Owner         Account
+	Alice         Account
+	Bob           Account
+	Carol         Account
+	Validator1    Account
+	Validator2    Account
+	Validator3    Account
+	DataSources   []types.DataSource
+	OracleScripts []types.OracleScript
 )
 
 // nolint
@@ -73,6 +81,39 @@ func createArbitraryAccount(r *rand.Rand) Account {
 	}
 }
 
+func getGenesisDataSources() []types.DataSource {
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	fc := filecache.New(dir)
+	DataSources = []types.DataSource{{}} // 0th index should be ignored
+	for idx := 0; idx < 5; idx++ {
+		idxStr := fmt.Sprintf("%d", idx+1)
+		hash := fc.AddFile([]byte("code" + idxStr))
+		DataSources = append(DataSources, types.NewDataSource(
+			Owner.Address, "name"+idxStr, "desc"+idxStr, hash,
+		))
+	}
+	return DataSources[1:]
+}
+
+func getGenesisOracleScripts() []types.OracleScript {
+	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
+	fc := filecache.New(dir)
+	OracleScripts = []types.OracleScript{{}} // 0th index should be ignored
+	wasms := [][]byte{
+		Wasm1,
+		Wasm2,
+		Wasm3,
+	}
+	for idx := 0; idx < len(wasms); idx++ {
+		idxStr := fmt.Sprintf("%d", idx+1)
+		hash := fc.AddFile(compile(wasms[idx]))
+		OracleScripts = append(OracleScripts, types.NewOracleScript(
+			Owner.Address, "name"+idxStr, "desc"+idxStr, hash, "schema"+idxStr, "url"+idxStr,
+		))
+	}
+	return OracleScripts[1:]
+}
+
 func createValidatorTx(chainID string, acc Account, moniker string, selfDelegation sdk.Coin) authtypes.StdTx {
 	msg := staking.NewMsgCreateValidator(
 		acc.ValAddress, acc.PubKey, selfDelegation,
@@ -92,7 +133,6 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 	if err != nil {
 		panic(err)
 	}
-
 	sigs := []authtypes.StdSignature{{
 		PubKey:    acc.PubKey,
 		Signature: sigBytes,
@@ -102,7 +142,7 @@ func createValidatorTx(chainID string, acc Account, moniker string, selfDelegati
 
 // NewSimApp creates instance of our app using in test.
 func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
-	// Sets HomeFlag to a temp folder for simulation run.
+	// Set HomeFlag to a temp folder for simulation run.
 	dir, err := ioutil.TempDir("", "bandd")
 	if err != nil {
 		panic(err)
@@ -111,7 +151,7 @@ func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 	db := dbm.NewMemDB()
 	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "")
 	genesis := bandapp.NewDefaultGenesisState()
-	// Funds seed accounts and validators with 1000000uband and 100000000uband initially.
+	// Fund seed accounts and validators with 1000000uband and 100000000uband initially.
 	authGenesis := auth.NewGenesisState(auth.DefaultParams(), []authexported.GenesisAccount{
 		&auth.BaseAccount{Address: Owner.Address, Coins: Coins1000000uband},
 		&auth.BaseAccount{Address: Alice.Address, Coins: Coins1000000uband},
@@ -122,12 +162,18 @@ func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 		&auth.BaseAccount{Address: Validator3.Address, Coins: Coins100000000uband},
 	})
 	genesis[auth.ModuleName] = app.Codec().MustMarshalJSON(authGenesis)
+	// Add genesis transactions to create 3 validators during chain genesis.
 	genutilGenesis := genutil.NewGenesisStateFromStdTx([]authtypes.StdTx{
 		createValidatorTx(chainID, Validator1, "validator1", Coins100000000uband[0]),
 		createValidatorTx(chainID, Validator2, "validator2", Coins1000000uband[0]),
 		createValidatorTx(chainID, Validator3, "validator3", Coins99999999uband[0]),
 	})
 	genesis[genutil.ModuleName] = app.Codec().MustMarshalJSON(genutilGenesis)
+	// Add genesis data sources and oracle scripts
+	oracleGenesis := oracle.DefaultGenesisState()
+	oracleGenesis.DataSources = getGenesisDataSources()
+	oracleGenesis.OracleScripts = getGenesisOracleScripts()
+	genesis[oracle.ModuleName] = app.Codec().MustMarshalJSON(oracleGenesis)
 	// Initialize the sim blockchain. We are ready for testing!
 	app.InitChain(abci.RequestInitChain{
 		ChainId:       chainID,
@@ -135,4 +181,16 @@ func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 		AppStateBytes: codec.MustMarshalJSONIndent(app.Codec(), genesis),
 	})
 	return app
+}
+
+// CreateTestInput creates a new test environment for unit tests.
+func CreateTestInput(autoActivate bool) (*bandapp.BandApp, sdk.Context, me.Keeper) {
+	app := NewSimApp("BANDCHAIN", log.NewNopLogger())
+	ctx := app.NewContext(false, abci.Header{})
+	if autoActivate {
+		app.OracleKeeper.Activate(ctx, Validator1.ValAddress)
+		app.OracleKeeper.Activate(ctx, Validator2.ValAddress)
+		app.OracleKeeper.Activate(ctx, Validator3.ValAddress)
+	}
+	return app, ctx, app.OracleKeeper
 }

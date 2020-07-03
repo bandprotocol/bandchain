@@ -9,6 +9,7 @@ require (
 	github.com/ethereum/go-ethereum v1.9.15
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gogo/protobuf v1.3.1
+	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.4
 	github.com/jinzhu/gorm v1.9.12
 	github.com/kyokomi/emoji v2.2.4+incompatible
@@ -16,7 +17,7 @@ require (
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible
-	github.com/rakyll/statik v0.1.7
+	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/segmentio/kafka-go v0.3.7
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.0

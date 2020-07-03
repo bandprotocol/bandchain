@@ -18,6 +18,8 @@ var (
 	NewQuerier    = keeper.NewQuerier
 	ModuleCdc     = types.ModuleCdc
 	RegisterCodec = types.RegisterCodec
+
+	EventTypeRequestExecute = types.EventTypeRequestExecute
 )
 
 type (
@@ -28,6 +30,7 @@ type (
 	MsgEditDataSource        = types.MsgEditDataSource
 	MsgCreateOracleScript    = types.MsgCreateOracleScript
 	MsgEditOracleScript      = types.MsgEditOracleScript
+	MsgActivate              = types.MsgActivate
 	MsgAddReporter           = types.MsgAddReporter
 	MsgRemoveReporter        = types.MsgRemoveReporter
 	OracleRequestPacketData  = types.OracleRequestPacketData

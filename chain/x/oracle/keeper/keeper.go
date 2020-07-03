@@ -17,27 +17,34 @@ const (
 )
 
 type Keeper struct {
-	storeKey      sdk.StoreKey
-	cdc           *codec.Codec
-	fileCache     filecache.Cache
-	ParamSpace    params.Subspace
-	StakingKeeper types.StakingKeeper
+	storeKey         sdk.StoreKey
+	cdc              *codec.Codec
+	fileCache        filecache.Cache
+	feeCollectorName string
+	paramSpace       params.Subspace
+	supplyKeeper     types.SupplyKeeper
+	stakingKeeper    types.StakingKeeper
+	distrKeeper      types.DistrKeeper
 }
 
 // NewKeeper creates a new oracle Keeper instance.
 func NewKeeper(
-	cdc *codec.Codec, key sdk.StoreKey, fileDir string, paramSpace params.Subspace,
-	stakingKeeper types.StakingKeeper,
+	cdc *codec.Codec, key sdk.StoreKey, fileDir string, feeCollectorName string,
+	paramSpace params.Subspace, supplyKeeper types.SupplyKeeper,
+	stakingKeeper types.StakingKeeper, distrKeeper types.DistrKeeper,
 ) Keeper {
 	if !paramSpace.HasKeyTable() {
 		paramSpace = paramSpace.WithKeyTable(ParamKeyTable())
 	}
 	return Keeper{
-		storeKey:      key,
-		cdc:           cdc,
-		fileCache:     filecache.New(fileDir),
-		ParamSpace:    paramSpace,
-		StakingKeeper: stakingKeeper,
+		storeKey:         key,
+		cdc:              cdc,
+		fileCache:        filecache.New(fileDir),
+		feeCollectorName: feeCollectorName,
+		paramSpace:       paramSpace,
+		supplyKeeper:     supplyKeeper,
+		stakingKeeper:    stakingKeeper,
+		distrKeeper:      distrKeeper,
 	}
 }
 
@@ -53,18 +60,18 @@ func ParamKeyTable() params.KeyTable {
 
 // GetParam returns the parameter as specified by key as an uint64.
 func (k Keeper) GetParam(ctx sdk.Context, key []byte) (res uint64) {
-	k.ParamSpace.Get(ctx, key, &res)
+	k.paramSpace.Get(ctx, key, &res)
 	return res
 }
 
 // SetParam saves the given key-value parameter to the store.
 func (k Keeper) SetParam(ctx sdk.Context, key []byte, value uint64) {
-	k.ParamSpace.Set(ctx, key, value)
+	k.paramSpace.Set(ctx, key, value)
 }
 
 // GetParams returns all current parameters as a types.Params instance.
 func (k Keeper) GetParams(ctx sdk.Context) (params types.Params) {
-	k.ParamSpace.GetParamSet(ctx, &params)
+	k.paramSpace.GetParamSet(ctx, &params)
 	return params
 }
 
@@ -75,12 +82,7 @@ func (k Keeper) SetRollingSeed(ctx sdk.Context, rollingSeed []byte) {
 
 // GetRollingSeed returns the current rolling seed value.
 func (k Keeper) GetRollingSeed(ctx sdk.Context) []byte {
-	bz := ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
-	if bz == nil {
-		// If RollingSeedStoreKey is not yet set, we initialize it to a zero'ed slice.
-		return make([]byte, RollingSeedSizeInBytes)
-	}
-	return bz
+	return ctx.KVStore(k.storeKey).Get(types.RollingSeedStoreKey)
 }
 
 // SetRequestCount sets the number of request count to the given value. Useful for genesis state.
@@ -98,14 +100,14 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 }
 
 // SetRequestLastExpired sets the ID of the last expired request.
-func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id int64) {
+func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id types.RequestID) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.RequestLastExpiredStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(id))
 }
 
 // GetRequestLastExpired returns the ID of the last expired request.
-func (k Keeper) GetRequestLastExpired(ctx sdk.Context) int64 {
-	var requestNumber int64
+func (k Keeper) GetRequestLastExpired(ctx sdk.Context) types.RequestID {
+	var requestNumber types.RequestID
 	bz := ctx.KVStore(k.storeKey).Get(types.RequestLastExpiredStoreKey)
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestNumber)
 	return requestNumber
@@ -133,7 +135,7 @@ func (k Keeper) GetDataSourceCount(ctx sdk.Context) int64 {
 	return dataSourceCount
 }
 
-// GetNextDataSourceID increments and returns the current number of data source.
+// GetNextDataSourceID increments and returns the current number of data sources.
 func (k Keeper) GetNextDataSourceID(ctx sdk.Context) types.DataSourceID {
 	dataSourceCount := k.GetDataSourceCount(ctx)
 	k.SetDataSourceCount(ctx, dataSourceCount+1)
@@ -154,7 +156,7 @@ func (k Keeper) GetOracleScriptCount(ctx sdk.Context) int64 {
 	return oracleScriptCount
 }
 
-// GetNextOracleScriptID increments and returns the current number of oracle script.
+// GetNextOracleScriptID increments and returns the current number of oracle scripts.
 func (k Keeper) GetNextOracleScriptID(ctx sdk.Context) types.OracleScriptID {
 	oracleScriptCount := k.GetOracleScriptCount(ctx)
 	k.SetOracleScriptCount(ctx, oracleScriptCount+1)

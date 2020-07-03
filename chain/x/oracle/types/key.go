@@ -14,6 +14,8 @@ const (
 )
 
 var (
+	// RollingSeedSizeInBytes is the size of rolling block hash for random seed.
+	RollingSeedSizeInBytes = 32
 	// GlobalStoreKeyPrefix is the prefix for global primitive state variables.
 	GlobalStoreKeyPrefix = []byte{0x00}
 	// RollingSeedStoreKey is the key that keeps the seed based on the first 8-bit of the most recent 32 block hashes.
@@ -39,8 +41,8 @@ var (
 	OracleScriptStoreKeyPrefix = []byte{0x04}
 	// ReporterStoreKeyPrefix is the prefix for reporter store.
 	ReporterStoreKeyPrefix = []byte{0x05}
-	// ReportInfoKeyPrefix is the prefix for validator report info store.
-	ReportInfoKeyPrefix = []byte{0x06}
+	// ValidatorStatusKeyPrefix is the prefix for validator status store.
+	ValidatorStatusKeyPrefix = []byte{0x06}
 	// ResultStoreKeyPrefix is the prefix for request result store.
 	ResultStoreKeyPrefix = []byte{0xff}
 )
@@ -53,13 +55,6 @@ func RequestStoreKey(requestID RequestID) []byte {
 // ReportStoreKey returns the key to retrieve all data reports for a request.
 func ReportStoreKey(requestID RequestID) []byte {
 	return append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
-}
-
-// ReportStoreKeyPerValidator returns the key to retrieve the data report from a validator to a request.
-func ReportStoreKeyPerValidator(reqID RequestID, val sdk.ValAddress) []byte {
-	buf := append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(reqID))...)
-	buf = append(buf, val.Bytes()...)
-	return buf
 }
 
 // DataSourceStoreKey returns the key to retrieve a specific data source from the store.
@@ -79,9 +74,9 @@ func ReporterStoreKey(validatorAddress sdk.ValAddress, reporterAddress sdk.AccAd
 	return buf
 }
 
-// ReportInfoStoreKey returns the key to a validator's report info.
-func ReportInfoStoreKey(v sdk.ValAddress) []byte {
-	return append(ReportInfoKeyPrefix, v.Bytes()...)
+// ValidatorStatusStoreKey returns the key to a validator's status.
+func ValidatorStatusStoreKey(v sdk.ValAddress) []byte {
+	return append(ValidatorStatusKeyPrefix, v.Bytes()...)
 }
 
 // ResultStoreKey returns the key to a request result in the store.
@@ -89,7 +84,14 @@ func ResultStoreKey(requestID RequestID) []byte {
 	return append(ResultStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(requestID))...)
 }
 
-// ValidatorReporterPrefixKey returns the key to a validator's reporters.
-func ValidatorReporterPrefixKey(val sdk.ValAddress) []byte {
+// ReportsOfValidatorPrefixKey returns the prefix key to get all reports for a request from a validator.
+func ReportsOfValidatorPrefixKey(reqID RequestID, val sdk.ValAddress) []byte {
+	buf := append(ReportStoreKeyPrefix, sdk.Uint64ToBigEndian(uint64(reqID))...)
+	buf = append(buf, val.Bytes()...)
+	return buf
+}
+
+// ReportersOfValidatorPrefixKey returns the prefix key to get all reporters of a validator.
+func ReportersOfValidatorPrefixKey(val sdk.ValAddress) []byte {
 	return append(ReporterStoreKeyPrefix, val.Bytes()...)
 }

@@ -20,8 +20,9 @@ import (
 
 type dbBandApp struct {
 	*BandApp
-	dbBand *db.BandDB
-	txNum  int64
+	txDecoder sdk.TxDecoder
+	dbBand    *db.BandDB
+	txNum     int64
 }
 
 func NewDBBandApp(
@@ -37,7 +38,7 @@ func NewDBBandApp(
 	dbBand.DistrKeeper = app.DistrKeeper
 	dbBand.StakingKeeper = app.StakingKeeper
 	dbBand.OracleKeeper = app.OracleKeeper
-	return &dbBandApp{BandApp: app, dbBand: dbBand}
+	return &dbBandApp{BandApp: app, txDecoder: auth.DefaultTxDecoder(app.Codec()), dbBand: dbBand}
 }
 
 func (app *dbBandApp) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
@@ -151,7 +152,7 @@ func (app *dbBandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDel
 		return res
 	}
 
-	tx, err := app.TxDecoder(req.Tx)
+	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		panic(err)
 	}
@@ -212,7 +213,14 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 	// Begin transaction
 	app.dbBand.BeginTransaction()
 	app.dbBand.SetContext(app.DeliverContext)
-	err := app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
+		return res
+	}
+	err = app.dbBand.ValidateChainID(app.DeliverContext.ChainID())
 	if err != nil {
 		panic(err)
 	}
@@ -257,8 +265,15 @@ func (app *dbBandApp) BeginBlock(req abci.RequestBeginBlock) (res abci.ResponseB
 
 func (app *dbBandApp) EndBlock(req abci.RequestEndBlock) (res abci.ResponseEndBlock) {
 	res = app.BandApp.EndBlock(req)
+	lastProcessHeight, err := app.dbBand.GetLastProcessedHeight()
+	if err != nil {
+		panic(err)
+	}
+	if lastProcessHeight+1 != app.DeliverContext.BlockHeight() {
+		return res
+	}
 	inflation := app.BandApp.MintKeeper.GetMinter(app.BandApp.DeliverContext).Inflation.String()
-	err := app.dbBand.SetInflationRate(inflation)
+	err = app.dbBand.SetInflationRate(inflation)
 	if err != nil {
 		panic(err)
 	}
