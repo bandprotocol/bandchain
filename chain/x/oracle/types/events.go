@@ -13,7 +13,7 @@ const (
 	EventTypeDeactivate         = "deactivate"
 	EventTypeAddReporter        = "add_reporter"
 	EventTypeRemoveReporter     = "remove_reporter"
-	EventTypeRequestExecute     = "request_execute"
+	EventTypeResolve            = "resolve"
 
 	AttributeKeyID             = "id"
 	AttributeKeyRequestID      = "request_id"

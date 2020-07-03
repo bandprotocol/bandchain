@@ -8,6 +8,7 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func parseEvents(events sdk.StringEvents) EvMap {
@@ -58,7 +59,7 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := parseEvents(events)
 	switch event.Type {
-	case oracle.EventTypeRequestExecute:
+	case types.EventTypeResolve:
 		app.handleEventRequestExecute(evMap)
 	default:
 		break
