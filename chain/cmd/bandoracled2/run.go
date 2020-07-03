@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	httpclient "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
@@ -92,7 +92,7 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			l.Info(":star: Creating HTTP client with node URI: %s", cfg.NodeURI)
-			c.client, err = rpcclient.NewHTTP(cfg.NodeURI, "/websocket")
+			c.client, err = httpclient.New(cfg.NodeURI, "/websocket")
 			if err != nil {
 				return err
 			}
