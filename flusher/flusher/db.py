@@ -194,8 +194,13 @@ validators = sa.Table(
 delegations = sa.Table(
     "delegations",
     metadata,
-    Column("delegator_address", sa.String, primary_key=True),
-    Column("operator_address", sa.String, primary_key=True),
+    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
+    Column(
+        "operator_address",
+        sa.String,
+        sa.ForeignKey("validators.operator_address"),
+        primary_key=True,
+    ),
     Column("shares", sa.String),
     Column("last_ratio", sa.String),
     Column("active", sa.Boolean),
