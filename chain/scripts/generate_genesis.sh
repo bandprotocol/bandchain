@@ -1,8 +1,6 @@
 DIR=`dirname "$0"`
 
 rm -rf ~/.band*
-dropdb my_db
-createdb my_db
 
 # initial new node
 bandd init validator --chain-id bandchain

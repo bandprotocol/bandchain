@@ -100,14 +100,14 @@ func (k Keeper) GetRequestCount(ctx sdk.Context) int64 {
 }
 
 // SetRequestLastExpired sets the ID of the last expired request.
-func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id int64) {
+func (k Keeper) SetRequestLastExpired(ctx sdk.Context, id types.RequestID) {
 	store := ctx.KVStore(k.storeKey)
 	store.Set(types.RequestLastExpiredStoreKey, k.cdc.MustMarshalBinaryLengthPrefixed(id))
 }
 
 // GetRequestLastExpired returns the ID of the last expired request.
-func (k Keeper) GetRequestLastExpired(ctx sdk.Context) int64 {
-	var requestNumber int64
+func (k Keeper) GetRequestLastExpired(ctx sdk.Context) types.RequestID {
+	var requestNumber types.RequestID
 	bz := ctx.KVStore(k.storeKey).Get(types.RequestLastExpiredStoreKey)
 	k.cdc.MustUnmarshalBinaryLengthPrefixed(bz, &requestNumber)
 	return requestNumber

@@ -238,7 +238,7 @@ func NewRequest(
 	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
 	MinCount uint64,
 	RequestHeight int64,
-	RequestTime int64,
+	RequestTime time.Time,
 	ClientID string,
 	RawRequests []RawRequest,
 ) Request {
