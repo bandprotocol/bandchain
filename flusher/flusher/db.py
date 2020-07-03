@@ -34,6 +34,8 @@ class CustomBase64(sa.types.TypeDecorator):
     impl = sa.String
 
     def process_bind_param(self, value, dialect):
+        if value is None:
+            return value
         return b64.decodestring(value.encode())
 
 

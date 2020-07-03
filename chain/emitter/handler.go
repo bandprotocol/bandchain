@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -35,6 +36,10 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgCreateDataSource(txHash, msg, evMap, extra)
 	case oracle.MsgCreateOracleScript:
 		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
+	case oracle.MsgEditDataSource:
+		app.handleMsgEditDataSource(txHash, msg, evMap, extra)
+	case oracle.MsgEditOracleScript:
+		app.handleMsgEditOracleScript(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		app.handleMsgCreateValidator(msg)
 	case staking.MsgEditValidator:
@@ -51,7 +56,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgMultiSend(msg)
 	case dist.MsgWithdrawDelegatorReward:
 		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
-
+	case slashing.MsgUnjail:
+		app.handleMsgUnjail(msg)
 	}
 }
 
@@ -61,6 +67,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 	switch event.Type {
 	case types.EventTypeResolve:
 		app.handleEventRequestExecute(evMap)
+	case slashing.EventTypeSlash:
+		app.handleEventSlash(evMap)
 	default:
 		break
 	}

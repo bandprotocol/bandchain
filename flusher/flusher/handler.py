@@ -36,11 +36,19 @@ class Handler(object):
             .on_conflict_do_update(constraint="accounts_pkey", set_=msg)
         )
 
-    def handle_new_data_source(self, msg):
-        self.conn.execute(data_sources.insert(), msg)
+    def handle_set_data_source(self, msg):
+        self.conn.execute(
+            insert(data_sources)
+            .values(**msg)
+            .on_conflict_do_update(constraint="data_sources_pkey", set_=msg)
+        )
 
-    def handle_new_oracle_script(self, msg):
-        self.conn.execute(oracle_scripts.insert(), msg)
+    def handle_set_oracle_script(self, msg):
+        self.conn.execute(
+            insert(oracle_scripts)
+            .values(**msg)
+            .on_conflict_do_update(constraint="oracle_scripts_pkey", set_=msg)
+        )
 
     def handle_new_request(self, msg):
         self.conn.execute(requests.insert(), msg)
