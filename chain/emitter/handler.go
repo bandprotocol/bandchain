@@ -3,6 +3,7 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
+	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -41,6 +42,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgSend(msg)
 	case bank.MsgMultiSend:
 		app.handleMsgMultiSend(msg)
+	case dist.MsgWithdrawDelegatorReward:
+		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
 	}
 }
 

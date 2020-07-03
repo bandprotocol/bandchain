@@ -21,6 +21,15 @@ func (app *App) getCurrentRatio(addrs sdk.ValAddress, reward types.ValidatorCurr
 	return "0"
 }
 
+func (app *App) emitUpdateValidatorReward(addrs sdk.ValAddress) {
+	reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, addrs)
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address": addrs.String(),
+		"current_reward":   getCurrentReward(reward),
+		"current_ratio":    app.getCurrentRatio(addrs, reward),
+	})
+}
+
 func (app *App) emitSetValidator(addrs sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addrs)
 	reward := app.DistrKeeper.GetValidatorCurrentRewards(app.DeliverContext, addrs)
