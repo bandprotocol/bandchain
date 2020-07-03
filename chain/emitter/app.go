@@ -20,6 +20,7 @@ import (
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // App extends the standard Band Cosmos-SDK application with Kafka emitter
@@ -114,24 +115,10 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 	for idx, ds := range oracleState.DataSources {
-		app.Write("NEW_DATA_SOURCE", JsDict{
-			"id":          idx + 1,
-			"name":        ds.Name,
-			"description": ds.Description,
-			"owner":       ds.Owner.String(),
-			"executable":  app.OracleKeeper.GetFile(ds.Filename),
-		})
+		app.emitSetDataSource(types.DataSourceID(idx), ds, nil)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		app.Write("NEW_ORACLE_SCRIPT", JsDict{
-			"id":              idx + 1,
-			"name":            os.Name,
-			"description":     os.Description,
-			"owner":           os.Owner.String(),
-			"schema":          os.Schema,
-			"codehash":        os.Filename,
-			"source_code_url": os.SourceCodeURL,
-		})
+		app.emitSetOracleScript(types.OracleScriptID(idx), os, nil)
 	}
 	app.FlushMessages()
 	return res
