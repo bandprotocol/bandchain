@@ -201,7 +201,7 @@ delegations = sa.Table(
         sa.ForeignKey("validators.operator_address"),
         primary_key=True,
     ),
-    Column("shares", sa.String),
+    Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.String),
     Column("active", sa.Boolean),
 )
