@@ -41,7 +41,7 @@ func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result 
 	return result
 }
 
-// Resolve saves the result packets for the given request and returns back the response packet.
+// Resolve saves the result packets for the given request and emits the resolve event.
 func (k Keeper) Resolve(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) {
 	r := k.MustGetRequest(ctx, id)
 	reqPacket := types.NewOracleRequestPacketData(
