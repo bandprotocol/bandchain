@@ -16,7 +16,7 @@ const (
 	MaxDataSize             = 1 * 1024        // 1kB
 
 	WasmPrepareGas = 1000000
-	WasmExecuteGas = 500000
+	WasmExecuteGas = 5000000
 )
 
 // nolint
