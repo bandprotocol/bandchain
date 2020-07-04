@@ -141,12 +141,12 @@ func TestAllocateTokensWithDistrAllocateTokens(t *testing.T) {
 	//     0.3uband (2%) go to community pool
 	//     0.75uband (5%) go to validator2 (proposer)
 	//     13.95uband split among voters
-	//        9.765 (70%) go to validator1
-	//        4.185 (30%) go to validator2
+	//        9.765uband (70%) go to validator1
+	//        4.185uband (30%) go to validator2
 	// In summary
 	//   Community pool: 0.7 + 0.3 = 1
 	//   Validator1: 34.3 + 9.765 = 44.065
-	//   validator2: 0.75 + 4.185 = 4.935
+	//   Validator2: 0.75 + 4.185 = 4.935
 	k.Activate(ctx, testapp.Validator1.ValAddress)
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{
 		Hash:           fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
