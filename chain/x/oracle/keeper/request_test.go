@@ -2,8 +2,8 @@ package keeper_test
 
 import (
 	"testing"
-	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
@@ -101,90 +101,78 @@ func TestAddPendingResolveList(t *testing.T) {
 
 func TestProcessExpiredRequests(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
-	currentTime := time.Unix(1000, 0)
-	currentBlock := int64(1)
-	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
-	r := defaultRequest()
-	r.RequestHeight = currentBlock
-	r.RequestTime = currentTime
-	k.SetRequest(ctx, 1, r)
-	k.SetRequestCount(ctx, 1)
-
-	currentTime = currentTime.Add(3 * time.Second)
-	currentBlock += 1
-	k.AddReport(ctx, 1, types.NewReport(testapp.Validator1.ValAddress, true, []types.RawReport{
-		types.NewRawReport(42, 0, BasicReport),
-		types.NewRawReport(43, 0, BasicReport),
-	}))
-
-	// Nothing happen
-	k.ProcessExpiredRequests(ctx)
-	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
-	require.False(t, k.HasResult(ctx, 1))
-
-	currentTime = currentTime.Add(7 * time.Second)
-	currentBlock += 2
-	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
-	k.ProcessExpiredRequests(ctx)
-
-	result, err := k.GetResult(ctx, 1)
-	require.NoError(t, err)
-	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
-	)
-	res := types.NewOracleResponsePacketData(
-		r.ClientID, 1, 1, r.RequestTime.Unix(),
-		currentTime.Unix(), types.ResolveStatus_Expired, []byte{},
-	)
-	require.Equal(t, types.NewResult(req, res), result)
-
-	// Check validator status
-	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
-	require.False(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
-}
-
-func TestProcessSuccessRequests(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput(true)
-
-	k.SetParam(ctx, types.KeyExpirationBlockCount, 3)
-	currentTime := time.Unix(1000, 0)
-	currentBlock := int64(1)
-	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
-	r := defaultRequest()
-	r.RequestHeight = currentBlock
-	r.RequestTime = currentTime
-	k.SetRequest(ctx, 1, r)
-	k.SetRequestCount(ctx, 1)
-
-	currentTime = currentTime.Add(3 * time.Second)
-	currentBlock += 1
-	k.AddReport(ctx, 1, types.NewReport(testapp.Validator1.ValAddress, true, []types.RawReport{
-		types.NewRawReport(42, 0, BasicReport),
-		types.NewRawReport(43, 0, BasicReport),
-	}))
-
-	k.AddReport(ctx, 1, types.NewReport(testapp.Validator2.ValAddress, true, []types.RawReport{
-		types.NewRawReport(42, 0, BasicReport),
-		types.NewRawReport(43, 0, BasicReport),
-	}))
-
-	// Nothing happen
-	k.ProcessExpiredRequests(ctx)
-	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
-	require.False(t, k.HasResult(ctx, 1))
-
-	currentTime = currentTime.Add(7 * time.Second)
-	currentBlock += 2
-	ctx = ctx.WithBlockHeight(currentBlock).WithBlockTime(currentTime)
-	k.ProcessExpiredRequests(ctx)
-
-	// Expired status must not be saved in store.
-	require.False(t, k.HasResult(ctx, 1))
-
-	// Check validator status
+	// Set some initial requests. All requests are asked to validators 1 & 2.
+	req1 := defaultRequest()
+	req1.RequestHeight = 5
+	req2 := defaultRequest()
+	req2.RequestHeight = 6
+	req3 := defaultRequest()
+	req3.RequestHeight = 6
+	req4 := defaultRequest()
+	req4.RequestHeight = 10
+	k.AddRequest(ctx, req1)
+	k.AddRequest(ctx, req2)
+	k.AddRequest(ctx, req3)
+	k.AddRequest(ctx, req4)
+	// Initially all validators are active.
 	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
 	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+	// Validator 1 reports all requests. Validator 2 misses request#3.
+	rawReports := []types.RawReport{types.NewRawReport(42, 0, BasicReport), types.NewRawReport(43, 0, BasicReport)}
+	k.AddReport(ctx, 1, types.NewReport(testapp.Validator1.ValAddress, false, rawReports))
+	k.AddReport(ctx, 2, types.NewReport(testapp.Validator1.ValAddress, true, rawReports))
+	k.AddReport(ctx, 3, types.NewReport(testapp.Validator1.ValAddress, false, rawReports))
+	k.AddReport(ctx, 4, types.NewReport(testapp.Validator1.ValAddress, true, rawReports))
+	k.AddReport(ctx, 1, types.NewReport(testapp.Validator2.ValAddress, true, rawReports))
+	k.AddReport(ctx, 2, types.NewReport(testapp.Validator2.ValAddress, true, rawReports))
+	k.AddReport(ctx, 4, types.NewReport(testapp.Validator2.ValAddress, true, rawReports))
+	// Request 1, 2 and 4 gets resolved. Request 3 does not.
+	k.ResolveSuccess(ctx, 1, BasicResult)
+	k.ResolveFailure(ctx, 2, "ARBITRARY_REASON")
+	k.ResolveSuccess(ctx, 4, BasicResult)
+	// Initially, last expired request ID should be 0.
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
+	// At block 7, nothing should happen.
+	ctx = ctx.WithBlockHeight(7).WithBlockTime(testapp.ParseTime(7000)).WithEventManager(sdk.NewEventManager())
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, sdk.Events{}, ctx.EventManager().Events())
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+	// At block 8, now last request ID should move to 1. No events should be emitted.
+	ctx = ctx.WithBlockHeight(8).WithBlockTime(testapp.ParseTime(8000)).WithEventManager(sdk.NewEventManager())
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, sdk.Events{}, ctx.EventManager().Events())
 	require.Equal(t, types.RequestID(1), k.GetRequestLastExpired(ctx))
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+	// At block 9, request#3 is expired and validator 2 becomes inactive.
+	ctx = ctx.WithBlockHeight(9).WithBlockTime(testapp.ParseTime(9000)).WithEventManager(sdk.NewEventManager())
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "3"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "3"),
+	), sdk.NewEvent(
+		types.EventTypeDeactivate,
+		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator2.ValAddress.String()),
+	)}, ctx.EventManager().Events())
+	require.Equal(t, types.RequestID(3), k.GetRequestLastExpired(ctx))
+	require.True(t, k.GetValidatorStatus(ctx, testapp.Validator1.ValAddress).IsActive)
+	require.False(t, k.GetValidatorStatus(ctx, testapp.Validator2.ValAddress).IsActive)
+	require.Equal(t, types.NewOracleResponsePacketData(
+		BasicClientID, 3, 1, req3.RequestTime.Unix(), testapp.ParseTime(9000).Unix(),
+		types.ResolveStatus_Expired, []byte{},
+	), k.MustGetResult(ctx, 3).ResponsePacketData)
+	// At block 10, nothing should happen
+	ctx = ctx.WithBlockHeight(10).WithBlockTime(testapp.ParseTime(10000)).WithEventManager(sdk.NewEventManager())
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, sdk.Events{}, ctx.EventManager().Events())
+	require.Equal(t, types.RequestID(3), k.GetRequestLastExpired(ctx))
+	// At block 13, last expired request becomes 4.
+	ctx = ctx.WithBlockHeight(13).WithBlockTime(testapp.ParseTime(13000)).WithEventManager(sdk.NewEventManager())
+	k.ProcessExpiredRequests(ctx)
+	require.Equal(t, sdk.Events{}, ctx.EventManager().Events())
+	require.Equal(t, types.RequestID(4), k.GetRequestLastExpired(ctx))
 }

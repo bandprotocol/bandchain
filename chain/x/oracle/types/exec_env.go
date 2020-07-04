@@ -98,23 +98,20 @@ type ExecuteEnv struct {
 }
 
 // NewExecuteEnv creates a new environment instance for execution period.
-func NewExecuteEnv(req Request) *ExecuteEnv {
-	return &ExecuteEnv{
-		BaseEnv: BaseEnv{
-			request: req,
-		},
-		reports: make(map[string]map[ExternalID]RawReport),
-	}
-}
-
-// SetReports loads the reports to the environment.
-func (env *ExecuteEnv) SetReports(reports []Report) {
+func NewExecuteEnv(req Request, reports []Report) *ExecuteEnv {
+	envReports := make(map[string]map[ExternalID]RawReport)
 	for _, report := range reports {
 		valReports := make(map[ExternalID]RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
-		env.reports[report.Validator.String()] = valReports
+		envReports[report.Validator.String()] = valReports
+	}
+	return &ExecuteEnv{
+		BaseEnv: BaseEnv{
+			request: req,
+		},
+		reports: envReports,
 	}
 }
 
