@@ -231,51 +231,32 @@ func TestPrepareRequestTooLargeCalldata(t *testing.T) {
 
 func TestResolveRequestSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata := []byte("calldata")
-	minCount := uint64(1)
-	clientID := "owasm test"
-	rawRequests := []types.RawRequest{
-		types.NewRawRequest(1, 1, []byte("beeb")),
-		types.NewRawRequest(2, 2, []byte("beeb")),
-		types.NewRawRequest(3, 3, []byte("beeb")),
-	}
-	vals := []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress, testapp.Validator3.ValAddress}
-	requestHeight := int64(4000)
-	requestTime := testapp.ParseTime(1581589700)
-
-	req := types.NewRequest(
-		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, rawRequests)
-	reqID := k.AddRequest(ctx, req)
-
-	// Set report validator
-	k.AddReport(ctx, types.RequestID(1), types.NewReport(
-		testapp.Validator1.ValAddress,
-		true,
-		[]types.RawReport{
-			types.NewRawReport(1, 0, []byte("answer1")),
-			types.NewRawReport(2, 0, []byte("answer2")),
-			types.NewRawReport(3, 0, []byte("answer3")),
-		}),
-	)
-
-	k.ResolveRequest(ctx, reqID)
-	res, err := k.GetResult(ctx, reqID)
-	require.NoError(t, err)
-
-	reqPacket := types.NewOracleRequestPacketData(
-		clientID, types.OracleScriptID(1), calldata, uint64(len(vals)), minCount,
-	)
-
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 1st Wasm - return "beeb"
+		1, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(1, 0, []byte("beeb")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(BasicClientID, 1, BasicCalldata, 2, 1)
 	resPacket := types.NewOracleResponsePacketData(
-		clientID, reqID, 1, requestTime.Unix(),
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
+		BasicClientID, 42, 1, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
-	require.Equal(t, types.Result{RequestPacketData: reqPacket, ResponsePacketData: resPacket}, res)
-
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
+		sdk.NewAttribute(types.AttributeKeyResult, "62656562"), // hex of "beeb"
+	)}, ctx.EventManager().Events())
 }
 
 func TestResolveRequestNoReturnData(t *testing.T) {
