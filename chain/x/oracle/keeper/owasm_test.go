@@ -266,6 +266,53 @@ func TestResolveRequestSuccess(t *testing.T) {
 	)}, ctx.EventManager().Events())
 }
 
+func TestResolveRequestSuccessComplex(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 4st Wasm. Append all reports from all validators.
+		4, obi.MustEncode(testapp.Wasm4Input{
+			IDs:      []int64{1, 2},
+			Calldata: string(BasicCalldata),
+		}), []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(0, 1, BasicCalldata),
+			types.NewRawRequest(1, 2, BasicCalldata),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(0, 0, []byte("beebd1v1")),
+			types.NewRawReport(1, 0, []byte("beebd2v1")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator2.ValAddress, true, []types.RawReport{
+			types.NewRawReport(0, 0, []byte("beebd1v2")),
+			types.NewRawReport(1, 0, []byte("beebd2v2")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(
+		BasicClientID, 4, obi.MustEncode(testapp.Wasm4Input{
+			IDs:      []int64{1, 2},
+			Calldata: string(BasicCalldata),
+		}), 2, 1,
+	)
+	resPacket := types.NewOracleResponsePacketData(
+		BasicClientID, 42, 2, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Success,
+		obi.MustEncode(testapp.Wasm4Output{Ret: "beebd1v1beebd1v2beebd2v1beebd2v2"}),
+	)
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
+		sdk.NewAttribute(types.AttributeKeyResult, "000000206265656264317631626565626431763262656562643276316265656264327632"),
+	)}, ctx.EventManager().Events())
+}
+
 func TestResolveRequestNoReturnData(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
