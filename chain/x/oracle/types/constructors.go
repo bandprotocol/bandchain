@@ -196,6 +196,40 @@ func NewRawReport(
 	}
 }
 
+func NewRequest(
+	OracleScriptID OracleScriptID,
+	Calldata []byte,
+	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
+	MinCount uint64,
+	RequestHeight int64,
+	RequestTime time.Time,
+	ClientID string,
+	RawRequests []RawRequest,
+) Request {
+	return Request{
+		OracleScriptID:      OracleScriptID,
+		Calldata:            Calldata,
+		RequestedValidators: RequestedValidators,
+		MinCount:            MinCount,
+		RequestHeight:       RequestHeight,
+		RequestTime:         RequestTime,
+		ClientID:            ClientID,
+		RawRequests:         RawRequests,
+	}
+}
+
+func NewReport(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+	InBeforeResolve bool,
+	RawReports []RawReport,
+) Report {
+	return Report{
+		Validator:       Validator,
+		InBeforeResolve: InBeforeResolve,
+		RawReports:      RawReports,
+	}
+}
+
 func NewOracleRequestPacketData(
 	ClientID string,
 	OracleScriptID OracleScriptID,
@@ -229,40 +263,6 @@ func NewOracleResponsePacketData(
 		ResolveTime:   ResolveTime,
 		ResolveStatus: ResolveStatus,
 		Result:        Result,
-	}
-}
-
-func NewRequest(
-	OracleScriptID OracleScriptID,
-	Calldata []byte,
-	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
-	MinCount uint64,
-	RequestHeight int64,
-	RequestTime time.Time,
-	ClientID string,
-	RawRequests []RawRequest,
-) Request {
-	return Request{
-		OracleScriptID:      OracleScriptID,
-		Calldata:            Calldata,
-		RequestedValidators: RequestedValidators,
-		MinCount:            MinCount,
-		RequestHeight:       RequestHeight,
-		RequestTime:         RequestTime,
-		ClientID:            ClientID,
-		RawRequests:         RawRequests,
-	}
-}
-
-func NewReport(
-	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
-	InBeforeResolve bool,
-	RawReports []RawReport,
-) Report {
-	return Report{
-		Validator:       Validator,
-		InBeforeResolve: InBeforeResolve,
-		RawReports:      RawReports,
 	}
 }
 

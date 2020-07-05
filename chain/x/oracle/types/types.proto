@@ -135,17 +135,15 @@ message MsgRemoveReporter {
 // DataSource is the data structure for storing data sources in the storage.
 message DataSource {
   option (gogoproto.equal) = true;
-
   bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
   string filename = 4;
 }
 
-// OracleScript is a type to store detail of oracle script.
+// OracleScript is the data structure for storing oracle scripts in the storage.
 message OracleScript {
   option (gogoproto.equal) = true;
-
   bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
@@ -154,90 +152,25 @@ message OracleScript {
   string source_code_url = 6 [(gogoproto.customname) = "SourceCodeURL"];
 }
 
-// RawRequest is a raw data request that contain external id.
+// RawRequest is the data structure for storing raw requests in the storage.
 message RawRequest {
   option (gogoproto.equal) = true;
-
   int64 external_id = 1 [(gogoproto.customname) = "ExternalID", (gogoproto.casttype) = "ExternalID"];
   int64 data_source_id = 2 [(gogoproto.customname) = "DataSourceID", (gogoproto.casttype) = "DataSourceID"];
   bytes calldata = 3;
 }
 
-// RawReport encapsulates a raw data report for an external data source from a
-// block validator.
+// RawRequest is the data structure for storing raw reporter in the storage.
 message RawReport {
   option (gogoproto.equal) = true;
-
   int64 external_id = 1 [(gogoproto.customname) = "ExternalID", (gogoproto.casttype) = "ExternalID"];
   uint32 exit_code = 2;
   bytes data = 3;
 }
 
-enum ResolveStatus {
-  Open = 0;
-  Success = 1;
-  Failure = 2;
-  Expired = 3;
-}
-
-// OracleRequestPacketData encodes an oracle request sent from other blockchains
-// to BandChain.
-message OracleRequestPacketData {
-  option (gogoproto.equal) = true;
-
-  // ClientID is the unique identifier of this oracle request, as specified by
-  // the client. This same unique ID will be sent back to the requester with the
-  // oracle response.
-  string client_id = 1 [(gogoproto.customname) = "ClientID"];
-  // OracleScriptID is the unique identifier of the oracle script to be
-  // executed.
-  int64 oracle_script_id = 2 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
-  // Calldata is the calldata bytes available for oracle
-  // execution during both preparation and execution phases.
-  bytes calldata = 3;
-  // AskCount is the number of validators that are requested to respond to this
-  // oracle request. Higher value means more security, at a higher gas cost.
-  uint64 ask_count = 4;
-  // MinCount is the minimum number of validators necessary for the request to
-  // proceed to the execution phase. Higher value means more security, at the
-  // cost of liveness.
-  uint64 min_count = 5;
-}
-
-// OracleResponsePacketData encodes an oracle response from BandChain to the
-// requester.
-message OracleResponsePacketData {
-  option (gogoproto.equal) = true;
-
-  // ClientID is the unique identifier matched with that of the oracle request
-  // packet.
-  string client_id = 1 [(gogoproto.customname) = "ClientID"];
-  // RequestID is BandChain's unique identifier for this oracle request.
-  // TODO: This is not actually needed, but is here to simplify DB. Should
-  // remove.
-  int64 request_id = 2 [(gogoproto.customname) = "RequestID", (gogoproto.casttype) = "RequestID"];
-  // AnsCount is the number of validators among to the asked validators that
-  // actually responded to this oracle request prior to this oracle request
-  // being resolved.
-  uint64 ans_count = 3;
-  // RequestTime is the UNIX epoch time at which the request was sent to
-  // BandChain.
-  int64 request_time = 4;
-  // ResolveTime is the UNIX epoch time at which the request was resolved to the
-  // final result.
-  int64 resolve_time = 5;
-  // ResolveStatus is the status of this oracle request, which can be OK, ERROR,
-  // or EXPIRED.
-  ResolveStatus resolve_status = 6;
-  // Result is the final aggregated value only available if status if OK.
-  bytes result = 7;
-}
-
-// Request is a data structure that stores the detail of a request to an oracle
-// script.
+// Request is the data structure for storing requests in the storage.
 message Request {
   option (gogoproto.equal) = true;
-
   int64 oracle_script_id = 1 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
   bytes calldata = 2;
   repeated bytes requested_validators = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
@@ -248,13 +181,62 @@ message Request {
   repeated RawRequest raw_requests = 8 [(gogoproto.nullable) = false];
 }
 
-// Report is a report that contains operator address in struct
+// Report is the data structure for storing reports in the storage.
 message Report {
   option (gogoproto.equal) = true;
-
   bytes validator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
   bool in_before_resolve = 2;
   repeated RawReport raw_reports = 3 [(gogoproto.nullable) = false];
+}
+
+// ResolveStatus encodes the status of an oracle request.
+enum ResolveStatus {
+  // Open - the request is not yet resolved.
+  Open = 0;
+  // Success - the request has been resolved successfully with no errors.
+  Success = 1;
+  // Failure - an error occured during the request's resolve call.
+  Failure = 2;
+  // Expired - the request does not get enough reports from validator within the timeframe.
+  Expired = 3;
+}
+
+// OracleRequestPacketData encodes an oracle request sent from other blockchains to BandChain.
+message OracleRequestPacketData {
+  option (gogoproto.equal) = true;
+  // ClientID is the unique identifier of this oracle request, as specified by the client.
+  // This same unique ID will be sent back to the requester with the oracle response.
+  string client_id = 1 [(gogoproto.customname) = "ClientID"];
+  // OracleScriptID is the unique identifier of the oracle script to be executed.
+  int64 oracle_script_id = 2 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
+  // Calldata is the calldata bytes available for oracle executor to read.
+  bytes calldata = 3;
+  // AskCount is the number of validators that are requested to respond to this oracle request.
+  // Higher value means more security, at a higher gas cost.
+  uint64 ask_count = 4;
+  // MinCount is the minimum number of validators necessary for the request to proceed to the
+  // execution phase. Higher value means more security, at the cost of liveness.
+  uint64 min_count = 5;
+}
+
+// OracleResponsePacketData encodes an oracle response from BandChain to the requester.
+message OracleResponsePacketData {
+  option (gogoproto.equal) = true;
+  // ClientID is the unique identifier matched with that of the oracle request packet.
+  string client_id = 1 [(gogoproto.customname) = "ClientID"];
+  // RequestID is BandChain's unique identifier for this oracle request.
+  int64 request_id = 2 [(gogoproto.customname) = "RequestID", (gogoproto.casttype) = "RequestID"];
+  // AnsCount is the number of validators among to the asked validators that actually responded
+  // to this oracle request prior to this oracle request being resolved.
+  uint64 ans_count = 3;
+  // RequestTime is the UNIX epoch time at which the request was sent to BandChain.
+  int64 request_time = 4;
+  // ResolveTime is the UNIX epoch time at which the request was resolved to the final result.
+  int64 resolve_time = 5;
+  // ResolveStatus is the status of this oracle request, which can be OK, FAILURE, or EXPIRED.
+  ResolveStatus resolve_status = 6;
+  // Result is the final aggregated value only available if status if OK.
+  bytes result = 7;
 }
 
 // ValidatorStatus maintains whether a validator is an active oracle provider.
@@ -268,7 +250,6 @@ message ValidatorStatus {
 message Params {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;
-
   uint64 max_raw_request_count = 1;
   uint64 max_ask_count = 2;
   uint64 expiration_block_count = 3;
