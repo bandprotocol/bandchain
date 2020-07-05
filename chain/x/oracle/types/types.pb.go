@@ -60,14 +60,20 @@ func (ResolveStatus) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_53e65fd95a58412c, []int{0}
 }
 
-// MsgRequestData is a message for sending a new data request.
+// MsgRequestData is a message for sending a data oracle request.
 type MsgRequestData struct {
-	OracleScriptID OracleScriptID                                `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	Calldata       []byte                                        `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
-	AskCount       uint64                                        `protobuf:"varint,3,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
-	MinCount       uint64                                        `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
-	ClientID       string                                        `protobuf:"bytes,5,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	Sender         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// OracleScriptID is the identifier of the oracle script to call.
+	OracleScriptID OracleScriptID `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
+	// Calldata is the OBI encoded call parameters to the oracle script.
+	Calldata []byte `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
+	// AskCount is the number of validators to perform the oracle task.
+	AskCount uint64 `protobuf:"varint,3,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
+	// MinCount is the minimum number of validators sufficient to resolve the tasks.
+	MinCount uint64 `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
+	// ClientID is the client-provided unique identifier to tracking the request.
+	ClientID string `protobuf:"bytes,5,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	// Sender is the sender of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgRequestData) Reset()         { *m = MsgRequestData{} }
@@ -145,13 +151,16 @@ func (m *MsgRequestData) GetSender() github_com_cosmos_cosmos_sdk_types.AccAddre
 	return nil
 }
 
-// MsgReportData is a message sent by each of the block validators to respond to
-// a data request.
+// MsgReportData is a message for reporting to a data request by a validator.
 type MsgReportData struct {
-	RequestID  RequestID                                     `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3,casttype=RequestID" json:"request_id,omitempty"`
-	RawReports []RawReport                                   `protobuf:"bytes,2,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
-	Validator  github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+	// RequestID is the identifier of the request to report to.
+	RequestID RequestID `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3,casttype=RequestID" json:"request_id,omitempty"`
+	// RawReports is the list of report information for each of the request's external ID.
+	RawReports []RawReport `protobuf:"bytes,2,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
+	// Validator is the address of the validator that owns this report.
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
+	// Reporter is the message signer who submits this report transaction for the validator.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgReportData) Reset()         { *m = MsgReportData{} }
@@ -217,11 +226,16 @@ func (m *MsgReportData) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddr
 
 // MsgCreateDataSource is a message for creating a new data source.
 type MsgCreateDataSource struct {
-	Owner       github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name        string                                        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description string                                        `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Executable  []byte                                        `protobuf:"bytes,4,opt,name=executable,proto3" json:"executable,omitempty"`
-	Sender      github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// Owner is the address who is allowed to make further changes to the data source.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this data source (optional).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this data source (optional).
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Executable is the executable script or binary to be run by validators upon execution.
+	Executable []byte `protobuf:"bytes,4,opt,name=executable,proto3" json:"executable,omitempty"`
+	// Sender is the signer of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgCreateDataSource) Reset()         { *m = MsgCreateDataSource{} }
@@ -294,12 +308,18 @@ func (m *MsgCreateDataSource) GetSender() github_com_cosmos_cosmos_sdk_types.Acc
 
 // MsgEditDataSource is a message for editing an existing data source.
 type MsgEditDataSource struct {
-	DataSourceID DataSourceID                                  `protobuf:"varint,1,opt,name=data_source_id,json=dataSourceId,proto3,casttype=DataSourceID" json:"data_source_id,omitempty"`
-	Owner        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name         string                                        `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description  string                                        `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Executable   []byte                                        `protobuf:"bytes,5,opt,name=executable,proto3" json:"executable,omitempty"`
-	Sender       github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// DataSourceID is the unique identifier of the data source to be edited.
+	DataSourceID DataSourceID `protobuf:"varint,1,opt,name=data_source_id,json=dataSourceId,proto3,casttype=DataSourceID" json:"data_source_id,omitempty"`
+	// Owner is the new address who is allowed to make further changes to the data source.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this data source (optional).
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this data source (optional).
+	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// Executable is the executable script or binary to be run by validators upon execution.
+	Executable []byte `protobuf:"bytes,5,opt,name=executable,proto3" json:"executable,omitempty"`
+	// Sender is the signer of this message. Must be the current data source's owner.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgEditDataSource) Reset()         { *m = MsgEditDataSource{} }
@@ -379,13 +399,20 @@ func (m *MsgEditDataSource) GetSender() github_com_cosmos_cosmos_sdk_types.AccAd
 
 // MsgCreateOracleScript is a message for creating an oracle script.
 type MsgCreateOracleScript struct {
-	Owner         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name          string                                        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                                        `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Code          []byte                                        `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
-	Schema        string                                        `protobuf:"bytes,5,opt,name=schema,proto3" json:"schema,omitempty"`
-	SourceCodeURL string                                        `protobuf:"bytes,6,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
-	Sender        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,7,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// Owner is the address who is allowed to make further changes to the oracle script.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this oracle script (optional).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this oracle script (optional).
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
+	Code []byte `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
+	// Schema is the OBI schema of this oracle script (optional).
+	Schema string `protobuf:"bytes,5,opt,name=schema,proto3" json:"schema,omitempty"`
+	// SourceCodeURL is the absolute URI to the script's source code (optional).
+	SourceCodeURL string `protobuf:"bytes,6,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
+	// Sender is the signer of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,7,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgCreateOracleScript) Reset()         { *m = MsgCreateOracleScript{} }
@@ -472,14 +499,22 @@ func (m *MsgCreateOracleScript) GetSender() github_com_cosmos_cosmos_sdk_types.A
 
 // MsgEditOracleScript is a message for editing an existing oracle script.
 type MsgEditOracleScript struct {
-	OracleScriptID OracleScriptID                                `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	Owner          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name           string                                        `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description    string                                        `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Code           []byte                                        `protobuf:"bytes,5,opt,name=code,proto3" json:"code,omitempty"`
-	Schema         string                                        `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
-	SourceCodeURL  string                                        `protobuf:"bytes,7,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
-	Sender         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,8,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// OracleScriptID is the unique identifier of the oracle script to be edited.
+	OracleScriptID OracleScriptID `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
+	// Owner is new the address who is allowed to make further changes to the oracle script.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this oracle script (optional).
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this oracle script (optional).
+	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
+	Code []byte `protobuf:"bytes,5,opt,name=code,proto3" json:"code,omitempty"`
+	// Schema is the OBI schema of this oracle script (optional).
+	Schema string `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
+	// SourceCodeURL is the absolute URI to the script's source code (optional).
+	SourceCodeURL string `protobuf:"bytes,7,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
+	// Sender is the signer of this message. Must be the current oracle script's owner.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,8,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgEditOracleScript) Reset()         { *m = MsgEditOracleScript{} }
@@ -571,7 +606,9 @@ func (m *MsgEditOracleScript) GetSender() github_com_cosmos_cosmos_sdk_types.Acc
 	return nil
 }
 
+// MsgEditOracleScript is a message for activating a validator to become an oracle provider.
 type MsgActivate struct {
+	// Validator is the signer of this message and the validator to be activated.
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
 }
 
@@ -615,11 +652,12 @@ func (m *MsgActivate) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddre
 	return nil
 }
 
-// MsgAddReporter is a message for adding an agent authorized to submit
-// report transactions.
+// MsgAddReporter is a message for adding a new reporter for a validator.
 type MsgAddReporter struct {
+	// Validator is the validator that wishes to add a new reporter. This is the signer.
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+	// Reporter is the address to be added as a reporter to the validator.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgAddReporter) Reset()         { *m = MsgAddReporter{} }
@@ -669,11 +707,12 @@ func (m *MsgAddReporter) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAdd
 	return nil
 }
 
-// MsgRemoveReporter is a message for removing an agent from the list of
-// authorized reporters.
+// MsgAddReporter is a message for removing an existing reporter from a validator.
 type MsgRemoveReporter struct {
+	// Validator is the validator that wishes to remove an existing reporter. This is the signer.
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+	// Reporter is the address to be removed from being the validators' reporter.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgRemoveReporter) Reset()         { *m = MsgRemoveReporter{} }

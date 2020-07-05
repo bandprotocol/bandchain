@@ -5,137 +5,138 @@ import "third_party/proto/gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
 option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
 
-// MsgRequestData is a message for sending a new data request.
+// MsgRequestData is a message for sending a data oracle request.
 message MsgRequestData {
   option (gogoproto.equal) = true;
-
-  int64 oracle_script_id = 1 [
-    (gogoproto.customname) = "OracleScriptID",
-    (gogoproto.casttype) = "OracleScriptID"
-  ];
+  // OracleScriptID is the identifier of the oracle script to call.
+  int64 oracle_script_id = 1 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
+  // Calldata is the OBI encoded call parameters to the oracle script.
   bytes calldata = 2;
+  // AskCount is the number of validators to perform the oracle task.
   uint64 ask_count = 3;
+  // MinCount is the minimum number of validators sufficient to resolve the tasks.
   uint64 min_count = 4;
+  // ClientID is the client-provided unique identifier to tracking the request.
   string client_id = 5 [(gogoproto.customname) = "ClientID"];
-  bytes sender = 6
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Sender is the sender of this message.
+  bytes sender = 6 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
-// MsgReportData is a message sent by each of the block validators to respond to
-// a data request.
+// MsgReportData is a message for reporting to a data request by a validator.
 message MsgReportData {
   option (gogoproto.equal) = true;
-
-  int64 request_id = 1 [
-    (gogoproto.customname) = "RequestID",
-    (gogoproto.casttype) = "RequestID"
-  ];
+  // RequestID is the identifier of the request to report to.
+  int64 request_id = 1 [(gogoproto.customname) = "RequestID", (gogoproto.casttype) = "RequestID"];
+  // RawReports is the list of report information for each of the request's external ID.
   repeated RawReport raw_reports = 2 [(gogoproto.nullable) = false];
-  bytes validator = 3
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  bytes reporter = 4
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Validator is the address of the validator that owns this report.
+  bytes validator = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // Reporter is the message signer who submits this report transaction for the validator.
+  bytes reporter = 4 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 // MsgCreateDataSource is a message for creating a new data source.
 message MsgCreateDataSource {
   option (gogoproto.equal) = true;
-
-  bytes owner = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Owner is the address who is allowed to make further changes to the data source.
+  bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Name is the name of this data source (optional).
   string name = 2;
+  // Description is the description of this data source (optional).
   string description = 3;
+  // Executable is the executable script or binary to be run by validators upon execution.
   bytes executable = 4;
-  bytes sender = 5
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Sender is the signer of this message.
+  bytes sender = 5 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 // MsgEditDataSource is a message for editing an existing data source.
 message MsgEditDataSource {
   option (gogoproto.equal) = true;
-
-  int64 data_source_id = 1 [
-    (gogoproto.customname) = "DataSourceID",
-    (gogoproto.casttype) = "DataSourceID"
-  ];
-  bytes owner = 2
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // DataSourceID is the unique identifier of the data source to be edited.
+  int64 data_source_id = 1 [(gogoproto.customname) = "DataSourceID", (gogoproto.casttype) = "DataSourceID"];
+  // Owner is the new address who is allowed to make further changes to the data source.
+  bytes owner = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Name is the name of this data source (optional).
   string name = 3;
+  // Description is the description of this data source (optional).
   string description = 4;
+  // Executable is the executable script or binary to be run by validators upon execution.
   bytes executable = 5;
-  bytes sender = 6
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Sender is the signer of this message. Must be the current data source's owner.
+  bytes sender = 6 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 // MsgCreateOracleScript is a message for creating an oracle script.
 message MsgCreateOracleScript {
   option (gogoproto.equal) = true;
-
-  bytes owner = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Owner is the address who is allowed to make further changes to the oracle script.
+  bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Name is the name of this oracle script (optional).
   string name = 2;
+  // Description is the description of this oracle script (optional).
   string description = 3;
+  // Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
   bytes code = 4;
+  // Schema is the OBI schema of this oracle script (optional).
   string schema = 5;
+  // SourceCodeURL is the absolute URI to the script's source code (optional).
   string source_code_url = 6 [(gogoproto.customname) = "SourceCodeURL"];
-  bytes sender = 7
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Sender is the signer of this message.
+  bytes sender = 7 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 // MsgEditOracleScript is a message for editing an existing oracle script.
 message MsgEditOracleScript {
   option (gogoproto.equal) = true;
-
-  int64 oracle_script_id = 1 [
-    (gogoproto.customname) = "OracleScriptID",
-    (gogoproto.casttype) = "OracleScriptID"
-  ];
-  bytes owner = 2
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // OracleScriptID is the unique identifier of the oracle script to be edited.
+  int64 oracle_script_id = 1 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
+  // Owner is new the address who is allowed to make further changes to the oracle script.
+  bytes owner = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Name is the name of this oracle script (optional).
   string name = 3;
+  // Description is the description of this oracle script (optional).
   string description = 4;
+  // Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
   bytes code = 5;
+  // Schema is the OBI schema of this oracle script (optional).
   string schema = 6;
+  // SourceCodeURL is the absolute URI to the script's source code (optional).
   string source_code_url = 7 [(gogoproto.customname) = "SourceCodeURL"];
-  bytes sender = 8
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Sender is the signer of this message. Must be the current oracle script's owner.
+  bytes sender = 8 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
+// MsgEditOracleScript is a message for activating a validator to become an oracle provider.
 message MsgActivate {
   option (gogoproto.equal) = true;
-
-  bytes validator = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // Validator is the signer of this message and the validator to be activated.
+  bytes validator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
 }
 
-// MsgAddReporter is a message for adding an agent authorized to submit
-// report transactions.
+// MsgAddReporter is a message for adding a new reporter for a validator.
 message MsgAddReporter {
   option (gogoproto.equal) = true;
-
-  bytes validator = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  bytes reporter = 2
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Validator is the validator that wishes to add a new reporter. This is the signer.
+  bytes validator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // Reporter is the address to be added as a reporter to the validator.
+  bytes reporter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
-// MsgRemoveReporter is a message for removing an agent from the list of
-// authorized reporters.
+// MsgAddReporter is a message for removing an existing reporter from a validator.
 message MsgRemoveReporter {
   option (gogoproto.equal) = true;
-
-  bytes validator = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
-  bytes reporter = 2
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  // Validator is the validator that wishes to remove an existing reporter. This is the signer.
+  bytes validator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  // Reporter is the address to be removed from being the validators' reporter.
+  bytes reporter = 2 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
 }
 
 // DataSource is the data structure for storing data sources in the storage.
 message DataSource {
   option (gogoproto.equal) = true;
 
-  bytes owner = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
   string filename = 4;
@@ -145,8 +146,7 @@ message DataSource {
 message OracleScript {
   option (gogoproto.equal) = true;
 
-  bytes owner = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
+  bytes owner = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.AccAddress"];
   string name = 2;
   string description = 3;
   string filename = 4;
@@ -158,14 +158,8 @@ message OracleScript {
 message RawRequest {
   option (gogoproto.equal) = true;
 
-  int64 external_id = 1 [
-    (gogoproto.customname) = "ExternalID",
-    (gogoproto.casttype) = "ExternalID"
-  ];
-  int64 data_source_id = 2 [
-    (gogoproto.customname) = "DataSourceID",
-    (gogoproto.casttype) = "DataSourceID"
-  ];
+  int64 external_id = 1 [(gogoproto.customname) = "ExternalID", (gogoproto.casttype) = "ExternalID"];
+  int64 data_source_id = 2 [(gogoproto.customname) = "DataSourceID", (gogoproto.casttype) = "DataSourceID"];
   bytes calldata = 3;
 }
 
@@ -174,10 +168,7 @@ message RawRequest {
 message RawReport {
   option (gogoproto.equal) = true;
 
-  int64 external_id = 1 [
-    (gogoproto.customname) = "ExternalID",
-    (gogoproto.casttype) = "ExternalID"
-  ];
+  int64 external_id = 1 [(gogoproto.customname) = "ExternalID", (gogoproto.casttype) = "ExternalID"];
   uint32 exit_code = 2;
   bytes data = 3;
 }
@@ -200,10 +191,7 @@ message OracleRequestPacketData {
   string client_id = 1 [(gogoproto.customname) = "ClientID"];
   // OracleScriptID is the unique identifier of the oracle script to be
   // executed.
-  int64 oracle_script_id = 2 [
-    (gogoproto.customname) = "OracleScriptID",
-    (gogoproto.casttype) = "OracleScriptID"
-  ];
+  int64 oracle_script_id = 2 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
   // Calldata is the calldata bytes available for oracle
   // execution during both preparation and execution phases.
   bytes calldata = 3;
@@ -227,10 +215,7 @@ message OracleResponsePacketData {
   // RequestID is BandChain's unique identifier for this oracle request.
   // TODO: This is not actually needed, but is here to simplify DB. Should
   // remove.
-  int64 request_id = 2 [
-    (gogoproto.customname) = "RequestID",
-    (gogoproto.casttype) = "RequestID"
-  ];
+  int64 request_id = 2 [(gogoproto.customname) = "RequestID", (gogoproto.casttype) = "RequestID"];
   // AnsCount is the number of validators among to the asked validators that
   // actually responded to this oracle request prior to this oracle request
   // being resolved.
@@ -253,17 +238,12 @@ message OracleResponsePacketData {
 message Request {
   option (gogoproto.equal) = true;
 
-  int64 oracle_script_id = 1 [
-    (gogoproto.customname) = "OracleScriptID",
-    (gogoproto.casttype) = "OracleScriptID"
-  ];
+  int64 oracle_script_id = 1 [(gogoproto.customname) = "OracleScriptID", (gogoproto.casttype) = "OracleScriptID"];
   bytes calldata = 2;
-  repeated bytes requested_validators = 3
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  repeated bytes requested_validators = 3 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
   uint64 min_count = 4;
   int64 request_height = 5;
-  google.protobuf.Timestamp request_time = 6
-      [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp request_time = 6 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
   string client_id = 7 [(gogoproto.customname) = "ClientID"];
   repeated RawRequest raw_requests = 8 [(gogoproto.nullable) = false];
 }
@@ -272,8 +252,7 @@ message Request {
 message Report {
   option (gogoproto.equal) = true;
 
-  bytes validator = 1
-      [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
+  bytes validator = 1 [(gogoproto.casttype) = "github.com/cosmos/cosmos-sdk/types.ValAddress"];
   bool in_before_resolve = 2;
   repeated RawReport raw_reports = 3 [(gogoproto.nullable) = false];
 }
@@ -282,8 +261,7 @@ message Report {
 message ValidatorStatus {
   option (gogoproto.equal) = true;
   bool is_active = 1;
-  google.protobuf.Timestamp since = 2
-      [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
+  google.protobuf.Timestamp since = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
 // Params - used for initializing default parameter for oracle at genesis.
