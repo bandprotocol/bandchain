@@ -69,7 +69,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	code := k.GetFile(script.Filename)
 	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
 	if err != nil {
-		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
+		return sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
 	req.RawRequests = env.GetRawRequests()
@@ -109,8 +109,8 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	return nil
 }
 
-// ResolveRequest resolves the given request, sends response packet out (if applicable),
-// and saves result hash to the store. Assumes that the given request is in a resolvable state.
+// ResolveRequest resolves the given request and saves result hash to the store. The function
+// assumes that the given request is in a resolvable state with sufficient reporters.
 func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
 	env := types.NewExecuteEnv(req, k.GetReports(ctx, reqID))
@@ -119,6 +119,8 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
 		k.ResolveFailure(ctx, reqID, err.Error())
+	} else if env.Retdata == nil {
+		k.ResolveFailure(ctx, reqID, "no return data")
 	} else {
 		k.ResolveSuccess(ctx, reqID, env.Retdata)
 	}

@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -76,300 +77,298 @@ func TestGetRandomValidatorsWithActivate(t *testing.T) {
 	require.Error(t, err)
 }
 
-func TestPrepareRequestSuccess(t *testing.T) {
+func TestPrepareRequestSuccessBasic(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata := []byte("beeb")
-	askCount := uint64(1)
-	minCount := uint64(1)
-	clientID := "beeb"
-	requestHeight := int64(0)
-	rawRequests := []types.RawRequest{
-		types.NewRawRequest(1, 1, []byte("beeb")),
-		types.NewRawRequest(2, 2, []byte("beeb")),
-		types.NewRawRequest(3, 3, []byte("beeb")),
-	}
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589790)).WithBlockHeight(42)
+	// OracleScript#1: Prepare asks for DS#1,2,3 with ExtID#1,2,3 and calldata "beeb"
+	m := types.NewMsgRequestData(1, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
 	require.NoError(t, err)
-
-	req, err := k.GetRequest(ctx, 1)
-	require.NoError(t, err)
-	expectReq := types.NewRequest(oracleScriptID, calldata, []sdk.ValAddress{testapp.Validator1.ValAddress}, minCount,
-		requestHeight, testapp.ParseTime(1581589790), clientID, rawRequests)
-	require.Equal(t, expectReq, req)
-	expectEvents := sdk.Events{
-		sdk.NewEvent(
-			types.EventTypeRequest,
-			sdk.NewAttribute(types.AttributeKeyID, "1"),
-			sdk.NewAttribute(types.AttributeKeyClientID, "beeb"),
-			sdk.NewAttribute(types.AttributeKeyOracleScriptID, "1"),
-			sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
-			sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
-			sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
-			sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
-		),
-		sdk.NewEvent(
-			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[1].Filename),
-			sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
-		),
-		sdk.NewEvent(
-			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[2].Filename),
-			sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
-		),
-		sdk.NewEvent(
-			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[3].Filename),
-			sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(calldata)),
-		),
-	}
-	require.Equal(t, expectEvents, ctx.EventManager().Events())
+	require.Equal(t, types.NewRequest(
+		1, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+			types.NewRawRequest(2, 2, []byte("beeb")),
+			types.NewRawRequest(3, 3, []byte("beeb")),
+		},
+	), k.MustGetRequest(ctx, 1))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeRequest,
+		sdk.NewAttribute(types.AttributeKeyID, "1"),
+		sdk.NewAttribute(types.AttributeKeyClientID, BasicClientID),
+		sdk.NewAttribute(types.AttributeKeyOracleScriptID, "1"),
+		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(BasicCalldata)),
+		sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
+		sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
+		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
+	), sdk.NewEvent(
+		types.EventTypeRawRequest,
+		sdk.NewAttribute(types.AttributeKeyDataSourceID, "1"),
+		sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[1].Filename),
+		sdk.NewAttribute(types.AttributeKeyExternalID, "1"),
+		sdk.NewAttribute(types.AttributeKeyCalldata, "beeb"),
+	), sdk.NewEvent(
+		types.EventTypeRawRequest,
+		sdk.NewAttribute(types.AttributeKeyDataSourceID, "2"),
+		sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[2].Filename),
+		sdk.NewAttribute(types.AttributeKeyExternalID, "2"),
+		sdk.NewAttribute(types.AttributeKeyCalldata, "beeb"),
+	), sdk.NewEvent(
+		types.EventTypeRawRequest,
+		sdk.NewAttribute(types.AttributeKeyDataSourceID, "3"),
+		sdk.NewAttribute(types.AttributeKeyDataSourceHash, testapp.DataSources[3].Filename),
+		sdk.NewAttribute(types.AttributeKeyExternalID, "3"),
+		sdk.NewAttribute(types.AttributeKeyCalldata, "beeb"),
+	)}, ctx.EventManager().Events())
 }
 
 func TestPrepareRequestInvalidAskCountFail(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	k.SetParam(ctx, types.KeyMaxAskCount, 1000) // Set MaxAskCount 1000
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(100000) // Set ask count 100000
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	k.SetParam(ctx, types.KeyMaxAskCount, 5)
+	m := types.NewMsgRequestData(1, BasicCalldata, 10, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
-	require.Error(t, err)
+	require.EqualError(t, err, "invalid ask count: got: 10, max: 5")
+	m = types.NewMsgRequestData(1, BasicCalldata, 4, 1, BasicClientID, testapp.Alice.Address)
+	err = k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "insufficent available validators: 3 < 4")
+	m = types.NewMsgRequestData(1, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	err = k.PrepareRequest(ctx, &m)
+	require.NoError(t, err)
 }
 
 func TestPrepareRequestBaseRequestFeePanic(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(90000)) // Set Gas Meter 90000
-
-	baseRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas) // Set BaseRequestGas 100000
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
-	require.Panics(t, func() { k.PrepareRequest(ctx, &m) })
-
+	k.SetParam(ctx, types.KeyBaseRequestGas, 100000) // Set BaseRequestGas to 100000
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 0)
+	m := types.NewMsgRequestData(1, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(90000))
+	require.PanicsWithValue(t, sdk.ErrorOutOfGas{Descriptor: "BASE_REQUEST_FEE"}, func() { k.PrepareRequest(ctx, &m) })
 	ctx = ctx.WithGasMeter(sdk.NewGasMeter(200000))
 	err := k.PrepareRequest(ctx, &m)
 	require.NoError(t, err)
-
 }
 
 func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-	ctx = ctx.WithGasMeter(sdk.NewGasMeter(150000)) //Set Gas Meter 150000
-
-	baseRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyBaseRequestGas, baseRequestGas) // Set BaseRequestGas 100000
-	perValidatorRequestGas := uint64(100000)
-	k.SetParam(ctx, types.KeyPerValidatorRequestGas, perValidatorRequestGas) // Set PerValidatorRequestGas 100000
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
-
-	// PrepareRequest panics because set gas meter at 150000
-	// but PrepareRequest consume gas more than 200000
-	// (baseRequestGas + askCount*perValidatorRequestGas = 200000)
-	require.Panics(t, func() { k.PrepareRequest(ctx, &m) })
+	k.SetParam(ctx, types.KeyBaseRequestGas, 100000)
+	k.SetParam(ctx, types.KeyPerValidatorRequestGas, 50000) // Set erValidatorRequestGas to 50000
+	m := types.NewMsgRequestData(1, BasicCalldata, 2, 1, BasicClientID, testapp.Alice.Address)
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(190000))
+	require.PanicsWithValue(t, sdk.ErrorOutOfGas{Descriptor: "PER_VALIDATOR_REQUEST_FEE"}, func() { k.PrepareRequest(ctx, &m) })
+	m = types.NewMsgRequestData(1, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	ctx = ctx.WithGasMeter(sdk.NewGasMeter(190000))
+	err := k.PrepareRequest(ctx, &m)
+	require.NoError(t, err)
 }
 
-func TestPrepareRequestGetRandomValidatorsFail(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(15)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
-
+func TestPrepareRequestEmptyCalldata(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true) // Send nil while oracle script expects calldata
+	m := types.NewMsgRequestData(4, nil, 1, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
-	require.Error(t, err)
+	require.EqualError(t, err, "bad wasm execution: runtime error while executing the Wasm script")
 }
 
-func TestPrepareRequestGetOracleScriptFail(t *testing.T) {
+func TestPrepareRequestOracleScriptNotFound(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(9999, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	m := types.NewMsgRequestData(999, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
-	require.Error(t, err)
-}
-
-func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(3)
-	calldata := []byte("test")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
-	err := k.PrepareRequest(ctx, &m)
-	require.EqualError(t, err, "empty raw requests")
+	require.EqualError(t, err, "oracle script not found: id: 999")
 }
 
 func TestPrepareRequestBadWasmExecutionFail(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(2)
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(oracleScriptID, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	m := types.NewMsgRequestData(2, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
-	require.EqualError(t, err, "bad wasm execution: failed to prepare request with error: OEI action to invoke is not available")
+	require.EqualError(t, err, "bad wasm execution: OEI action to invoke is not available")
 }
 
-func TestPrepareRequestGetDataSourceFail(t *testing.T) {
+func TestPrepareRequestWithEmptyRawRequest(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	calldata, _ := hex.DecodeString("030000004254436400000000000000")
-	askCount := uint64(1)
-	minCount := uint64(2)
-	clientID := "beeb"
-
-	m := types.NewMsgRequestData(2, calldata, askCount, minCount, clientID, testapp.Alice.Address)
+	m := types.NewMsgRequestData(3, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
 	err := k.PrepareRequest(ctx, &m)
-	require.Error(t, err)
+	require.EqualError(t, err, "empty raw requests")
+}
+
+func TestPrepareRequestUnknownDataSource(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	m := types.NewMsgRequestData(4, obi.MustEncode(testapp.Wasm4Input{
+		IDs:      []int64{1, 2, 99},
+		Calldata: "beeb",
+	}), 1, 1, BasicClientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "data source not found: id: 99")
+}
+
+func TestPrepareRequestInvalidDataSourceCount(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetParam(ctx, types.KeyMaxRawRequestCount, 3)
+	m := types.NewMsgRequestData(4, obi.MustEncode(testapp.Wasm4Input{
+		IDs:      []int64{1, 2, 3, 4},
+		Calldata: "beeb",
+	}), 1, 1, BasicClientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "bad wasm execution: too many external data requests")
+	m = types.NewMsgRequestData(4, obi.MustEncode(testapp.Wasm4Input{
+		IDs:      []int64{1, 2, 3},
+		Calldata: "beeb",
+	}), 1, 1, BasicClientID, testapp.Alice.Address)
+	err = k.PrepareRequest(ctx, &m)
+	require.NoError(t, err)
+}
+
+func TestPrepareRequestTooMuchWasmGas(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	m := types.NewMsgRequestData(5, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.NoError(t, err)
+	m = types.NewMsgRequestData(6, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	err = k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "bad wasm execution: out-of-gas while executing the wasm script")
+}
+
+func TestPrepareRequestTooLargeCalldata(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	m := types.NewMsgRequestData(7, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.NoError(t, err)
+	m = types.NewMsgRequestData(8, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
+	err = k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "bad wasm execution: span to write is too small")
 }
 
 func TestResolveRequestSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
-
-	oracleScriptID := types.OracleScriptID(1)
-	calldata := []byte("calldata")
-	minCount := uint64(1)
-	clientID := "owasm test"
-	rawRequests := []types.RawRequest{
-		types.NewRawRequest(1, 1, []byte("beeb")),
-		types.NewRawRequest(2, 2, []byte("beeb")),
-		types.NewRawRequest(3, 3, []byte("beeb")),
-	}
-	vals := []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress, testapp.Validator3.ValAddress}
-	requestHeight := int64(4000)
-	requestTime := testapp.ParseTime(1581589700)
-
-	req := types.NewRequest(
-		oracleScriptID, calldata, vals, minCount, requestHeight,
-		requestTime, clientID, rawRequests)
-	reqID := k.AddRequest(ctx, req)
-
-	// Set report validator
-	k.AddReport(ctx, types.RequestID(1), types.NewReport(
-		testapp.Validator1.ValAddress,
-		true,
-		[]types.RawReport{
-			types.NewRawReport(1, 0, []byte("answer1")),
-			types.NewRawReport(2, 0, []byte("answer2")),
-			types.NewRawReport(3, 0, []byte("answer3")),
-		}),
-	)
-
-	k.ResolveRequest(ctx, reqID)
-	res, err := k.GetResult(ctx, reqID)
-	require.NoError(t, err)
-
-	reqPacket := types.NewOracleRequestPacketData(
-		clientID, types.OracleScriptID(1), calldata, uint64(len(vals)), minCount,
-	)
-
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 1st Wasm - return "beeb"
+		1, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(1, 0, []byte("beeb")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(BasicClientID, 1, BasicCalldata, 2, 1)
 	resPacket := types.NewOracleResponsePacketData(
-		clientID, reqID, 1, requestTime.Unix(),
-		ctx.BlockTime().Unix(), types.ResolveStatus_Success, []byte("beeb"),
+		BasicClientID, 42, 1, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Success, []byte("beeb"),
 	)
-	require.Equal(t, types.Result{RequestPacketData: reqPacket, ResponsePacketData: resPacket}, res)
-
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
+		sdk.NewAttribute(types.AttributeKeyResult, "62656562"), // hex of "beeb"
+	)}, ctx.EventManager().Events())
 }
 
-// TODO: Patch to "Bad" wasm code that is a valid wasm code.
-// func TestResolveRequestFail(t *testing.T) {
-// 	_, ctx, k := testapp.CreateTestInput(true)
-// 	ctx = ctx.WithBlockTime(time.Unix(1581589790, 0))
+func TestResolveRequestSuccessComplex(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 4st Wasm. Append all reports from all validators.
+		4, obi.MustEncode(testapp.Wasm4Input{
+			IDs:      []int64{1, 2},
+			Calldata: string(BasicCalldata),
+		}), []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(0, 1, BasicCalldata),
+			types.NewRawRequest(1, 2, BasicCalldata),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(0, 0, []byte("beebd1v1")),
+			types.NewRawReport(1, 0, []byte("beebd2v1")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator2.ValAddress, true, []types.RawReport{
+			types.NewRawReport(0, 0, []byte("beebd1v2")),
+			types.NewRawReport(1, 0, []byte("beebd2v2")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(
+		BasicClientID, 4, obi.MustEncode(testapp.Wasm4Input{
+			IDs:      []int64{1, 2},
+			Calldata: string(BasicCalldata),
+		}), 2, 1,
+	)
+	resPacket := types.NewOracleResponsePacketData(
+		BasicClientID, 42, 2, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Success,
+		obi.MustEncode(testapp.Wasm4Output{Ret: "beebd1v1beebd1v2beebd2v1beebd2v2"}),
+	)
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
+		sdk.NewAttribute(types.AttributeKeyResult, "000000206265656264317631626565626431763262656562643276316265656264327632"),
+	)}, ctx.EventManager().Events())
+}
 
-// 	ds1, clear1 := getTestDataSource("code1")
-// 	defer clear1()
-// 	k.AddDataSource(ctx, ds1)
+func TestResolveRequestNoReturnData(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 3rd Wasm - do nothing
+		3, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(1, 0, []byte("beeb")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(BasicClientID, 3, BasicCalldata, 2, 1)
+	resPacket := types.NewOracleResponsePacketData(
+		BasicClientID, 42, 1, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Failure, []byte{},
+	)
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "2"),
+		sdk.NewAttribute(types.AttributeKeyReason, "no return data"),
+	)}, ctx.EventManager().Events())
+}
 
-// 	ds2, clear2 := getTestDataSource("code2")
-// 	defer clear2()
-// 	k.AddDataSource(ctx, ds2)
-
-// 	ds3, clear3 := getTestDataSource("code3")
-// 	defer clear3()
-// 	k.AddDataSource(ctx, ds3)
-
-// 	os, clear4 := getBadOracleScript()
-// 	defer clear4()
-
-// 	oracleScriptID := k.AddOracleScript(ctx, os)
-// 	calldata, _ := hex.DecodeString("00")
-// 	minCount := uint64(2)
-// 	clientID := "beeb"
-// 	rawRequestID := []types.ExternalID{1, 2}
-// 	vals := []sdk.ValAddress{Validator1.ValAddress}
-// 	requestHeight := int64(4000)
-// 	requestTime := int64(1581589700)
-
-// 	req := types.NewRequest(
-// 		oracleScriptID, calldata, vals, minCount, requestHeight,
-// 		requestTime, clientID, nil, rawRequestID)
-// 	reqID := k.AddRequest(ctx, req)
-// 	k.ResolveRequest(ctx, reqID)
-
-// 	res, err := k.GetResult(ctx, reqID)
-// 	require.NoError(t, err)
-
-// 	r := k.MustGetRequest(ctx, reqID)
-// 	resPacket := types.NewOracleResponsePacketData(
-// 		r.ClientID, reqID, k.GetReportCount(ctx, reqID), r.RequestTime,
-// 		ctx.BlockTime().Unix(), types.ResolveStatus_Failure, nil,
-// 	)
-// 	reqPacket := types.NewOracleRequestPacketData(
-// 		r.ClientID, r.OracleScriptID, r.Calldata, r.MinCount, uint64(len(r.RequestedValidators)),
-// 	)
-// 	expecetRes := obi.MustEncode(reqPacket, resPacket)
-
-// 	require.Equal(t, expecetRes, res)
-// }
+func TestResolveRequestWasmFailure(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 6th Wasm - out-of-gas
+		6, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+		},
+	))
+	k.SetReport(ctx, 42, types.NewReport(
+		testapp.Validator1.ValAddress, true, []types.RawReport{
+			types.NewRawReport(1, 0, []byte("beeb")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(BasicClientID, 6, BasicCalldata, 2, 1)
+	resPacket := types.NewOracleResponsePacketData(
+		BasicClientID, 42, 1, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Failure, []byte{},
+	)
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "2"),
+		sdk.NewAttribute(types.AttributeKeyReason, "out-of-gas while executing the wasm script"),
+	)}, ctx.EventManager().Events())
+}
