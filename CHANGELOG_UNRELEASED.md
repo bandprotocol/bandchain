@@ -10,7 +10,7 @@
 
 ### Chain
 
-- (impv) [\#2148](https://github.com/bandprotocol/bandchain/pull/2148) Add more unit tests and fix nil retdata.
+- (impv) [\#2148](https://github.com/bandprotocol/bandchain/pull/2148) Add more unit tests and fix nil retdata and nil calldata.
 - (impv) [\#2146](https://github.com/bandprotocol/bandchain/pull/2146) Various minor improvements and unit tests.
 - (impv) [\#2138](https://github.com/bandprotocol/bandchain/pull/2138) Docker deployment and handle jail event and unjail msg.
 - (impv) [\#2143](https://github.com/bandprotocol/bandchain/pull/2143) Separate resolve functions into success/failure/expired cases.

@@ -161,6 +161,13 @@ func TestPrepareRequestPerValidatorRequestFeePanic(t *testing.T) {
 	require.NoError(t, err)
 }
 
+func TestPrepareRequestEmptyCalldata(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true) // Send nil while oracle script expects calldata
+	m := types.NewMsgRequestData(4, nil, 1, 1, BasicClientID, testapp.Alice.Address)
+	err := k.PrepareRequest(ctx, &m)
+	require.EqualError(t, err, "bad wasm execution: runtime error while executing the Wasm script")
+}
+
 func TestPrepareRequestOracleScriptNotFound(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	m := types.NewMsgRequestData(999, BasicCalldata, 1, 1, BasicClientID, testapp.Alice.Address)
