@@ -246,7 +246,7 @@ message ValidatorStatus {
   google.protobuf.Timestamp since = 2 [(gogoproto.stdtime) = true, (gogoproto.nullable) = false];
 }
 
-// Params - used for initializing default parameter for oracle at genesis.
+// Params is the data structure that keeps the parameters of the oracle module.
 message Params {
   option (gogoproto.equal) = true;
   option (gogoproto.goproto_stringer) = false;

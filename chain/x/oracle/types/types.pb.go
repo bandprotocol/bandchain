@@ -1444,7 +1444,7 @@ func (m *ValidatorStatus) GetSince() time.Time {
 	return time.Time{}
 }
 
-// Params - used for initializing default parameter for oracle at genesis.
+// Params is the data structure that keeps the parameters of the oracle module.
 type Params struct {
 	MaxRawRequestCount      uint64 `protobuf:"varint,1,opt,name=max_raw_request_count,json=maxRawRequestCount,proto3" json:"max_raw_request_count,omitempty"`
 	MaxAskCount             uint64 `protobuf:"varint,2,opt,name=max_ask_count,json=maxAskCount,proto3" json:"max_ask_count,omitempty"`
