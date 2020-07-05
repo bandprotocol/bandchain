@@ -60,6 +60,8 @@
 
 ### Owasm
 
+- (feat) [\#2150](https://github.com/bandprotocol/bandchain/pull/2150) Increase wasm gas limit and consume gas when reading / writing.
+
 ### Oracle Binary Encoding (OBI)
 
 - (impv) [#1947](https://github.com/bandprotocol/bandchain/pull/2065) Remove obi.js build process
