@@ -179,7 +179,7 @@ module Balance = {
 
 [@react.component]
 let make = () => {
-  let metadataSub = MetadataSub.use();
+  let trackingSub = TrackingSub.use();
   let (accountOpt, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
@@ -204,7 +204,7 @@ let make = () => {
       </Row>
     </>
   | None =>
-    switch (metadataSub) {
+    switch (trackingSub) {
     | Data({chainID}) => <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
     | Error(err) =>
       // log for err details

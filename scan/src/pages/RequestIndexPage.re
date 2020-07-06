@@ -100,7 +100,7 @@ let make = (~reqID) =>
           <InfoHL header="SENDER" info={InfoHL.Address(request.requester, 280)} />
         </Col>
         <Col size=4.0>
-          <InfoHL header="TX HASH" info={InfoHL.TxHash(request.transaction.txHash, 385)} />
+          <InfoHL header="TX HASH" info={InfoHL.TxHash(request.transaction.hash, 385)} />
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
@@ -353,7 +353,7 @@ let make = (~reqID) =>
                      [
                        KVTable.Validator(report.validatorByValidator),
                        KVTable.Block(report.transaction.blockHeight),
-                       KVTable.TxHash(report.transaction.txHash),
+                       KVTable.TxHash(report.transaction.hash),
                        KVTable.Values(
                          report.reportDetails
                          ->Belt_Array.map(({externalID}) => externalID |> Format.iPretty)

@@ -106,9 +106,9 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        fromAddress: json |> field("from_address", string) |> Address.fromBech32,
-        toAddress: json |> field("to_address", string) |> Address.fromBech32,
-        amount: json |> field("amount", list(Coin.decodeCoin)),
+        fromAddress: json |> at(["msg", "from_address"], string) |> Address.fromBech32,
+        toAddress: json |> at(["msg", "to_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
   };
 
@@ -1150,6 +1150,8 @@ module Msg = {
   };
 };
 
+type block_t = {timestamp: MomentRe.Moment.t};
+
 type t = {
   txHash: Hash.t,
   blockHeight: ID.Block.t,
@@ -1160,50 +1162,100 @@ type t = {
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
   messages: list(Msg.t),
+  memo: string,
   rawLog: string,
+};
+
+type internal_t = {
+  txHash: Hash.t,
+  blockHeight: ID.Block.t,
+  success: bool,
+  gasFee: list(Coin.t),
+  gasLimit: int,
+  gasUsed: int,
+  sender: Address.t,
+  block: block_t,
+  messages: list(Msg.t),
+  memo: string,
+  errMsg: option(string),
 };
 
 module Mini = {
   type t = {
-    txHash: Hash.t,
+    hash: Hash.t,
     blockHeight: ID.Block.t,
     timestamp: MomentRe.Moment.t,
   };
 };
 
-module SingleConfig = [%graphql
-  {|
-  subscription Transaction($tx_hash:bytea!) {
-    transactions_by_pk(tx_hash: $tx_hash) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
-      success
-      gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
-      sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
-      messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
-    }
-  },
-|}
-];
+let toExternal =
+    (
+      {
+        txHash,
+        blockHeight,
+        success,
+        gasFee,
+        gasLimit,
+        gasUsed,
+        sender,
+        memo,
+        block,
+        messages,
+        errMsg,
+      },
+    ) => {
+  txHash,
+  blockHeight,
+  success,
+  gasFee,
+  gasLimit,
+  gasUsed,
+  sender,
+  memo,
+  timestamp: block.timestamp,
+  messages,
+  // TODO: change it later
+  rawLog: errMsg |> Belt.Option.getWithDefault(_, ""),
+};
+
+// module SingleConfig = [%graphql
+//   {|
+//   subscription Transaction($tx_hash: String!) {
+//     transactions_by_pk(hash: $tx_hash) @bsRecord {
+//       txHash: hash @bsDecoder(fn: "Hash.fromHex")
+//       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+//       success
+//       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+//       gasLimit: gas_limit
+//       gasUsed : gas_used
+//       sender  @bsDecoder(fn: "Address.fromBech32")
+//       messages @bsDecoder(fn: "Msg.decodeActions")
+//       rawLog: err_msg
+//       block @bsRecord {
+//         timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+//       }
+//     }
+//   },
+// |}
+// ];
 
 module MultiConfig = [%graphql
   {|
   subscription Transactions($limit: Int!, $offset: Int!) {
     transactions(offset: $offset, limit: $limit, order_by: {block_height: desc, index: desc}) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+      txHash : hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed : gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   }
 |}
@@ -1211,18 +1263,21 @@ module MultiConfig = [%graphql
 
 module MultiByHeightConfig = [%graphql
   {|
-  subscription TransactionsByHeight($height: bigint!, $limit: Int!, $offset: Int!) {
+  subscription TransactionsByHeight($height: Int!, $limit: Int!, $offset: Int!) {
     transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit, order_by: {index: desc}) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+      txHash : hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed : gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   }
 |}
@@ -1237,16 +1292,19 @@ module MultiBySenderConfig = [%graphql
       limit: $limit,
       order_by: {block_height: desc,index: desc},
     ) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+      txHash : hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed : gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
       messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   }
 |}
@@ -1277,30 +1335,59 @@ module TxCountBySenderConfig = [%graphql
 ];
 
 let get = txHash => {
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      SingleConfig.definition,
-      ~variables=
-        SingleConfig.makeVariables(
-          ~tx_hash=txHash |> Hash.toHex |> (x => "\\x" ++ x) |> Js.Json.string,
-          (),
-        ),
-    );
-  let%Sub x = result;
-  switch (x##transactions_by_pk) {
-  | Some(data) => Sub.resolve(data)
-  | None => NoData
-  };
+  // TODO;
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     SingleConfig.definition,
+  //     ~variables=
+  //       SingleConfig.makeVariables(
+  //         ~tx_hash=txHash |> Hash.toHex |> (x => "\\x" ++ x) |> Js.Json.string,
+  //         (),
+  //       ),
+  //   );
+  // let%Sub x = result;
+  // switch (x##transactions_by_pk) {
+  // | Some(data) => Sub.resolve(data)
+  // | None => NoData
+  // };
+  Sub.resolve({
+    txHash,
+    blockHeight: ID.Block.ID(1),
+    success: true,
+    memo: "memo",
+    gasFee: [],
+    gasLimit: 1,
+    gasUsed: 2,
+    sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+    timestamp: MomentRe.momentNow(),
+    messages: [],
+    rawLog: "asdj",
+  });
 };
 
 let getList = (~page, ~pageSize, ()) => {
-  let offset = (page - 1) * pageSize;
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      MultiConfig.definition,
-      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
-    );
-  result |> Sub.map(_, x => x##transactions);
+  // let offset = (page - 1) * pageSize;
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     MultiConfig.definition,
+  //     ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
+  //   );
+  // result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
+  Sub.resolve([|
+    {
+      txHash: "1BDB3B86BB70506A50D7F10028A13CE1CB46E43D7B245058ED9D58FD1A5C6ADE" |> Hash.fromHex,
+      blockHeight: ID.Block.ID(1),
+      success: true,
+      memo: "memo",
+      gasFee: [],
+      gasLimit: 1,
+      gasUsed: 2,
+      sender: "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs" |> Address.fromBech32,
+      timestamp: MomentRe.momentNow(),
+      messages: [],
+      rawLog: "asdj",
+    },
+  |]);
 };
 
 let getListBySender = (sender, ~page, ~pageSize, ()) => {
@@ -1316,23 +1403,18 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
           (),
         ),
     );
-  result |> Sub.map(_, x => x##transactions);
+  result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };
 
 let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
+  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiByHeightConfig.definition,
-      ~variables=
-        MultiByHeightConfig.makeVariables(
-          ~height=height |> ID.Block.toJson,
-          ~limit=pageSize,
-          ~offset,
-          (),
-        ),
+      ~variables=MultiByHeightConfig.makeVariables(~height=height_, ~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, x => x##transactions);
+  result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };
 
 let count = () => {

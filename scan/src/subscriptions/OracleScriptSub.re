@@ -10,6 +10,8 @@ type t = {
 };
 
 type related_data_source_t = {dataSourceID: ID.DataSource.t};
+type block_t = {timestamp: MomentRe.Moment.t};
+type transaction_t = {block: block_t};
 
 type internal_t = {
   id: ID.OracleScript.t,
@@ -18,36 +20,41 @@ type internal_t = {
   description: string,
   schema: string,
   sourceCodeURL: string,
-  timestamp: MomentRe.Moment.t,
-  related_data_sources: array(related_data_source_t),
+  transaction: option(transaction_t),
+  // related_data_sources: array(related_data_source_t),
 };
 
-let toExternal =
-    ({id, owner, name, description, schema, sourceCodeURL, timestamp, related_data_sources}) => {
+let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transaction}) => {
   id,
   owner,
   name,
   description,
   schema,
   sourceCodeURL,
-  timestamp,
-  relatedDataSources:
-    related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
+  timestamp:
+    switch (transaction) {
+    | Some({block}) => block.timestamp
+    // TODO: Please revisit again.
+    | _ => MomentRe.momentNow()
+    },
+  relatedDataSources: [],
+  //   related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
 };
 
 module MultiConfig = [%graphql
   {|
   subscription OracleScripts($limit: Int!, $offset: Int!) {
-    oracle_scripts(limit: $limit, offset: $offset, order_by: {last_updated: desc}) @bsRecord {
-      id @bsDecoder(fn: "ID.OracleScript.fromJson")
+    oracle_scripts(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}}) @bsRecord {
+      id @bsDecoder(fn: "ID.OracleScript.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
       schema
       sourceCodeURL: source_code_url
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
-      related_data_sources @bsRecord {
-        dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
+      transaction @bsRecord {
+        block @bsRecord {
+          timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+        }
       }
     }
   }
@@ -56,17 +63,18 @@ module MultiConfig = [%graphql
 
 module SingleConfig = [%graphql
   {|
-  subscription OracleScript($id: bigint!) {
+  subscription OracleScript($id: Int!) {
     oracle_scripts_by_pk(id: $id) @bsRecord {
-      id @bsDecoder(fn: "ID.OracleScript.fromJson")
+      id @bsDecoder(fn: "ID.OracleScript.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
       description
       schema
       sourceCodeURL: source_code_url
-      timestamp: last_updated @bsDecoder(fn: "GraphQLParser.timeMS")
-      related_data_sources @bsRecord {
-        dataSourceID: data_source_id @bsDecoder(fn: "ID.DataSource.fromJson")
+      transaction @bsRecord {
+        block @bsRecord {
+          timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+        }
       }
     }
   },
@@ -86,10 +94,11 @@ module OracleScriptsCountConfig = [%graphql
 ];
 
 let get = id => {
+  let ID.OracleScript.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~id=id |> ID.OracleScript.toJson, ()),
+      ~variables=SingleConfig.makeVariables(~id=id_, ()),
     );
   let%Sub x = result;
   switch (x##oracle_scripts_by_pk) {

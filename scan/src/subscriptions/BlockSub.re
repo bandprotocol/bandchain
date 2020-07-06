@@ -7,6 +7,7 @@ type transactions_aggregate_t = {aggregate: option(aggregate_t)};
 type internal_t = {
   height: ID.Block.t,
   hash: Hash.t,
+  inflation: float,
   validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
   transactions_aggregate: transactions_aggregate_t,
@@ -15,16 +16,18 @@ type internal_t = {
 type t = {
   height: ID.Block.t,
   hash: Hash.t,
-  validator: ValidatorSub.Mini.t,
+  inflation: float,
   timestamp: MomentRe.Moment.t,
+  validator: ValidatorSub.Mini.t,
   txn: int,
 };
 
-let toExternal = ({height, hash, validator, timestamp, transactions_aggregate}) => {
+let toExternal = ({height, hash, inflation, timestamp, validator, transactions_aggregate}) => {
   height,
   hash,
-  validator,
+  inflation,
   timestamp,
+  validator,
   txn:
     switch (transactions_aggregate.aggregate) {
     | Some(aggregate) => aggregate.count
@@ -36,15 +39,16 @@ module MultiConfig = [%graphql
   {|
   subscription Blocks($limit: Int!, $offset: Int!) {
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}) @bsRecord {
-      height @bsDecoder(fn: "ID.Block.fromJson")
-      hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
+      height @bsDecoder(fn: "ID.Block.fromInt")
+      hash @bsDecoder(fn: "GraphQLParser.hash")
+      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
         identity
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
+      timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -59,15 +63,16 @@ module MultiConsensusAddressConfig = [%graphql
   {|
   subscription BlocksByConsensusAddress($limit: Int!, $offset: Int!, $address: String!) {
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}, where: {proposer: {_eq: $address}}) @bsRecord {
-      height @bsDecoder(fn: "ID.Block.fromJson")
-      hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
+      height @bsDecoder(fn: "ID.Block.fromInt")
+      hash @bsDecoder(fn: "GraphQLParser.hash")
+      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
         identity
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
+      timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -80,17 +85,18 @@ module MultiConsensusAddressConfig = [%graphql
 
 module SingleConfig = [%graphql
   {|
-  subscription Block($height: bigint!) {
+  subscription Block($height: Int!) {
     blocks_by_pk(height: $height) @bsRecord {
-      height @bsDecoder(fn: "ID.Block.fromJson")
-      hash: block_hash @bsDecoder(fn: "GraphQLParser.hash")
+      height @bsDecoder(fn: "ID.Block.fromInt")
+      hash @bsDecoder(fn: "GraphQLParser.hash")
+      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
         moniker
         identity
       }
-      timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
+      timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
       transactions_aggregate @bsRecord {
         aggregate @bsRecord {
           count @bsDecoder(fn: "Belt_Option.getExn")
@@ -113,41 +119,42 @@ module BlockCountConfig = [%graphql
 |}
 ];
 
-module PastDayBlockCountConfig = [%graphql
-  {|
-  subscription AvgDayBlocksCount($greater: bigint!, $less: bigint!) {
-    blocks_aggregate(where: {timestamp: {_lte: $less, _gte: $greater}}) {
-      aggregate{
-        count @bsDecoder(fn: "Belt_Option.getExn")
-        max {
-          timestamp @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        }
-        min {
-          timestamp @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        }
-      }
-    }
-  }
-|}
-];
+// module PastDayBlockCountConfig = [%graphql
+//   {|
+//   subscription AvgDayBlocksCount($greater: timestamp, $less: timestamp) {
+//     blocks_aggregate(where: {timestamp: {_lte: $less, _gte: $greater}}) {
+//       aggregate{
+//         count @bsDecoder(fn: "Belt_Option.getExn")
+//         max {
+//           timestamp @bsDecoder(fn: "GraphQLParser.timestampWithDefault")
+//         }
+//         min {
+//           timestamp @bsDecoder(fn: "GraphQLParser.timestampWithDefault")
+//         }
+//       }
+//     }
+//   }
+// |}
+// ];
 
-module BlockCountConsensusAddressConfig = [%graphql
-  {|
-  subscription BlocksCountByConsensusAddress($address: String!) {
-    blocks_aggregate(where: {proposer: {_eq: $address}}) {
-      aggregate{
-        count @bsDecoder(fn: "Belt_Option.getExn")
-      }
-    }
-  }
-|}
-];
+// module BlockCountConsensusAddressConfig = [%graphql
+//   {|
+//   subscription BlocksCountByConsensusAddress($address: String!) {
+//     blocks_aggregate(where: {proposer: {_eq: $address}}) {
+//       aggregate{
+//         count @bsDecoder(fn: "Belt_Option.getExn")
+//       }
+//     }
+//   }
+// |}
+// ];
 
 let get = height => {
+  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~height=height |> ID.Block.toJson, ()),
+      ~variables=SingleConfig.makeVariables(~height=height_, ()),
     );
   let%Sub x = result;
   switch (x##blocks_by_pk) {
@@ -197,49 +204,53 @@ let count = () => {
 };
 
 let getAvgBlockTime = (greater, less) => {
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      PastDayBlockCountConfig.definition,
-      ~variables=
-        PastDayBlockCountConfig.makeVariables(
-          ~greater=greater |> Js.Json.number,
-          ~less=less |> Js.Json.number,
-          (),
-        ),
-    );
-  let timestampMinSub =
-    result
-    |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
-    |> Sub.map(_, b => b##min |> Belt_Option.getExn)
-    |> Sub.map(_, c => c##timestamp);
-  let timestampMaxSub =
-    result
-    |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
-    |> Sub.map(_, b => b##max |> Belt_Option.getExn)
-    |> Sub.map(_, c => c##timestamp);
-  let blockCountSub =
-    result
-    |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-
-  let%Sub timestampMin = timestampMinSub;
-  let%Sub timestampMax = timestampMaxSub;
-  let%Sub blockCount = blockCountSub;
-
-  let secondsPassed = (timestampMax -. timestampMin) /. 1000.;
-
-  secondsPassed /. (blockCount |> float_of_int) |> Sub.resolve;
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     PastDayBlockCountConfig.definition,
+  //     ~variables=
+  //       PastDayBlockCountConfig.makeVariables(
+  //         ~greater=greater |> Js.Json.string,
+  //         ~less=less |> Js.Json.string,
+  //         (),
+  //       ),
+  //   );
+  // let timestampMinSub =
+  //   result
+  //   |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
+  //   |> Sub.map(_, b => b##min |> Belt_Option.getExn)
+  //   |> Sub.map(_, c => c##timestamp);
+  // let timestampMaxSub =
+  //   result
+  //   |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
+  //   |> Sub.map(_, b => b##max |> Belt_Option.getExn)
+  //   |> Sub.map(_, c => c##timestamp);
+  // let blockCountSub =
+  //   result
+  //   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  // let%Sub timestampMin = timestampMinSub;
+  // let%Sub timestampMax = timestampMaxSub;
+  // let%Sub blockCount = blockCountSub;
+  // let secondsPassed = MomentRe.diff(timestampMax, timestampMin, `milliseconds) /. 1000.;
+  // secondsPassed /. (blockCount |> float_of_int) |> Sub.resolve;
+  Sub.resolve(
+    3.2,
+  );
 };
 
+// TODO
 let countByConsensusAddress = (~address, ()) => {
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      BlockCountConsensusAddressConfig.definition,
-      ~variables=
-        BlockCountConsensusAddressConfig.makeVariables(
-          ~address=address |> Address.toHex(~upper=true),
-          (),
-        ),
-    );
-  result
-  |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     BlockCountConsensusAddressConfig.definition,
+  //     ~variables=
+  //       BlockCountConsensusAddressConfig.makeVariables(
+  //         ~address=address |> Address.toHex(~upper=true),
+  //         (),
+  //       ),
+  //   );
+  // result
+  // |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  Sub.resolve(
+    100,
+  );
 };
