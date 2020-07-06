@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2144](https://github.com/bandprotocol/bandchain/pull/2144) Add validator votes table.
 - (impv) [\#2148](https://github.com/bandprotocol/bandchain/pull/2148) Add more unit tests and fix nil retdata and nil calldata.
 - (impv/chore) [\#2147](https://github.com/bandprotocol/bandchain/pull/2147) Add abci begin block test for reward allocation.
 - (impv) [\#2146](https://github.com/bandprotocol/bandchain/pull/2146) Various minor improvements and unit tests.

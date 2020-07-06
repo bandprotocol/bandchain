@@ -15,6 +15,7 @@ from .db import (
     raw_reports,
     validators,
     delegations,
+    validator_votes,
 )
 
 
@@ -95,3 +96,6 @@ class Handler(object):
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(delegations.delete().where(condition))
+
+    def handle_new_validator_vote(self, msg):
+        self.conn.execute(insert(validator_votes).values(**msg))

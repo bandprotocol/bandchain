@@ -206,3 +206,16 @@ delegations = sa.Table(
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
+
+validator_votes = sa.Table(
+    "validator_votes",
+    metadata,
+    Column(
+        "consensus_address",
+        sa.String,
+        sa.ForeignKey("validators.consensus_address"),
+        primary_key=True,
+    ),
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), primary_key=True),
+    Column("voted", sa.Boolean),
+)
