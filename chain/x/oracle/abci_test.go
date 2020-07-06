@@ -139,14 +139,14 @@ func TestAllocateTokensWithDistrAllocateTokens(t *testing.T) {
 	//     34.3uband go to validator1 (active)
 	//   15uband = 30% go to distr pool
 	//     0.3uband (2%) go to community pool
-	//     0.75uband (5%) go to validator2 (proposer)
-	//     13.95uband split among voters
-	//        9.765uband (70%) go to validator1
-	//        4.185uband (30%) go to validator2
+	//     2.25uband (15%) go to validator2 (proposer)
+	//     12.45uband split among voters
+	//        8.715uband (70%) go to validator1
+	//        3.735uband (30%) go to validator2
 	// In summary
 	//   Community pool: 0.7 + 0.3 = 1
-	//   Validator1: 34.3 + 9.765 = 44.065
-	//   Validator2: 0.75 + 4.185 = 4.935
+	//   Validator1: 34.3 + 8.715 = 43.015
+	//   Validator2: 2.25 + 3.735 = 5.985
 	k.Activate(ctx, testapp.Validator1.ValAddress)
 	app.BeginBlocker(ctx, abci.RequestBeginBlock{
 		Hash:           fromHex("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"),
@@ -155,6 +155,6 @@ func TestAllocateTokensWithDistrAllocateTokens(t *testing.T) {
 	require.Equal(t, sdk.Coins(nil), app.SupplyKeeper.GetModuleAccount(ctx, auth.FeeCollectorName).GetCoins())
 	require.Equal(t, sdk.NewCoins(sdk.NewInt64Coin("uband", 50)), app.SupplyKeeper.GetModuleAccount(ctx, distribution.ModuleName).GetCoins())
 	require.Equal(t, sdk.DecCoins{{Denom: "uband", Amount: sdk.NewDec(1)}}, app.DistrKeeper.GetFeePool(ctx).CommunityPool)
-	require.Equal(t, sdk.DecCoins{{Denom: "uband", Amount: sdk.NewDecWithPrec(44065, 3)}}, app.DistrKeeper.GetValidatorOutstandingRewards(ctx, testapp.Validator1.ValAddress))
-	require.Equal(t, sdk.DecCoins{{Denom: "uband", Amount: sdk.NewDecWithPrec(4935, 3)}}, app.DistrKeeper.GetValidatorOutstandingRewards(ctx, testapp.Validator2.ValAddress))
+	require.Equal(t, sdk.DecCoins{{Denom: "uband", Amount: sdk.NewDecWithPrec(43015, 3)}}, app.DistrKeeper.GetValidatorOutstandingRewards(ctx, testapp.Validator1.ValAddress))
+	require.Equal(t, sdk.DecCoins{{Denom: "uband", Amount: sdk.NewDecWithPrec(5985, 3)}}, app.DistrKeeper.GetValidatorOutstandingRewards(ctx, testapp.Validator2.ValAddress))
 }
