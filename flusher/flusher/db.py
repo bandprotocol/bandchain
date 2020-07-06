@@ -162,9 +162,9 @@ reports = sa.Table(
 raw_reports = sa.Table(
     "raw_reports",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),
+    Column("request_id", sa.Integer, sa.ForeignKey("raw_requests.request_id"), primary_key=True),
     Column("validator", sa.String, primary_key=True),
-    Column("external_id", sa.Integer, primary_key=True),
+    Column("external_id", sa.Integer, sa.ForeignKey("raw_requests.external_id"), primary_key=True),
     Column("data", CustomBase64),
     Column("exit_code", sa.Integer),
     sa.ForeignKeyConstraint(
