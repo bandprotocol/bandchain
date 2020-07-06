@@ -129,7 +129,7 @@ fn check_wasm_imports(module: &Module) -> Result<(), Error> {
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
     wasmparser::validate(code, None).map_err(|_| Error::ValidationError)?;
-    // Start the compiling chains. TODO: Add more safeguards.
+    // Start the compiling chains.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
     check_wasm_exports(&module)?;
     check_wasm_imports(&module)?;
