@@ -10,6 +10,7 @@
 
 ### Chain
 
+- (impv) [\#2161](https://github.com/bandprotocol/bandchain/pull/2161) Update default genesis parameters for oracle and distr.
 - (impv) [\#2151](https://github.com/bandprotocol/bandchain/pull/2151) Fix `exec_env` code more consistent.
 - (impv) [\#2144](https://github.com/bandprotocol/bandchain/pull/2144) Add validator votes table.
 - (impv) [\#2148](https://github.com/bandprotocol/bandchain/pull/2148) Add more unit tests and fix nil retdata and nil calldata.
