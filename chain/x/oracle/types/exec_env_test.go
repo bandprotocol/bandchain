@@ -32,16 +32,12 @@ func mockExecEnv() *ExecuteEnv {
 	requestTime := time.Unix(1581589700, 0)
 	clientID := "beeb"
 	request := NewRequest(oracleScriptID, calldata, valAddresses, minCount, requestHeight, requestTime, clientID, nil)
-	env := NewExecuteEnv(request)
-
 	rawReport1 := NewRawReport(1, 0, []byte("DATA1"))
 	rawReport2 := NewRawReport(2, 1, []byte("DATA2"))
 	rawReport3 := NewRawReport(3, 0, []byte("DATA3"))
-
 	report1 := NewReport(validatorAddress1, true, []RawReport{rawReport1, rawReport2})
 	report2 := NewReport(validatorAddress2, true, []RawReport{rawReport3})
-
-	env.SetReports([]Report{report1, report2})
+	env := NewExecuteEnv(request, []Report{report1, report2})
 	return env
 }
 

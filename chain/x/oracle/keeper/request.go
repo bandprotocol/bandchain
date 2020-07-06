@@ -49,14 +49,14 @@ func (k Keeper) AddRequest(ctx sdk.Context, req types.Request) types.RequestID {
 	return id
 }
 
-// ProcessExpiredRequests resolves and saves response packets for all expired-but-unresolved requests.
+// ProcessExpiredRequests resolves all expired requests and deactivates missed validators.
 func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
-	currentReqID := types.RequestID(k.GetRequestLastExpired(ctx) + 1)
+	currentReqID := k.GetRequestLastExpired(ctx) + 1
 	lastReqID := types.RequestID(k.GetRequestCount(ctx))
 	expirationBlockCount := int64(k.GetParam(ctx, types.KeyExpirationBlockCount))
-	// Loop through all data requests in chronological order. If a request reaches its expiration
-	// time, we will deactivate validators that didn't report data on each request. Note that we
-	// will need to save oracle response packets with status EXPIRED for those that are not yet resolved.
+	// Loop through all data requests in chronological order. If a request reaches its
+	// expiration height, we will deactivate validators that didn't report data on the
+	// request. We also resolve requests to status EXPIRED if they are not yet resolved.
 	for ; currentReqID <= lastReqID; currentReqID++ {
 		req := k.MustGetRequest(ctx, currentReqID)
 		// This request is not yet expired, so there's nothing to do here. Ditto for
@@ -64,9 +64,8 @@ func (k Keeper) ProcessExpiredRequests(ctx sdk.Context) {
 		if req.RequestHeight+expirationBlockCount > ctx.BlockHeight() {
 			break
 		}
-		// If the number of reports still doesn't reach the minimum, that means this request
-		// is never resolved. Here we process the response as EXPIRED.
-		if k.GetReportCount(ctx, currentReqID) < req.MinCount {
+		// If the request still does not have result, we resolve it as EXPIRED.
+		if !k.HasResult(ctx, currentReqID) {
 			k.ResolveExpired(ctx, currentReqID)
 		}
 		// Deactivate all validators that do not report to this request.

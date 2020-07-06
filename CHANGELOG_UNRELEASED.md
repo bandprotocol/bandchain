@@ -11,6 +11,9 @@
 ### Chain
 
 - (impv) [\#2144](https://github.com/bandprotocol/bandchain/pull/2144) Add validator votes table.
+- (impv) [\#2148](https://github.com/bandprotocol/bandchain/pull/2148) Add more unit tests and fix nil retdata and nil calldata.
+- (impv/chore) [\#2147](https://github.com/bandprotocol/bandchain/pull/2147) Add abci begin block test for reward allocation.
+- (impv) [\#2146](https://github.com/bandprotocol/bandchain/pull/2146) Various minor improvements and unit tests.
 - (impv) [\#2138](https://github.com/bandprotocol/bandchain/pull/2138) Docker deployment and handle jail event and unjail msg.
 - (impv) [\#2143](https://github.com/bandprotocol/bandchain/pull/2143) Separate resolve functions into success/failure/expired cases.
 - (chore) [\#2139](https://github.com/bandprotocol/bandchain/pull/2139) Remove db in favor of emitter.
@@ -59,6 +62,8 @@
 - (feat) [\#2055](https://github.com/bandprotocol/bandchain/pull/2055) Implement BridgeWithCache to keep the latest response for any unique request packet
 
 ### Owasm
+
+- (feat) [\#2150](https://github.com/bandprotocol/bandchain/pull/2150) Increase wasm gas limit and consume gas when reading / writing.
 
 ### Oracle Binary Encoding (OBI)
 
