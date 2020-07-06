@@ -148,7 +148,7 @@ func TestAddOracleScriptFile(t *testing.T) {
 	require.NoError(t, err)
 	// If we get by file name, we should get the compiled content back.
 	require.Equal(t, compiledCode, k.GetFile(filename))
-	// If we try to add do-not-modify, we should just get do-not-modify-back.
+	// If we try to add do-not-modify, we should just get do-not-modify back.
 	filename, err = k.AddOracleScriptFile(types.DoNotModifyBytes)
 	require.NoError(t, err)
 	require.Equal(t, types.DoNotModify, filename)
