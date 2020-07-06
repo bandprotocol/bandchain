@@ -40,12 +40,12 @@ func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) error {
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+func (env *BaseEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
 	return 0, api.ErrWrongPeriodAction
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+func (env *BaseEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
 	return nil, api.ErrWrongPeriodAction
 }
 
