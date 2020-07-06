@@ -79,7 +79,6 @@ func (app *App) handleMsgReportData(
 		"validator":  msg.Validator.String(),
 		"reporter":   msg.Reporter.String(),
 	})
-
 	for _, data := range msg.RawReports {
 		app.Write("NEW_RAW_REPORT", JsDict{
 			"request_id":  msg.RequestID,
