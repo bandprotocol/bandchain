@@ -153,9 +153,10 @@ val_requests = sa.Table(
 reports = sa.Table(
     "reports",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
     Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id")),
     Column("reporter", sa.String),
 )
 
@@ -167,6 +168,7 @@ raw_reports = sa.Table(
     Column("external_id", sa.Integer, primary_key=True),
     Column("data", CustomBase64),
     Column("exit_code", sa.Integer),
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id")),
     sa.ForeignKeyConstraint(
         ["request_id", "validator"], ["reports.request_id", "reports.validator"]
     ),

@@ -73,19 +73,27 @@ func (app *App) handleMsgRequestData(
 func (app *App) handleMsgReportData(
 	txHash []byte, msg oracle.MsgReportData, evMap EvMap, extra JsDict,
 ) {
+	rq := app.OracleKeeper.MustGetRequest(app.DeliverContext, msg.RequestID)
 	app.Write("NEW_REPORT", JsDict{
-		"tx_hash":    txHash,
-		"request_id": msg.RequestID,
-		"validator":  msg.Validator.String(),
-		"reporter":   msg.Reporter.String(),
+		"tx_hash":          txHash,
+		"request_id":       msg.RequestID,
+		"validator":        msg.Validator.String(),
+		"reporter":         msg.Reporter.String(),
+		"oracle_script_id": rq.OracleScriptID,
 	})
+	kv := make(map[types.ExternalID]types.DataSourceID)
+	for _, rawRequest := range rq.RawRequests {
+		kv[rawRequest.ExternalID] = rawRequest.DataSourceID
+	}
+
 	for _, data := range msg.RawReports {
 		app.Write("NEW_RAW_REPORT", JsDict{
-			"request_id":  msg.RequestID,
-			"validator":   msg.Validator.String(),
-			"external_id": data.ExternalID,
-			"data":        data.Data,
-			"exit_code":   data.ExitCode,
+			"request_id":     msg.RequestID,
+			"validator":      msg.Validator.String(),
+			"external_id":    data.ExternalID,
+			"data":           data.Data,
+			"exit_code":      data.ExitCode,
+			"data_source_id": kv[data.ExternalID],
 		})
 	}
 }
