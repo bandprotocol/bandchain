@@ -31,6 +31,7 @@ func NewDefaultGenesisState() GenesisState {
 	// Get default genesis states of the modules we are to override.
 	authGenesis := auth.DefaultGenesisState()
 	stakingGenesis := staking.DefaultGenesisState()
+	distrGenesis := distr.DefaultGenesisState()
 	mintGenesis := mint.DefaultGenesisState()
 	govGenesis := gov.DefaultGenesisState()
 	crisisGenesis := crisis.DefaultGenesisState()
@@ -39,7 +40,9 @@ func NewDefaultGenesisState() GenesisState {
 	authGenesis.Params.TxSizeCostPerByte = 5
 	stakingGenesis.Params.BondDenom = denom
 	stakingGenesis.Params.HistoricalEntries = 1000
-	mintGenesis.Params.BlocksPerYear = 10519200 // target 3-second block time
+	distrGenesis.Params.BaseProposerReward = sdk.NewDecWithPrec(2, 2)  // 2%
+	distrGenesis.Params.BonusProposerReward = sdk.NewDecWithPrec(8, 2) // 8%
+	mintGenesis.Params.BlocksPerYear = 10519200                        // target 3-second block time
 	mintGenesis.Params.MintDenom = denom
 	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(denom, sdk.TokensFromConsensusPower(1000)))
 	crisisGenesis.ConstantFee = sdk.NewCoin(denom, sdk.TokensFromConsensusPower(10000))
@@ -55,7 +58,7 @@ func NewDefaultGenesisState() GenesisState {
 		supply.ModuleName:   supply.AppModuleBasic{}.DefaultGenesis(),
 		staking.ModuleName:  cdc.MustMarshalJSON(stakingGenesis),
 		mint.ModuleName:     cdc.MustMarshalJSON(mintGenesis),
-		distr.ModuleName:    distr.AppModuleBasic{}.DefaultGenesis(),
+		distr.ModuleName:    cdc.MustMarshalJSON(distrGenesis),
 		gov.ModuleName:      cdc.MustMarshalJSON(govGenesis),
 		crisis.ModuleName:   cdc.MustMarshalJSON(crisisGenesis),
 		slashing.ModuleName: cdc.MustMarshalJSON(slashingGenesis),
