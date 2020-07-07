@@ -190,7 +190,7 @@ validators = sa.Table(
     Column("commission_max_change", sa.String),
     Column("min_self_delegation", sa.String),
     Column("jailed", sa.Boolean),
-    Column("tokens", sa.Integer),
+    Column("tokens", sa.DECIMAL),
     Column("delegator_shares", sa.DECIMAL),
     Column("current_reward", sa.DECIMAL),
     Column("current_ratio", sa.DECIMAL),
@@ -230,7 +230,7 @@ unbonding_delegations = sa.Table(
     Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
-    Column("amount", sa.Integer),
+    Column("amount", sa.DECIMAL),
 )
 
 redelegations = sa.Table(
@@ -241,5 +241,5 @@ redelegations = sa.Table(
     Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("completion_time", CustomDateTime),
-    Column("amount", sa.Integer),
+    Column("amount", sa.DECIMAL),
 )
