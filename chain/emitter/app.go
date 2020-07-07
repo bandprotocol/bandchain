@@ -211,7 +211,7 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 			"extra": extra,
 		})
 	}
-	app.AddAccountsInTx(stdTx.GetSigners()[0])
+	app.AddAccountsInTx(stdTx.GetSigners()...)
 	accsInTx := []sdk.AccAddress{}
 	for accStr, _ := range app.accsInTx {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
@@ -242,7 +242,7 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
-	// Index 0 is message new block, We insert set account message after new block message
+	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
 	app.msgs = append(app.msgs[:1], append(msgs, app.msgs[1:]...)...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
