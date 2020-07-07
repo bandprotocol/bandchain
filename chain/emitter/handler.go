@@ -49,9 +49,9 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case staking.MsgDelegate:
 		app.handleMsgDelegate(msg)
 	case staking.MsgUndelegate:
-		app.handleMsgUndelegate(msg)
+		app.handleMsgUndelegate(txHash, msg, evMap, extra)
 	case staking.MsgBeginRedelegate:
-		app.handleMsgBeginRedelegate(msg)
+		app.handleMsgBeginRedelegate(txHash, msg, evMap, extra)
 	case bank.MsgSend:
 		app.handleMsgSend(msg)
 	case bank.MsgMultiSend:
@@ -73,6 +73,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventSlash(evMap)
 	case types.EventTypeDeactivate:
 		app.handleEventDeactivate(evMap)
+	case EventTypeCompleteUnbonding:
+		app.handleEventTypeCompleteUnbonding(evMap)
 	default:
 		break
 	}

@@ -13,7 +13,13 @@ type a =
 let reducer = state =>
   fun
   | Connect(wallet, address, pubKey, chainID) => Some({wallet, pubKey, address, chainID})
-  | Disconnect => None
+  | Disconnect => {
+      switch (state) {
+      | Some({wallet}) => wallet |> Wallet.disconnect
+      | None => ()
+      };
+      None;
+    }
   | SendRequest(oracleScriptID, calldata, callback) =>
     switch (state) {
     | Some({address, wallet, pubKey, chainID}) =>
