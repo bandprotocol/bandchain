@@ -47,6 +47,15 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 	})
 }
 
+func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
+	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address": addr.String(),
+		"status":           status.IsActive,
+		"status_since":     status.Since.UnixNano(),
+	})
+}
+
 func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
 	delegation, found := app.StakingKeeper.GetDelegation(app.DeliverContext, delegatorAddress, operatorAddress)
 	if found {
