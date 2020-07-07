@@ -3,11 +3,17 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	types "github.com/cosmos/cosmos-sdk/x/staking/types"
+)
+
+var (
+	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
 )
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
+	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addr.String(),
 		"consensus_address":     sdk.ConsAddress(val.ConsPubKey.Address()).String(),
@@ -25,6 +31,8 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"delegator_shares":      val.DelegatorShares.String(),
 		"current_reward":        currentReward,
 		"current_ratio":         currentRatio,
+		"status":                status.IsActive,
+		"active_since":          status.Since.UnixNano(),
 	})
 }
 

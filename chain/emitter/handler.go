@@ -40,6 +40,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgEditDataSource(txHash, msg, evMap, extra)
 	case oracle.MsgEditOracleScript:
 		app.handleMsgEditOracleScript(txHash, msg, evMap, extra)
+	case oracle.MsgActivate:
+		app.handleMsgActivate(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		app.handleMsgCreateValidator(msg)
 	case staking.MsgEditValidator:
@@ -69,6 +71,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventRequestExecute(evMap)
 	case slashing.EventTypeSlash:
 		app.handleEventSlash(evMap)
+	case types.EventTypeDeactivate:
+		app.handleEventDeactivate(evMap)
 	default:
 		break
 	}

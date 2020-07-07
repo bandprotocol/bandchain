@@ -14,6 +14,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2160](https://github.com/bandprotocol/bandchain/pull/2160) Add missing foreign key in report table.
 
 ### Scan
