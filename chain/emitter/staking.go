@@ -45,7 +45,7 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 	app.Write("UPDATE_VALIDATOR", JsDict{
 		"operator_address": addr.String(),
 		"status":           status.IsActive,
-		"status_since":     status.Since,
+		"status_since":     status.Since.UnixNano(),
 	})
 }
 
