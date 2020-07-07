@@ -130,5 +130,5 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 }
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
-	// TODO: update delegator account
+	app.AddAccountsInBlock(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
 }

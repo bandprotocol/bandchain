@@ -213,11 +213,9 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	}
 
 	accsInTx := []string{}
-	accMap := make(map[string]bool)
 
 	for acc, _ := range app.accsInTx {
 		accsInTx = append(accsInTx, acc)
-		accMap[acc] = true
 	}
 
 	txDict["account_transcations"] = accsInTx
@@ -231,19 +229,22 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 // EndBlock calls into the underlying EndBlock and emits relevant events to Kafka.
 func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.BandApp.EndBlock(req)
-	// Update balances of all affected accounts on this block.
-	for accStr, _ := range app.accsInBlock {
-		acc, _ := sdk.AccAddressFromBech32(accStr)
-		app.Write("SET_ACCOUNT", JsDict{
-			"address": acc,
-			"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
-		})
-	}
-
 	for _, event := range res.Events {
 		app.handleBeginBlockEndBlockEvent(event)
 	}
-
+	// Update balances of all affected accounts on this block.
+	msgs := []Message{}
+	for accStr, _ := range app.accsInBlock {
+		acc, _ := sdk.AccAddressFromBech32(accStr)
+		msgs = append(msgs, Message{
+			Key: "SET_ACCOUNT",
+			Value: JsDict{
+				"address": acc,
+				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
+			}})
+	}
+	// Index 0 is message new block, We insert set account message after new block message
+	app.msgs = append(app.msgs[:1], append(msgs, app.msgs[1:]...)...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }
