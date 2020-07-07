@@ -41,9 +41,11 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 }
 
 func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
+	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
 	app.Write("UPDATE_VALIDATOR", JsDict{
 		"operator_address": addr.String(),
-		"status":           app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr).IsActive,
+		"status":           status.IsActive,
+		"active_since":     status.Since,
 	})
 }
 
