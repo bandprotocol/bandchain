@@ -226,9 +226,9 @@ validator_votes = sa.Table(
 unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
-    Column("delegator_address", sa.String),
-    Column("operator_address", sa.String),
-    Column("creation_height", sa.Integer),
+    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.Integer),
 )
@@ -237,9 +237,9 @@ redelegations = sa.Table(
     "redelegations",
     metadata,
     metadata,
-    Column("delegator_address", sa.String),
-    Column("operator_src_address", sa.String),
-    Column("operator_dst_address", sa.String),
+    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.Integer),
 )
