@@ -62,7 +62,7 @@ func NewBandAppWithEmitter(
 	}
 }
 
-// AddAccountsBlock adds the given accounts to the list of accounts to update balances end-of-block.
+// AddAccountsInBlock adds the given accounts to the list of accounts to update balances end-of-block.
 func (app *App) AddAccountsInBlock(accs ...sdk.AccAddress) {
 	for _, acc := range accs {
 		app.accsInBlock[acc.String()] = true
