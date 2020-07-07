@@ -236,7 +236,6 @@ unbonding_delegations = sa.Table(
 redelegations = sa.Table(
     "redelegations",
     metadata,
-    metadata,
     Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
     Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
