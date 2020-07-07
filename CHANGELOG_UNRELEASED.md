@@ -8,7 +8,11 @@
 
 ## [Unreleased]
 
-### Chain
+### Chain (Consensus)
+
+### Chain (Non-consensus)
+
+### Emitter & Flusher
 
 ### Scan
 
