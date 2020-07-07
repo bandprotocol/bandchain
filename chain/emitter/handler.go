@@ -6,7 +6,6 @@ import (
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	stypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -71,7 +70,7 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventRequestExecute(evMap)
 	case slashing.EventTypeSlash:
 		app.handleEventSlash(evMap)
-	case stypes.EventTypeCompleteUnbonding:
+	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
 	default:
 		break

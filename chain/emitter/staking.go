@@ -8,6 +8,10 @@ import (
 	types "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
+var (
+	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
+)
+
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
