@@ -3,11 +3,6 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
-	types "github.com/cosmos/cosmos-sdk/x/staking/types"
-)
-
-var (
-	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
 )
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
