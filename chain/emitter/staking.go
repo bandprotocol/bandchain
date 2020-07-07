@@ -1,8 +1,11 @@
 package emitter
 
 import (
+	"time"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	types "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
@@ -80,13 +83,44 @@ func (app *App) handleMsgDelegate(msg staking.MsgDelegate) {
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
-func (app *App) handleMsgUndelegate(msg staking.MsgUndelegate) {
+func (app *App) handleMsgUndelegate(
+	txHash []byte, msg staking.MsgUndelegate, evMap EvMap, extra JsDict,
+) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	app.emitUnbondingDelegation(msg, evMap)
+}
 
+func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) {
+	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeUnbond+"."+types.AttributeKeyCompletionTime][0])
+	app.Write("NEW_UNBONDING_DELEGATION", JsDict{
+		"delegator_address": msg.DelegatorAddress,
+		"operator_address":  msg.ValidatorAddress,
+		"creation_height":   app.DeliverContext.BlockHeight(),
+		"completion_time":   completeTime.UnixNano(),
+		"amount":            evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0],
+	})
 }
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
-func (app *App) handleMsgBeginRedelegate(msg staking.MsgBeginRedelegate) {
+func (app *App) handleMsgBeginRedelegate(
+	txHash []byte, msg staking.MsgBeginRedelegate, evMap EvMap, extra JsDict,
+) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorSrcAddress, msg.DelegatorAddress)
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorDstAddress, msg.DelegatorAddress)
+	app.emitUpdateRedelation(msg.ValidatorSrcAddress, msg.ValidatorDstAddress, msg.DelegatorAddress, evMap)
+}
+
+func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorDstAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, evMap EvMap) {
+	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeRedelegate+"."+types.AttributeKeyCompletionTime][0])
+	app.Write("NEW_REDELEGATION", JsDict{
+		"delegator_address":    delegatorAddress.String(),
+		"operator_src_address": operatorSrcAddress.String(),
+		"operator_dst_address": operatorDstAddress.String(),
+		"completion_time":      completeTime.UnixNano(),
+		"amount":               evMap[types.EventTypeRedelegate+"."+sdk.AttributeKeyAmount][0],
+	})
+}
+
+func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
+	// TODO: update delegator account
 }

@@ -16,6 +16,8 @@ from .db import (
     validators,
     delegations,
     validator_votes,
+    unbonding_delegations,
+    redelegations,
 )
 
 
@@ -99,3 +101,9 @@ class Handler(object):
 
     def handle_new_validator_vote(self, msg):
         self.conn.execute(insert(validator_votes).values(**msg))
+
+    def handle_new_unbonding_delegation(self, msg):
+        self.conn.execute(insert(unbonding_delegations).values(**msg))
+
+    def handle_new_redelegation(self, msg):
+        self.conn.execute(insert(redelegations).values(**msg))

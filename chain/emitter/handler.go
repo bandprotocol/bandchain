@@ -6,6 +6,8 @@ import (
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	stypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
@@ -47,9 +49,9 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case staking.MsgDelegate:
 		app.handleMsgDelegate(msg)
 	case staking.MsgUndelegate:
-		app.handleMsgUndelegate(msg)
+		app.handleMsgUndelegate(txHash, msg, evMap, extra)
 	case staking.MsgBeginRedelegate:
-		app.handleMsgBeginRedelegate(msg)
+		app.handleMsgBeginRedelegate(txHash, msg, evMap, extra)
 	case bank.MsgSend:
 		app.handleMsgSend(msg)
 	case bank.MsgMultiSend:
@@ -69,6 +71,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventRequestExecute(evMap)
 	case slashing.EventTypeSlash:
 		app.handleEventSlash(evMap)
+	case stypes.EventTypeCompleteUnbonding:
+		app.handleEventTypeCompleteUnbonding(evMap)
 	default:
 		break
 	}

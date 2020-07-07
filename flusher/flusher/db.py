@@ -219,3 +219,24 @@ validator_votes = sa.Table(
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), primary_key=True),
     Column("voted", sa.Boolean),
 )
+
+unbonding_delegations = sa.Table(
+    "unbonding_delegations",
+    metadata,
+    Column("delegator_address", sa.String),
+    Column("operator_address", sa.String),
+    Column("creation_height", sa.Integer),
+    Column("completion_time", CustomDateTime),
+    Column("amount", sa.Integer),
+)
+
+redelegations = sa.Table(
+    "redelegations",
+    metadata,
+    metadata,
+    Column("delegator_address", sa.String),
+    Column("operator_src_address", sa.String),
+    Column("operator_dst_address", sa.String),
+    Column("completion_time", CustomDateTime),
+    Column("amount", sa.Integer),
+)
