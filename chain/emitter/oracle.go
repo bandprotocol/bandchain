@@ -147,11 +147,11 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 func (app *App) handleMsgActivate(
 	txHash []byte, msg oracle.MsgActivate, evMap EvMap, extra JsDict,
 ) {
-	app.emitSetValidator(msg.Validator)
+	app.emitUpdateValidatorStatus(msg.Validator)
 }
 
 // handleEventDeactivate implements emitter handler for EventDeactivate .
 func (app *App) handleEventDeactivate(evMap EvMap) {
 	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
-	app.emitSetValidator(addr)
+	app.emitUpdateValidatorStatus(addr)
 }

@@ -8,7 +8,6 @@ import (
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
-	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addr.String(),
 		"consensus_address":     sdk.ConsAddress(val.ConsPubKey.Address()).String(),
@@ -26,8 +25,6 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"delegator_shares":      val.DelegatorShares.String(),
 		"current_reward":        currentReward,
 		"current_ratio":         currentRatio,
-		"status":                status.IsActive,
-		"active_since":          status.Since.UnixNano(),
 	})
 }
 
@@ -40,6 +37,13 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
+	})
+}
+
+func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address": addr.String(),
+		"status":           app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr).IsActive,
 	})
 }
 

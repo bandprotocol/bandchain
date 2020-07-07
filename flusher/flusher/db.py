@@ -194,8 +194,7 @@ validators = sa.Table(
     Column("delegator_shares", sa.DECIMAL),
     Column("current_reward", sa.DECIMAL),
     Column("current_ratio", sa.DECIMAL),
-    Column("status", sa.Boolean),
-    Column("active_since", CustomDateTime),
+    Column("status", sa.Boolean, default=False),
 )
 
 delegations = sa.Table(
