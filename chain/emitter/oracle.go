@@ -1,6 +1,8 @@
 package emitter
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -153,4 +155,17 @@ func (app *App) handleMsgRemoveReporter(
 	txHash []byte, msg oracle.MsgRemoveReporter, evMap EvMap, extra JsDict,
 ) {
 	app.AddAccountsInTx(msg.Reporter)
+}
+
+// handleMsgActivate implements emitter handler for handleMsgActivate.
+func (app *App) handleMsgActivate(
+	txHash []byte, msg oracle.MsgActivate, evMap EvMap, extra JsDict,
+) {
+	app.emitUpdateValidatorStatus(msg.Validator)
+}
+
+// handleEventDeactivate implements emitter handler for EventDeactivate.
+func (app *App) handleEventDeactivate(evMap EvMap) {
+	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
+	app.emitUpdateValidatorStatus(addr)
 }

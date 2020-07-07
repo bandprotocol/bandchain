@@ -44,6 +44,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgAddReporter(txHash, msg, evMap, extra)
 	case oracle.MsgRemoveReporter:
 		app.handleMsgRemoveReporter(txHash, msg, evMap, extra)
+	case oracle.MsgActivate:
+		app.handleMsgActivate(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
 	case staking.MsgEditValidator:
@@ -75,6 +77,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventRequestExecute(evMap)
 	case slashing.EventTypeSlash:
 		app.handleEventSlash(evMap)
+	case types.EventTypeDeactivate:
+		app.handleEventDeactivate(evMap)
 	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
 	default:
