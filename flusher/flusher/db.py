@@ -249,6 +249,6 @@ redelegations = sa.Table(
 account_transcations = sa.Table(
     "account_transcations",
     metadata,
-    Column("id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
     Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
 )
