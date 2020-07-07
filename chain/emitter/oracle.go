@@ -150,7 +150,7 @@ func (app *App) handleMsgActivate(
 	app.emitUpdateValidatorStatus(msg.Validator)
 }
 
-// handleEventDeactivate implements emitter handler for EventDeactivate .
+// handleEventDeactivate implements emitter handler for EventDeactivate.
 func (app *App) handleEventDeactivate(evMap EvMap) {
 	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
 	app.emitUpdateValidatorStatus(addr)
