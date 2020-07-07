@@ -145,12 +145,12 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 func (app *App) handleMsgAddReporter(
 	txHash []byte, msg oracle.MsgAddReporter, evMap EvMap, extra JsDict,
 ) {
-	app.AddAccountsInTx(msg.Reporter.String())
+	app.AddAccountsInTx(msg.Reporter)
 }
 
 // handleMsgRemoveReporter implements emitter handler for MsgRemoveReporter.
 func (app *App) handleMsgRemoveReporter(
 	txHash []byte, msg oracle.MsgRemoveReporter, evMap EvMap, extra JsDict,
 ) {
-	app.AddAccountsInTx(msg.Reporter.String())
+	app.AddAccountsInTx(msg.Reporter)
 }

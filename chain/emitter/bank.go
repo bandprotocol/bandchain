@@ -8,7 +8,7 @@ import (
 func (app *App) handleMsgSend(
 	txHash []byte, msg bank.MsgSend, evMap EvMap, extra JsDict,
 ) {
-	app.AddAccountsInTx(msg.FromAddress.String(), msg.ToAddress.String())
+	app.AddAccountsInTx(msg.ToAddress)
 }
 
 // handleMsgMultiSend implements emitter handler for MsgMultiSend.
@@ -16,9 +16,9 @@ func (app *App) handleMsgMultiSend(
 	txHash []byte, msg bank.MsgMultiSend, evMap EvMap, extra JsDict,
 ) {
 	for _, input := range msg.Inputs {
-		app.AddAccountsInTx(input.Address.String())
+		app.AddAccountsInTx(input.Address)
 	}
 	for _, output := range msg.Outputs {
-		app.AddAccountsInTx(output.Address.String())
+		app.AddAccountsInTx(output.Address)
 	}
 }

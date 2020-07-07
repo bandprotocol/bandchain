@@ -30,8 +30,8 @@ class Handler(object):
         self.conn.execute(blocks.insert(), msg)
 
     def handle_new_transaction(self, msg):
-        related_tx_accounts = msg["account_transcations"]
-        del msg["account_transcations"]
+        related_tx_accounts = msg["related_accounts"]
+        del msg["related_accounts"]
         res = self.conn.execute(transactions.insert(), msg)
         tx_id = res.inserted_primary_key[0]
         for account in related_tx_accounts:

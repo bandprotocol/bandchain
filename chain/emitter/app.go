@@ -63,16 +63,16 @@ func NewBandAppWithEmitter(
 }
 
 // AddAccountsBlock adds the given accounts to the list of accounts to update balances end-of-block.
-func (app *App) AddAccountsInBlock(accs ...string) {
+func (app *App) AddAccountsInBlock(accs ...sdk.AccAddress) {
 	for _, acc := range accs {
-		app.accsInBlock[acc] = true
+		app.accsInBlock[acc.String()] = true
 	}
 }
 
 // AddAccountsInTx adds the given accounts to the list of accounts to track related account in transaction.
-func (app *App) AddAccountsInTx(accs ...string) {
+func (app *App) AddAccountsInTx(accs ...sdk.AccAddress) {
 	for _, acc := range accs {
-		app.accsInTx[acc] = true
+		app.accsInTx[acc.String()] = true
 	}
 }
 
@@ -211,18 +211,17 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 			"extra": extra,
 		})
 	}
-
-	accsInTx := []string{}
-
-	for acc, _ := range app.accsInTx {
+	app.AddAccountsInTx(stdTx.GetSigners()[0])
+	accsInTx := []sdk.AccAddress{}
+	for accStr, _ := range app.accsInTx {
+		acc, _ := sdk.AccAddressFromBech32(accStr)
 		accsInTx = append(accsInTx, acc)
 	}
 
-	txDict["account_transcations"] = accsInTx
+	txDict["related_accounts"] = accsInTx
 	app.AddAccountsInBlock(accsInTx...)
 	app.accsInTx = make(map[string]bool)
 	txDict["messages"] = messages
-	app.AddAccountsInBlock(stdTx.GetSigners()[0].String())
 	return res
 }
 

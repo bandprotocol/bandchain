@@ -130,5 +130,6 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 }
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
-	app.AddAccountsInBlock(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	app.AddAccountsInBlock(acc)
 }
