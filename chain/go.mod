@@ -11,7 +11,7 @@ require (
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
 	github.com/gorilla/mux v1.7.4
-	github.com/jinzhu/gorm v1.9.12
+	github.com/jinzhu/gorm v1.9.14
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/onsi/ginkgo v1.8.0 // indirect
