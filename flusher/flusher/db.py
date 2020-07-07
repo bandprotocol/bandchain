@@ -153,7 +153,7 @@ val_requests = sa.Table(
 reports = sa.Table(
     "reports",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
     Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
     Column("reporter", sa.String),
@@ -169,6 +169,9 @@ raw_reports = sa.Table(
     Column("exit_code", sa.Integer),
     sa.ForeignKeyConstraint(
         ["request_id", "validator"], ["reports.request_id", "reports.validator"]
+    ),
+    sa.ForeignKeyConstraint(
+        ["request_id", "external_id"], ["raw_requests.request_id", "raw_requests.external_id"]
     ),
 )
 

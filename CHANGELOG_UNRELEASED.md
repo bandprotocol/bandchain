@@ -8,7 +8,13 @@
 
 ## [Unreleased]
 
-### Chain
+### Chain (Consensus)
+
+### Chain (Non-consensus)
+
+### Emitter & Flusher
+
+- (impv) [\#2160](https://github.com/bandprotocol/bandchain/pull/2160) Add missing foreign key in report table.
 
 ### Scan
 
