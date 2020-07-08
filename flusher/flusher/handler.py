@@ -74,21 +74,24 @@ class Handler(object):
         self.conn.execute(raw_requests.insert(), msg)
 
     def handle_new_val_request(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
         ).scalar()
+        del msg["validator"]
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
         ).scalar()
+        del msg["validator"]
         self.conn.execute(reports.insert(), msg)
 
     def handle_new_raw_report(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
         ).scalar()
+        del msg["validator"]
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
@@ -106,7 +109,7 @@ class Handler(object):
         )
 
     def handle_set_delegation(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(
                 validators.c.operator_address == msg["operator_address"]
             )
@@ -119,7 +122,7 @@ class Handler(object):
         )
 
     def handle_remove_delegation(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(
                 validators.c.operator_address == msg["operator_address"]
             )
@@ -134,7 +137,7 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
-        msg["validator"] = self.conn.execute(
+        msg["validator_id"] = self.conn.execute(
             select([validators.c.id]).where(
                 validators.c.operator_address == msg["operator_address"]
             )
@@ -143,13 +146,13 @@ class Handler(object):
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
-        msg["validator_src"] = self.conn.execute(
+        msg["validator_src_id"] = self.conn.execute(
             select([validators.c.id]).where(
                 validators.c.operator_address == msg["operator_src_address"]
             )
         ).scalar()
         del msg["operator_src_address"]
-        msg["validator_dst"] = val_dst_id = self.conn.execute(
+        msg["validator_dst_id"] = self.conn.execute(
             select([validators.c.id]).where(
                 validators.c.operator_address == msg["operator_dst_address"]
             )
