@@ -321,7 +321,7 @@ module ConnectBtn = {
 
 [@react.component]
 let make = (~validatorAddress) => {
-  let metadataSub = MetadataSub.use();
+  let trackingSub = TrackingSub.use();
   let (accountOpt, _) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
@@ -333,7 +333,7 @@ let make = (~validatorAddress) => {
     {switch (accountOpt) {
      | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
      | None =>
-       switch (metadataSub) {
+       switch (trackingSub) {
        | Data({chainID}) =>
          <div>
            <Row>

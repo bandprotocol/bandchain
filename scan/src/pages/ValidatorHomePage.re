@@ -474,17 +474,13 @@ module ValidatorList = {
 };
 
 let getPrevDay = _ => {
-  (
-    MomentRe.momentNow()
-    |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-    |> MomentRe.Moment.toUnix
-    |> float_of_int
-  )
-  *. 1000.;
+  MomentRe.momentNow()
+  |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+  |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
 };
 
 let getCurrentDay = _ => {
-  (MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int) *. 1000.;
+  MomentRe.momentNow() |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
 };
 
 [@react.component]
@@ -512,7 +508,7 @@ let make = () => {
   let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
   let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
-  let metadataSub = MetadataSub.use();
+  let latestBlock = BlockSub.getLatest();
   let votesBlockSub = ValidatorSub.getListVotesBlock();
 
   let topPartAllSub =
@@ -521,7 +517,7 @@ let make = () => {
       isActiveValidatorCountSub,
       bondedTokenCountSub,
       avgBlockTimeSub,
-      metadataSub,
+      latestBlock,
     );
 
   let allSub = Sub.all3(topPartAllSub, validatorsSub, votesBlockSub);
@@ -582,9 +578,9 @@ let make = () => {
         </Col>
         <Col size=0.9>
           {switch (topPartAllSub) {
-           | Data((_, _, _, _, metadata)) =>
+           | Data((_, _, _, _, {inflation})) =>
              <InfoHL
-               info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
+               info={InfoHL.FloatWithSuffix(inflation *. 100., "  %", 2)}
                header="INFLATION RATE"
              />
            | _ =>

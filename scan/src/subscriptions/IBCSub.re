@@ -111,50 +111,53 @@ module Internal = {
       | _ => Unknown
       },
   };
-
-  module MultiPacketsConfig = [%graphql
-    {|
-    subscription Packets($limit: Int!, $offset: Int!) {
-      packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
-        isIncoming: is_incoming
-        blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
-        channel: my_channel
-        port: my_port
-        yourChainID: your_chain_id
-        yourChannel: your_channel
-        yourPort: your_port
-        packetType: type
-        packetDetail: detail
-      }
-    }
-  |}
-  ];
+  // module MultiPacketsConfig = [%graphql
+  //   {|
+  //   subscription Packets($limit: Int!, $offset: Int!) {
+  //     packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
+  //       isIncoming: is_incoming
+  //       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+  //       channel: my_channel
+  //       port: my_port
+  //       yourChainID: your_chain_id
+  //       yourChannel: your_channel
+  //       yourPort: your_port
+  //       packetType: type
+  //       packetDetail: detail
+  //     }
+  //   }
+  // |}
+  // ];
 };
 
-module PacketCountConfig = [%graphql
-  {|
-  subscription PacketsCount {
-    packets_aggregate{
-      aggregate{
-        count @bsDecoder(fn: "Belt_Option.getExn")
-      }
-    }
-  }
-|}
-];
+// module PacketCountConfig = [%graphql
+//   {|
+//   subscription PacketsCount {
+//     packets_aggregate{
+//       aggregate{
+//         count @bsDecoder(fn: "Belt_Option.getExn")
+//       }
+//     }
+//   }
+// |}
+// ];
 
-let getList = (~page=1, ~pageSize=10, ()) => {
-  let offset = (page - 1) * pageSize;
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      Internal.MultiPacketsConfig.definition,
-      ~variables=Internal.MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
-    );
-  result |> Sub.map(_, x => x##packets->Belt_Array.map(Internal.toExternal));
+let getList = (~page=1, ~pageSize=10, ()): ApolloHooks.Subscription.variant(array(t)) => {
+  // let offset = (page - 1) * pageSize;
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     Internal.MultiPacketsConfig.definition,
+  //     ~variables=Internal.MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
+  //   );
+  // result |> Sub.map(_, x => x##packets->Belt_Array.map(Internal.toExternal));
+  Sub.resolve([||]);
 };
 
 let count = () => {
-  let (result, _) = ApolloHooks.useSubscription(PacketCountConfig.definition);
-  result
-  |> Sub.map(_, x => x##packets_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  // let (result, _) = ApolloHooks.useSubscription(PacketCountConfig.definition);
+  // result
+  // |> Sub.map(_, x => x##packets_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  Sub.resolve(
+    0,
+  );
 };
