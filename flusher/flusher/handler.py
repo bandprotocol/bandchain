@@ -1,5 +1,6 @@
 import base64 as b64
 from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from .db import (
@@ -73,28 +74,44 @@ class Handler(object):
         self.conn.execute(raw_requests.insert(), msg)
 
     def handle_new_val_request(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
+        ).scalar()
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
+        ).scalar()
         self.conn.execute(reports.insert(), msg)
 
     def handle_new_raw_report(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(validators.c.operator_address == msg["validator"])
+        ).scalar()
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
         self.conn.execute(
             insert(validators)
             .values(**msg)
-            .on_conflict_do_update(constraint="validators_pkey", set_=msg)
+            .on_conflict_do_update(index_elements=[validators.c.operator_address], set_=msg)
         )
 
     def handle_update_validator(self, msg):
-        condition = True
-        for col in validators.primary_key.columns.values():
-            condition = (col == msg[col.name]) & condition
-        self.conn.execute(validators.update().where(condition).values(**msg))
+        self.conn.execute(
+            validators.update()
+            .where(msg["operator_address"] == validators.c.operator_address)
+            .values(**msg)
+        )
 
     def handle_set_delegation(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(
+                validators.c.operator_address == msg["operator_address"]
+            )
+        ).scalar()
+        del msg["operator_address"]
         self.conn.execute(
             insert(delegations)
             .values(**msg)
@@ -102,6 +119,12 @@ class Handler(object):
         )
 
     def handle_remove_delegation(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(
+                validators.c.operator_address == msg["operator_address"]
+            )
+        ).scalar()
+        del msg["operator_address"]
         condition = True
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
@@ -111,7 +134,26 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
+        msg["validator"] = self.conn.execute(
+            select([validators.c.id]).where(
+                validators.c.operator_address == msg["operator_address"]
+            )
+        ).scalar()
+        del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
+        msg["validator_src"] = self.conn.execute(
+            select([validators.c.id]).where(
+                validators.c.operator_address == msg["operator_src_address"]
+            )
+        ).scalar()
+        del msg["operator_src_address"]
+        msg["validator_dst"] = val_dst_id = self.conn.execute(
+            select([validators.c.id]).where(
+                validators.c.operator_address == msg["operator_dst_address"]
+            )
+        ).scalar()
+        del msg["operator_dst_address"]
+
         self.conn.execute(insert(redelegations).values(**msg))

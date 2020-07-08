@@ -147,14 +147,14 @@ val_requests = sa.Table(
     "val_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
+    Column("validator", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
 )
 
 reports = sa.Table(
     "reports",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
+    Column("validator", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
     Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
     Column("reporter", sa.String),
 )
@@ -163,7 +163,7 @@ raw_reports = sa.Table(
     "raw_reports",
     metadata,
     Column("request_id", sa.Integer, primary_key=True),
-    Column("validator", sa.String, primary_key=True),
+    Column("validator", sa.Integer, primary_key=True),
     Column("external_id", sa.Integer, primary_key=True),
     Column("data", CustomBase64),
     Column("exit_code", sa.Integer),
@@ -178,7 +178,8 @@ raw_reports = sa.Table(
 validators = sa.Table(
     "validators",
     metadata,
-    Column("operator_address", sa.String, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("operator_address", sa.String, unique=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
     Column("moniker", sa.String),
@@ -202,12 +203,7 @@ delegations = sa.Table(
     "delegations",
     metadata,
     Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
-    Column(
-        "operator_address",
-        sa.String,
-        sa.ForeignKey("validators.operator_address"),
-        primary_key=True,
-    ),
+    Column("validator", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True,),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
@@ -229,7 +225,7 @@ unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
     Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
-    Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("validator", sa.Integer, sa.ForeignKey("validators.id")),
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
@@ -239,8 +235,8 @@ redelegations = sa.Table(
     "redelegations",
     metadata,
     Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
-    Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
-    Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("validator_src", sa.Integer, sa.ForeignKey("validators.id")),
+    Column("validator_dst", sa.Integer, sa.ForeignKey("validators.id")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
 )
