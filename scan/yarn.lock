@@ -1149,6 +1149,16 @@
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.19.0.tgz#b5580c084a2b9bd8efb21cb50f69a712e3a02b2d"
   integrity sha512-UrRS1xZ/UidIrGyM+h/T/h57DpiFgfqMtlu5VBic1LbekNUojBPx0cMb099p07uyEwKggfawzbdLmxv4j9Ct+g==
 
+"@ledgerhq/hw-transport-webhid@^5.19.0":
+  version "5.19.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-5.19.0.tgz#48b5e3c94c710cace39af8954796480c942c95f2"
+  integrity sha512-D3f46bM5d73dXyZXO4hwnXIytU1xU4YJ1xNJP0a81xd8XyvD4TtzePqYebhX0myEb2qZYWJAtcVtm9ARLCtwyA==
+  dependencies:
+    "@ledgerhq/devices" "^5.19.0"
+    "@ledgerhq/errors" "^5.19.0"
+    "@ledgerhq/hw-transport" "^5.19.0"
+    "@ledgerhq/logs" "^5.19.0"
+
 "@ledgerhq/hw-transport-webusb@^5.19.0":
   version "5.19.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-5.19.0.tgz#f103f3bd79fe0b78b3d70c98d45fd61d5dc09bf3"

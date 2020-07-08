@@ -72,9 +72,9 @@ blocks = sa.Table(
 transactions = sa.Table(
     "transactions",
     metadata,
-    Column("hash", CustomBase64, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("hash", CustomBase64, unique=True),
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
-    Column("index", sa.Integer),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix
@@ -153,7 +153,7 @@ val_requests = sa.Table(
 reports = sa.Table(
     "reports",
     metadata,
-    Column("request_id", sa.Integer, primary_key=True),  # Add FK to requests
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
     Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
     Column("reporter", sa.String),
@@ -169,6 +169,9 @@ raw_reports = sa.Table(
     Column("exit_code", sa.Integer),
     sa.ForeignKeyConstraint(
         ["request_id", "validator"], ["reports.request_id", "reports.validator"]
+    ),
+    sa.ForeignKeyConstraint(
+        ["request_id", "external_id"], ["raw_requests.request_id", "raw_requests.external_id"]
     ),
 )
 
@@ -187,10 +190,12 @@ validators = sa.Table(
     Column("commission_max_change", sa.String),
     Column("min_self_delegation", sa.String),
     Column("jailed", sa.Boolean),
-    Column("tokens", sa.Integer),
+    Column("tokens", sa.DECIMAL),
     Column("delegator_shares", sa.DECIMAL),
     Column("current_reward", sa.DECIMAL),
     Column("current_ratio", sa.DECIMAL),
+    Column("status", sa.Boolean, default=False),
+    Column("status_since", CustomDateTime, default=0),
 )
 
 delegations = sa.Table(
@@ -218,4 +223,31 @@ validator_votes = sa.Table(
     ),
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), primary_key=True),
     Column("voted", sa.Boolean),
+)
+
+unbonding_delegations = sa.Table(
+    "unbonding_delegations",
+    metadata,
+    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
+    Column("completion_time", CustomDateTime),
+    Column("amount", sa.DECIMAL),
+)
+
+redelegations = sa.Table(
+    "redelegations",
+    metadata,
+    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("completion_time", CustomDateTime),
+    Column("amount", sa.DECIMAL),
+)
+
+account_transcations = sa.Table(
+    "account_transcations",
+    metadata,
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
+    Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
 )
