@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: Apache-2.0
+
 pragma solidity 0.6.11;
 
 /// @dev Library for performing signer recovery for ECDSA secp256k1 signature. Note that the
