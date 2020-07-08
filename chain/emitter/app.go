@@ -32,7 +32,6 @@ type App struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	txIdx       int             // The current transaction's index on the current block starting from 1.
 	accsInBlock map[string]bool // The accounts that need balance update at the end of block.
 	accsInTx    map[string]bool // The accounts related to the current processing transaction.
 	msgs        []Message       // The list of all messages to publish for this block.
@@ -137,7 +136,6 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 // BeginBlock calls into the underlying BeginBlock and emits relevant events to Kafka.
 func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
-	app.txIdx = 0
 	app.accsInBlock = make(map[string]bool)
 	app.accsInTx = make(map[string]bool)
 	app.msgs = []Message{}
@@ -169,6 +167,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 // DeliverTx calls into the underlying DeliverTx and emits relevant events to Kafka.
 func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	res := app.BandApp.DeliverTx(req)
+	app.accsInTx = make(map[string]bool)
 	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		return res
@@ -182,10 +181,8 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	if !res.IsOK() {
 		errMsg = &res.Log
 	}
-	app.txIdx++
 	txDict := JsDict{
 		"hash":         txHash,
-		"index":        app.txIdx,
 		"block_height": app.DeliverContext.BlockHeight(),
 		"gas_used":     res.GasUsed,
 		"gas_limit":    stdTx.Fee.Gas,
@@ -220,7 +217,6 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 
 	txDict["related_accounts"] = accsInTx
 	app.AddAccountsInBlock(accsInTx...)
-	app.accsInTx = make(map[string]bool)
 	txDict["messages"] = messages
 	return res
 }
@@ -232,18 +228,18 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 		app.handleBeginBlockEndBlockEvent(event)
 	}
 	// Update balances of all affected accounts on this block.
-	msgs := []Message{}
+	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
+	modifyMsgs := []Message{app.msgs[0]}
 	for accStr, _ := range app.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
-		msgs = append(msgs, Message{
+		modifyMsgs = append(modifyMsgs, Message{
 			Key: "SET_ACCOUNT",
 			Value: JsDict{
 				"address": acc,
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
-	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
-	app.msgs = append(app.msgs[:1], append(msgs, app.msgs[1:]...)...)
+	app.msgs = append(modifyMsgs, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }

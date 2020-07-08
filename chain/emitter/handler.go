@@ -51,7 +51,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case staking.MsgEditValidator:
 		app.handleMsgEditValidator(txHash, msg, evMap, extra)
 	case staking.MsgDelegate:
-		app.handleMsgDelegate(msg)
+		app.handleMsgDelegate(txHash, msg, evMap, extra)
 	case staking.MsgUndelegate:
 		app.handleMsgUndelegate(txHash, msg, evMap, extra)
 	case staking.MsgBeginRedelegate:
@@ -63,7 +63,7 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 	case dist.MsgWithdrawDelegatorReward:
 		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
 	case slashing.MsgUnjail:
-		app.handleMsgUnjail(msg)
+		app.handleMsgUnjail(txHash, msg, evMap, extra)
 	case dist.MsgSetWithdrawAddress:
 		app.handleMsgSetWithdrawAddress(txHash, msg, evMap, extra)
 	}

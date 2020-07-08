@@ -75,7 +75,6 @@ transactions = sa.Table(
     Column("id", sa.Integer, primary_key=True, autoincrement=True),
     Column("hash", CustomBase64, unique=True),
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
-    Column("index", sa.Integer),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix

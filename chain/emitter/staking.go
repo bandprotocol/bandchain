@@ -95,7 +95,9 @@ func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress,
 }
 
 // handleMsgDelegate implements emitter handler for MsgDelegate
-func (app *App) handleMsgDelegate(msg staking.MsgDelegate) {
+func (app *App) handleMsgDelegate(
+	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
+) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 }
 
