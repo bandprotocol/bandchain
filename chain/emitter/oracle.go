@@ -7,6 +7,13 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+func parseBytes(b []byte) []byte {
+	if len(b) == 0 {
+		return []byte{}
+	}
+	return b
+}
+
 func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
 	app.Write("SET_DATA_SOURCE", JsDict{
 		"id":          id,
@@ -41,22 +48,19 @@ func (app *App) handleMsgRequestData(
 		"id":               id,
 		"tx_hash":          txHash,
 		"oracle_script_id": msg.OracleScriptID,
-		"calldata":         msg.Calldata,
+		"calldata":         parseBytes(msg.Calldata),
 		"ask_count":        msg.AskCount,
 		"min_count":        msg.MinCount,
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
 		"resolve_status":   types.ResolveStatus_Open,
 	})
-	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
-	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]
-	cs := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyCalldata]
-	for idx := range es {
+	for _, raw := range req.RawRequests {
 		app.Write("NEW_RAW_REQUEST", JsDict{
 			"request_id":     id,
-			"external_id":    es[idx],
-			"data_source_id": ds[idx],
-			"calldata":       []byte(cs[idx]),
+			"external_id":    raw.ExternalID,
+			"data_source_id": raw.DataSourceID,
+			"calldata":       parseBytes(raw.Calldata),
 		})
 	}
 	for _, val := range req.RequestedValidators {
@@ -86,7 +90,7 @@ func (app *App) handleMsgReportData(
 			"request_id":  msg.RequestID,
 			"validator":   msg.Validator.String(),
 			"external_id": data.ExternalID,
-			"data":        data.Data,
+			"data":        parseBytes(data.Data),
 			"exit_code":   data.ExitCode,
 		})
 	}
@@ -139,7 +143,7 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 		"request_time":   result.ResponsePacketData.RequestTime,
 		"resolve_time":   result.ResponsePacketData.ResolveTime,
 		"resolve_status": result.ResponsePacketData.ResolveStatus,
-		"result":         result.ResponsePacketData.Result,
+		"result":         parseBytes(result.ResponsePacketData.Result),
 	})
 }
 
