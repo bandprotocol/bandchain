@@ -1,5 +1,6 @@
 import base64 as b64
 from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from .db import (
@@ -47,6 +48,13 @@ class Handler(object):
         )
 
     def handle_set_data_source(self, msg):
+        if "tx_hash" in msg:
+            msg["transaction_id"] = self.conn.execute(
+                select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
+            ).scalar()
+        else:
+            msg["transaction_id"] = None
+        del msg["tx_hash"]
         self.conn.execute(
             insert(data_sources)
             .values(**msg)
@@ -54,6 +62,13 @@ class Handler(object):
         )
 
     def handle_set_oracle_script(self, msg):
+        if "tx_hash" in msg:
+            msg["transaction_id"] = self.conn.execute(
+                select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
+            ).scalar()
+        else:
+            msg["transaction_id"] = None
+        del msg["tx_hash"]
         self.conn.execute(
             insert(oracle_scripts)
             .values(**msg)
@@ -61,6 +76,10 @@ class Handler(object):
         )
 
     def handle_new_request(self, msg):
+        msg["transaction_id"] = self.conn.execute(
+            select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
+        ).scalar()
+        del msg["tx_hash"]
         self.conn.execute(requests.insert(), msg)
 
     def handle_update_request(self, msg):
@@ -76,6 +95,10 @@ class Handler(object):
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
+        msg["transaction_id"] = self.conn.execute(
+            select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
+        ).scalar()
+        del msg["tx_hash"]
         self.conn.execute(reports.insert(), msg)
 
     def handle_new_raw_report(self, msg):

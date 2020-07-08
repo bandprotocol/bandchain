@@ -29,9 +29,9 @@ class CustomDateTime(sa.types.TypeDecorator):
 
 
 class CustomBase64(sa.types.TypeDecorator):
-    """Custom String type that accepts base64-encoded string."""
+    """Custom LargeBinary type that accepts base64-encoded string."""
 
-    impl = sa.String
+    impl = sa.LargeBinary
 
     def process_bind_param(self, value, dialect):
         if value is None:
@@ -101,7 +101,7 @@ data_sources = sa.Table(
     Column("description", sa.String),
     Column("owner", sa.String),
     Column("executable", CustomBase64),
-    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash"), nullable=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 oracle_scripts = sa.Table(
@@ -114,14 +114,14 @@ oracle_scripts = sa.Table(
     Column("schema", sa.String),
     Column("codehash", sa.String),
     Column("source_code_url", sa.String),
-    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash"), nullable=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 requests = sa.Table(
     "requests",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
     Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id")),
     Column("calldata", CustomBase64),
     Column("ask_count", sa.Integer),
@@ -155,7 +155,7 @@ reports = sa.Table(
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
-    Column("tx_hash", CustomBase64, sa.ForeignKey("transactions.hash")),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
     Column("reporter", sa.String),
 )
 
