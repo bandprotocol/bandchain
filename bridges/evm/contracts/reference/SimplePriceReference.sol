@@ -1,6 +1,8 @@
-pragma solidity 0.5.14;
+// SPDX-License-Identifier: Apache-2.0
 
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+pragma solidity 0.6.11;
+
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IPriceReference} from "./IPriceReference.sol";
 
 contract SimplePriceReference is IPriceReference, Ownable {
@@ -16,23 +18,23 @@ contract SimplePriceReference is IPriceReference, Ownable {
         timestamps.push(block.timestamp);
     }
 
-    function latestRound() public view returns (uint256) {
+    function latestRound() public view override returns (uint256) {
         return prices.length;
     }
 
-    function latestAnswer() public view returns (uint256) {
+    function latestAnswer() public view override returns (uint256) {
         return getAnswer(latestRound());
     }
 
-    function latestTimestamp() public view returns (uint256) {
+    function latestTimestamp() public view override returns (uint256) {
         return getTimestamp(latestRound());
     }
 
-    function getAnswer(uint256 _round) public view returns (uint256) {
+    function getAnswer(uint256 _round) public view override returns (uint256) {
         return prices[_round - 1];
     }
 
-    function getTimestamp(uint256 _round) public view returns (uint256) {
+    function getTimestamp(uint256 _round) public view override returns (uint256) {
         return timestamps[_round - 1];
     }
 }

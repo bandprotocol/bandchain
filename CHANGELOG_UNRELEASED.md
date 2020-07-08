@@ -24,6 +24,8 @@
 
 ### Bridges
 
+- (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
