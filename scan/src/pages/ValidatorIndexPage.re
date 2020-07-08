@@ -277,19 +277,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          },
        )}
       <VSpacing size=Spacing.lg />
-      {kvRow(
-         "BONDED HEIGHT",
-         {
-           "The block height at which the entity registers as a validator" |> React.string;
-         },
-         {
-           switch (allSub) {
-           | Data((validator, _)) => VCode(validator.bondedHeight->Format.iPretty)
-           | _ => Loading(100, 16)
-           };
-         },
-       )}
-      <VSpacing size=Spacing.lg />
       {switch (allSub) {
        | Data((validator, _)) => <Uptime consensusAddress={validator.consensusAddress} />
 

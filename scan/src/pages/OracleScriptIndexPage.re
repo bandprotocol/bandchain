@@ -103,11 +103,11 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
             route:
               oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRequests),
           },
-          {
-            name: "REVISIONS",
-            route:
-              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
-          },
+          // {
+          //   name: "REVISIONS",
+          //   route:
+          //     oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
+          // },
         |]
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {

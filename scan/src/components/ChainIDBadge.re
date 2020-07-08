@@ -89,9 +89,9 @@ let getName =
 let make = () =>
   {
     let (show, setShow) = React.useState(_ => false);
-    let metadataSub = MetadataSub.use();
-    let%Sub metadata = metadataSub;
-    let currentChainID = metadata.chainID->parseChainID;
+    let trackingSub = TrackingSub.use();
+    let%Sub tracking = trackingSub;
+    let currentChainID = tracking.chainID->parseChainID;
 
     <div
       className=Styles.version

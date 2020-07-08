@@ -63,6 +63,8 @@ module IDCreator = (RawID: RawIDSig) => {
 
   let fromJson = json => ID(json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float);
 
+  let fromInt = x => ID(x);
+
   let toJson =
     fun
     | ID(id) => id |> float_of_int |> Js.Json.number;
