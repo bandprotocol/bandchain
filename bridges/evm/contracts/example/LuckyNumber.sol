@@ -1,7 +1,7 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IBridge} from "../IBridge.sol";
 
 
@@ -53,5 +53,5 @@ contract LuckyNumber is Ownable {
         msg.sender.transfer(address(this).balance);
     }
 
-    function() external payable {}
+    fallback() external payable {}
 }

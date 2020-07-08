@@ -1,8 +1,8 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IBridge} from "../IBridge.sol";
 
 

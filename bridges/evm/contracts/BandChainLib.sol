@@ -1,4 +1,4 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 
 library BandChainLib {
     function toUint64List(bytes memory _data)

@@ -1,4 +1,4 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 
 import {Packets} from "./Packets.sol";
@@ -34,6 +34,7 @@ contract BridgeWithCache is Bridge, IBridgeCache {
     function getLatestResponse(RequestPacket memory _request)
         public
         view
+        override
         returns (ResponsePacket memory)
     {
         ResponsePacket memory res = requestsCache[getRequestKey(_request)];

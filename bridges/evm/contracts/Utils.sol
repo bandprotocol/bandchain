@@ -1,4 +1,4 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 
 /// @dev Helper utility library for calculating Merkle proof and managing bytes.
 library Utils {

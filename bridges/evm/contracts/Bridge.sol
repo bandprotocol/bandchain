@@ -1,9 +1,9 @@
-pragma solidity 0.5.14;
+pragma solidity 0.6.0;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
 import {MultiStore} from "./MultiStore.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
@@ -157,6 +157,7 @@ contract Bridge is IBridge, Ownable {
     /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
+        override
         returns (RequestPacket memory, ResponsePacket memory)
     {
         (bytes memory relayData, bytes memory verifyData) = abi.decode(
