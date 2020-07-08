@@ -269,9 +269,9 @@ module StakingInfo = {
                  headers=["AMOUNT (BAND)", "UNBONDED AT"]
                  rows={
                    unbondingList
-                   ->Belt_Array.map(({completionTime, balance}) =>
+                   ->Belt_Array.map(({completionTime, amount}) =>
                        [
-                         KVTable.Value(balance |> Coin.getBandAmountFromCoin |> Format.fPretty),
+                         KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
                            |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")

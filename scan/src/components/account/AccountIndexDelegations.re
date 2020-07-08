@@ -73,13 +73,13 @@ let make = (~address) =>
         </THead>
         {delegations
          ->Belt.Array.map(delegation => {
-             <TBody key={delegation.validatorAddress |> Address.toBech32} minHeight=50>
+             <TBody key={delegation.operatorAddress |> Address.toBech32} minHeight=50>
                <Row>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                  <Col size=0.9>
                    <div className=Styles.hFlex>
                      <ValidatorMonikerLink
-                       validatorAddress={delegation.validatorAddress}
+                       validatorAddress={delegation.operatorAddress}
                        moniker={delegation.moniker}
                        width={`px(300)}
                      />
