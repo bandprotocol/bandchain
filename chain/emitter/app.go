@@ -229,17 +229,17 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	}
 	// Update balances of all affected accounts on this block.
 	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
-	modified := []Message{app.msgs[0]}
+	modifiedMsgs := []Message{app.msgs[0]}
 	for accStr, _ := range app.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
-		modified = append(modified, Message{
+		modifiedMsgs = append(modifiedMsgs, Message{
 			Key: "SET_ACCOUNT",
 			Value: JsDict{
 				"address": acc,
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
-	app.msgs = append(modified, app.msgs[1:]...)
+	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }
