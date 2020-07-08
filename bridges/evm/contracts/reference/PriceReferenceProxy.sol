@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity 0.6.11;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IPriceReference} from "./IPriceReference.sol";

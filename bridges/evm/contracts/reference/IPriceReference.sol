@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity 0.6.11;
 
 interface IPriceReference {
     /// @dev Returns the number of times that the price has been updated.

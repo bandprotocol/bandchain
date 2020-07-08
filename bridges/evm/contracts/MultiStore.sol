@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity 0.6.11;
 import {Utils} from "./Utils.sol";
 
 // Computes Tendermint's application state hash at this given block. AppHash is actually a

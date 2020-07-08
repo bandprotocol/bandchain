@@ -1,4 +1,4 @@
-pragma solidity 0.6.0;
+pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {BandChainLib} from "../BandChainLib.sol";
