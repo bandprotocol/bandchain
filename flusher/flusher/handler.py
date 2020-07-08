@@ -1,5 +1,6 @@
 import base64 as b64
 from datetime import datetime
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from .db import (
@@ -35,15 +36,18 @@ class Handler(object):
         res = self.conn.execute(transactions.insert(), msg)
         tx_id = res.inserted_primary_key[0]
         for account in related_tx_accounts:
+            id = self.conn.execute(
+                select([accounts.c.id]).where(accounts.c.address == account)
+            ).scalar()
             self.conn.execute(
-                account_transcations.insert(), {"transaction_id": tx_id, "address": account}
+                account_transcations.insert(), {"transaction_id": tx_id, "account_id": id}
             )
 
     def handle_set_account(self, msg):
         self.conn.execute(
             insert(accounts)
             .values(**msg)
-            .on_conflict_do_update(constraint="accounts_pkey", set_=msg)
+            .on_conflict_do_update(index_elements=[accounts.c.address], set_=msg)
         )
 
     def handle_set_data_source(self, msg):
@@ -95,6 +99,10 @@ class Handler(object):
         self.conn.execute(validators.update().where(condition).values(**msg))
 
     def handle_set_delegation(self, msg):
+        msg["account_id"] = self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
+        ).scalar()
+        del msg["delegator_address"]
         self.conn.execute(
             insert(delegations)
             .values(**msg)
@@ -102,6 +110,10 @@ class Handler(object):
         )
 
     def handle_remove_delegation(self, msg):
+        msg["account_id"] = self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
+        ).scalar()
+        del msg["delegator_address"]
         condition = True
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
@@ -111,7 +123,15 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
+        msg["account_id"] = self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
+        ).scalar()
+        del msg["delegator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
+        msg["account_id"] = self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
+        ).scalar()
+        del msg["delegator_address"]
         self.conn.execute(insert(redelegations).values(**msg))

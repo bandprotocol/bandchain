@@ -89,7 +89,8 @@ transactions = sa.Table(
 accounts = sa.Table(
     "accounts",
     metadata,
-    Column("address", sa.String, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("address", sa.String, unique=True),
     Column("balance", sa.String),
 )
 
@@ -201,7 +202,7 @@ validators = sa.Table(
 delegations = sa.Table(
     "delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column(
         "operator_address",
         sa.String,
@@ -228,7 +229,7 @@ validator_votes = sa.Table(
 unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
@@ -238,7 +239,7 @@ unbonding_delegations = sa.Table(
 redelegations = sa.Table(
     "redelegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("completion_time", CustomDateTime),
@@ -249,5 +250,5 @@ account_transcations = sa.Table(
     "account_transcations",
     metadata,
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
-    Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
 )
