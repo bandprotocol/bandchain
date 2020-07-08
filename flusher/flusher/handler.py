@@ -48,7 +48,7 @@ class Handler(object):
         )
 
     def handle_set_data_source(self, msg):
-        if "tx_hash" in msg:
+        if msg["tx_hash"] is not None:
             msg["transaction_id"] = self.conn.execute(
                 select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
             ).scalar()
@@ -62,7 +62,7 @@ class Handler(object):
         )
 
     def handle_set_oracle_script(self, msg):
-        if "tx_hash" in msg:
+        if msg["tx_hash"] is not None:
             msg["transaction_id"] = self.conn.execute(
                 select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
             ).scalar()
