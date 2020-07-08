@@ -209,14 +209,14 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 		})
 	}
 	app.AddAccountsInTx(stdTx.GetSigners()...)
-	accsInTx := []sdk.AccAddress{}
+	relatedAccounts := make([]sdk.AccAddress, 0, len(app.accsInBlock))
 	for accStr, _ := range app.accsInTx {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
-		accsInTx = append(accsInTx, acc)
+		relatedAccounts = append(relatedAccounts, acc)
 	}
 
-	txDict["related_accounts"] = accsInTx
-	app.AddAccountsInBlock(accsInTx...)
+	txDict["related_accounts"] = relatedAccounts
+	app.AddAccountsInBlock(relatedAccounts...)
 	txDict["messages"] = messages
 	return res
 }
@@ -229,17 +229,17 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	}
 	// Update balances of all affected accounts on this block.
 	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
-	modifyMsgs := []Message{app.msgs[0]}
+	modified := []Message{app.msgs[0]}
 	for accStr, _ := range app.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
-		modifyMsgs = append(modifyMsgs, Message{
+		modified = append(modified, Message{
 			Key: "SET_ACCOUNT",
 			Value: JsDict{
 				"address": acc,
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
-	app.msgs = append(modifyMsgs, app.msgs[1:]...)
+	app.msgs = append(modified, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }
