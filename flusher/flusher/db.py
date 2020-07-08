@@ -72,9 +72,9 @@ blocks = sa.Table(
 transactions = sa.Table(
     "transactions",
     metadata,
-    Column("hash", CustomBase64, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("hash", CustomBase64, unique=True),
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
-    Column("index", sa.Integer),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix
@@ -243,4 +243,11 @@ redelegations = sa.Table(
     Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
+)
+
+account_transcations = sa.Table(
+    "account_transcations",
+    metadata,
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
+    Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
 )

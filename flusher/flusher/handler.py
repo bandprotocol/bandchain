@@ -18,6 +18,7 @@ from .db import (
     validator_votes,
     unbonding_delegations,
     redelegations,
+    account_transcations,
 )
 
 
@@ -29,7 +30,14 @@ class Handler(object):
         self.conn.execute(blocks.insert(), msg)
 
     def handle_new_transaction(self, msg):
-        self.conn.execute(transactions.insert(), msg)
+        related_tx_accounts = msg["related_accounts"]
+        del msg["related_accounts"]
+        res = self.conn.execute(transactions.insert(), msg)
+        tx_id = res.inserted_primary_key[0]
+        for account in related_tx_accounts:
+            self.conn.execute(
+                account_transcations.insert(), {"transaction_id": tx_id, "address": account}
+            )
 
     def handle_set_account(self, msg):
         self.conn.execute(

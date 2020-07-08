@@ -19,7 +19,9 @@ func (app *App) handleEventSlash(event EvMap) {
 }
 
 // handleMsgUnjail implements emitter handler for MsgUnjail.
-func (app *App) handleMsgUnjail(msg slashing.MsgUnjail) {
+func (app *App) handleMsgUnjail(
+	txHash []byte, msg slashing.MsgUnjail, evMap EvMap, extra JsDict,
+) {
 	validator, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.ValidatorAddr)
 	app.Write("UPDATE_VALIDATOR", JsDict{
 		"operator_address": msg.ValidatorAddr.String(),

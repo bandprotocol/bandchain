@@ -76,12 +76,16 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 }
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
-func (app *App) handleMsgCreateValidator(msg staking.MsgCreateValidator) {
+func (app *App) handleMsgCreateValidator(
+	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
+) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
-func (app *App) handleMsgEditValidator(msg staking.MsgEditValidator) {
+func (app *App) handleMsgEditValidator(
+	txHash []byte, msg staking.MsgEditValidator, evMap EvMap, extra JsDict,
+) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
 
@@ -91,7 +95,9 @@ func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress,
 }
 
 // handleMsgDelegate implements emitter handler for MsgDelegate
-func (app *App) handleMsgDelegate(msg staking.MsgDelegate) {
+func (app *App) handleMsgDelegate(
+	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
+) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 }
 
@@ -135,5 +141,6 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 }
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
-	// TODO: update delegator account
+	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	app.AddAccountsInBlock(acc)
 }
