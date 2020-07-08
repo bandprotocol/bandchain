@@ -138,7 +138,7 @@ raw_requests = sa.Table(
     "raw_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("external_id", sa.Integer, primary_key=True),
+    Column("external_id", sa.BigInteger, primary_key=True),
     Column("data_source_id", sa.Integer),
     Column("calldata", CustomBase64),
 )
