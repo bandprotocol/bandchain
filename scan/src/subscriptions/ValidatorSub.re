@@ -168,28 +168,28 @@ module ValidatorCountByJailedConfig = [%graphql
   |}
 ];
 
-// module SingleLast250VotedConfig = [%graphql
-//   {|
-//   subscription ValidatorLast25Voted($consensusAddress: String!) {
-//     validator_last_250_votes(where: {consensus_address: {_eq: $consensusAddress}}) {
-//       count
-//       voted
-//     }
-//   }
-// |}
-// ];
+module SingleLast250VotedConfig = [%graphql
+  {|
+  subscription ValidatorLast25Voted($consensusAddress: String!) {
+    validator_last_250_votes(where: {consensus_address: {_eq: $consensusAddress}}) {
+      count
+      voted
+    }
+  }
+|}
+];
 
-// module MultiLast250VotedConfig = [%graphql
-//   {|
-//   subscription ValidatorsLast25Voted {
-//     validator_last_250_votes {
-//       consensus_address
-//       count
-//       voted
-//     }
-//   }
-// |}
-// ];
+module MultiLast250VotedConfig = [%graphql
+  {|
+  subscription ValidatorsLast25Voted {
+    validator_last_250_votes {
+      consensus_address
+      count
+      voted
+    }
+  }
+|}
+];
 
 let get = operator_address => {
   let (result, _) =
@@ -245,61 +245,51 @@ let getTotalBondedAmount = () => {
 };
 
 let getUptime = consensusAddress => {
-  // let (result, _) =
-  //   ApolloHooks.useSubscription(
-  //     SingleLast250VotedConfig.definition,
-  //     ~variables=
-  //       SingleLast250VotedConfig.makeVariables(
-  //         ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
-  //         (),
-  //       ),
-  //   );
-  // let%Sub x = result;
-  // let validatorVotes = x##validator_last_250_votes;
-  // let signedBlock =
-  //   validatorVotes
-  //   ->Belt.Array.keep(each => each##voted == Some(true))
-  //   ->Belt.Array.get(0)
-  //   ->Belt.Option.flatMap(each => each##count)
-  //   ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
-  //   |> float_of_int;
-  // let missedBlock =
-  //   validatorVotes
-  //   ->Belt.Array.keep(each => each##voted == Some(false))
-  //   ->Belt.Array.get(0)
-  //   ->Belt.Option.flatMap(each => each##count)
-  //   ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
-  //   |> float_of_int;
-  // if (signedBlock == 0. && missedBlock == 0.) {
-  //   Sub.resolve(None);
-  // } else {
-  //   let uptime = signedBlock /. (signedBlock +. missedBlock) *. 100.;
-  //   Sub.resolve(Some(uptime));
-  // };
-  Sub.resolve(
-    Some(12.2),
-  );
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      SingleLast250VotedConfig.definition,
+      ~variables=
+        SingleLast250VotedConfig.makeVariables(
+          ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
+          (),
+        ),
+    );
+  let%Sub x = result;
+  let validatorVotes = x##validator_last_250_votes;
+  let signedBlock =
+    validatorVotes
+    ->Belt.Array.keep(each => each##voted == Some(true))
+    ->Belt.Array.get(0)
+    ->Belt.Option.flatMap(each => each##count)
+    ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
+    |> float_of_int;
+  let missedBlock =
+    validatorVotes
+    ->Belt.Array.keep(each => each##voted == Some(false))
+    ->Belt.Array.get(0)
+    ->Belt.Option.flatMap(each => each##count)
+    ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
+    |> float_of_int;
+  if (signedBlock == 0. && missedBlock == 0.) {
+    Sub.resolve(None);
+  } else {
+    let uptime = signedBlock /. (signedBlock +. missedBlock) *. 100.;
+    Sub.resolve(Some(uptime));
+  };
 };
 
 // For computing uptime on Validator home page
 let getListVotesBlock = () => {
-  // let (result, _) = ApolloHooks.useSubscription(MultiLast250VotedConfig.definition);
-  // let%Sub x = result;
-  // let validatorVotes =
-  //   x##validator_last_250_votes
-  //   ->Belt.Array.map(each =>
-  //       {
-  //         consensusAddress: each##consensus_address->Belt.Option.getExn->Address.fromHex,
-  //         count: each##count->Belt.Option.getExn->GraphQLParser.int64,
-  //         voted: each##voted->Belt.Option.getExn,
-  //       }
-  //     );
-  // Sub.resolve(validatorVotes);
-  Sub.resolve([|
-    {
-      consensusAddress: "5179B0BB203248E03D2A1342896133B5C58E1E44" |> Address.fromHex,
-      count: 250,
-      voted: true,
-    },
-  |]);
+  let (result, _) = ApolloHooks.useSubscription(MultiLast250VotedConfig.definition);
+  let%Sub x = result;
+  let validatorVotes =
+    x##validator_last_250_votes
+    ->Belt.Array.map(each =>
+        {
+          consensusAddress: each##consensus_address->Belt.Option.getExn->Address.fromHex,
+          count: each##count->Belt.Option.getExn->GraphQLParser.int64,
+          voted: each##voted->Belt.Option.getExn,
+        }
+      );
+  Sub.resolve(validatorVotes);
 };

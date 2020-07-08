@@ -104,12 +104,14 @@ module Msg = {
       amount: list(Coin.t),
     };
 
-    let decode = json =>
+    let decode = json => {
+      Js.Console.log(json);
       JsonUtils.Decode.{
         fromAddress: json |> at(["msg", "from_address"], string) |> Address.fromBech32,
         toAddress: json |> at(["msg", "to_address"], string) |> Address.fromBech32,
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
+    };
   };
 
   module CreateDataSource = {

@@ -2,7 +2,7 @@ type t = {balance: Coin.t};
 
 type unbonding_status_t = {
   completionTime: MomentRe.Moment.t,
-  balance: Coin.t,
+  amount: Coin.t,
 };
 
 module SingleConfig = [%graphql
@@ -11,7 +11,7 @@ module SingleConfig = [%graphql
         unbonding_delegations_aggregate(where: {delegator_address: {_eq: $delegator_address}}) {
           aggregate {
             sum {
-              balance @bsDecoder(fn: "GraphQLParser.coinWithDefault")
+              amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
             }
           }
         }
@@ -21,10 +21,10 @@ module SingleConfig = [%graphql
 
 module MultiConfig = [%graphql
   {|
-  subscription Unbonding($delegator_address: String!, $validator_address: String!) {
-  unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}, order_by: {completion_time: asc}) @bsRecord {
+  subscription Unbonding($delegator_address: String!, $operator_address: String!) {
+  unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}, order_by: {completion_time: asc}) @bsRecord {
     completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timeMS")
-    balance @bsDecoder(fn: "GraphQLParser.coin")
+    amount @bsDecoder(fn: "GraphQLParser.coin")
   }
   }
 |}
@@ -32,11 +32,11 @@ module MultiConfig = [%graphql
 
 module UnbondingByValidatorConfig = [%graphql
   {|
-    subscription Unbonding($delegator_address: String!, $validator_address: String!) {
-        unbonding_delegations_aggregate(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) {
+    subscription Unbonding($delegator_address: String!, $operator_address: String!) {
+        unbonding_delegations_aggregate(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}) {
           aggregate {
             sum {
-              balance @bsDecoder(fn: "GraphQLParser.coinWithDefault")
+              amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
             }
           }
         }
@@ -60,17 +60,17 @@ let getUnbondingBalance = delegatorAddress => {
        );
 
   let%Sub unbondingInfo = unbondingInfoSub;
-  unbondingInfo##balance |> Sub.resolve;
+  unbondingInfo##amount |> Sub.resolve;
 };
 
-let getUnbondingBalanceByValidator = (delegatorAddress, validatorAddress) => {
+let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       UnbondingByValidatorConfig.definition,
       ~variables=
         UnbondingByValidatorConfig.makeVariables(
           ~delegator_address=delegatorAddress |> Address.toBech32,
-          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~operator_address=operatorAddress |> Address.toOperatorBech32,
           (),
         ),
     );
@@ -83,17 +83,17 @@ let getUnbondingBalanceByValidator = (delegatorAddress, validatorAddress) => {
        );
 
   let%Sub unbondingInfo = unbondingInfoSub;
-  unbondingInfo##balance |> Sub.resolve;
+  unbondingInfo##amount |> Sub.resolve;
 };
 
-let getUnbondingList = (delegatorAddress, validatorAddress) => {
+let getUnbondingList = (delegatorAddress, operatorAddress) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
       ~variables=
         MultiConfig.makeVariables(
           ~delegator_address=delegatorAddress |> Address.toBech32,
-          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~operator_address=operatorAddress |> Address.toOperatorBech32,
           (),
         ),
     );
