@@ -14,6 +14,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2178](https://github.com/bandprotocol/bandchain/pull/2178) Add field id in accounts table.
 - (impv) [\#2142](https://github.com/bandprotocol/bandchain/pull/2142) Add account transactions table.
 - (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2169](https://github.com/bandprotocol/bandchain/pull/2169) Add unbonding and redelegation table.
