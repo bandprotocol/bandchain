@@ -14,7 +14,7 @@
 
 ### Emitter & Flusher
 
-- (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nill slice to empty slice.
+- (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
 - (impv) [\#2142](https://github.com/bandprotocol/bandchain/pull/2142) Add account transactions table.
 - (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2169](https://github.com/bandprotocol/bandchain/pull/2169) Add unbonding and redelegation table.
