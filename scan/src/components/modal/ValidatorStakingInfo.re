@@ -150,12 +150,6 @@ module StakingInfo = {
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
       let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);
 
-      Js.Console.log2("info", infoSub);
-      Js.Console.log2("validatorInfo",validatorInfoSub);
-      Js.Console.log2("balanceAtStake",balanceAtStakeSub);
-      Js.Console.log2("unbonding",unbondingSub);
-      Js.Console.log2("unbondingList",unbondingListSub)
-
       let%Sub info = infoSub;
       let%Sub balanceAtStake = balanceAtStakeSub;
       let%Sub unbonding = unbondingSub;
