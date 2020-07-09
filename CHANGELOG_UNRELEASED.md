@@ -47,3 +47,5 @@
 ### Helpers
 
 ### MISC
+
+- (impv) [\#2195](https://github.com/bandprotocol/bandchain/pull/2195) Remove lib and update executable as base64 encoded.
