@@ -125,6 +125,9 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
   let validatorSub = ValidatorSub.get(address);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
 
+  Js.Console.log(validatorSub);
+  Js.Console.log(bondedTokenCountSub);
+
   let allSub = Sub.all2(validatorSub, bondedTokenCountSub);
 
   <>
