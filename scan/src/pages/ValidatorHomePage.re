@@ -372,6 +372,8 @@ module ValidatorList = {
   let make = (~allSub, ~searchTerm) => {
     let (sortedBy, setSortedBy) = React.useState(_ => VotingPowerDesc);
 
+    Js.Console.log(allSub);
+
     let toggle = (sortedByAsc, sortedByDesc) =>
       if (sortedBy == sortedByDesc) {
         setSortedBy(_ => sortedByAsc);

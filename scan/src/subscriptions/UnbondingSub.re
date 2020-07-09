@@ -23,7 +23,7 @@ module MultiConfig = [%graphql
   {|
   subscription Unbonding($delegator_address: String!, $operator_address: String!) {
   unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}, order_by: {completion_time: asc}) @bsRecord {
-    completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timeMS")
+    completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
     amount @bsDecoder(fn: "GraphQLParser.coin")
   }
   }
