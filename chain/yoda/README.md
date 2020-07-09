@@ -1,4 +1,4 @@
-### Band Oracle 2
+### Yoda
 
 ## Prepare environment
 
@@ -10,10 +10,10 @@
 6. `make install` in chain directory
 7. Open 3 tabs on cmd
 
-## How to install and run Band Oracle 2
+## How to install and run Yoda
 
 1. Open first cmd tab for running the BandChain
-2. Open second cmd tab for running the Band Oracle 2
+2. Open second cmd tab for running the Yoda
 3. Open third cmd tab for running the BandChian CLI
 
 ### How to run BandChain on development mode
@@ -30,15 +30,15 @@ wasm-pack build .
 cd ../../../chain
 ```
 
-### How to run Band Oracle 2
+### How to run Yoda
 
 1. Go to chain directory
-2. run `chmod +x scripts/start_bandoracled2.sh` to change the access permission of start_bandoracled2.script
-3. run `./scripts/start_bandoracled2.sh validator [number of reporter]` to start Band Oracle D2
+2. run `chmod +x scripts/start_yoda.sh` to change the access permission of start_yoda.script
+3. run `./scripts/start_yoda.sh validator [number of reporter]` to start Yoda
 
 ### Try to request data BandChain
 
-After we have `BandChain` and `Band Oracle 2` running, now we can request data on BandChain.
+After we have `BandChain` and `Yoda` running, now we can request data on BandChain.
 Example of requesting data on BandChain
 
 ```
