@@ -19,6 +19,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
 - (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
