@@ -9,7 +9,7 @@ func configCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "config [key] [value]",
 		Aliases: []string{"c"},
-		Short:   "Set oracled configuration environment",
+		Short:   "Set yoda configuration environment",
 		Args:    cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			viper.Set(args[0], args[1])
