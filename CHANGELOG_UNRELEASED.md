@@ -18,6 +18,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
 - (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
 - (impv) [\#2181](https://github.com/bandprotocol/bandchain/pull/2181) Change all foreign key that refers from tx_hash to id.
