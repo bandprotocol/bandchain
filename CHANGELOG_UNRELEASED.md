@@ -15,6 +15,8 @@
 ### Emitter & Flusher
 
 - (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
+- (bugs) [\#2182](https://github.com/bandprotocol/bandchain/pull/2182) Flusher: change external id to BigInteger.
+- (bugs) [\#2183](https://github.com/bandprotocol/bandchain/pull/2183) Add data_sources_id FK in raw_requests table.
 - (impv) [\#2142](https://github.com/bandprotocol/bandchain/pull/2142) Add account transactions table.
 - (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2169](https://github.com/bandprotocol/bandchain/pull/2169) Add unbonding and redelegation table.
@@ -23,6 +25,8 @@
 ### Scan
 
 ### Bridges
+
+- (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
 
 ### Owasm
 

@@ -1,4 +1,6 @@
-pragma solidity ^0.5.0;
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Obi} from "./Obi.sol";
@@ -10,7 +12,7 @@ contract ObiUser {
 
     function decode(bytes memory _data)
         public
-        view
+        pure
         returns (ResultDecoder.Result memory)
     {
         return _data.decodeResult();
