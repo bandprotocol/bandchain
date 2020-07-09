@@ -14,6 +14,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2191](https://github.com/bandprotocol/bandchain/pull/2191) Add `reward_amount` field to Withdraw Reward Msg.
 - (impv) [\#2178](https://github.com/bandprotocol/bandchain/pull/2178) Add field id in accounts table.
 - (bugs) [\#2180](https://github.com/bandprotocol/bandchain/pull/2180) Fix bug data source and oracle script id from genesis.
 - (bugs) [\#2182](https://github.com/bandprotocol/bandchain/pull/2182) Flusher: change external id to BigInteger.
