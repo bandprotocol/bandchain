@@ -27,9 +27,9 @@ class Handler(object):
     def __init__(self, conn):
         self.conn = conn
 
-    def get_transaction_id(self, msg):
+    def get_transaction_id(self, tx_hash):
         return self.conn.execute(
-            select([transactions.c.id]).where(transactions.c.hash == msg["tx_hash"])
+            select([transactions.c.id]).where(transactions.c.hash == tx_hash)
         ).scalar()
 
     def handle_new_block(self, msg):
@@ -54,7 +54,7 @@ class Handler(object):
 
     def handle_set_data_source(self, msg):
         if msg["tx_hash"] is not None:
-            msg["transaction_id"] = self.get_transaction_id(msg)
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         else:
             msg["transaction_id"] = None
         del msg["tx_hash"]
@@ -66,7 +66,7 @@ class Handler(object):
 
     def handle_set_oracle_script(self, msg):
         if msg["tx_hash"] is not None:
-            msg["transaction_id"] = self.get_transaction_id(msg)
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         else:
             msg["transaction_id"] = None
         del msg["tx_hash"]
@@ -77,7 +77,7 @@ class Handler(object):
         )
 
     def handle_new_request(self, msg):
-        msg["transaction_id"] = self.get_transaction_id(msg)
+        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(requests.insert(), msg)
 
@@ -94,7 +94,7 @@ class Handler(object):
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
-        msg["transaction_id"] = self.get_transaction_id(msg)
+        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(reports.insert(), msg)
 
