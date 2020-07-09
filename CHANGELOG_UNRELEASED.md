@@ -12,6 +12,10 @@
 
 ### Chain (Non-consensus)
 
+### Yoda
+
+- (feat) [\#2190](https://github.com/bandprotocol/bandchain/pull/2190) Add yoda command to bandchain.
+
 ### Emitter & Flusher
 
 - (impv) [\#2181](https://github.com/bandprotocol/bandchain/pull/2181) Change all foreign key that refers from tx_hash to id.
