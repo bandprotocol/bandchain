@@ -14,6 +14,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2177](https://github.com/bandprotocol/bandchain/pull/2177) Add field validator id for validators table.
 - (impv) [\#2178](https://github.com/bandprotocol/bandchain/pull/2178) Add field id in accounts table.
 - (bugs) [\#2180](https://github.com/bandprotocol/bandchain/pull/2180) Fix bug data source and oracle script id from genesis.
 - (bugs) [\#2182](https://github.com/bandprotocol/bandchain/pull/2182) Flusher: change external id to BigInteger.
