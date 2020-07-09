@@ -172,7 +172,7 @@ let getStakeCountByDelegator = delegatorAddress => {
   |> Sub.map(_, x =>
        x##delegations_view_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
      );
-} /* }*/;
+};
 
 let getDelegatorsByValidator = (validatorAddress, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
