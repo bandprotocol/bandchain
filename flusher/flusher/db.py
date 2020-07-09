@@ -89,7 +89,8 @@ transactions = sa.Table(
 accounts = sa.Table(
     "accounts",
     metadata,
-    Column("address", sa.String, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("address", sa.String, unique=True),
     Column("balance", sa.String),
 )
 
@@ -202,8 +203,8 @@ validators = sa.Table(
 delegations = sa.Table(
     "delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
@@ -224,8 +225,9 @@ validator_votes = sa.Table(
 unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
+master
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
@@ -234,7 +236,7 @@ unbonding_delegations = sa.Table(
 redelegations = sa.Table(
     "redelegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("validator_src_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("validator_dst_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("completion_time", CustomDateTime),
@@ -245,5 +247,5 @@ account_transcations = sa.Table(
     "account_transcations",
     metadata,
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
-    Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
 )

@@ -32,6 +32,11 @@ class Handler(object):
             select([validators.c.id]).where(validators.c.operator_address == val)
         ).scalar()
 
+    def get_account_id(self, address):
+        return self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == address)
+        ).scalar()
+
     def handle_new_block(self, msg):
         self.conn.execute(blocks.insert(), msg)
 
@@ -42,14 +47,15 @@ class Handler(object):
         tx_id = res.inserted_primary_key[0]
         for account in related_tx_accounts:
             self.conn.execute(
-                account_transcations.insert(), {"transaction_id": tx_id, "address": account}
+                account_transcations.insert(),
+                {"transaction_id": tx_id, "account_id": self.get_account_id(account)},
             )
 
     def handle_set_account(self, msg):
         self.conn.execute(
             insert(accounts)
             .values(**msg)
-            .on_conflict_do_update(constraint="accounts_pkey", set_=msg)
+            .on_conflict_do_update(index_elements=[accounts.c.address], set_=msg)
         )
 
     def handle_set_data_source(self, msg):
@@ -110,6 +116,8 @@ class Handler(object):
     def handle_set_delegation(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         self.conn.execute(
             insert(delegations)
             .values(**msg)
@@ -119,6 +127,8 @@ class Handler(object):
     def handle_remove_delegation(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         condition = True
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
@@ -133,9 +143,10 @@ class Handler(object):
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         msg["validator_src_id"] = self.get_validator_id(msg["operator_src_address"])
         del msg["operator_src_address"]
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
-
-        self.conn.execute(insert(redelegations).values(**msg))
+        self.conn.execute(insert(unbonding_delegations).values(**msg))
