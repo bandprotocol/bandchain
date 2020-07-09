@@ -14,6 +14,7 @@
 
 ### Yoda
 
+- (feat) [\#2193](https://github.com/bandprotocol/bandchain/pull/2193) Fix bug start_docker.sh and start_yoda.sh.
 - (feat) [\#2190](https://github.com/bandprotocol/bandchain/pull/2190) Add yoda command to bandchain.
 
 ### Emitter & Flusher
