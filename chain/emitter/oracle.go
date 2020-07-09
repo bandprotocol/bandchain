@@ -151,6 +151,8 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 func (app *App) handleMsgAddReporter(
 	txHash []byte, msg oracle.MsgAddReporter, evMap EvMap, extra JsDict,
 ) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.Validator)
+	extra["validator_moniker"] = val.GetMoniker()
 	app.AddAccountsInTx(msg.Reporter)
 }
 
@@ -158,6 +160,8 @@ func (app *App) handleMsgAddReporter(
 func (app *App) handleMsgRemoveReporter(
 	txHash []byte, msg oracle.MsgRemoveReporter, evMap EvMap, extra JsDict,
 ) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.Validator)
+	extra["validator_moniker"] = val.GetMoniker()
 	app.AddAccountsInTx(msg.Reporter)
 }
 
