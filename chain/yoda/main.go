@@ -1,4 +1,4 @@
-package main
+package yoda
 
 import (
 	"fmt"
@@ -49,14 +49,14 @@ func initConfig(cmd *cobra.Command) error {
 	return nil
 }
 
-func main() {
+func Main() {
 	appConfig := sdk.GetConfig()
 	app.SetBech32AddressPrefixesAndBip44CoinType(appConfig)
 	appConfig.Seal()
 
 	ctx := &Context{}
 	rootCmd := &cobra.Command{
-		Use:   "oracled",
+		Use:   "yoda",
 		Short: "BandChain oracle daemon to subscribe and response to oracle requests",
 	}
 
@@ -75,7 +75,7 @@ func main() {
 		}
 		return initConfig(rootCmd)
 	}
-	rootCmd.PersistentFlags().String(flags.FlagHome, os.ExpandEnv("$HOME/.oracled"), "home directory")
+	rootCmd.PersistentFlags().String(flags.FlagHome, os.ExpandEnv("$HOME/.yoda"), "home directory")
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)

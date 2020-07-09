@@ -1,4 +1,4 @@
-package main
+package yoda
 
 import (
 	"encoding/base64"

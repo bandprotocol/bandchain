@@ -12,6 +12,10 @@
 
 ### Chain (Non-consensus)
 
+### Yoda
+
+- (feat) [\#2190](https://github.com/bandprotocol/bandchain/pull/2190) Add yoda command to bandchain.
+
 ### Emitter & Flusher
 
 - (bugs) [\#2191](https://github.com/bandprotocol/bandchain/pull/2191) Add `reward_amount` field to Withdraw Reward Msg.
