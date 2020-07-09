@@ -204,7 +204,7 @@ delegations = sa.Table(
     "delegations",
     metadata,
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
-    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
@@ -225,8 +225,8 @@ validator_votes = sa.Table(
 unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
-    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
@@ -235,7 +235,7 @@ unbonding_delegations = sa.Table(
 redelegations = sa.Table(
     "redelegations",
     metadata,
-    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("validator_src_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("validator_dst_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("completion_time", CustomDateTime),

@@ -114,10 +114,10 @@ class Handler(object):
         )
 
     def handle_set_delegation(self, msg):
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
-        msg["account_id"] = self.get_account_id(msg["delegator_address"])
-        del msg["delegator_address"]
         self.conn.execute(
             insert(delegations)
             .values(**msg)
@@ -125,10 +125,10 @@ class Handler(object):
         )
 
     def handle_remove_delegation(self, msg):
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
-        msg["account_id"] = self.get_account_id(msg["delegator_address"])
-        del msg["delegator_address"]
         condition = True
         for col in delegations.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
@@ -138,14 +138,14 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
-        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
-        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         msg["validator_src_id"] = self.get_validator_id(msg["operator_src_address"])
         del msg["operator_src_address"]
