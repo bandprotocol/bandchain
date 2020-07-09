@@ -1,4 +1,6 @@
-pragma solidity 0.5.14;
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity 0.6.11;
 
 /// @dev Library for performing signer recovery for ECDSA secp256k1 signature. Note that the
 /// library is written specifically for signature signed on Tendermint's precommit data, which

@@ -89,7 +89,8 @@ transactions = sa.Table(
 accounts = sa.Table(
     "accounts",
     metadata,
-    Column("address", sa.String, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("address", sa.String, unique=True),
     Column("balance", sa.String),
 )
 
@@ -138,8 +139,8 @@ raw_requests = sa.Table(
     "raw_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("external_id", sa.Integer, primary_key=True),
-    Column("data_source_id", sa.Integer),
+    Column("external_id", sa.BigInteger, primary_key=True),
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id")),
     Column("calldata", CustomBase64),
 )
 
@@ -147,15 +148,15 @@ val_requests = sa.Table(
     "val_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
 )
 
 reports = sa.Table(
     "reports",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validator", sa.String, sa.ForeignKey("validators.operator_address"), primary_key=True),
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
     Column("reporter", sa.String),
 )
 
@@ -163,12 +164,12 @@ raw_reports = sa.Table(
     "raw_reports",
     metadata,
     Column("request_id", sa.Integer, primary_key=True),
-    Column("validator", sa.String, primary_key=True),
-    Column("external_id", sa.Integer, primary_key=True),
+    Column("validator_id", sa.Integer, primary_key=True),
+    Column("external_id", sa.BigInteger, primary_key=True),
     Column("data", CustomBase64),
     Column("exit_code", sa.Integer),
     sa.ForeignKeyConstraint(
-        ["request_id", "validator"], ["reports.request_id", "reports.validator"]
+        ["request_id", "validator_id"], ["reports.request_id", "reports.validator_id"]
     ),
     sa.ForeignKeyConstraint(
         ["request_id", "external_id"], ["raw_requests.request_id", "raw_requests.external_id"]
@@ -178,7 +179,8 @@ raw_reports = sa.Table(
 validators = sa.Table(
     "validators",
     metadata,
-    Column("operator_address", sa.String, primary_key=True),
+    Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    Column("operator_address", sa.String, unique=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
     Column("moniker", sa.String),
@@ -201,13 +203,8 @@ validators = sa.Table(
 delegations = sa.Table(
     "delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
-    Column(
-        "operator_address",
-        sa.String,
-        sa.ForeignKey("validators.operator_address"),
-        primary_key=True,
-    ),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
@@ -228,8 +225,8 @@ validator_votes = sa.Table(
 unbonding_delegations = sa.Table(
     "unbonding_delegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
-    Column("operator_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
@@ -238,9 +235,9 @@ unbonding_delegations = sa.Table(
 redelegations = sa.Table(
     "redelegations",
     metadata,
-    Column("delegator_address", sa.String, sa.ForeignKey("accounts.address")),
-    Column("operator_src_address", sa.String, sa.ForeignKey("validators.operator_address")),
-    Column("operator_dst_address", sa.String, sa.ForeignKey("validators.operator_address")),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("validator_src_id", sa.Integer, sa.ForeignKey("validators.id")),
+    Column("validator_dst_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
 )
@@ -249,5 +246,5 @@ account_transcations = sa.Table(
     "account_transcations",
     metadata,
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
-    Column("address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
 )

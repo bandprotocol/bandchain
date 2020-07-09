@@ -1,4 +1,6 @@
-pragma solidity 0.5.14;
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity 0.6.11;
 
 interface IPriceReference {
     /// @dev Returns the number of times that the price has been updated.
