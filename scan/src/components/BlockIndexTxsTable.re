@@ -55,8 +55,8 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       <Col> <div className=Styles.container /> </Col>
       <Col size=5. alignSelf=Col.Start>
         {switch (txSub) {
-         | Data({messages, txHash, success, rawLog}) =>
-           <TxMessages txHash messages success rawLog width=530 />
+         | Data({messages, txHash, success, errMsg}) =>
+           <TxMessages txHash messages success errMsg width=530 />
 
          | _ => <LoadingCensorBar width=530 height=15 />
          }}
