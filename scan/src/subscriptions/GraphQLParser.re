@@ -1,7 +1,12 @@
 let int64 = json => json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float;
 let string = json => json |> Js.Json.decodeString |> Belt.Option.getExn;
 let stringExn = (stringOpt: option(string)) => stringOpt |> Belt_Option.getExn;
-let buffer = str => str |> Js.String.substr(~from=2) |> JsBuffer.fromHex;
+let buffer = json =>
+  json
+  |> Js.Json.decodeString
+  |> Belt.Option.getExn
+  |> Js.String.substr(~from=2)
+  |> JsBuffer.fromHex;
 
 let timeS = json => {
   json
@@ -24,8 +29,7 @@ let timestamp = json =>
   json
   |> Js.Json.decodeString
   |> Belt.Option.getExn
-  |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS")
-  |> MomentRe.Moment.defaultUtc;
+  |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS");
 
 let timestampWithDefault = jsonOpt =>
   jsonOpt
@@ -42,7 +46,8 @@ let optionTimeSExn = timeSOpt => timeSOpt |> Belt_Option.getExn |> timeS;
 
 let bool = json => json |> Js.Json.decodeBoolean |> Belt.Option.getExn;
 
-let hash = str => str |> Js.String.substr(~from=2) |> Hash.fromHex;
+let hash = json =>
+  json |> Js.Json.decodeString |> Belt.Option.getExn |> Js.String.substr(~from=2) |> Hash.fromHex;
 
 let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 
