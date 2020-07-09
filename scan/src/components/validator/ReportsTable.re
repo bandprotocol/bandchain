@@ -154,7 +154,14 @@ module Reports = {
               {reportDetails
                ->Belt_Array.map(reportDetail => {
                    <div key={reportDetail.externalID |> string_of_int}>
-                     <Row> <TypeID.DataSource id={reportDetail.dataSourceID} /> </Row>
+                     <Row>
+                       <TypeID.DataSource
+                         id={
+                              let rawRequest = reportDetail.rawRequest |> Belt_Option.getExn;
+                              rawRequest.dataSourceID;
+                            }
+                       />
+                     </Row>
                      <VSpacing size=Spacing.sm />
                      <VSpacing size=Spacing.xs />
                    </div>

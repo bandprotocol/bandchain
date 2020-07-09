@@ -51,8 +51,7 @@ let make = (~reqID) =>
     let%Sub blockCount = blockCountSub;
 
     let numReport = request.reports |> Belt_Array.size;
-    let remainingBlock =
-      blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
+    let remainingBlock = blockCount >= 12345678 ? 0 : 12345678 - blockCount;
     let calldataKVs =
       Obi.decode(request.oracleScript.schema, "input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
@@ -74,7 +73,7 @@ let make = (~reqID) =>
             />
             <div className=Styles.seperatedLine />
             <Timestamp
-              time={request.transaction.timestamp}
+              time={request.transaction.block.timestamp}
               size=Text.Md
               weight=Text.Thin
               spacing={Text.Em(0.06)}
@@ -179,7 +178,7 @@ let make = (~reqID) =>
           <Col size=1.>
             <div className=Styles.hFlex>
               <div className=Styles.fillRight />
-              <TypeID.Block id={ID.Block.ID(request.expirationHeight)} />
+              <TypeID.Block id={ID.Block.ID(12345678)} />
               {switch (request.resolveStatus) {
                | RequestSub.Pending =>
                  <>
@@ -351,7 +350,7 @@ let make = (~reqID) =>
                  request.reports
                  ->Belt_Array.map(report =>
                      [
-                       KVTable.Validator(report.validatorByValidator),
+                       KVTable.Validator(report.reportValidator),
                        KVTable.Block(report.transaction.blockHeight),
                        KVTable.TxHash(report.transaction.hash),
                        KVTable.Values(

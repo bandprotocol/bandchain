@@ -26,6 +26,7 @@ module Styles = {
 let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
   {
     let requestsByTxHashSub = RequestSub.Mini.getListByTxHash(txResponse.txHash);
+    Js.Console.log(requestsByTxHashSub);
     let%Sub requestsByTxHash = requestsByTxHashSub;
     let requestOpt = requestsByTxHash->Belt_Array.get(0);
 

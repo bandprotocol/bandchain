@@ -24,6 +24,7 @@ let make = (~dataSourceID: ID.DataSource.t) =>
     let pageSize = 5;
 
     let requestsSub = RequestSub.Mini.getListByDataSource(dataSourceID, ~pageSize, ~page, ());
+    Js.Console.log(requestsSub);
     let totalRequestCountSub = RequestSub.countByDataSource(dataSourceID);
 
     let%Sub requests = requestsSub;
