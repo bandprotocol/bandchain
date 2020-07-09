@@ -49,7 +49,7 @@ func (app *App) handleMsgSetWithdrawAddress(
 	app.AddAccountsInTx(msg.WithdrawAddress)
 }
 
-// handleMsgWithdrawValidatorCommission implements emitter handler for MsgWithdrawValidatorCommissiond.
+// handleMsgWithdrawValidatorCommission implements emitter handler for MsgWithdrawValidatorCommission.
 func (app *App) handleMsgWithdrawValidatorCommission(
 	txHash []byte, msg dist.MsgWithdrawValidatorCommission, evMap EvMap, extra JsDict,
 ) {
