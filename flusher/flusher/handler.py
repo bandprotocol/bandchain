@@ -138,6 +138,8 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
