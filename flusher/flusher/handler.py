@@ -27,6 +27,11 @@ class Handler(object):
     def __init__(self, conn):
         self.conn = conn
 
+    def get_transaction_id(self, tx_hash):
+        return self.conn.execute(
+            select([transactions.c.id]).where(transactions.c.hash == tx_hash)
+        ).scalar()
+
     def get_validator_id(self, val):
         return self.conn.execute(
             select([validators.c.id]).where(validators.c.operator_address == val)
@@ -59,6 +64,11 @@ class Handler(object):
         )
 
     def handle_set_data_source(self, msg):
+        if msg["tx_hash"] is not None:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        else:
+            msg["transaction_id"] = None
+        del msg["tx_hash"]
         self.conn.execute(
             insert(data_sources)
             .values(**msg)
@@ -66,6 +76,11 @@ class Handler(object):
         )
 
     def handle_set_oracle_script(self, msg):
+        if msg["tx_hash"] is not None:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        else:
+            msg["transaction_id"] = None
+        del msg["tx_hash"]
         self.conn.execute(
             insert(oracle_scripts)
             .values(**msg)
@@ -73,6 +88,8 @@ class Handler(object):
         )
 
     def handle_new_request(self, msg):
+        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
         self.conn.execute(requests.insert(), msg)
 
     def handle_update_request(self, msg):
@@ -90,8 +107,12 @@ class Handler(object):
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
+        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
         self.conn.execute(reports.insert(), msg)
 
     def handle_new_raw_report(self, msg):
