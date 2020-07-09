@@ -15,6 +15,7 @@
 ### Emitter & Flusher
 
 - (impv) [\#2177](https://github.com/bandprotocol/bandchain/pull/2177) Add field validator id for validators table.
+- (bugs) [\#2183](https://github.com/bandprotocol/bandchain/pull/2183) Add data_sources_id FK in raw_requests table.
 - (impv) [\#2142](https://github.com/bandprotocol/bandchain/pull/2142) Add account transactions table.
 - (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2169](https://github.com/bandprotocol/bandchain/pull/2169) Add unbonding and redelegation table.
@@ -23,6 +24,8 @@
 ### Scan
 
 ### Bridges
+
+- (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
 
 ### Owasm
 
