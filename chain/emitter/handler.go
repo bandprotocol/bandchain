@@ -64,6 +64,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
 	case dist.MsgSetWithdrawAddress:
 		app.handleMsgSetWithdrawAddress(txHash, msg, evMap, extra)
+	case dist.MsgWithdrawValidatorCommission:
+		app.handleMsgWithdrawValidatorCommission(txHash, msg, evMap, extra)
 	case slashing.MsgUnjail:
 		app.handleMsgUnjail(txHash, msg, evMap, extra)
 	}

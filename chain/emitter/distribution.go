@@ -3,6 +3,7 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/distribution/types"
 )
 
 func (app *App) getCurrentRewardAndCurrentRatio(addr sdk.ValAddress) (string, string) {
@@ -45,4 +46,14 @@ func (app *App) handleMsgSetWithdrawAddress(
 	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap EvMap, extra JsDict,
 ) {
 	app.AddAccountsInTx(msg.WithdrawAddress)
+}
+
+// handleMsgWithdrawValidatorCommission implements emitter handler for MsgWithdrawValidatorCommissiond.
+func (app *App) handleMsgWithdrawValidatorCommission(
+	txHash []byte, msg dist.MsgWithdrawValidatorCommission, evMap EvMap, extra JsDict,
+) {
+	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, sdk.AccAddress(msg.ValidatorAddress))
+	app.AddAccountsInTx(withdrawAddr)
+	app.emitUpdateValidatorReward(msg.ValidatorAddress)
+	extra["commission_amount"] = evMap[types.EventTypeWithdrawCommission+"."+sdk.AttributeKeyAmount]
 }
