@@ -8,13 +8,15 @@ type unbonding_status_t = {
 module SingleConfig = [%graphql
   {|
     subscription Unbonding($delegator_address: String!) {
-        unbonding_delegations_aggregate(where: {delegator_address: {_eq: $delegator_address}}) {
+      accounts_by_pk(address: $delegator_address){
+        unbonding_delegations_aggregate {
           aggregate {
             sum {
               amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
             }
           }
         }
+      }
     }
 |}
 ];
@@ -22,9 +24,11 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
   subscription Unbonding($delegator_address: String!, $operator_address: String!) {
-  unbonding_delegations(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}, order_by: {completion_time: asc}) @bsRecord {
-    completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
-    amount @bsDecoder(fn: "GraphQLParser.coin")
+  accounts_by_pk(address: $delegator_address) {
+    unbonding_delegations(where: {validator: {operator_address: {_eq: $operator_address}}}) @bsRecord {
+      completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
+      amount @bsDecoder(fn: "GraphQLParser.coin")
+    }
   }
   }
 |}
@@ -33,13 +37,15 @@ module MultiConfig = [%graphql
 module UnbondingByValidatorConfig = [%graphql
   {|
     subscription Unbonding($delegator_address: String!, $operator_address: String!) {
-        unbonding_delegations_aggregate(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}) {
+      accounts_by_pk(address: $delegator_address) {
+        unbonding_delegations_aggregate(where: {validator: {operator_address: {_eq: $operator_address}}}) {
           aggregate {
             sum {
               amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
             }
           }
         }
+      }
     }
 |}
 ];
@@ -55,7 +61,10 @@ let getUnbondingBalance = delegatorAddress => {
   let unbondingInfoSub =
     result
     |> Sub.map(_, a =>
-         (a##unbonding_delegations_aggregate##aggregate |> Belt_Option.getExn)##sum
+         (
+           (a##accounts_by_pk |> Belt.Option.getExn)##unbonding_delegations_aggregate##aggregate
+           |> Belt_Option.getExn
+         )##sum
          |> Belt_Option.getExn
        );
 
@@ -77,13 +86,19 @@ let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
 
   let unbondingInfoSub =
     result
-    |> Sub.map(_, a =>
-         (a##unbonding_delegations_aggregate##aggregate |> Belt_Option.getExn)##sum
-         |> Belt_Option.getExn
-       );
+    |> Sub.map(_, a => {
+         switch (a##accounts_by_pk) {
+         | Some(account) =>
+           (
+             (account##unbonding_delegations_aggregate##aggregate |> Belt_Option.getExn)##sum
+             |> Belt_Option.getExn
+           )##amount
+         | None => Coin.newUBANDFromAmount(0.)
+         }
+       });
 
   let%Sub unbondingInfo = unbondingInfoSub;
-  unbondingInfo##amount |> Sub.resolve;
+  unbondingInfo |> Sub.resolve;
 };
 
 let getUnbondingList = (delegatorAddress, operatorAddress) => {
@@ -97,5 +112,11 @@ let getUnbondingList = (delegatorAddress, operatorAddress) => {
           (),
         ),
     );
-  result |> Sub.map(_, x => x##unbonding_delegations);
+  result
+  |> Sub.map(_, x => {
+       switch (x##accounts_by_pk) {
+       | Some(x') => x'##unbonding_delegations
+       | None => [||]
+       }
+     });
 };
