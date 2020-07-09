@@ -119,10 +119,10 @@ sleep 10
 for v in {1..4}
 do
     rm -rf ~/.oracled
-    bandoracled2 config chain-id bandchain
-    bandoracled2 config node tcp://172.18.0.1$v:26657
-    bandoracled2 config chain-rest-server http://172.18.0.20:1317
-    bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+    yoda config chain-id bandchain
+    yoda config node tcp://172.18.0.1$v:26657
+    yoda config chain-rest-server http://172.18.0.20:1317
+    yoda config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
 
     # activate validator
     echo "y" | bandcli tx oracle activate --from validator$v --keyring-backend test
@@ -133,22 +133,22 @@ do
     for i in $(eval echo {1..5})
     do
     # add reporter key
-    bandoracled2 keys add reporter$i
+    yoda keys add reporter$i
 
     # send band tokens to reporter
-    echo "y" | bandcli tx send validator$v $(bandoracled2 keys show reporter$i) 1000000uband --keyring-backend test
+    echo "y" | bandcli tx send validator$v $(yoda keys show reporter$i) 1000000uband --keyring-backend test
 
     # wait for sending band tokens transaction success
     sleep 2
 
     # add reporter to bandchain
-    echo "y" | bandcli tx oracle add-reporter $(bandoracled2 keys show reporter$i) --from validator$v --keyring-backend test
+    echo "y" | bandcli tx oracle add-reporter $(yoda keys show reporter$i) --from validator$v --keyring-backend test
 
     # wait for addding reporter transaction success
     sleep 2
     done
 
-    docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest bandoracled2 r
+    docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest yoda r
     docker cp ~/.oracled bandchain_oracle${v}:/root/.oracled
     docker start bandchain_oracle${v}
 done

@@ -22,7 +22,7 @@ all: install
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandd
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandcli
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandoracled2
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/yoda
 
 faucet: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/faucet
@@ -41,11 +41,11 @@ release: go.sum
 	env GOOS=windows GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandcli_windows_amd64 $(BUILD_FLAGS) ./cmd/bandcli
 	env GOOS=linux GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_linux_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_linux_amd64 $(BUILD_FLAGS) ./cmd/yoda
 	env GOOS=darwin GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_darwin_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_darwin_amd64 $(BUILD_FLAGS) ./cmd/yoda
 	env GOOS=windows GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_windows_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_windows_amd64 $(BUILD_FLAGS) ./cmd/yoda
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"

@@ -124,10 +124,10 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 	for idx, ds := range oracleState.DataSources {
-		app.emitSetDataSource(types.DataSourceID(idx), ds, nil)
+		app.emitSetDataSource(types.DataSourceID(idx+1), ds, nil)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		app.emitSetOracleScript(types.OracleScriptID(idx), os, nil)
+		app.emitSetOracleScript(types.OracleScriptID(idx+1), os, nil)
 	}
 	app.FlushMessages()
 	return res
