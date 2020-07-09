@@ -192,9 +192,9 @@ let make = (~txHash) => {
         </Col>
       </Row>
       {switch (txSub) {
-       | Data({success, rawLog, messages}) =>
+       | Data({success, errMsg, messages}) =>
          <>
-           {success ? React.null : <> <VSpacing size=Spacing.xl /> <TxError.Full msg=rawLog /> </>}
+           {success ? React.null : <> <VSpacing size=Spacing.xl /> <TxError.Full msg=errMsg /> </>}
            <VSpacing size=Spacing.xxl />
            <div className=Styles.vFlex>
              <HSpacing size=Spacing.md />

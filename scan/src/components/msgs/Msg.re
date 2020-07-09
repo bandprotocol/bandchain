@@ -189,12 +189,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <TypeID.Request id=requestID />
     </div>
-  | AddOracleAddressMsg({validator, reporter}) =>
+  | AddReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
-      <div className={Styles.withBg(Colors.purple1, 114)}>
+      <div className={Styles.withBg(Colors.purple1, 80)}>
         <Text
-          value="ADD ORACLE ADDRESS"
+          value="ADD REPORTER"
           size=Text.Xs
           spacing={Text.Em(0.07)}
           weight=Text.Medium
@@ -204,12 +204,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
     </div>
-  | RemoveOracleAddressMsg({validator, reporter}) =>
+  | RemoveReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
-      <div className={Styles.withBg(Colors.purple1, 133)}>
+      <div className={Styles.withBg(Colors.purple1, 100)}>
         <Text
-          value="REMOVE ORACLE ADDRESS"
+          value="REMOVE REPORTER"
           size=Text.Xs
           spacing={Text.Em(0.07)}
           weight=Text.Medium
@@ -966,6 +966,19 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <Text value="Outputs" />
       </div>
     </div>;
+  | ActivateMsg({validatorAddress}) =>
+    <div className={Styles.rowWithWidth(width)}>
+      <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
+      <div className={Styles.withBg(Colors.blue1, 65)}>
+        <Text
+          value="ACTIVATE"
+          size=Text.Xs
+          spacing={Text.Em(0.07)}
+          weight=Text.Medium
+          color=Colors.blue7
+        />
+      </div>
+    </div>
   | UnknownMsg => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
   | FailMsg({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -980,10 +993,8 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        | EditOracleScriptBadge => makeBadge("EDIT ORACLE SCRIPT", 110, Colors.pink1, Colors.pink6)
        | RequestBadge => makeBadge("REQUEST", 60, Colors.orange1, Colors.orange6)
        | ReportBadge => makeBadge("REPORT", 50, Colors.orange1, Colors.orange6)
-       | AddOracleAddressBadge =>
-         makeBadge("ADD ORACLE ADDRESS", 114, Colors.purple1, Colors.purple6)
-       | RemoveOracleAddressBadge =>
-         makeBadge("REMOVE ORACLE ADDRESS", 133, Colors.purple1, Colors.purple6)
+       | AddReporterBadge => makeBadge("ADD REPORTER", 114, Colors.purple1, Colors.purple6)
+       | RemoveReporterBadge => makeBadge("REMOVE REPORTER", 133, Colors.purple1, Colors.purple6)
        | CreateValidatorBadge => makeBadge("CREATE VALIDATOR", 97, Colors.purple1, Colors.purple6)
        | EditValidatorBadge => makeBadge("EDIT VALIDATOR", 85, Colors.purple1, Colors.purple6)
        | CreateClientBadge => makeBadge("CREATE CLIENT", 85, Colors.blue1, Colors.blue7)
@@ -1017,11 +1028,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          makeBadge("SET WITHDRAW ADDRESS", 170, Colors.purple1, Colors.purple6)
        | SubmitProposalBadge => makeBadge("SUBMIT PROPOSAL", 100, Colors.blue1, Colors.blue7)
        | DepositBadge => makeBadge("DEPOSIT", 50, Colors.blue1, Colors.blue7)
-       | UnjailBadge => makeBadge("UNJAIL", 130, Colors.blue1, Colors.blue7)
+       | UnjailBadge => makeBadge("UNJAIL", 50, Colors.blue1, Colors.blue7)
        | VoteBadge => makeBadge("VOTE", 40, Colors.blue1, Colors.blue7)
        | WithdrawCommissionBadge =>
          makeBadge("WITHDRAW COMMISSION", 100, Colors.purple1, Colors.purple6)
        | MultiSendBadge => makeBadge("MULTI SEND", 70, Colors.blue1, Colors.blue7)
+       | ActivateBadge => makeBadge("Activate", 70, Colors.blue1, Colors.blue7)
        | UnknownBadge => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
        }}
     </div>
