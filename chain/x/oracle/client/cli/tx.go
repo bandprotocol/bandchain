@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io/ioutil"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -46,7 +45,6 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdCreateOracleScript(cdc),
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
-		GetCmdReport(cdc),
 		GetCmdActivate(cdc),
 		GetCmdAddReporter(cdc),
 		GetCmdRemoveReporter(cdc),
@@ -123,67 +121,6 @@ $ %s tx oracle request 1 4 3 --calldata 1234abcdef --client-id cliend-id --from 
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 
 	return cmd
-}
-
-// GetCmdReport implements the report command handler.
-func GetCmdReport(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "report [request-id] ([data]...)",
-		Short: "Report raw data for the given request ID",
-		Args:  cobra.MinimumNArgs(2),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
-Example:
-$ %s tx oracle report 1 1:172.5 2:HELLOWORLD --from mykey
-`,
-				version.ClientName,
-			),
-		),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-			requestID := types.RequestID(int64RequestID)
-
-			if err != nil {
-				return err
-			}
-
-			var dataset []types.RawReport
-			for _, arg := range args[1:] {
-				reportRaw := strings.SplitN(arg, ":", 2)
-				if len(reportRaw) != 2 {
-					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
-				}
-				int64ExternalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
-				if err != nil {
-					return err
-				}
-				externalID := types.ExternalID(int64ExternalID)
-
-				// TODO: Do not hardcode exit code
-				dataset = append(dataset, types.NewRawReport(externalID, 0, []byte(reportRaw[1])))
-			}
-
-			// Sort data reports by external ID
-			sort.Slice(dataset, func(i, j int) bool {
-				return dataset[i].ExternalID < dataset[j].ExternalID
-			})
-
-			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), cliCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
 }
 
 // GetCmdCreateDataSource implements the create data source command handler.

@@ -32,6 +32,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdOracleScript(storeKey, cdc),
 		GetQueryCmdRequest(storeKey, cdc),
 		GetQueryCmdRequestSearch(storeKey, cdc),
+		GetQueryCmdValidatorStatus(storeKey, cdc),
 		GetQueryCmdReporters(storeKey, cdc),
 	)...)
 	return oracleCmd
@@ -56,7 +57,7 @@ func GetQueryCmdParams(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryParams))
 			if err != nil {
 				return err
 			}
@@ -72,7 +73,7 @@ func GetQueryCmdCounts(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts))
 			if err != nil {
 				return err
 			}
@@ -88,7 +89,7 @@ func GetQueryCmdDataSource(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, args[0]), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, args[0]))
 			if err != nil {
 				return err
 			}
@@ -104,7 +105,7 @@ func GetQueryCmdOracleScript(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, args[0]), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, args[0]))
 			if err != nil {
 				return err
 			}
@@ -120,7 +121,7 @@ func GetQueryCmdRequest(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, args[0]), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, args[0]))
 			if err != nil {
 				return err
 			}
@@ -145,6 +146,22 @@ func GetQueryCmdRequestSearch(route string, cdc *codec.Codec) *cobra.Command {
 	}
 }
 
+// GetQueryCmdValidatorStatus implements the query reporter list of validator command.
+func GetQueryCmdValidatorStatus(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "validator [validator]",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryValidatorStatus, args[0]))
+			if err != nil {
+				return err
+			}
+			return printOutput(cliCtx, cdc, bz, &types.ValidatorStatus{})
+		},
+	}
+}
+
 // GetQueryCmdReporters implements the query reporter list of validator command.
 func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 	return &cobra.Command{
@@ -152,7 +169,7 @@ func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			bz, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, args[0]), nil)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, args[0]))
 			if err != nil {
 				return err
 			}

@@ -18,8 +18,6 @@ var (
 	NewQuerier    = keeper.NewQuerier
 	ModuleCdc     = types.ModuleCdc
 	RegisterCodec = types.RegisterCodec
-
-	EventTypeRequestExecute = types.EventTypeRequestExecute
 )
 
 type (

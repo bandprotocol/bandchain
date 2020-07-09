@@ -1,6 +1,7 @@
 package keeper
 
 import (
+	"encoding/hex"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,9 +17,9 @@ func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 }
 
 // SetResult sets result to the store.
-func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
+func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result types.Result) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.ResultStoreKey(reqID), result)
+	store.Set(types.ResultStoreKey(reqID), obi.MustEncode(result))
 }
 
 // GetResult returns the result for the given request ID or error if not exists.
@@ -28,38 +29,8 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 		return types.Result{}, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
 	}
 	var result types.Result
-	err := obi.Decode(bz, &result)
-	if err != nil {
-		return types.Result{}, types.ErrOBIDecode
-	}
+	obi.MustDecode(bz, &result)
 	return result, nil
-}
-
-// SaveResult saves the result packets for the given request and returns back the response packet.
-func (k Keeper) SaveResult(ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte) {
-	r := k.MustGetRequest(ctx, id)
-	req := types.NewOracleRequestPacketData(
-		r.ClientID, r.OracleScriptID, r.Calldata, uint64(len(r.RequestedValidators)), r.MinCount,
-	)
-	res := types.NewOracleResponsePacketData(
-		r.ClientID, id, k.GetReportCount(ctx, id), r.RequestTime,
-		ctx.BlockTime().Unix(), status, result,
-	)
-	k.SetResult(ctx, id, obi.MustEncode(req, res))
-	ctx.EventManager().EmitEvent(sdk.NewEvent(
-		types.EventTypeRequestExecute,
-		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
-		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
-		sdk.NewAttribute(types.AttributeKeyCalldata, string(req.Calldata)),
-		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", req.AskCount)),
-		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", res.RequestID)),
-		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", status)),
-		sdk.NewAttribute(types.AttributeKeyAnsCount, fmt.Sprintf("%d", res.AnsCount)),
-		sdk.NewAttribute(types.AttributeKeyRequestTime, fmt.Sprintf("%d", res.RequestTime)),
-		sdk.NewAttribute(types.AttributeKeyResolveTime, fmt.Sprintf("%d", res.ResolveTime)),
-		sdk.NewAttribute(types.AttributeKeyResult, string(res.Result)),
-	))
 }
 
 // MustGetResult returns the result for the given request ID. Panics on error.
@@ -69,4 +40,60 @@ func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result 
 		panic(err)
 	}
 	return result
+}
+
+// ResolveSuccess resolves the given request as success with the given result.
+func (k Keeper) ResolveSuccess(ctx sdk.Context, id types.RequestID, result []byte) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Success, result)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyResult, hex.EncodeToString(result)),
+	))
+}
+
+// ResolveFailure resolves the given request as failure with the given reason.
+func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason string) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Failure, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Failure)),
+		sdk.NewAttribute(types.AttributeKeyReason, reason),
+	))
+}
+
+// ResolveExpired resolves the given request as expired.
+func (k Keeper) ResolveExpired(ctx sdk.Context, id types.RequestID) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Expired, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Expired)),
+	))
+}
+
+// SaveResult saves the result packets for the request with the given resolve status and result.
+func (k Keeper) SaveResult(
+	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
+) {
+	r := k.MustGetRequest(ctx, id)
+	reqPacket := types.NewOracleRequestPacketData(
+		r.ClientID,                         // ClientID
+		r.OracleScriptID,                   // OracleScriptID
+		r.Calldata,                         // Calldata
+		uint64(len(r.RequestedValidators)), // AskCount
+		r.MinCount,                         // Mincount
+	)
+	resPacket := types.NewOracleResponsePacketData(
+		r.ClientID,                // ClientID
+		id,                        // RequestID
+		k.GetReportCount(ctx, id), // AnsCount
+		r.RequestTime.Unix(),      // RequestTime
+		ctx.BlockTime().Unix(),    // ResolveTime
+		status,                    // ResolveStatus
+		result,                    // Result
+	)
+	k.SetResult(ctx, id, types.NewResult(reqPacket, resPacket))
 }

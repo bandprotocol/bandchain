@@ -40,12 +40,12 @@ func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) error {
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+func (env *BaseEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
 	return 0, api.ErrWrongPeriodAction
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+func (env *BaseEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
 	return nil, api.ErrWrongPeriodAction
 }
 
@@ -98,23 +98,20 @@ type ExecuteEnv struct {
 }
 
 // NewExecuteEnv creates a new environment instance for execution period.
-func NewExecuteEnv(req Request) *ExecuteEnv {
-	return &ExecuteEnv{
-		BaseEnv: BaseEnv{
-			request: req,
-		},
-		reports: make(map[string]map[ExternalID]RawReport),
-	}
-}
-
-// SetReports loads the reports to the environment.
-func (env *ExecuteEnv) SetReports(reports []Report) {
+func NewExecuteEnv(req Request, reports []Report) *ExecuteEnv {
+	envReports := make(map[string]map[ExternalID]RawReport)
 	for _, report := range reports {
 		valReports := make(map[ExternalID]RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
-		env.reports[report.Validator.String()] = valReports
+		envReports[report.Validator.String()] = valReports
+	}
+	return &ExecuteEnv{
+		BaseEnv: BaseEnv{
+			request: req,
+		},
+		reports: envReports,
 	}
 }
 

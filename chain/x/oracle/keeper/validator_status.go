@@ -61,7 +61,7 @@ func (k Keeper) AllocateTokens(ctx sdk.Context, previousVotes []abci.VoteInfo) {
 }
 
 // GetValidatorStatus returns the validator status for the given validator. Note that validator
-// status is default to [active, 0], so new validators start with active state.
+// status is default to [inactive, 0], so new validators start with inactive state.
 func (k Keeper) GetValidatorStatus(ctx sdk.Context, val sdk.ValAddress) types.ValidatorStatus {
 	bz := ctx.KVStore(k.storeKey).Get(types.ValidatorStatusStoreKey(val))
 	if bz == nil {
@@ -78,7 +78,7 @@ func (k Keeper) SetValidatorStatus(ctx sdk.Context, val sdk.ValAddress, status t
 }
 
 // Activate changes the given validator's status to active. Returns error if the validator is
-// already active or was deactivated recently, as specified in InactivePenaltyDuration parameter.
+// already active or was deactivated recently, as specified by InactivePenaltyDuration parameter.
 func (k Keeper) Activate(ctx sdk.Context, val sdk.ValAddress) error {
 	status := k.GetValidatorStatus(ctx, val)
 	if status.IsActive {

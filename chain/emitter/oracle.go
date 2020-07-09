@@ -1,9 +1,35 @@
 package emitter
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
+
+func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
+	app.Write("SET_DATA_SOURCE", JsDict{
+		"id":          id,
+		"name":        ds.Name,
+		"description": ds.Description,
+		"owner":       ds.Owner.String(),
+		"executable":  app.OracleKeeper.GetFile(ds.Filename),
+		"tx_hash":     txHash,
+	})
+}
+
+func (app *App) emitSetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
+	app.Write("SET_ORACLE_SCRIPT", JsDict{
+		"id":              id,
+		"name":            os.Name,
+		"description":     os.Description,
+		"owner":           os.Owner.String(),
+		"schema":          os.Schema,
+		"codehash":        os.Filename,
+		"source_code_url": os.SourceCodeURL,
+		"tx_hash":         txHash,
+	})
+}
 
 // handleMsgRequestData implements emitter handler for MsgRequestData.
 func (app *App) handleMsgRequestData(
@@ -25,7 +51,7 @@ func (app *App) handleMsgRequestData(
 	es := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyExternalID]
 	ds := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyDataSourceID]
 	cs := evMap[types.EventTypeRawRequest+"."+types.AttributeKeyCalldata]
-	for idx, _ := range es {
+	for idx := range es {
 		app.Write("NEW_RAW_REQUEST", JsDict{
 			"request_id":     id,
 			"external_id":    es[idx],
@@ -70,15 +96,9 @@ func (app *App) handleMsgReportData(
 func (app *App) handleMsgCreateDataSource(
 	txHash []byte, msg oracle.MsgCreateDataSource, evMap EvMap, extra JsDict,
 ) {
-	id := atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0])
-	app.Write("NEW_DATA_SOURCE", JsDict{
-		"id":          id,
-		"name":        msg.Name,
-		"description": msg.Description,
-		"owner":       msg.Owner.String(),
-		"executable":  msg.Executable,
-		"tx_hash":     txHash,
-	})
+	id := types.DataSourceID(atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
+	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
+	app.emitSetDataSource(id, ds, txHash)
 	extra["id"] = id
 }
 
@@ -88,22 +108,31 @@ func (app *App) handleMsgCreateOracleScript(
 ) {
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
-	app.Write("NEW_ORACLE_SCRIPT", JsDict{
-		"id":              id,
-		"name":            msg.Name,
-		"description":     msg.Description,
-		"owner":           msg.Owner.String(),
-		"schema":          msg.Schema,
-		"codehash":        os.Filename,
-		"source_code_url": msg.SourceCodeURL,
-		"tx_hash":         txHash,
-	})
+	app.emitSetOracleScript(id, os, txHash)
 	extra["id"] = id
+}
+
+// handleMsgEditDataSource implements emitter handler for MsgEditDataSource.
+func (app *App) handleMsgEditDataSource(
+	txHash []byte, msg oracle.MsgEditDataSource, evMap EvMap, extra JsDict,
+) {
+	id := msg.DataSourceID
+	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
+	app.emitSetDataSource(id, ds, txHash)
+}
+
+// handleMsgEditOracleScript implements emitter handler for MsgEditOracleScript.
+func (app *App) handleMsgEditOracleScript(
+	txHash []byte, msg oracle.MsgEditOracleScript, evMap EvMap, extra JsDict,
+) {
+	id := msg.OracleScriptID
+	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
+	app.emitSetOracleScript(id, os, txHash)
 }
 
 // handleEventRequestExecute implements emitter handler for EventRequestExecute.
 func (app *App) handleEventRequestExecute(evMap EvMap) {
-	id := types.RequestID(atoi(evMap[types.EventTypeRequestExecute+"."+types.AttributeKeyRequestID][0]))
+	id := types.RequestID(atoi(evMap[types.EventTypeResolve+"."+types.AttributeKeyID][0]))
 	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
 	app.Write("UPDATE_REQUEST", JsDict{
 		"id":             id,
@@ -112,4 +141,31 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 		"resolve_status": result.ResponsePacketData.ResolveStatus,
 		"result":         result.ResponsePacketData.Result,
 	})
+}
+
+// handleMsgAddReporter implements emitter handler for MsgAddReporter.
+func (app *App) handleMsgAddReporter(
+	txHash []byte, msg oracle.MsgAddReporter, evMap EvMap, extra JsDict,
+) {
+	app.AddAccountsInTx(msg.Reporter)
+}
+
+// handleMsgRemoveReporter implements emitter handler for MsgRemoveReporter.
+func (app *App) handleMsgRemoveReporter(
+	txHash []byte, msg oracle.MsgRemoveReporter, evMap EvMap, extra JsDict,
+) {
+	app.AddAccountsInTx(msg.Reporter)
+}
+
+// handleMsgActivate implements emitter handler for handleMsgActivate.
+func (app *App) handleMsgActivate(
+	txHash []byte, msg oracle.MsgActivate, evMap EvMap, extra JsDict,
+) {
+	app.emitUpdateValidatorStatus(msg.Validator)
+}
+
+// handleEventDeactivate implements emitter handler for EventDeactivate.
+func (app *App) handleEventDeactivate(evMap EvMap) {
+	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
+	app.emitUpdateValidatorStatus(addr)
 }

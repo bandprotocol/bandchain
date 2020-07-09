@@ -38,6 +38,9 @@ type sign_response_t = {
   signature: array(int),
 };
 
+[@bs.module "@ledgerhq/hw-transport-webhid"] [@bs.scope "default"] [@bs.val]
+external createTransportWebHID: int => Js.Promise.t(transport_t) = "create";
+
 [@bs.module "@ledgerhq/hw-transport-webusb"] [@bs.scope "default"] [@bs.val]
 external createTransportWebUSB: int => Js.Promise.t(transport_t) = "create";
 
@@ -49,3 +52,5 @@ external getAddressAndPubKey: (t, array(int), string) => Js.Promise.t(addr_pukey
 [@bs.send] external sign: (t, array(int), string) => Js.Promise.t(sign_response_t) = "sign";
 [@bs.send] external getVersion: t => Js.Promise.t(version_t) = "getVersion";
 [@bs.send] external appInfo: t => Js.Promise.t(app_info_t) = "appInfo";
+// TODO: It should return promise
+[@bs.send] external close: transport_t => unit = "close";

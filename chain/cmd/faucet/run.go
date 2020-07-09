@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	rpcclient "github.com/tendermint/tendermint/rpc/client"
+	httpclient "github.com/tendermint/tendermint/rpc/client/http"
 )
 
 func runCmd(c *Context) *cobra.Command {
@@ -37,7 +37,7 @@ func runCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-			c.client, err = rpcclient.NewHTTP(cfg.NodeURI, "/websocket")
+			c.client, err = httpclient.New(cfg.NodeURI, "/websocket")
 			if err != nil {
 				return err
 			}

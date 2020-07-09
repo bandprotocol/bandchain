@@ -58,7 +58,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	// Create a request object. Note that RawRequestIDs will be populated after preparation is done.
 	req := types.NewRequest(
 		r.GetOracleScriptID(), r.GetCalldata(), validators, r.GetMinCount(),
-		ctx.BlockHeight(), ctx.BlockTime().Unix(), r.GetClientID(), nil,
+		ctx.BlockHeight(), ctx.BlockTime(), r.GetClientID(), nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
 	env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
@@ -69,7 +69,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	code := k.GetFile(script.Filename)
 	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
 	if err != nil {
-		return sdkerrors.Wrapf(types.ErrBadWasmExecution, "failed to prepare request with error: %s", err.Error())
+		return sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
 	}
 	// Preparation complete! It's time to collect raw request ids.
 	req.RawRequests = env.GetRawRequests()
@@ -82,6 +82,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	event := sdk.NewEvent(types.EventTypeRequest)
 	event = event.AppendAttributes(
 		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyClientID, req.ClientID),
 		sdk.NewAttribute(types.AttributeKeyOracleScriptID, fmt.Sprintf("%d", req.OracleScriptID)),
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", askCount)),
@@ -108,19 +109,19 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 	return nil
 }
 
-// ResolveRequest resolves the given request, sends response packet out (if applicable),
-// and saves result hash to the store. Assumes that the given request is in a resolvable state.
+// ResolveRequest resolves the given request and saves the result to the store. The function
+// assumes that the given request is in a resolvable state with sufficient reporters.
 func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	req := k.MustGetRequest(ctx, reqID)
-	env := types.NewExecuteEnv(req)
-	env.SetReports(k.GetReports(ctx, reqID))
+	env := types.NewExecuteEnv(req, k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
 	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
-		k.Logger(ctx).Info(fmt.Sprintf("failed to execute request id: %d with error: %s", reqID, err.Error()))
-		k.SaveResult(ctx, reqID, types.ResolveStatus_Failure, nil)
+		k.ResolveFailure(ctx, reqID, err.Error())
+	} else if env.Retdata == nil {
+		k.ResolveFailure(ctx, reqID, "no return data")
 	} else {
-		k.SaveResult(ctx, reqID, types.ResolveStatus_Success, env.Retdata)
+		k.ResolveSuccess(ctx, reqID, env.Retdata)
 	}
 }

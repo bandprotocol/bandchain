@@ -91,7 +91,7 @@ func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScr
 	}
 	filename, err := k.AddOracleScriptFile(m.Code)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrOwasmCompilation, err.Error())
+		return nil, err
 	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
@@ -119,7 +119,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 	}
 	filename, err := k.AddOracleScriptFile(m.Code)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrOwasmCompilation, err.Error())
+		return nil, err
 	}
 	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
 		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
@@ -143,6 +143,9 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	if !k.IsReporter(ctx, m.Validator, m.Reporter) {
 		return nil, types.ErrReporterNotAuthorized
 	}
+	if m.RequestID <= k.GetRequestLastExpired(ctx) {
+		return nil, types.ErrRequestAlreadyExpired
+	}
 	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, !k.HasResult(ctx, m.RequestID), m.RawReports))
 	if err != nil {
 		return nil, err
@@ -155,7 +158,7 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeReport,
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.RequestID)),
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 	))
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil

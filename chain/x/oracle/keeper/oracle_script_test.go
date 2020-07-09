@@ -11,7 +11,7 @@ import (
 )
 
 func TestHasOracleScript(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a oracle script ID 42 without setting it.
 	require.False(t, k.HasOracleScript(ctx, 42))
 	// After we set it, we should be able to find it.
@@ -22,7 +22,7 @@ func TestHasOracleScript(t *testing.T) {
 }
 
 func TestSetterGetterOracleScript(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Getting a non-existent oracle script should return error.
 	_, err := k.GetOracleScript(ctx, 42)
 	require.Error(t, err)
@@ -53,7 +53,7 @@ func TestSetterGetterOracleScript(t *testing.T) {
 }
 
 func TestAddEditOracleScriptBasic(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(
 		testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1", BasicSchema, BasicSourceCodeURL,
@@ -77,7 +77,7 @@ func TestAddEditOracleScriptBasic(t *testing.T) {
 }
 
 func TestAddEditOracleScriptDoNotModify(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic oracle scripts.
 	oracleScript1 := types.NewOracleScript(
 		testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1", BasicSchema, BasicSourceCodeURL,
@@ -104,7 +104,7 @@ func TestAddEditOracleScriptDoNotModify(t *testing.T) {
 }
 
 func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially we expect the oracle script count to be what we have on genesis state.
 	genesisCount := int64(len(testapp.OracleScripts)) - 1
 	require.Equal(t, genesisCount, k.GetOracleScriptCount(ctx))
@@ -123,7 +123,7 @@ func TestAddOracleScriptMustReturnCorrectID(t *testing.T) {
 }
 
 func TestEditNonExistentOracleScript(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Editing a non-existent oracle script should return error.
 	require.Panics(t, func() {
 		k.MustEditOracleScript(ctx, 42, types.NewOracleScript(
@@ -133,13 +133,13 @@ func TestEditNonExistentOracleScript(t *testing.T) {
 }
 
 func TestGetAllOracleScripts(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should be able to get all genesis oracle scripts.
 	require.Equal(t, testapp.OracleScripts[1:], k.GetAllOracleScripts(ctx))
 }
 
 func TestAddOracleScriptFile(t *testing.T) {
-	_, _, k := testapp.CreateTestInput()
+	_, _, k := testapp.CreateTestInput(true)
 	// Code should be perferctly compilable.
 	compiledCode, err := api.Compile(testapp.WasmExtra1, types.MaxCompiledWasmCodeSize)
 	require.NoError(t, err)
@@ -148,7 +148,7 @@ func TestAddOracleScriptFile(t *testing.T) {
 	require.NoError(t, err)
 	// If we get by file name, we should get the compiled content back.
 	require.Equal(t, compiledCode, k.GetFile(filename))
-	// If we try to add do-not-modify, we should just get do-not-modify-back.
+	// If we try to add do-not-modify, we should just get do-not-modify back.
 	filename, err = k.AddOracleScriptFile(types.DoNotModifyBytes)
 	require.NoError(t, err)
 	require.Equal(t, types.DoNotModify, filename)

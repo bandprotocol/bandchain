@@ -10,13 +10,13 @@ import (
 )
 
 func TestGetRequestCount(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially request count must be 0.
 	require.Equal(t, int64(0), k.GetRequestCount(ctx))
 }
 
 func TestGetNextRequestID(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// First request id must be 1.
 	require.Equal(t, types.RequestID(1), k.GetNextRequestID(ctx))
 	// After we add new requests, the request count must increase accordingly.
@@ -28,15 +28,15 @@ func TestGetNextRequestID(t *testing.T) {
 }
 
 func TestGetSetRequestLastExpiredID(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially last expired request must be 0.
-	require.Equal(t, int64(0), k.GetRequestLastExpired(ctx))
+	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
 	k.SetRequestLastExpired(ctx, 20)
-	require.Equal(t, int64(20), k.GetRequestLastExpired(ctx))
+	require.Equal(t, types.RequestID(20), k.GetRequestLastExpired(ctx))
 }
 
 func TestGetSetParams(t *testing.T) {
-	_, ctx, k := testapp.CreateTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetParam(ctx, types.KeyMaxRawRequestCount, 1)
 	k.SetParam(ctx, types.KeyMaxAskCount, 10)
 	k.SetParam(ctx, types.KeyExpirationBlockCount, 30)

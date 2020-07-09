@@ -2,10 +2,14 @@ package emitter
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/x/bank"
+	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func parseEvents(events sdk.StringEvents) EvMap {
@@ -32,10 +36,36 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgCreateDataSource(txHash, msg, evMap, extra)
 	case oracle.MsgCreateOracleScript:
 		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
+	case oracle.MsgEditDataSource:
+		app.handleMsgEditDataSource(txHash, msg, evMap, extra)
+	case oracle.MsgEditOracleScript:
+		app.handleMsgEditOracleScript(txHash, msg, evMap, extra)
+	case oracle.MsgAddReporter:
+		app.handleMsgAddReporter(txHash, msg, evMap, extra)
+	case oracle.MsgRemoveReporter:
+		app.handleMsgRemoveReporter(txHash, msg, evMap, extra)
+	case oracle.MsgActivate:
+		app.handleMsgActivate(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
-		app.handleMsgCreateValidator(msg)
+		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
 	case staking.MsgEditValidator:
-		app.handleMsgEditValidator(msg)
+		app.handleMsgEditValidator(txHash, msg, evMap, extra)
+	case staking.MsgDelegate:
+		app.handleMsgDelegate(txHash, msg, evMap, extra)
+	case staking.MsgUndelegate:
+		app.handleMsgUndelegate(txHash, msg, evMap, extra)
+	case staking.MsgBeginRedelegate:
+		app.handleMsgBeginRedelegate(txHash, msg, evMap, extra)
+	case bank.MsgSend:
+		app.handleMsgSend(txHash, msg, evMap, extra)
+	case bank.MsgMultiSend:
+		app.handleMsgMultiSend(txHash, msg, evMap, extra)
+	case dist.MsgWithdrawDelegatorReward:
+		app.handleMsgWithdrawDelegatorReward(txHash, msg, evMap, extra)
+	case dist.MsgSetWithdrawAddress:
+		app.handleMsgSetWithdrawAddress(txHash, msg, evMap, extra)
+	case slashing.MsgUnjail:
+		app.handleMsgUnjail(txHash, msg, evMap, extra)
 	}
 }
 
@@ -43,8 +73,14 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := parseEvents(events)
 	switch event.Type {
-	case oracle.EventTypeRequestExecute:
+	case types.EventTypeResolve:
 		app.handleEventRequestExecute(evMap)
+	case slashing.EventTypeSlash:
+		app.handleEventSlash(evMap)
+	case types.EventTypeDeactivate:
+		app.handleEventDeactivate(evMap)
+	case EventTypeCompleteUnbonding:
+		app.handleEventTypeCompleteUnbonding(evMap)
 	default:
 		break
 	}

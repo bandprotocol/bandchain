@@ -100,9 +100,7 @@ func getGenesisOracleScripts() []types.OracleScript {
 	fc := filecache.New(dir)
 	OracleScripts = []types.OracleScript{{}} // 0th index should be ignored
 	wasms := [][]byte{
-		Wasm1,
-		Wasm2,
-		Wasm3,
+		Wasm1, Wasm2, Wasm3, Wasm4, Wasm56(10), Wasm56(10000000), Wasm78(10), Wasm78(2000),
 	}
 	for idx := 0; idx < len(wasms); idx++ {
 		idxStr := fmt.Sprintf("%d", idx+1)
@@ -184,12 +182,13 @@ func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 }
 
 // CreateTestInput creates a new test environment for unit tests.
-func CreateTestInput() (*bandapp.BandApp, sdk.Context, me.Keeper) {
+func CreateTestInput(autoActivate bool) (*bandapp.BandApp, sdk.Context, me.Keeper) {
 	app := NewSimApp("BANDCHAIN", log.NewNopLogger())
 	ctx := app.NewContext(false, abci.Header{})
-	// TODO: Test activate properly
-	app.OracleKeeper.Activate(ctx, Validator1.ValAddress)
-	app.OracleKeeper.Activate(ctx, Validator2.ValAddress)
-	app.OracleKeeper.Activate(ctx, Validator3.ValAddress)
+	if autoActivate {
+		app.OracleKeeper.Activate(ctx, Validator1.ValAddress)
+		app.OracleKeeper.Activate(ctx, Validator2.ValAddress)
+		app.OracleKeeper.Activate(ctx, Validator3.ValAddress)
+	}
 	return app, ctx, app.OracleKeeper
 }

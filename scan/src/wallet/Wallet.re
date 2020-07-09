@@ -20,3 +20,8 @@ let sign = msg =>
   fun
   | Mnemonic(x) => x |> Mnemonic.sign(_, msg) |> Promise.ret
   | Ledger(x) => x |> Ledger.sign(_, msg);
+
+let disconnect =
+  fun
+  | Mnemonic(_) => ()
+  | Ledger({transport}) => transport |> LedgerJS.close;
