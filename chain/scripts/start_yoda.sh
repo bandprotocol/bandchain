@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rm -rf ~/.oracled
+rm -rf ~/.yoda
 
 # config chain id
 yoda config chain-id bandchain
