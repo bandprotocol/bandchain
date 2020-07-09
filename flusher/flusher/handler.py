@@ -103,7 +103,7 @@ class Handler(object):
     def handle_update_validator(self, msg):
         self.conn.execute(
             validators.update()
-            .where(msg["operator_address"] == validators.c.operator_address)
+            .where(validators.c.operator_address == msg["operator_address"])
             .values(**msg)
         )
 
