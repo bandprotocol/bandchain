@@ -27,9 +27,9 @@ class Handler(object):
     def __init__(self, conn):
         self.conn = conn
 
-    def get_account_id(self, delegator_address):
+    def get_account_id(self, address):
         return self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == delegator_address)
+            select([accounts.c.id]).where(accounts.c.address == address)
         ).scalar()
 
     def handle_new_block(self, msg):
@@ -123,12 +123,10 @@ class Handler(object):
 
     def handle_new_unbonding_delegation(self, msg):
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
-
         del msg["delegator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
-
         del msg["delegator_address"]
         self.conn.execute(insert(redelegations).values(**msg))
