@@ -1,4 +1,4 @@
-package main
+package yoda
 
 import (
 	"github.com/spf13/cobra"
