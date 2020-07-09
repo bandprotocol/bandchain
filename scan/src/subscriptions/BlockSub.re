@@ -119,35 +119,29 @@ module BlockCountConfig = [%graphql
 |}
 ];
 
-// module PastDayBlockCountConfig = [%graphql
-//   {|
-//   subscription AvgDayBlocksCount($greater: timestamp, $less: timestamp) {
-//     blocks_aggregate(where: {timestamp: {_lte: $less, _gte: $greater}}) {
-//       aggregate{
-//         count @bsDecoder(fn: "Belt_Option.getExn")
-//         max {
-//           timestamp @bsDecoder(fn: "GraphQLParser.timestampWithDefault")
-//         }
-//         min {
-//           timestamp @bsDecoder(fn: "GraphQLParser.timestampWithDefault")
-//         }
-//       }
-//     }
-//   }
-// |}
-// ];
+module PastDayBlockCountConfig = [%graphql
+  {|
+  subscription AvgDayBlocksCount($greater: timestamp, $less: timestamp) {
+    blocks_aggregate(where: {timestamp: {_lte: $less, _gte: $greater}}) {
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
 
-// module BlockCountConsensusAddressConfig = [%graphql
-//   {|
-//   subscription BlocksCountByConsensusAddress($address: String!) {
-//     blocks_aggregate(where: {proposer: {_eq: $address}}) {
-//       aggregate{
-//         count @bsDecoder(fn: "Belt_Option.getExn")
-//       }
-//     }
-//   }
-// |}
-// ];
+module BlockCountConsensusAddressConfig = [%graphql
+  {|
+  subscription BlocksCountByConsensusAddress($address: String!) {
+    blocks_aggregate(where: {proposer: {_eq: $address}}) {
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
 
 let get = height => {
   let ID.Block.ID(height_) = height;
@@ -204,53 +198,34 @@ let count = () => {
 };
 
 let getAvgBlockTime = (greater, less) => {
-  // let (result, _) =
-  //   ApolloHooks.useSubscription(
-  //     PastDayBlockCountConfig.definition,
-  //     ~variables=
-  //       PastDayBlockCountConfig.makeVariables(
-  //         ~greater=greater |> Js.Json.string,
-  //         ~less=less |> Js.Json.string,
-  //         (),
-  //       ),
-  //   );
-  // let timestampMinSub =
-  //   result
-  //   |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
-  //   |> Sub.map(_, b => b##min |> Belt_Option.getExn)
-  //   |> Sub.map(_, c => c##timestamp);
-  // let timestampMaxSub =
-  //   result
-  //   |> Sub.map(_, a => a##blocks_aggregate##aggregate |> Belt_Option.getExn)
-  //   |> Sub.map(_, b => b##max |> Belt_Option.getExn)
-  //   |> Sub.map(_, c => c##timestamp);
-  // let blockCountSub =
-  //   result
-  //   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-  // let%Sub timestampMin = timestampMinSub;
-  // let%Sub timestampMax = timestampMaxSub;
-  // let%Sub blockCount = blockCountSub;
-  // let secondsPassed = MomentRe.diff(timestampMax, timestampMin, `milliseconds) /. 1000.;
-  // secondsPassed /. (blockCount |> float_of_int) |> Sub.resolve;
-  Sub.resolve(
-    3.2,
-  );
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      PastDayBlockCountConfig.definition,
+      ~variables=
+        PastDayBlockCountConfig.makeVariables(
+          ~greater=greater |> Js.Json.string,
+          ~less=less |> Js.Json.string,
+          (),
+        ),
+    );
+  let blockCountSub =
+    result
+    |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  let%Sub blockCount = blockCountSub;
+  (24 * 60 * 60 |> float_of_int) /. (blockCount |> float_of_int) |> Sub.resolve;
 };
 
 // TODO
 let countByConsensusAddress = (~address, ()) => {
-  // let (result, _) =
-  //   ApolloHooks.useSubscription(
-  //     BlockCountConsensusAddressConfig.definition,
-  //     ~variables=
-  //       BlockCountConsensusAddressConfig.makeVariables(
-  //         ~address=address |> Address.toHex(~upper=true),
-  //         (),
-  //       ),
-  //   );
-  // result
-  // |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-  Sub.resolve(
-    100,
-  );
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      BlockCountConsensusAddressConfig.definition,
+      ~variables=
+        BlockCountConsensusAddressConfig.makeVariables(
+          ~address=address |> Address.toHex(~upper=true),
+          (),
+        ),
+    );
+  result
+  |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };

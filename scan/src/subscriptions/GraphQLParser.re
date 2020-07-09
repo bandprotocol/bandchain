@@ -24,8 +24,7 @@ let timestamp = json =>
   json
   |> Js.Json.decodeString
   |> Belt.Option.getExn
-  |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS")
-  |> MomentRe.Moment.defaultUtc;
+  |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS");
 
 let timestampWithDefault = jsonOpt =>
   jsonOpt
