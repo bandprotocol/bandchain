@@ -203,7 +203,7 @@ delegations = sa.Table(
     "delegations",
     metadata,
     Column("delegator_address", sa.String, sa.ForeignKey("accounts.address"), primary_key=True),
-    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True,),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
