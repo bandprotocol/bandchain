@@ -41,11 +41,9 @@ class Handler(object):
         res = self.conn.execute(transactions.insert(), msg)
         tx_id = res.inserted_primary_key[0]
         for account in related_tx_accounts:
-            id = self.conn.execute(
-                select([accounts.c.id]).where(accounts.c.address == account)
-            ).scalar()
             self.conn.execute(
-                account_transcations.insert(), {"transaction_id": tx_id, "account_id": id}
+                account_transcations.insert(),
+                {"transaction_id": tx_id, "account_id": self.get_account_id(account)},
             )
 
     def handle_set_account(self, msg):
