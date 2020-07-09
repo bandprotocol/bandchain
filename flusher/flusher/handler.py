@@ -27,6 +27,11 @@ class Handler(object):
     def __init__(self, conn):
         self.conn = conn
 
+    def get_account_id(self, delegator_address):
+        return self.conn.execute(
+            select([accounts.c.id]).where(accounts.c.address == delegator_address)
+        ).scalar()
+
     def handle_new_block(self, msg):
         self.conn.execute(blocks.insert(), msg)
 
@@ -99,9 +104,7 @@ class Handler(object):
         self.conn.execute(validators.update().where(condition).values(**msg))
 
     def handle_set_delegation(self, msg):
-        msg["account_id"] = self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
-        ).scalar()
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         self.conn.execute(
             insert(delegations)
@@ -110,9 +113,7 @@ class Handler(object):
         )
 
     def handle_remove_delegation(self, msg):
-        msg["account_id"] = self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
-        ).scalar()
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         condition = True
         for col in delegations.primary_key.columns.values():
@@ -123,15 +124,13 @@ class Handler(object):
         self.conn.execute(insert(validator_votes).values(**msg))
 
     def handle_new_unbonding_delegation(self, msg):
-        msg["account_id"] = self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
-        ).scalar()
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+
         del msg["delegator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
     def handle_new_redelegation(self, msg):
-        msg["account_id"] = self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == msg["delegator_address"])
-        ).scalar()
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+
         del msg["delegator_address"]
         self.conn.execute(insert(redelegations).values(**msg))
