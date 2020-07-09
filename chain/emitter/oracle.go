@@ -156,6 +156,8 @@ func (app *App) handleMsgAddReporter(
 func (app *App) handleMsgRemoveReporter(
 	txHash []byte, msg oracle.MsgRemoveReporter, evMap EvMap, extra JsDict,
 ) {
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.Validator)
+	extra["validator_moniker"] = val.GetMoniker()
 	app.AddAccountsInTx(msg.Reporter)
 }
 
