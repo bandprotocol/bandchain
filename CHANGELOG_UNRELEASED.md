@@ -21,6 +21,8 @@
 
 ### Scan
 
+- (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
+
 ### Bridges
 
 - (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
