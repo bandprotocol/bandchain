@@ -227,7 +227,6 @@ unbonding_delegations = sa.Table(
     metadata,
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
     Column("account_id", sa.Integer, sa.ForeignKey("accounts.id")),
-master
     Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),

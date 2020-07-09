@@ -149,4 +149,4 @@ class Handler(object):
         del msg["operator_src_address"]
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
-        self.conn.execute(insert(unbonding_delegations).values(**msg))
+        self.conn.execute(insert(redelegations).values(**msg))
