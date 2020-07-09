@@ -147,7 +147,7 @@ val_requests = sa.Table(
     "val_requests",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("validato_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
 )
 
 reports = sa.Table(
