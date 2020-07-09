@@ -20,7 +20,7 @@ const (
 	flagExecutor  = "executor"
 )
 
-// Config data structure for bandoracled daemon.
+// Config data structure for yoda daemon.
 type Config struct {
 	ChainID   string `mapstructure:"chain-id"`   // ChainID of the target chain
 	NodeURI   string `mapstructure:"node"`       // Remote RPC URI of BandChain node to connect to
