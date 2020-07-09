@@ -1,6 +1,6 @@
 import base64 as b64
 from datetime import datetime
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from .db import (
