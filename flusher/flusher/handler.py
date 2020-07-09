@@ -108,9 +108,6 @@ class Handler(object):
         )
 
     def handle_set_delegation(self, msg):
-        print("!!", msg)
-        print("=", msg["operator_address"])
-        print("->", self.get_validator_id(msg["operator_address"]))
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
         self.conn.execute(
