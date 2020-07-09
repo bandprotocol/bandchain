@@ -19,6 +19,7 @@
 - (bugs) [\#2180](https://github.com/bandprotocol/bandchain/pull/2180) Fix bug data source and oracle script id from genesis.
 - (bugs) [\#2182](https://github.com/bandprotocol/bandchain/pull/2182) Flusher: change external id to BigInteger.
 - (bugs) [\#2183](https://github.com/bandprotocol/bandchain/pull/2183) Add data_sources_id FK in raw_requests table.
+- (impv) [\#2184](https://github.com/bandprotocol/bandchain/pull/2184) Add `validator_moniker` on `add_reporter` and `remove_reporter` msg.
 - (impv) [\#2142](https://github.com/bandprotocol/bandchain/pull/2142) Add account transactions table.
 - (impv) [\#2170](https://github.com/bandprotocol/bandchain/pull/2170) Add validator status field in table.
 - (impv) [\#2169](https://github.com/bandprotocol/bandchain/pull/2169) Add unbonding and redelegation table.
