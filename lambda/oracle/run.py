@@ -1,6 +1,7 @@
 import json
 import os
 import shlex
+import base64
 import subprocess
 
 HEADERS = {
@@ -35,22 +36,12 @@ def lambda_handler(event, context):
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(body["executable"])
+        f.write(base64.b64decode(body["executable"]).decode())
 
     os.chmod(path, 0o775)
     try:
-        env = os.environ.copy()
-        env["PATH"] = env["PATH"] + ":" + os.path.join(os.getcwd(), "exec", "usr", "bin")
-        env["LD_LIBRARY_PATH"] = (
-            env["LD_LIBRARY_PATH"]
-            + ":"
-            + os.path.join(os.getcwd(), "exec", "lib64")
-            + ":"
-            + os.path.join(os.getcwd(), "exec", "usr", "lib64")
-        )
-
         result = subprocess.run(
-            [path] + shlex.split(body["calldata"]), env=env, timeout=3, capture_output=True
+            [path] + shlex.split(body["calldata"]), timeout=3, capture_output=True
         )
 
         return {
