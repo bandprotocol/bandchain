@@ -111,6 +111,8 @@ class Handler(object):
         del msg["tx_hash"]
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
         self.conn.execute(reports.insert(), msg)
 
     def handle_new_raw_report(self, msg):

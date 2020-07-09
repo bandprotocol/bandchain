@@ -157,7 +157,7 @@ reports = sa.Table(
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
-    Column("reporter", sa.String),
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id")),
 )
 
 raw_reports = sa.Table(
