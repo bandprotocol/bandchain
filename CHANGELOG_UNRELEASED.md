@@ -18,6 +18,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
 - (impv) [\#2181](https://github.com/bandprotocol/bandchain/pull/2181) Change all foreign key that refers from tx_hash to id.
 - (bugs) [\#2191](https://github.com/bandprotocol/bandchain/pull/2191) Add `reward_amount` field to Withdraw Reward Msg.
 - (impv) [\#2177](https://github.com/bandprotocol/bandchain/pull/2177) Add field validator id for validators table.
