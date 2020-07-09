@@ -60,16 +60,19 @@ let getUnbondingBalance = delegatorAddress => {
 
   let unbondingInfoSub =
     result
-    |> Sub.map(_, a =>
-         (
-           (a##accounts_by_pk |> Belt.Option.getExn)##unbonding_delegations_aggregate##aggregate
-           |> Belt_Option.getExn
-         )##sum
-         |> Belt_Option.getExn
-       );
+    |> Sub.map(_, a => {
+         switch (a##accounts_by_pk) {
+         | Some(account) =>
+           (
+             (account##unbonding_delegations_aggregate##aggregate |> Belt_Option.getExn)##sum
+             |> Belt_Option.getExn
+           )##amount
+         | None => Coin.newUBANDFromAmount(0.)
+         }
+       });
 
   let%Sub unbondingInfo = unbondingInfoSub;
-  unbondingInfo##amount |> Sub.resolve;
+  unbondingInfo |> Sub.resolve;
 };
 
 let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
