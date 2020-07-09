@@ -215,7 +215,6 @@ let getAvgBlockTime = (greater, less) => {
   (24 * 60 * 60 |> float_of_int) /. (blockCount |> float_of_int) |> Sub.resolve;
 };
 
-// TODO
 let countByConsensusAddress = (~address, ()) => {
   let (result, _) =
     ApolloHooks.useSubscription(
