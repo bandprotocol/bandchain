@@ -40,12 +40,12 @@ func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) error {
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+func (env *BaseEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
 	return 0, api.ErrWrongPeriodAction
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+func (env *BaseEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
 	return nil, api.ErrWrongPeriodAction
 }
 
@@ -74,6 +74,11 @@ func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error 
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
 		return api.ErrTooManyExternalData
 	}
+	for _, raw := range env.rawRequests {
+		if raw.ExternalID == ExternalID(eid) {
+			return api.ErrDuplicateExternalID
+		}
+	}
 	env.rawRequests = append(env.rawRequests, NewRawRequest(
 		ExternalID(eid), DataSourceID(did), data,
 	))
@@ -93,23 +98,20 @@ type ExecuteEnv struct {
 }
 
 // NewExecuteEnv creates a new environment instance for execution period.
-func NewExecuteEnv(req Request) *ExecuteEnv {
-	return &ExecuteEnv{
-		BaseEnv: BaseEnv{
-			request: req,
-		},
-		reports: make(map[string]map[ExternalID]RawReport),
-	}
-}
-
-// SetReports loads the reports to the environment.
-func (env *ExecuteEnv) SetReports(reports []Report) {
+func NewExecuteEnv(req Request, reports []Report) *ExecuteEnv {
+	envReports := make(map[string]map[ExternalID]RawReport)
 	for _, report := range reports {
 		valReports := make(map[ExternalID]RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
-		env.reports[report.Validator.String()] = valReports
+		envReports[report.Validator.String()] = valReports
+	}
+	return &ExecuteEnv{
+		BaseEnv: BaseEnv{
+			request: req,
+		},
+		reports: envReports,
 	}
 }
 
@@ -135,7 +137,7 @@ func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int
 	}
 	valReport, ok := valReports[ExternalID(eid)]
 	if !ok {
-		return nil, -1, api.ErrBadExternalID
+		return nil, 0, api.ErrBadExternalID
 	}
 	return valReport.Data, int64(valReport.ExitCode), nil
 }

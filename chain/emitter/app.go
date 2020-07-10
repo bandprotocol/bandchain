@@ -4,11 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"io"
+	"strings"
 	"time"
 
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/segmentio/kafka-go"
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -17,39 +20,40 @@ import (
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
-
-type Message struct {
-	Key   string
-	Value JsDict
-}
 
 // App extends the standard Band Cosmos-SDK application with Kafka emitter
 // functionality to act as an event producer for all events in the blockchains.
 type App struct {
 	*bandapp.BandApp
+	// Decoder for unmarshaling []byte into sdk.Tx.
+	txDecoder sdk.TxDecoder
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	txIdx int              // The current transaction's index on the current block starting from 1.
-	accs  []sdk.AccAddress // The accounts that need balance update at the end of block.
-	msgs  []Message        // The list of all messages to publish for this block.
+	accsInBlock map[string]bool // The accounts that need balance update at the end of block.
+	accsInTx    map[string]bool // The accounts related to the current processing transaction.
+	msgs        []Message       // The list of all messages to publish for this block.
 }
 
 // NewBandAppWithEmitter creates a new App instance.
 func NewBandAppWithEmitter(
-	topic string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
+	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	baseAppOptions ...func(*bam.BaseApp),
 ) *App {
+	app := bandapp.NewBandApp(
+		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
+		home, baseAppOptions...,
+	)
+	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &App{
-		BandApp: bandapp.NewBandApp(
-			logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-			home, baseAppOptions...,
-		),
+		BandApp:   app,
+		txDecoder: auth.DefaultTxDecoder(app.Codec()),
 		writer: kafka.NewWriter(kafka.WriterConfig{
-			Brokers:      []string{"localhost:9092"}, // TODO: Remove hardcode
-			Topic:        topic,
+			Brokers:      paths[1:],
+			Topic:        paths[0],
 			Balancer:     &kafka.LeastBytes{},
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
@@ -57,9 +61,18 @@ func NewBandAppWithEmitter(
 	}
 }
 
-// AddAccount adds the given account to the list of accounts to update balances end-of-block.
-func (app *App) AddAccount(acc sdk.AccAddress) {
-	app.accs = append(app.accs, acc)
+// AddAccountsInBlock adds the given accounts to the list of accounts to update balances end-of-block.
+func (app *App) AddAccountsInBlock(accs ...sdk.AccAddress) {
+	for _, acc := range accs {
+		app.accsInBlock[acc.String()] = true
+	}
+}
+
+// AddAccountsInTx adds the given accounts to the list of accounts to track related account in transaction.
+func (app *App) AddAccountsInTx(accs ...sdk.AccAddress) {
+	for _, acc := range accs {
+		app.accsInTx[acc.String()] = true
+	}
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
@@ -95,29 +108,26 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		})
 	}
 	// Staking module
-	// TODO
+	var genutilState genutil.GenesisState
+	app.Codec().MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
+	for _, genTx := range genutilState.GenTxs {
+		var tx auth.StdTx
+		app.Codec().MustUnmarshalJSON(genTx, &tx)
+		for _, msg := range tx.Msgs {
+			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
+				app.emitSetValidator(createMsg.ValidatorAddress)
+			}
+		}
+	}
+
 	// Oracle module
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 	for idx, ds := range oracleState.DataSources {
-		app.Write("NEW_DATA_SOURCE", JsDict{
-			"id":          idx + 1,
-			"name":        ds.Name,
-			"description": ds.Description,
-			"owner":       ds.Owner.String(),
-			"executable":  app.OracleKeeper.GetFile(ds.Filename),
-		})
+		app.emitSetDataSource(types.DataSourceID(idx+1), ds, nil)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		app.Write("NEW_ORACLE_SCRIPT", JsDict{
-			"id":              idx + 1,
-			"name":            os.Name,
-			"description":     os.Description,
-			"owner":           os.Owner.String(),
-			"schema":          os.Schema,
-			"codehash":        os.Filename,
-			"source_code_url": os.SourceCodeURL,
-		})
+		app.emitSetOracleScript(types.OracleScriptID(idx+1), os, nil)
 	}
 	app.FlushMessages()
 	return res
@@ -126,25 +136,39 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 // BeginBlock calls into the underlying BeginBlock and emits relevant events to Kafka.
 func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
-	app.txIdx = 0
-	app.accs = []sdk.AccAddress{}
+	app.accsInBlock = make(map[string]bool)
+	app.accsInTx = make(map[string]bool)
 	app.msgs = []Message{}
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
 		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
-		"proposer":  req.Header.GetProposerAddress(),
+		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
 		"hash":      req.GetHash(),
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
 	})
-	// TODO: Handle begin block event
+	for _, val := range req.GetLastCommitInfo().Votes {
+		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		app.Write("NEW_VALIDATOR_VOTE", JsDict{
+			"consensus_address": validator.GetConsAddr().String(),
+			"block_height":      req.Header.GetHeight() - 1,
+			"voted":             val.GetSignedLastBlock(),
+		})
+		app.emitUpdateValidatorReward(validator.GetOperator())
+	}
+
+	for _, event := range res.Events {
+		app.handleBeginBlockEndBlockEvent(event)
+	}
+
 	return res
 }
 
 // DeliverTx calls into the underlying DeliverTx and emits relevant events to Kafka.
 func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	res := app.BandApp.DeliverTx(req)
-	tx, err := app.TxDecoder(req.Tx)
+	app.accsInTx = make(map[string]bool)
+	tx, err := app.txDecoder(req.Tx)
 	if err != nil {
 		return res
 	}
@@ -157,10 +181,8 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	if !res.IsOK() {
 		errMsg = &res.Log
 	}
-	app.txIdx++
 	txDict := JsDict{
 		"hash":         txHash,
-		"index":        app.txIdx,
 		"block_height": app.DeliverContext.BlockHeight(),
 		"gas_used":     res.GasUsed,
 		"gas_limit":    stdTx.Fee.Gas,
@@ -186,28 +208,38 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 			"extra": extra,
 		})
 	}
+	app.AddAccountsInTx(stdTx.GetSigners()...)
+	relatedAccounts := make([]sdk.AccAddress, 0, len(app.accsInBlock))
+	for accStr, _ := range app.accsInTx {
+		acc, _ := sdk.AccAddressFromBech32(accStr)
+		relatedAccounts = append(relatedAccounts, acc)
+	}
+
+	txDict["related_accounts"] = relatedAccounts
+	app.AddAccountsInBlock(relatedAccounts...)
 	txDict["messages"] = messages
-	app.AddAccount(stdTx.GetSigners()[0])
 	return res
 }
 
 // EndBlock calls into the underlying EndBlock and emits relevant events to Kafka.
 func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.BandApp.EndBlock(req)
-	// Update balances of all affected accounts on this block.
-	accMap := make(map[string]bool)
-	for _, acc := range app.accs {
-		accStr := string(acc)
-		if accMap[accStr] {
-			continue
-		}
-		accMap[accStr] = true
-		app.Write("SET_ACCOUNT", JsDict{
-			"address": acc,
-			"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
-		})
+	for _, event := range res.Events {
+		app.handleBeginBlockEndBlockEvent(event)
 	}
-	// TODO: Handle end block events
+	// Update balances of all affected accounts on this block.
+	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
+	modifiedMsgs := []Message{app.msgs[0]}
+	for accStr, _ := range app.accsInBlock {
+		acc, _ := sdk.AccAddressFromBech32(accStr)
+		modifiedMsgs = append(modifiedMsgs, Message{
+			Key: "SET_ACCOUNT",
+			Value: JsDict{
+				"address": acc,
+				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
+			}})
+	}
+	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
 }

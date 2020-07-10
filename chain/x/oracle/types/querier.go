@@ -9,14 +9,14 @@ import (
 
 // Query endpoints supported by the oracle Querier.
 const (
-	QueryParams        = "params"
-	QueryCounts        = "counts"
-	QueryData          = "data"
-	QueryDataSources   = "data_sources"
-	QueryOracleScripts = "oracle_scripts"
-	QueryRequests      = "requests"
-	QueryReporters     = "reporters"
-	QueryReportInfo    = "report_info"
+	QueryParams          = "params"
+	QueryCounts          = "counts"
+	QueryData            = "data"
+	QueryDataSources     = "data_sources"
+	QueryOracleScripts   = "oracle_scripts"
+	QueryRequests        = "requests"
+	QueryValidatorStatus = "validators"
+	QueryReporters       = "reporters"
 )
 
 // QueryResult wraps querier result with HTTP status to return to application.

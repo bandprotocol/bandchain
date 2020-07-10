@@ -1,7 +1,8 @@
 package keeper
 
 import (
-	"encoding/binary"
+	"encoding/hex"
+	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -16,9 +17,9 @@ func (k Keeper) HasResult(ctx sdk.Context, id types.RequestID) bool {
 }
 
 // SetResult sets result to the store.
-func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result []byte) {
+func (k Keeper) SetResult(ctx sdk.Context, reqID types.RequestID, result types.Result) {
 	store := ctx.KVStore(k.storeKey)
-	store.Set(types.ResultStoreKey(reqID), result)
+	store.Set(types.ResultStoreKey(reqID), obi.MustEncode(result))
 }
 
 // GetResult returns the result for the given request ID or error if not exists.
@@ -28,11 +29,7 @@ func (k Keeper) GetResult(ctx sdk.Context, id types.RequestID) (types.Result, er
 		return types.Result{}, sdkerrors.Wrapf(types.ErrResultNotFound, "id: %d", id)
 	}
 	var result types.Result
-	err := obi.Decode(bz, &result)
-	if err != nil {
-		return types.Result{}, types.ErrOBIDecode
-	}
-
+	obi.MustDecode(bz, &result)
 	return result, nil
 }
 
@@ -45,23 +42,58 @@ func (k Keeper) MustGetResult(ctx sdk.Context, id types.RequestID) types.Result 
 	return result
 }
 
-// GetAllResults returns the list of all results in the store. Nil will be added for skipped results.
-func (k Keeper) GetAllResults(ctx sdk.Context) (results [][]byte) {
-	store := ctx.KVStore(k.storeKey)
-	iterator := sdk.KVStorePrefixIterator(store, types.ResultStoreKeyPrefix)
-	var previousReqID types.RequestID
-	defer iterator.Close()
-	for ; iterator.Valid(); iterator.Next() {
-		currentReqID := types.RequestID(binary.BigEndian.Uint64(iterator.Key()[1:]))
-		diffReqIDCount := int(currentReqID - previousReqID)
+// ResolveSuccess resolves the given request as success with the given result.
+func (k Keeper) ResolveSuccess(ctx sdk.Context, id types.RequestID, result []byte) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Success, result)
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Success)),
+		sdk.NewAttribute(types.AttributeKeyResult, hex.EncodeToString(result)),
+	))
+}
 
-		// Insert nil for each request without result.
-		for i := 0; i < diffReqIDCount-1; i++ {
-			results = append(results, nil)
-		}
+// ResolveFailure resolves the given request as failure with the given reason.
+func (k Keeper) ResolveFailure(ctx sdk.Context, id types.RequestID, reason string) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Failure, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Failure)),
+		sdk.NewAttribute(types.AttributeKeyReason, reason),
+	))
+}
 
-		results = append(results, iterator.Value())
-		previousReqID = currentReqID
-	}
-	return results
+// ResolveExpired resolves the given request as expired.
+func (k Keeper) ResolveExpired(ctx sdk.Context, id types.RequestID) {
+	k.SaveResult(ctx, id, types.ResolveStatus_Expired, []byte{})
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", id)),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, fmt.Sprintf("%d", types.ResolveStatus_Expired)),
+	))
+}
+
+// SaveResult saves the result packets for the request with the given resolve status and result.
+func (k Keeper) SaveResult(
+	ctx sdk.Context, id types.RequestID, status types.ResolveStatus, result []byte,
+) {
+	r := k.MustGetRequest(ctx, id)
+	reqPacket := types.NewOracleRequestPacketData(
+		r.ClientID,                         // ClientID
+		r.OracleScriptID,                   // OracleScriptID
+		r.Calldata,                         // Calldata
+		uint64(len(r.RequestedValidators)), // AskCount
+		r.MinCount,                         // Mincount
+	)
+	resPacket := types.NewOracleResponsePacketData(
+		r.ClientID,                // ClientID
+		id,                        // RequestID
+		k.GetReportCount(ctx, id), // AnsCount
+		r.RequestTime.Unix(),      // RequestTime
+		ctx.BlockTime().Unix(),    // ResolveTime
+		status,                    // ResolveStatus
+		result,                    // Result
+	)
+	k.SetResult(ctx, id, types.NewResult(reqPacket, resPacket))
 }

@@ -1,7 +1,6 @@
 /.github
 /.vscode
 /assets
-/band-consumer
 /bridges
 /lambda
 /go-owasm/target

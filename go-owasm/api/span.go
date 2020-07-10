@@ -38,7 +38,9 @@ func writeSpan(span *C.Span, data []byte) C.Error {
 	if int(span.cap) < len(data) {
 		return C.Error_SpanTooSmallError
 	}
-	C.memcpy(unsafe.Pointer(span.ptr), unsafe.Pointer(&data[0]), C.size_t(len(data)))
+	if len(data) > 0 {
+		C.memcpy(unsafe.Pointer(span.ptr), unsafe.Pointer(&data[0]), C.size_t(len(data)))
+	}
 	span.len = C.uintptr_t(len(data))
 	return C.Error_NoError
 }

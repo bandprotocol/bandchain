@@ -1,6 +1,6 @@
 {
   "name": "@bandprotocol/bandchain.js",
-  "version": "1.0.11",
+  "version": "1.0.17",
   "description": "Library for interacting with BandChain in browser and Node.js environments",
   "main": "src/lib/BandChain.js",
   "scripts": {
@@ -25,13 +25,10 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.10.2",
-    "@babel/preset-env": "^7.10.2",
-    "babel-jest": "^26.0.1",
     "jest": "26.0.1"
   },
   "dependencies": {
-    "@bandprotocol/obi.js": "1.0.4",
+    "@bandprotocol/obi.js": "^1.0.5",
     "@cosmostation/cosmosjs": "0.5.8",
     "axios": "0.19.2",
     "delay": "4.3.0"

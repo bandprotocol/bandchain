@@ -1,40 +1,34 @@
 package keeper_test
 
 import (
-	"path/filepath"
 	"testing"
 
-	"github.com/spf13/viper"
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/cli"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestHasDataSource(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// We should not have a data source ID 42 without setting it.
 	require.False(t, k.HasDataSource(ctx, 42))
 	// After we set it, we should be able to find it.
 	k.SetDataSource(ctx, 42, types.NewDataSource(
-		Owner.Address, BasicName, BasicDesc, BasicFilename,
+		testapp.Owner.Address, BasicName, BasicDesc, BasicFilename,
 	))
 	require.True(t, k.HasDataSource(ctx, 42))
 }
 
 func TestSetterGetterDataSource(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Getting a non-existent data source should return error.
 	_, err := k.GetDataSource(ctx, 42)
 	require.Error(t, err)
 	require.Panics(t, func() { _ = k.MustGetDataSource(ctx, 42) })
 	// Creates some basic data sources.
-	dataSource1 := types.NewDataSource(
-		Alice.Address, "NAME1", "DESCRIPTION1", "filename1",
-	)
-	dataSource2 := types.NewDataSource(
-		Bob.Address, "NAME2", "DESCRIPTION2", "filename2",
-	)
+	dataSource1 := types.NewDataSource(testapp.Alice.Address, "NAME1", "DESCRIPTION1", "filename1")
+	dataSource2 := types.NewDataSource(testapp.Bob.Address, "NAME2", "DESCRIPTION2", "filename2")
 	// Sets id 42 with data soure 1 and id 42 with data source 2.
 	k.SetDataSource(ctx, 42, dataSource1)
 	k.SetDataSource(ctx, 43, dataSource2)
@@ -54,14 +48,10 @@ func TestSetterGetterDataSource(t *testing.T) {
 }
 
 func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic data sources.
-	dataSource1 := types.NewDataSource(
-		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1",
-	)
-	dataSource2 := types.NewDataSource(
-		Bob.Address, "NAME2", "DESCRIPTION2", "FILENAME2",
-	)
+	dataSource1 := types.NewDataSource(testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1")
+	dataSource2 := types.NewDataSource(testapp.Bob.Address, "NAME2", "DESCRIPTION2", "FILENAME2")
 	// Adds a new data source to the store. We should be able to retreive it back.
 	id := k.AddDataSource(ctx, dataSource1)
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
@@ -75,14 +65,10 @@ func TestAddDataSourceEditDataSourceBasic(t *testing.T) {
 }
 
 func TestEditDataSourceDoNotModify(t *testing.T) {
-	_, ctx, k := createTestInput()
+	_, ctx, k := testapp.CreateTestInput(true)
 	// Creates some basic data sources.
-	dataSource1 := types.NewDataSource(
-		Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1",
-	)
-	dataSource2 := types.NewDataSource(
-		Bob.Address, types.DoNotModify, types.DoNotModify, "FILENAME2",
-	)
+	dataSource1 := types.NewDataSource(testapp.Alice.Address, "NAME1", "DESCRIPTION1", "FILENAME1")
+	dataSource2 := types.NewDataSource(testapp.Bob.Address, types.DoNotModify, types.DoNotModify, "FILENAME2")
 	// Adds a new data source to the store. We should be able to retreive it back.
 	id := k.AddDataSource(ctx, dataSource1)
 	require.Equal(t, dataSource1, k.MustGetDataSource(ctx, id))
@@ -99,51 +85,36 @@ func TestEditDataSourceDoNotModify(t *testing.T) {
 }
 
 func TestAddDataSourceDataSourceMustReturnCorrectID(t *testing.T) {
-	_, ctx, k := createTestInput()
-	// Initially we expect the data source count to be zero.
-	count := k.GetDataSourceCount(ctx)
-	require.Equal(t, count, int64(0))
+	_, ctx, k := testapp.CreateTestInput(true)
+	// Initially we expect the data source count to be what we have on genesis state.
+	genesisCount := int64(len(testapp.DataSources)) - 1
+	require.Equal(t, genesisCount, k.GetDataSourceCount(ctx))
 	// Every new data source we add should return a new ID.
-	id1 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicFilename))
-	require.Equal(t, id1, types.DataSourceID(1))
-	// Adds another data source so now ID should be 2.
-	id2 := k.AddDataSource(ctx, types.NewDataSource(Owner.Address, BasicName, BasicDesc, BasicFilename))
-	require.Equal(t, id2, types.DataSourceID(2))
-	// Finally we expect the data source to increase to 2 since we added two data sources.
-	count = k.GetDataSourceCount(ctx)
-	require.Equal(t, count, int64(2))
+	id1 := k.AddDataSource(ctx, types.NewDataSource(testapp.Owner.Address, BasicName, BasicDesc, BasicFilename))
+	require.Equal(t, types.DataSourceID(genesisCount+1), id1)
+	// Adds another data source so now ID should increase by 2.
+	id2 := k.AddDataSource(ctx, types.NewDataSource(testapp.Owner.Address, BasicName, BasicDesc, BasicFilename))
+	require.Equal(t, types.DataSourceID(genesisCount+2), id2)
+	// Finally we expect the data source to increase as well.
+	require.Equal(t, genesisCount+2, k.GetDataSourceCount(ctx))
 }
+
 func TestEditDataSourceNonExistentDataSource(t *testing.T) {
-	_, ctx, k := createTestInput()
-	dataSource, clear := getTestDataSource("code")
-	defer clear()
-	require.Panics(t, func() { k.MustEditDataSource(ctx, 9999, dataSource) })
+	_, ctx, k := testapp.CreateTestInput(true)
+	require.Panics(t, func() { k.MustEditDataSource(ctx, 9999, testapp.DataSources[1]) })
 }
+
 func TestGetAllDataSources(t *testing.T) {
-	_, ctx, k := createTestInput()
-	dataSource1, clear1 := getTestDataSource("code1")
-	defer clear1()
-	dataSource2, clear2 := getTestDataSource("code2")
-	defer clear2()
-	dataSource3, clear3 := getTestDataSource("code3")
-	defer clear3()
-	// Sets the data sources to the storage.
-	dataSources := []types.DataSource{dataSource1, dataSource2, dataSource3}
-	k.SetDataSource(ctx, 1, dataSources[0])
-	k.SetDataSource(ctx, 2, dataSources[1])
-	k.SetDataSource(ctx, 3, dataSources[2])
-	// We should now be able to get all the existing data sources.
-	require.Equal(t, dataSources, k.GetAllDataSources(ctx))
+	_, ctx, k := testapp.CreateTestInput(true)
+	// We should be able to get all genesis data sources.
+	require.Equal(t, testapp.DataSources[1:], k.GetAllDataSources(ctx))
 }
 
 func TestAddExecutableFile(t *testing.T) {
-	_, _, k := createTestInput()
-
-	dir := filepath.Join(viper.GetString(cli.HomeFlag), "files")
-	filename := k.AddExecutableFile([]byte("executable"))
-	defer deleteFile(filepath.Join(dir, filename))
-
-	require.Equal(t, []byte("executable"), k.GetFile(filename))
-
+	_, _, k := testapp.CreateTestInput(true)
+	// Adding do-not-modify should simply return do-not-modify.
 	require.Equal(t, types.DoNotModify, k.AddExecutableFile(types.DoNotModifyBytes))
+	// After we add an executable file, we should be able to retrieve it back.
+	filename := k.AddExecutableFile([]byte("UNIQUE_EXEC_FOR_TestAddExecutableFile"))
+	require.Equal(t, []byte("UNIQUE_EXEC_FOR_TestAddExecutableFile"), k.GetFile(filename))
 }

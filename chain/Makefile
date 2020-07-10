@@ -17,12 +17,12 @@ ldflags = -X github.com/cosmos/cosmos-sdk/version.Name=bandchain \
 
 BUILD_FLAGS := -tags "$(build_tags)" -ldflags '$(ldflags)'
 
-all: lint install
+all: install
 
 install: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandd
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandcli
-	go install -mod=readonly $(BUILD_FLAGS) ./cmd/bandoracled2
+	go install -mod=readonly $(BUILD_FLAGS) ./cmd/yoda
 
 faucet: go.sum
 	go install -mod=readonly $(BUILD_FLAGS) ./cmd/faucet
@@ -41,29 +41,16 @@ release: go.sum
 	env GOOS=windows GOARCH=amd64 \
 		go build -mod=readonly -o ./build/bandcli_windows_amd64 $(BUILD_FLAGS) ./cmd/bandcli
 	env GOOS=linux GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_linux_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_linux_amd64 $(BUILD_FLAGS) ./cmd/yoda
 	env GOOS=darwin GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_darwin_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_darwin_amd64 $(BUILD_FLAGS) ./cmd/yoda
 	env GOOS=windows GOARCH=amd64 \
-		go build -mod=readonly -o ./build/bandoracled_windows_amd64 $(BUILD_FLAGS) ./cmd/bandoracled2
+		go build -mod=readonly -o ./build/yoda_windows_amd64 $(BUILD_FLAGS) ./cmd/yoda
 
 go.sum: go.mod
 	@echo "--> Ensure dependencies have not been modified"
 	GO111MODULE=on go mod verify
-
-update-swagger-docs:
-	$(BINDIR)/statik -src=client/lcd/swagger-ui -dest=client/lcd -f -m
-	@if [ -n "$(git status --porcelain)" ]; then \
-			echo "\033[91mSwagger docs are out of sync!!!\033[0m";\
-			exit 1;\
-	else \
-		echo "\033[92mSwagger docs are in sync\033[0m";\
-	fi
-
-lint:
-	golangci-lint run
-	@find . -name '*.go' -type f -not -path "./vendor*" -not -path "*.git*" | xargs gofmt -d -s
-	go mod verify
+	touch go.sum
 
 test:
 	@go test -mod=readonly $(PACKAGES)

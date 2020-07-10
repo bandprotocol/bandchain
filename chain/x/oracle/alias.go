@@ -28,6 +28,7 @@ type (
 	MsgEditDataSource        = types.MsgEditDataSource
 	MsgCreateOracleScript    = types.MsgCreateOracleScript
 	MsgEditOracleScript      = types.MsgEditOracleScript
+	MsgActivate              = types.MsgActivate
 	MsgAddReporter           = types.MsgAddReporter
 	MsgRemoveReporter        = types.MsgRemoveReporter
 	OracleRequestPacketData  = types.OracleRequestPacketData

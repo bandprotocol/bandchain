@@ -15,7 +15,7 @@ import (
 	"github.com/tendermint/tendermint/libs/cli"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // AddGenesisDataSourceCmd returns add-data-source cobra Command.
@@ -37,25 +37,21 @@ func AddGenesisDataSourceCmd(ctx *server.Context, cdc *codec.Codec, defaultNodeH
 			if err != nil {
 				return err
 			}
-
 			genFile := config.GenesisFile()
 			appState, genDoc, err := genutil.GenesisStateFromGenFile(cdc, genFile)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal genesis state: %w", err)
 			}
-
 			oracleGenState := oracle.GetGenesisStateFromAppState(cdc, appState)
-			oracleGenState.DataSources = append(oracleGenState.DataSources, otypes.NewDataSource(
+			oracleGenState.DataSources = append(oracleGenState.DataSources, types.NewDataSource(
 				owner, args[0], args[1], filename,
 			))
-
 			appState[oracle.ModuleName] = cdc.MustMarshalJSON(oracleGenState)
 			appStateJSON := cdc.MustMarshalJSON(appState)
 			genDoc.AppState = appStateJSON
 			return genutil.ExportGenesisFile(genDoc, genFile)
 		},
 	}
-
 	cmd.Flags().String(cli.HomeFlag, defaultNodeHome, "node's home directory")
 	return cmd
 }
