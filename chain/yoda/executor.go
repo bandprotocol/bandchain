@@ -27,13 +27,7 @@ type externalExecutionResponse struct {
 func (e *restExecutor) Execute(
 	l *Logger, exec []byte, timeout time.Duration, arg string,
 ) ([]byte, uint32) {
-	var executable string
-	if e.Name == "cloud-function" {
-		executable = base64.StdEncoding.EncodeToString([]byte(exec))
-	} else {
-		executable = string(exec)
-	}
-
+	executable := base64.StdEncoding.EncodeToString(exec)
 	resp, err := grequests.Post(
 		e.URL,
 		&grequests.RequestOptions{
@@ -80,7 +74,7 @@ func NewExecutor(executor string) (executor, error) {
 		return nil, err
 	}
 	switch name {
-	case "lambda", "cloud-function":
+	case "rest":
 		return &restExecutor{Name: name, URL: url}, nil
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, url: %s", name, url)
