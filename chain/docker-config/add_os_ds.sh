@@ -61,7 +61,7 @@ bandd add-data-source \
 	"CryptoCompare Cryptocurrency Trading Volume" \
 	"Retrieves current trading volume of a cryptocurrency from https://www.cryptocompare.com" \
 	band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs \
-	$DIR/datasources/crypto_compare_volume.py
+	$DIR/datasources/cryptocompare_volume.py
 
 bandd add-data-source \
 	"ETH Gas Station Current Ethereum Gas Price" \
