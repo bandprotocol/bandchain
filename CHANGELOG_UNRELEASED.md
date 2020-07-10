@@ -39,6 +39,7 @@
 
 ### Scan
 
+- (impv) [\#2199](https://github.com/bandprotocol/bandchain/pull/2199) Remove proposed blocks count & adjust ui
 - (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
 - (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
 
@@ -55,4 +56,3 @@
 ### MISC
 
 - (impv) [\#2195](https://github.com/bandprotocol/bandchain/pull/2195) Remove lib and update executable as base64 encoded.
-
