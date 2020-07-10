@@ -58,7 +58,7 @@ bandd start
 On a separate tab, you should run the oracle daemon script to ensure your validator responds to oracle requests.
 
 ```bash
-./scripts/start_bandoracled2.sh validator
+./scripts/start_yoda.sh validator
 ```
 
 To send an oracle request to the chain, use `bandcli`.
