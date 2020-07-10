@@ -6,7 +6,7 @@ import (
 
 func TestDockerSuccess(t *testing.T) {
 	// TODO: Enable test when CI has docker installed.
-	// 	e := NewDockerExec("bandprotocol/runtime")
+	// e := NewDockerExec("bandprotocol/runtime:1.0.1")
 	// 	res, err := e.Exec(10*time.Second, []byte(`#!/usr/bin/env python3
 	// import json
 	// import urllib.request
@@ -36,5 +36,5 @@ func TestDockerSuccess(t *testing.T) {
 	// 		sys.exit(1)
 	// `), "BTC")
 	// 	fmt.Println(string(res.Output), res.Code, err)
-	// 	require.True(t, false)
+	// require.True(t, false)
 }
