@@ -95,7 +95,8 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
-			result, err := c.executor.Exec(3*time.Second, exec, req.calldata)
+			// TODO: Make timeout can configurable.
+			result, err := c.executor.Exec(10*time.Second, exec, req.calldata)
 			if err != nil {
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)

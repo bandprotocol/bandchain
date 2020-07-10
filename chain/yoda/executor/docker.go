@@ -25,7 +25,7 @@ func NewDockerExec(image string) *DockerExec {
 }
 
 func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
-	dir, err := ioutil.TempDir("", "executor")
+	dir, err := ioutil.TempDir("/tmp", "executor")
 	if err != nil {
 		return ExecResult{}, err
 	}
