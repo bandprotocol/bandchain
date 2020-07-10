@@ -45,7 +45,11 @@
 
 ### Bridges
 
-- (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
+- (impv) [\#2175](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
+
+### Runtime
+
+- (impv) [\#2200](https://github.com/bandprotocol/bandchain/pull/2200) Move runtime configurations to runtime directory.
 
 ### Owasm
 
