@@ -191,6 +191,15 @@ let make = (~txHash) => {
            }}
         </Col>
       </Row>
+      <VSpacing size=Spacing.xl />
+      <Row>
+        <Col>
+          {switch (txSub) {
+           | Data({memo}) => <InfoHL info={InfoHL.Description(memo)} header="MEMO" />
+           | _ => <InfoHL info={InfoHL.Loading(75)} header="MEMO" />
+           }}
+        </Col>
+      </Row>
       {switch (txSub) {
        | Data({success, rawLog, messages}) =>
          <>
