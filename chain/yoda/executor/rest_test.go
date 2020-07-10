@@ -1,4 +1,4 @@
-package yoda
+package executor
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tendermint/tendermint/libs/log"
 )
 
 func creatDefaultServer() *httptest.Server {
@@ -48,17 +47,12 @@ func creatExecuteFailSenarioServer() *httptest.Server {
 	}))
 }
 
-func getLog() *Logger {
-	logLevel, _ := log.AllowLevel("debug")
-	return NewLogger(logLevel)
-}
-
 func TestExecuteSuccess(t *testing.T) {
 	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
-	executor := &restExecutor{Name: "rest", URL: testServer.URL}
-	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
+	executor := NewRestExec(testServer.URL)
+	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
 
 	require.Equal(t, uint32(0), exitcode)
 	require.Equal(t, []byte("BEEB"), res)
@@ -68,8 +62,8 @@ func TestExecuteBadUrlFail(t *testing.T) {
 	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
-	executor := &restExecutor{Name: "rest", URL: "www.beeb.com"} // bad url
-	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
+	executor := NewRestExec("www.beeb.com") // bad url
+	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
 
 	require.Equal(t, uint32(255), exitcode)
 	require.Equal(t, []byte("EXECUTION_ERROR"), res)
@@ -79,8 +73,8 @@ func TestExecuteDecodeStructFail(t *testing.T) {
 	testServer := createCannotDecodeJsonSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := &restExecutor{Name: "rest", URL: testServer.URL}
-	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
+	executor := NewRestExec(testServer.URL)
+	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
 	require.Equal(t, uint32(255), exitcode)
 	require.Equal(t, []byte("EXECUTION_ERROR"), res)
 }
@@ -89,8 +83,8 @@ func TestExecuteResponseNotOk(t *testing.T) {
 	testServer := createResponseNotOkSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := &restExecutor{Name: "rest", URL: testServer.URL}
-	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
+	executor := NewRestExec(testServer.URL)
+	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
 	require.Equal(t, uint32(255), exitcode)
 	require.Equal(t, []byte("EXECUTION_ERROR"), res)
 }
@@ -99,8 +93,8 @@ func TestExecuteFail(t *testing.T) {
 	testServer := creatExecuteFailSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := &restExecutor{Name: "rest", URL: testServer.URL}
-	res, exitcode := executor.Execute(getLog(), []byte("executable"), 1*time.Second, "calldata")
+	executor := NewRestExec(testServer.URL)
+	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
 	require.Equal(t, uint32(1), exitcode)
 	require.Equal(t, []byte("Stderr"), res)
 }

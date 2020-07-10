@@ -95,12 +95,17 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
-			result, exitCode := c.executor.Execute(l, exec, 3*time.Second, req.calldata)
-			l.Debug(
-				":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
-				req.calldata, result, exitCode,
-			)
-			reportsChan <- otypes.NewRawReport(req.externalID, exitCode, result)
+			result, err := c.executor.Exec(3*time.Second, exec, req.calldata)
+			if err != nil {
+				l.Error(":skull: Failed to execute data source script: %s", err.Error())
+				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
+			} else {
+				l.Debug(
+					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
+					req.calldata, result.Output, result.Code,
+				)
+				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
+			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 

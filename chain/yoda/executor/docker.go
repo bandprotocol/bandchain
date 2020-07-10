@@ -9,6 +9,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"time"
+
+	"github.com/google/shlex"
 )
 
 // TODO: Make this configurable
@@ -22,7 +24,7 @@ func NewDockerExec(image string) *DockerExec {
 	return &DockerExec{image: image}
 }
 
-func (e *DockerExec) Exec(timeout time.Duration, code []byte, args ...string) (ExecResult, error) {
+func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
 	dir, err := ioutil.TempDir("", "executor")
 	if err != nil {
 		return ExecResult{}, err
@@ -33,6 +35,10 @@ func (e *DockerExec) Exec(timeout time.Duration, code []byte, args ...string) (E
 		return ExecResult{}, err
 	}
 	name := filepath.Base(dir)
+	args, err := shlex.Split(arg)
+	if err != nil {
+		return ExecResult{}, err
+	}
 	dockerArgs := append([]string{
 		"run", "--rm",
 		"-v", dir + ":/scratch:ro",
