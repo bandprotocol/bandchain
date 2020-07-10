@@ -74,7 +74,7 @@ module Loading = {
     <>
       <Header />
       {Belt_Array.make(
-         5,
+         10,
          <Row>
            <Col> <HSpacing size=Spacing.lg /> </Col>
            <Col size=1.4> <LoadingCensorBar width=300 height=16 /> </Col>

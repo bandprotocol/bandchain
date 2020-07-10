@@ -200,7 +200,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
              </div>
            </div>
          </>
-       | _ => <LoadingCensorBar width=150 height=50 />
+       | _ => <LoadingCensorBar width=150 height=30 />
        }}
     </div>
     <VSpacing size=Spacing.xl />
@@ -380,7 +380,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
          switch (validatorSub) {
          | Data(validator) =>
            <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
-         | _ => <ProposedBlocksTable.Loading />
+         | _ => <ProposedBlocksTable.LoadingWithHeader />
          }
        | Delegators => <DelegatorsTable address />
        | Reports => <ReportsTable address />
