@@ -15,10 +15,13 @@
 ### Yoda
 
 - (feat) [\#2198](https://github.com/bandprotocol/bandchain/pull/2198) Implement POC docker executor.
+- (impv) [\#2197](https://github.com/bandprotocol/bandchain/pull/2197) Combine execution type to `rest` and update add ds or script.
+- (bugs) [\#2193](https://github.com/bandprotocol/bandchain/pull/2193) Fix bug start_docker.sh and start_yoda.sh.
 - (feat) [\#2190](https://github.com/bandprotocol/bandchain/pull/2190) Add yoda command to bandchain.
 
 ### Emitter & Flusher
 
+- (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
 - (bugs) [\#2179](https://github.com/bandprotocol/bandchain/pull/2179) Add parse bytes to convert nil slices to empty slices.
@@ -37,6 +40,9 @@
 
 ### Scan
 
+- (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
+- (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
+
 ### Bridges
 
 - (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
@@ -48,3 +54,6 @@
 ### Helpers
 
 ### MISC
+
+- (impv) [\#2195](https://github.com/bandprotocol/bandchain/pull/2195) Remove lib and update executable as base64 encoded.
+

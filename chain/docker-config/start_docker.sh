@@ -118,11 +118,12 @@ sleep 10
 
 for v in {1..4}
 do
-    rm -rf ~/.oracled
+    rm -rf ~/.yoda
     yoda config chain-id bandchain
     yoda config node tcp://172.18.0.1$v:26657
     yoda config chain-rest-server http://172.18.0.20:1317
     yoda config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+    yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution"
 
     # activate validator
     echo "y" | bandcli tx oracle activate --from validator$v --keyring-backend test
@@ -149,7 +150,7 @@ do
     done
 
     docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest yoda r
-    docker cp ~/.oracled bandchain_oracle${v}:/root/.oracled
+    docker cp ~/.yoda bandchain_oracle${v}:/root/.yoda
     docker start bandchain_oracle${v}
 done
 

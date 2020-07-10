@@ -72,8 +72,8 @@ blocks = sa.Table(
 transactions = sa.Table(
     "transactions",
     metadata,
-    Column("id", sa.Integer, primary_key=True, autoincrement=True),
-    Column("hash", CustomBase64, unique=True),
+    Column("id", sa.Integer, sa.Sequence("seq_transaction_id"), unique=True),
+    Column("hash", CustomBase64, primary_key=True),
     Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
@@ -89,8 +89,8 @@ transactions = sa.Table(
 accounts = sa.Table(
     "accounts",
     metadata,
-    Column("id", sa.Integer, primary_key=True, autoincrement=True),
-    Column("address", sa.String, unique=True),
+    Column("id", sa.Integer, sa.Sequence("seq_account_id"), unique=True),
+    Column("address", sa.String, primary_key=True),
     Column("balance", sa.String),
 )
 
@@ -179,8 +179,8 @@ raw_reports = sa.Table(
 validators = sa.Table(
     "validators",
     metadata,
-    Column("id", sa.Integer, primary_key=True, autoincrement=True),
-    Column("operator_address", sa.String, unique=True),
+    Column("id", sa.Integer, sa.Sequence("seq_validator_id"), unique=True),
+    Column("operator_address", sa.String, primary_key=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
     Column("moniker", sa.String),
