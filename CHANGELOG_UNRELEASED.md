@@ -39,6 +39,7 @@
 ### Scan
 
 - (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
+- (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
 
 ### Bridges
 
