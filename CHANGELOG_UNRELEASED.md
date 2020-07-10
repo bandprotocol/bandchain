@@ -38,6 +38,8 @@
 
 ### Scan
 
+- (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
+
 ### Bridges
 
 - (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
