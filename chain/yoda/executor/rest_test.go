@@ -52,10 +52,10 @@ func TestExecuteSuccess(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL)
-	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
-
-	require.Equal(t, uint32(0), exitcode)
-	require.Equal(t, []byte("BEEB"), res)
+	res, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	require.NoError(t, err)
+	require.Equal(t, uint32(0), res.Code)
+	require.Equal(t, []byte("BEEB"), res.Output)
 }
 
 func TestExecuteBadUrlFail(t *testing.T) {
@@ -63,10 +63,8 @@ func TestExecuteBadUrlFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec("www.beeb.com") // bad url
-	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
-
-	require.Equal(t, uint32(255), exitcode)
-	require.Equal(t, []byte("EXECUTION_ERROR"), res)
+	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	require.Error(t, err)
 }
 
 func TestExecuteDecodeStructFail(t *testing.T) {
@@ -74,9 +72,8 @@ func TestExecuteDecodeStructFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL)
-	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
-	require.Equal(t, uint32(255), exitcode)
-	require.Equal(t, []byte("EXECUTION_ERROR"), res)
+	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	require.Error(t, err)
 }
 
 func TestExecuteResponseNotOk(t *testing.T) {
@@ -84,9 +81,8 @@ func TestExecuteResponseNotOk(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL)
-	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
-	require.Equal(t, uint32(255), exitcode)
-	require.Equal(t, []byte("EXECUTION_ERROR"), res)
+	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	require.Error(t, err)
 }
 
 func TestExecuteFail(t *testing.T) {
@@ -94,7 +90,8 @@ func TestExecuteFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL)
-	res, exitcode := executor.Exec(1*time.Second, []byte("executable"), "calldata")
-	require.Equal(t, uint32(1), exitcode)
-	require.Equal(t, []byte("Stderr"), res)
+	res, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	require.NoError(t, err)
+	require.Equal(t, uint32(1), res.Code)
+	require.Equal(t, []byte("Stderr"), res.Output)
 }

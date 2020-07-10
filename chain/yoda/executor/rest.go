@@ -42,7 +42,7 @@ func (e *RestExec) Exec(timeout time.Duration, code []byte, arg string) (ExecRes
 	}
 
 	if resp.Ok != true {
-		return ExecResult{}, resp.Error
+		return ExecResult{}, ErrRestNotOk
 	}
 
 	r := externalExecutionResponse{}
