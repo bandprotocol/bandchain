@@ -9,10 +9,20 @@ module ValidatorReport = {
     oracleScript: oracle_script_t,
   };
 
+  type raw_request_t = {dataSourceID: ID.DataSource.t};
+
   type report_details_t = {
-    dataSourceID: ID.DataSource.t,
     externalID: int,
     data: JsBuffer.t,
+    rawRequest: option(raw_request_t),
+  };
+
+  type transaction_t = {hash: Hash.t};
+
+  type internal_t = {
+    request: request_t,
+    transaction: transaction_t,
+    reportDetails: array(report_details_t),
   };
 
   type t = {
@@ -21,27 +31,37 @@ module ValidatorReport = {
     reportDetails: array(report_details_t),
   };
 
-  // module MultiConfig = [%graphql
-  //   {|
-  //     subscription Reports ($limit: Int!, $offset: Int!, $validator: String!) {
-  //       reports (where: {validator: {_eq: $validator}}, limit: $limit, offset: $offset, order_by: {request_id: desc}) @bsRecord {
-  //           request @bsRecord {
-  //             id @bsDecoder (fn: "ID.Request.fromInt")
-  //             oracleScript: oracle_script @bsRecord {
-  //               id @bsDecoder (fn: "ID.OracleScript.fromInt")
-  //               name
-  //             }
-  //           }
-  //           txHash: tx_hash @bsDecoder (fn: "GraphQLParser.hash")
-  //           reportDetails: report_details @bsRecord {
-  //             dataSourceID: data_source_id @bsDecoder (fn: "ID.DataSource.fromInt")
-  //             externalID: external_id @bsDecoder (fn: "GraphQLParser.int64")
-  //             data @bsDecoder (fn: "GraphQLParser.buffer")
-  //           }
-  //         }
-  //       }
-  //     |}
-  // ];
+  let toExternal = ({request, transaction, reportDetails}) => {
+    txHash: transaction.hash,
+    request,
+    reportDetails,
+  };
+
+  module MultiConfig = [%graphql
+    {|
+      subscription Reports ($limit: Int!, $offset: Int!, $validator: String!) {
+        reports (where: {validator: {_eq: $validator}}, limit: $limit, offset: $offset, order_by: {request_id: desc}) @bsRecord {
+            request @bsRecord {
+              id @bsDecoder (fn: "ID.Request.fromInt")
+              oracleScript: oracle_script @bsRecord {
+                id @bsDecoder (fn: "ID.OracleScript.fromInt")
+                name
+              }
+            }
+            transaction @bsRecord{
+              hash @bsDecoder (fn: "GraphQLParser.hash")
+            }
+            reportDetails: raw_reports @bsRecord {
+              externalID: external_id @bsDecoder (fn:"GraphQLParser.int64")
+              data @bsDecoder (fn: "GraphQLParser.buffer")
+              rawRequest: raw_request @bsRecord {
+                dataSourceID: data_source_id @bsDecoder (fn: "ID.DataSource.fromInt")
+              }
+            }
+          }
+        }
+      |}
+  ];
 
   module ReportCountConfig = [%graphql
     {|
@@ -56,26 +76,13 @@ module ValidatorReport = {
   ];
 
   let getListByValidator = (~page=1, ~pageSize=5, ~validator) => {
-    // let offset = (page - 1) * pageSize;
-    // let (result, _) =
-    //   ApolloHooks.useSubscription(
-    //     MultiConfig.definition,
-    //     ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~validator, ()),
-    //   );
-    // result |> Sub.map(_, x => x##reports);
-    Sub.resolve([|
-      {
-        txHash: "89e6fd29d5e8c37af39351695b91d1b58b85071485794024ca7bb81d7becd1ac" |> Hash.fromHex,
-        request: {
-          id: ID.Request.ID(1),
-          oracleScript: {
-            id: ID.OracleScript.ID(3),
-            name: "jjjj",
-          },
-        },
-        reportDetails: [||],
-      },
-    |]);
+    let offset = (page - 1) * pageSize;
+    let (result, _) =
+      ApolloHooks.useSubscription(
+        MultiConfig.definition,
+        ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~validator, ()),
+      );
+    result |> Sub.map(_, x => x##reports->Belt_Array.map(toExternal));
   };
 
   let count = validator => {

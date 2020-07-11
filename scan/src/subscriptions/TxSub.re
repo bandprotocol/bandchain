@@ -1196,10 +1196,11 @@ type internal_t = {
 };
 
 module Mini = {
+  type block_t = {timestamp: MomentRe.Moment.t};
   type t = {
     hash: Hash.t,
     blockHeight: ID.Block.t,
-    timestamp: MomentRe.Moment.t,
+    block: block_t,
   };
 };
 

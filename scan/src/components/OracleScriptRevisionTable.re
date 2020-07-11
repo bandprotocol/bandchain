@@ -105,7 +105,7 @@ let make = (~id) =>
                         {switch (transaction) {
                          | Some(tx) =>
                            <Timestamp
-                             time={tx.timestamp}
+                             time={tx.block.timestamp}
                              weight=Text.Regular
                              code=true
                              size=Text.Md
