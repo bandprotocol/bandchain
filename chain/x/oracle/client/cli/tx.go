@@ -48,6 +48,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdActivate(cdc),
 		GetCmdAddReporter(cdc),
 		GetCmdRemoveReporter(cdc),
+		GetCmdAddReporters(cdc),
 	)...)
 
 	return oracleCmd
@@ -554,6 +555,48 @@ $ %s tx oracle remove-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --fro
 				return err
 			}
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdAddReporter implements the add reporter command handler.
+func GetCmdAddReporters(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-reporters [reporter1] [reporter2] ...",
+		Short: "Add an agent authorized to submit report transactions.",
+		Args:  cobra.MinimumNArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Add agents authorized to submit report transactions.
+Example:
+$ %s tx oracle add-reporters band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			msgs := make([]sdk.Msg, len(args))
+			for i, raw := range args {
+				reporter, err := sdk.AccAddressFromBech32(raw)
+				if err != nil {
+					return err
+				}
+				msgs[i] = types.NewMsgAddReporter(
+					validator,
+					reporter,
+				)
+				err = msgs[i].ValidateBasic()
+				if err != nil {
+					return err
+				}
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	}
 
