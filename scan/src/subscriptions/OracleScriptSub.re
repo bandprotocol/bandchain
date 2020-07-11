@@ -44,7 +44,7 @@ let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transact
 module MultiConfig = [%graphql
   {|
   subscription OracleScripts($limit: Int!, $offset: Int!) {
-    oracle_scripts(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}}) @bsRecord {
+    oracle_scripts(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.OracleScript.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name

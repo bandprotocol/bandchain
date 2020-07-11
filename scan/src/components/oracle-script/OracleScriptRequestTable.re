@@ -99,14 +99,14 @@ let make = (~oracleScriptID: ID.OracleScript.t) =>
                </Row>
              </THead>
              {requests
-              ->Belt_Array.map(({id, requester, txTimestamp, blockHeight, txHash}) => {
+              ->Belt_Array.map(({id, sender, txTimestamp, blockHeight, txHash}) => {
                   <TBody key={txHash |> Hash.toHex(~upper=true)}>
                     <Row>
                       <Col> <HSpacing size=Spacing.lg /> </Col>
                       <Col size=1.> <TypeID.Request id /> </Col>
                       <Col size=2.64>
                         <div className={Styles.withWidth(220)}>
-                          <AddressRender address=requester />
+                          <AddressRender address=sender />
                         </div>
                       </Col>
                       <Col size=2.2>
