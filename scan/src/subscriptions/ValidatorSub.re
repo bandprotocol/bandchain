@@ -19,6 +19,7 @@ type internal_t = {
   commissionMaxRate: float,
   consensusPubKey: PubKey.t,
   jailed: bool,
+  oracleStatus: bool,
   details: string,
 };
 
@@ -26,6 +27,7 @@ type t = {
   rank: int,
   avgResponseTime: int,
   isActive: bool,
+  oracleStatus: bool,
   operatorAddress: Address.t,
   consensusAddress: Address.t,
   consensusPubKey: PubKey.t,
@@ -57,12 +59,14 @@ let toExternal =
         commissionMaxChange,
         commissionMaxRate,
         jailed,
+        oracleStatus,
         details,
       }: internal_t,
       rank,
     ) => {
   rank,
   isActive: !jailed,
+  oracleStatus,
   operatorAddress,
   consensusAddress,
   consensusPubKey,
@@ -104,6 +108,7 @@ module SingleConfig = [%graphql
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           jailed
           details
+          oracleStatus: status
         }
       }
   |}
@@ -125,6 +130,7 @@ module MultiConfig = [%graphql
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
           jailed
           details
+          oracleStatus: status
         }
       }
   |}
