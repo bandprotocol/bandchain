@@ -11,6 +11,7 @@ HEADERS = {
     "access-control-allow-methods": "OPTIONS, POST",
 }
 
+
 def lambda_handler(event, context):
     try:
         body = json.loads(event["body"])
@@ -40,8 +41,10 @@ def lambda_handler(event, context):
 
     os.chmod(path, 0o775)
     try:
+        env = os.environ.copy()
+        env["PYTHONPATH"] = env["PYTHONPATH"] + ":" + os.getcwd()
         result = subprocess.run(
-            [path] + shlex.split(body["calldata"]), timeout=3, capture_output=True
+            [path] + shlex.split(body["calldata"]), env=env, timeout=3, capture_output=True
         )
 
         return {
