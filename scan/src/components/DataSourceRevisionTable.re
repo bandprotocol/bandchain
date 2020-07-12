@@ -103,7 +103,7 @@ let make = (~id) =>
                       <Col size=2.>
                         {switch (transaction) {
                          | Some(tx) =>
-                           <TimeAgos time={tx.timestamp} size=Text.Md weight=Text.Medium />
+                           <TimeAgos time={tx.block.timestamp} size=Text.Md weight=Text.Medium />
                          | None => <Text value="GENESIS" />
                          }}
                       </Col>

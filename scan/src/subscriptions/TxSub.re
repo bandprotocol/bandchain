@@ -1,13 +1,15 @@
 module RawDataReport = {
   type t = {
     externalDataID: int,
+    exitCode: int,
     data: JsBuffer.t,
   };
 
   let decode = json =>
     JsonUtils.Decode.{
-      externalDataID: json |> field("external_id", int),
-      data: json |> field("data", string) |> JsBuffer.fromBase64,
+      externalDataID: json |> intWithDefault(field("external_id")),
+      exitCode: json |> intWithDefault(field("exit_code")),
+      data: json |> bufferWithDefault(field("data")),
     };
 };
 
@@ -207,7 +209,7 @@ module Msg = {
         id: json |> at(["extra", "id"], ID.Request.fromJson),
         oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
         oracleScriptName: json |> at(["extra", "name"], string),
-        calldata: json |> at(["msg", "calldata"], string) |> JsBuffer.fromBase64,
+        calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
         askCount: json |> at(["msg", "ask_count"], int),
         minCount: json |> at(["msg", "min_count"], int),
         schema: json |> at(["extra", "schema"], string),
@@ -1196,10 +1198,11 @@ type internal_t = {
 };
 
 module Mini = {
+  type block_t = {timestamp: MomentRe.Moment.t};
   type t = {
     hash: Hash.t,
     blockHeight: ID.Block.t,
-    timestamp: MomentRe.Moment.t,
+    block: block_t,
   };
 };
 

@@ -17,6 +17,12 @@ let timeS = json => {
   |> MomentRe.Moment.defaultUtc;
 };
 
+let fromUnixSecondOpt = timeOpt => {
+  timeOpt->Belt_Option.map(x => {
+    x * 1000 |> MomentRe.momentWithUnix |> MomentRe.Moment.defaultUtc
+  });
+};
+
 let timeMS = json => {
   json
   |> Js.Json.decodeNumber
@@ -30,6 +36,8 @@ let timestamp = json =>
   |> Js.Json.decodeString
   |> Belt.Option.getExn
   |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS");
+
+let timestampOpt = Belt_Option.map(_, timestamp);
 
 let timestampWithDefault = jsonOpt =>
   jsonOpt

@@ -14,7 +14,7 @@ module Styles = {
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
-  let addressContainer = style([width(`px(270))]);
+  let addressContainer = style([width(`px(320))]);
 
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 };
@@ -97,21 +97,21 @@ let make = () =>
                 spacing={Text.Em(0.1)}
               />
             </Col>
-            <Col size=1.35>
-              <Text
-                block=true
-                value="DATA SOURCES"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
+            // <Col size=1.35>
+            //   <Text
+            //     block=true
+            //     value="DATA SOURCES"
+            //     size=Text.Sm
+            //     weight=Text.Semibold
+            //     color=Colors.gray5
+            //     spacing={Text.Em(0.1)}
+            //   />
+            // </Col>
             <Col> <HSpacing size=Spacing.lg /> </Col>
           </Row>
         </THead>
         {oracleScripts
-         ->Belt.Array.map(({id, name, timestamp, owner, relatedDataSources}) => {
+         ->Belt.Array.map(({id, name, timestamp, owner}) => {
              <TBody key={id |> ID.OracleScript.toString}>
                <div className=Styles.fullWidth>
                  <Row alignItems=`baseline>
@@ -125,9 +125,9 @@ let make = () =>
                        <TElement elementType={owner->TElement.Address} />
                      </div>
                    </Col>
-                   <Col size=1.35>
-                     <TElement elementType={relatedDataSources->TElement.RelatedDataSources} />
-                   </Col>
+                   //  <Col size=1.35>
+                   //    <TElement elementType={relatedDataSources->TElement.RelatedDataSources} />
+                   //  </Col>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                  </Row>
                </div>

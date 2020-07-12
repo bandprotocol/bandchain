@@ -154,10 +154,19 @@ module Reports = {
               {reportDetails
                ->Belt_Array.map(reportDetail => {
                    <div key={reportDetail.externalID |> string_of_int}>
-                     <Row> <TypeID.DataSource id={reportDetail.dataSourceID} /> </Row>
-                     <VSpacing size=Spacing.sm />
-                     <VSpacing size=Spacing.xs />
-                   </div>
+                     // TODO: let's investigate later why raw_request is optional.
+
+                       <Row>
+                         <TypeID.DataSource
+                           id={
+                                let rawRequest = reportDetail.rawRequest |> Belt_Option.getExn;
+                                rawRequest.dataSourceID;
+                              }
+                         />
+                       </Row>
+                       <VSpacing size=Spacing.sm />
+                       <VSpacing size=Spacing.xs />
+                     </div>
                  })
                ->React.array}
             </Col>

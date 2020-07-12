@@ -35,7 +35,7 @@ let toExternal = ({id, owner, name, description, executable, transaction}) => {
 module MultiConfig = [%graphql
   {|
   subscription DataSources($limit: Int!, $offset: Int!) {
-    data_sources(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}}) @bsRecord {
+    data_sources(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
