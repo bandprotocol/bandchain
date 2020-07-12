@@ -16,6 +16,7 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
 
 const (
@@ -87,7 +88,7 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			l := NewLogger(allowLevel)
-			c.executor, err = NewExecutor(cfg.Executor)
+			c.executor, err = executor.NewExecutor(cfg.Executor)
 			if err != nil {
 				return err
 			}

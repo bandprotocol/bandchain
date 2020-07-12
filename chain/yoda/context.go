@@ -6,6 +6,7 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
 
 type Context struct {
@@ -13,6 +14,6 @@ type Context struct {
 	validator sdk.ValAddress
 	gasPrices sdk.DecCoins
 	keys      chan keys.Info
-	executor  executor
+	executor  executor.Executor
 	fileCache filecache.Cache
 }

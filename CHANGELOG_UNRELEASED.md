@@ -14,6 +14,7 @@
 
 ### Yoda
 
+- (feat) [\#2198](https://github.com/bandprotocol/bandchain/pull/2198) Implement POC docker executor.
 - (impv) [\#2197](https://github.com/bandprotocol/bandchain/pull/2197) Combine execution type to `rest` and update add ds or script.
 - (bugs) [\#2193](https://github.com/bandprotocol/bandchain/pull/2193) Fix bug start_docker.sh and start_yoda.sh.
 - (feat) [\#2190](https://github.com/bandprotocol/bandchain/pull/2190) Add yoda command to bandchain.
@@ -45,7 +46,11 @@
 
 ### Bridges
 
-- (impv) [\#67](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
+- (impv) [\#2175](https://github.com/bandprotocol/bandchain/pull/2175) Patched bridge contracts to use Solidity version 0.6.11
+
+### Runtime
+
+- (impv) [\#2200](https://github.com/bandprotocol/bandchain/pull/2200) Move runtime configurations to runtime directory.
 
 ### Owasm
 
