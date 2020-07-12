@@ -13,15 +13,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func mulCoins(coins sdk.Coins, multiplier int64) sdk.Coins {
-	var newCoins sdk.Coins
-	for _, coin := range coins {
-		newCoins = append(newCoins, sdk.NewCoin(coin.Denom, coin.Amount.MulRaw(multiplier)))
-	}
-	return newCoins
-}
-
-// MultiSendTxCmd will create a multi-send tx and sign it with the given key.
+// MultiSendTxCmd creates a multi-send tx and signs it with the given key.
 func MultiSendTxCmd(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "multi-send [amount] [to_address1] [to_address2] ....",
@@ -32,23 +24,26 @@ func MultiSendTxCmd(cdc *codec.Codec) *cobra.Command {
 			cliCtx := context.NewCLIContext().WithCodec(cdc)
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
-			// parse coins trying to be sent
+			// Parse the coins we are trying to send
 			coins, err := sdk.ParseCoins(args[0])
 			if err != nil {
 				return err
 			}
-			msg := bank.NewMsgMultiSend(
-				[]bank.Input{bank.NewInput(cliCtx.GetFromAddress(), mulCoins(coins, int64(len(args[1:]))))},
-				[]bank.Output{},
-			)
-			for _, arg := range args[1:] {
-				to, err := sdk.AccAddressFromBech32(arg)
+			accounts := args[1:]
+			inputCoins := sdk.NewCoins()
+			outputs := make([]bank.Output, 0, len(accounts))
+			for _, acc := range accounts {
+				to, err := sdk.AccAddressFromBech32(acc)
 				if err != nil {
 					return err
 				}
-				msg.Outputs = append(msg.Outputs, bank.NewOutput(to, coins))
+				outputs = append(outputs, bank.NewOutput(to, coins))
+				inputCoins = inputCoins.Add(coins...)
 			}
-
+			msg := bank.NewMsgMultiSend(
+				[]bank.Input{bank.NewInput(cliCtx.GetFromAddress(), inputCoins)},
+				outputs,
+			)
 			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
 		},
 	}
