@@ -138,12 +138,13 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
     <VSpacing size=Spacing.md />
     <KVTable
       tableWidth=480
-      headers=["EXTERNAL ID", "VALUE"]
+      headers=["EXTERNAL ID", "EXIT CODE", "VALUE"]
       rows={
         report.rawReports
         |> Belt_List.map(_, rawReport =>
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
+               KVTable.Value(rawReport.exitCode |> string_of_int),
                KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
              ]
            )
