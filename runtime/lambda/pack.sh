@@ -8,8 +8,9 @@ source venv/bin/activate
 pip install -r requirements.txt
 
 cd venv/lib/python3.7/site-packages
-zip -r9 ${OLDPWD}/function.zip .
+zip -r9 ${OLDPWD}/lambda-yoda.zip .
 
 cd ${OLDPWD}
-zip -g function.zip run.py
 deactivate
+rm -r venv
+zip -g lambda-yoda.zip run.py

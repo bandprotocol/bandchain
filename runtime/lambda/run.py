@@ -44,7 +44,7 @@ def lambda_handler(event, context):
         env = os.environ.copy()
         env["PYTHONPATH"] = os.getcwd()
         result = subprocess.run(
-            [path] + shlex.split(body["calldata"]), env=env, timeout=3, capture_output=True
+            [path] + shlex.split(body["calldata"]), env=env, timeout=5, capture_output=True
         )
 
         return {
