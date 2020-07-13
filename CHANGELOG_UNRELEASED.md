@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2222](https://github.com/bandprotocol/bandchain/pull/2222) Fix account_transactions table name
 - (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
