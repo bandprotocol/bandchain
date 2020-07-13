@@ -1,5 +1,8 @@
 #!/bin/bash
 
+yum install -y zip python3
+
+cd /pack
 python3 -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
