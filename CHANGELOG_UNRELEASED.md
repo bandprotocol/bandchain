@@ -55,6 +55,7 @@
 
 ### Runtime
 
+- (chore) [\#2226](https://github.com/bandprotocol/bandchain/pull/2226) Rename lambda function file.
 - (impv) [\#2210](https://github.com/bandprotocol/bandchain/pull/2210) Support non-standard python package.
 - (impv) [\#2200](https://github.com/bandprotocol/bandchain/pull/2200) Move runtime configurations to runtime directory.
 
