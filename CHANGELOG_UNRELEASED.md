@@ -10,7 +10,11 @@
 
 ### Chain (Consensus)
 
+- (impv) [\#2223](https://github.com/bandprotocol/bandchain/pull/2223) Re-adjust data size parameters.
+
 ### Chain (Non-consensus)
+
+- (impv)[\#2204](https://github.com/bandprotocol/bandchain/pull/2204) Add commands for improve experience of starting yoda process.
 
 ### Yoda
 
@@ -21,6 +25,8 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2219](https://github.com/bandprotocol/bandchain/pull/2219) Add delegation row in create validator handler.
+- (bugs) [\#2222](https://github.com/bandprotocol/bandchain/pull/2222) Fix account_transactions table name
 - (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
@@ -40,8 +46,8 @@
 
 ### Scan
 
-- (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
-- (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
+- (bugs) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
+- (bugs) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
 
 ### Bridges
 

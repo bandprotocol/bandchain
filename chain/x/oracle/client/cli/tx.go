@@ -46,7 +46,7 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
 		GetCmdActivate(cdc),
-		GetCmdAddReporter(cdc),
+		GetCmdAddReporters(cdc),
 		GetCmdRemoveReporter(cdc),
 	)...)
 
@@ -483,16 +483,16 @@ $ %s tx oracle activate --from mykey
 	return cmd
 }
 
-// GetCmdAddReporter implements the add reporter command handler.
-func GetCmdAddReporter(cdc *codec.Codec) *cobra.Command {
+// GetCmdAddReporters implements the add reporters command handler.
+func GetCmdAddReporters(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-reporter [reporter]",
-		Short: "Add an agent authorized to submit report transactions.",
-		Args:  cobra.ExactArgs(1),
+		Use:   "add-reporters [reporter1] [reporter2] ...",
+		Short: "Add agents authorized to submit report transactions.",
+		Args:  cobra.MinimumNArgs(1),
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Add an agent authorized to submit report transactions.
+			fmt.Sprintf(`Add agents authorized to submit report transactions.
 Example:
-$ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx oracle add-reporters band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs --from mykey
 `,
 				version.ClientName,
 			),
@@ -503,19 +503,22 @@ $ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from m
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			validator := sdk.ValAddress(cliCtx.GetFromAddress())
-			reporter, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
+			msgs := make([]sdk.Msg, len(args))
+			for i, raw := range args {
+				reporter, err := sdk.AccAddressFromBech32(raw)
+				if err != nil {
+					return err
+				}
+				msgs[i] = types.NewMsgAddReporter(
+					validator,
+					reporter,
+				)
+				err = msgs[i].ValidateBasic()
+				if err != nil {
+					return err
+				}
 			}
-			msg := types.NewMsgAddReporter(
-				validator,
-				reporter,
-			)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	}
 

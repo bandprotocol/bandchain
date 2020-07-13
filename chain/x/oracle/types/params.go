@@ -10,7 +10,7 @@ import (
 // nolint
 const (
 	DefaultParamspace              = ModuleName
-	DefaultMaxRawRequestCount      = uint64(16)
+	DefaultMaxRawRequestCount      = uint64(12)
 	DefaultMaxAskCount             = uint64(16)
 	DefaultExpirationBlockCount    = uint64(100)
 	DefaultBaseRequestGas          = uint64(150000)
