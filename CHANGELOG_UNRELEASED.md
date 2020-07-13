@@ -14,6 +14,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv)[\#2204](https://github.com/bandprotocol/bandchain/pull/2204) Add commands for improve experience of starting yoda process.
+
 ### Yoda
 
 - (feat) [\#2198](https://github.com/bandprotocol/bandchain/pull/2198) Implement POC docker executor.

@@ -9,7 +9,6 @@ yoda config chain-id bandchain
 yoda config validator $(bandcli keys show $1 -a --bech val --keyring-backend test)
 
 # setup execution endpoint
-# yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution"
 yoda config executor "docker:bandprotocol/runtime:1.0.1"
 
 echo "y" | bandcli tx oracle activate --from $1 --keyring-backend test
@@ -21,19 +20,19 @@ for i in $(eval echo {1..$2})
 do
   # add reporter key
   yoda keys add reporter$i
-
-  # send band tokens to reporter
-  echo "y" | bandcli tx send $1 $(yoda keys show reporter$i) 1000000uband --keyring-backend test
-
-  # wait for sending band tokens transaction success
-  sleep 2
-
-  # add reporter to bandchain
-  echo "y" | bandcli tx oracle add-reporter $(yoda keys show reporter$i) --from $1 --keyring-backend test
-
-  # wait for addding reporter transaction success
-  sleep 2
 done
+
+# send band tokens to reporters
+echo "y" | bandcli tx multi-send 1000000uband $(yoda keys list -a) --from $1 --keyring-backend test
+
+# wait for sending band tokens transaction success
+sleep 2
+
+# add reporter to bandchain
+echo "y" | bandcli tx oracle add-reporters $(yoda keys list -a) --from $1 --keyring-backend test
+
+# wait for addding reporter transaction success
+sleep 2
 
 # run yoda
 yoda run
