@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2222](https://github.com/bandprotocol/bandchain/pull/2222) Fix account_transactions table name
 - (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
@@ -40,8 +41,8 @@
 
 ### Scan
 
-- (bug) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
-- (bug) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
+- (bugs) [\#2119](https://github.com/bandprotocol/bandchain/pull/2119) Fix matching order on search.
+- (bugs) [\#2061](https://github.com/bandprotocol/bandchain/pull/2061) Fix wrong delegation count on account index
 
 ### Bridges
 
