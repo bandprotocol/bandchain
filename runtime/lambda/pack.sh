@@ -13,4 +13,4 @@ zip -r9 ${OLDPWD}/lambda-yoda.zip .
 cd ${OLDPWD}
 deactivate
 rm -r venv
-zip -g lambda-yoda.zip run.py
+zip -g lambda-yoda.zip lambda_function.py
