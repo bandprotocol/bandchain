@@ -9,9 +9,11 @@ import (
 
 // MutliExec is a higher-order executor that utlizes the underlying executors to perform Exec.
 type MultiExec struct {
-	execs    []Executor // The list of underlying executors.
-	strategy string     // Execution strategy. Can be "order" order "round-robin".
-	rIndex   int64      // Round-robin index, only applicable when strategy is "round-robin"
+	execs    []Executor // The underlying executors (duplicated if strategy is round-robin).
+	strategy string     // Execution strategy. Can be "order" or "round-robin".
+	// Round-robin specific state variables.
+	rIndex  int64 // Current round-robin starting index (need to mod rLength).
+	rLength int64 // Total number of available executors.
 }
 
 // MultiError encapsulates error messages from the underlying executors into one error.
@@ -21,10 +23,20 @@ type MultiError struct {
 
 // NewMultiExec creates a new MultiExec instance.
 func NewMultiExec(execs []Executor, strategy string) (*MultiExec, error) {
-	if strategy != "order" && strategy != "round-robin" {
+	switch strategy {
+	case "order":
+		return &MultiExec{execs: execs, strategy: strategy, rIndex: 0, rLength: 0}, nil
+	case "round-robin":
+		rExecs := append(append([]Executor{}, execs...), execs...)
+		return &MultiExec{
+			execs:    rExecs,
+			strategy: strategy,
+			rIndex:   -1,
+			rLength:  int64(len(execs)),
+		}, nil
+	default:
 		return &MultiExec{}, fmt.Errorf("unknown MultiExec strategy: %s", strategy)
 	}
-	return &MultiExec{execs: execs, strategy: strategy, rIndex: -1}, nil
 }
 
 // Error implements error interface for MultiError by returning all error messages concatenated.
@@ -46,8 +58,8 @@ func (e *MultiExec) nextExecOrder() []Executor {
 	case "order":
 		return e.execs
 	case "round-robin":
-		rIndex := atomic.AddInt64(&e.rIndex, 1) % int64(len(e.execs))
-		return append(append([]Executor{}, e.execs[rIndex:]...), e.execs[:rIndex]...)
+		rIndex := atomic.AddInt64(&e.rIndex, 1) % e.rLength
+		return e.execs[rIndex : rIndex+e.rLength]
 	default:
 		panic("unknown MultiExec strategy") // We should never reach here.
 	}
