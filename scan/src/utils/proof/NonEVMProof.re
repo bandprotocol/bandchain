@@ -80,7 +80,8 @@ let resolveStatusToInt = (rs: RequestSub.resolve_status_t) =>
   | Pending => 0
   | Success => 1
   | Failure => 2
-  | Unknown => 3
+  | Expired => 3
+  | Unknown => 4
   };
 
 let toPackets = (request: request_t) => {

@@ -5,6 +5,7 @@ type resolve_status_t =
   | Pending
   | Success
   | Failure
+  | Expired
   | Unknown;
 
 let parseResolveStatus = json => {
@@ -13,6 +14,7 @@ let parseResolveStatus = json => {
   | "Pending" => Pending
   | "Success" => Success
   | "Failure" => Failure
+  | "Expired" => Expired
   | _ => Unknown
   };
 };

@@ -25,6 +25,7 @@
 [@bs.module] external fail: string = "./fail.svg";
 [@bs.module] external fail2: string = "./fail2.svg";
 [@bs.module] external pending: string = "./pending.svg";
+[@bs.module] external expired: string = "./expired.svg";
 [@bs.module] external unknown: string = "./unknown.svg";
 [@bs.module] external noRequestIcon: string = "./noRequest.png";
 [@bs.module] external noRevisionIcon: string = "./noRevision.png";
