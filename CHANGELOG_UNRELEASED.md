@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2219](https://github.com/bandprotocol/bandchain/pull/2219) Add delegation row in create validator handler.
 - (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
 - (bugs) [\#2192](https://github.com/bandprotocol/bandchain/pull/2192) Add `commission_amount` field to Withdraw Commission Reward.
@@ -60,4 +61,3 @@
 ### MISC
 
 - (impv) [\#2195](https://github.com/bandprotocol/bandchain/pull/2195) Remove lib and update executable as base64 encoded.
-
