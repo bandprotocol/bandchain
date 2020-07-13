@@ -10,6 +10,8 @@
 
 ### Chain (Consensus)
 
+- (impv) [\#2223](https://github.com/bandprotocol/bandchain/pull/2223) Re-adjust data size parameters.
+
 ### Chain (Non-consensus)
 
 ### Yoda
@@ -61,4 +63,3 @@
 ### MISC
 
 - (impv) [\#2195](https://github.com/bandprotocol/bandchain/pull/2195) Remove lib and update executable as base64 encoded.
-
