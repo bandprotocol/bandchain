@@ -485,19 +485,13 @@ let getCurrentDay = _ => {
 
 [@react.component]
 let make = () => {
+  let currentTime = React.useContext(TimeContext.context);
+
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
-  let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
   let (searchTerm, setSearchTerm) = React.useState(_ => "");
 
   React.useEffect0(() => {
-    let timeOutID =
-      Js.Global.setInterval(
-        () => {
-          setPrevDayTime(getPrevDay);
-          setCurrentTime(getCurrentDay);
-        },
-        60_000,
-      );
+    let timeOutID = Js.Global.setInterval(() => {setPrevDayTime(getPrevDay)}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
 
@@ -507,7 +501,11 @@ let make = () => {
   let validatorsCountSub = ValidatorSub.count();
   let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-  let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
+  let avgBlockTimeSub =
+    BlockSub.getAvgBlockTime(
+      prevDayTime,
+      currentTime |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
+    );
   let latestBlock = BlockSub.getLatest();
   let votesBlockSub = ValidatorSub.getListVotesBlock();
 

@@ -11,30 +11,37 @@ module Styles = {
 [@react.component]
 let make = (~address) =>
   {
+    let currentTime =
+      React.useContext(TimeContext.context)
+      |> MomentRe.Moment.defaultUtc
+      |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
-    let delegationsCountSub = DelegationSub.getStakeCountByDelegator(address);
-    let delegationsSub = DelegationSub.getStakeList(address, ~pageSize, ~page, ());
 
-    let%Sub delegationsCount = delegationsCountSub;
-    let%Sub delegations = delegationsSub;
+    let unbondingListSub =
+      UnbondingSub.getUnbondingByDelegator(address, currentTime, ~pageSize, ~page, ());
+    let unbondingCountSub = UnbondingSub.getUnbondingCountByDelegator(address, currentTime);
 
-    let pageCount = Page.getPageCount(delegationsCount, pageSize);
+    let%Sub unbondingCount = unbondingCountSub;
+    let%Sub unbondingList = unbondingListSub;
 
-    <div className=Styles.tableLowerContainer>
+    let pageCount = Page.getPageCount(unbondingCount, pageSize);
+
+    <div>
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
         <HSpacing size=Spacing.lg />
-        <Text value={delegations |> Belt_Array.length |> string_of_int} weight=Text.Semibold />
+        <Text value={unbondingCount |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.xs />
-        <Text value="Validators Delegated" />
+        <Text value="Unbonding Entries" />
       </div>
       <VSpacing size=Spacing.lg />
       <>
         <THead>
           <Row>
             <Col> <HSpacing size=Spacing.lg /> </Col>
-            <Col size=0.9>
+            <Col size=1.>
               <Text
                 block=true
                 value="VALIDATOR"
@@ -56,11 +63,11 @@ let make = (~address) =>
                 />
               </div>
             </Col>
-            <Col size=0.6>
+            <Col size=1.>
               <div className=Styles.alignRight>
                 <Text
                   block=true
-                  value="REWARD (BAND)"
+                  value="UNBONDED AT"
                   size=Text.Sm
                   spacing={Text.Em(0.05)}
                   weight=Text.Bold
@@ -71,17 +78,18 @@ let make = (~address) =>
             <Col> <HSpacing size=Spacing.lg /> </Col>
           </Row>
         </THead>
-        {delegations
-         ->Belt.Array.map(delegation => {
-             <TBody key={delegation.operatorAddress |> Address.toBech32} minHeight=50>
+        {unbondingList
+         ->Belt.Array.map(unbondingEntry => {
+             <TBody
+               key={unbondingEntry.validator.operatorAddress |> Address.toBech32} minHeight=50>
                <Row>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=0.9>
+                 <Col size=1.>
                    <div className=Styles.hFlex>
                      <ValidatorMonikerLink
-                       validatorAddress={delegation.operatorAddress}
-                       moniker={delegation.moniker}
-                       identity={delegation.identity}
+                       validatorAddress={unbondingEntry.validator.operatorAddress}
+                       moniker={unbondingEntry.validator.moniker}
+                       identity={unbondingEntry.validator.identity}
                        width={`px(300)}
                      />
                    </div>
@@ -89,15 +97,21 @@ let make = (~address) =>
                  <Col size=0.6>
                    <div className=Styles.alignRight>
                      <Text
-                       value={delegation.amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                       value={
+                         unbondingEntry.amount |> Coin.getBandAmountFromCoin |> Format.fPretty
+                       }
                        code=true
                      />
                    </div>
                  </Col>
-                 <Col size=0.6>
+                 <Col size=1.>
                    <div className=Styles.alignRight>
                      <Text
-                       value={delegation.reward |> Coin.getBandAmountFromCoin |> Format.fPretty}
+                       value={
+                         unbondingEntry.completionTime
+                         |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                         |> String.uppercase_ascii
+                       }
                        code=true
                      />
                    </div>

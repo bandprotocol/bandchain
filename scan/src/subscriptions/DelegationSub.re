@@ -11,6 +11,7 @@ type stake_t = {
   operatorAddress: Address.t,
   reward: Coin.t,
   sharePercentage: float,
+  identity: string,
 };
 
 type stake_aggregate_t = {
@@ -28,6 +29,7 @@ module StakeConfig = [%graphql
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       operatorAddress: operator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       moniker @bsDecoder(fn: "GraphQLParser.stringExn")
+      identity @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}
@@ -81,6 +83,7 @@ module DelegatorsByValidatorConfig = [%graphql
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       operatorAddress: operator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       moniker @bsDecoder(fn: "GraphQLParser.stringExn")
+      identity @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}

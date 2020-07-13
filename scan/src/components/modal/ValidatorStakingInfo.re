@@ -140,6 +140,10 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      let currentTime =
+        React.useContext(TimeContext.context)
+        |> MomentRe.Moment.defaultUtc
+        |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
@@ -148,7 +152,8 @@ module StakingInfo = {
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
-      let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);
+      let unbondingListSub =
+        UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress, currentTime);
 
       let%Sub info = infoSub;
       let%Sub balanceAtStake = balanceAtStakeSub;
