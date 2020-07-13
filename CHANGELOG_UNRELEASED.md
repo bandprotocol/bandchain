@@ -25,6 +25,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2219](https://github.com/bandprotocol/bandchain/pull/2219) Add delegation row in create validator handler.
 - (bugs) [\#2222](https://github.com/bandprotocol/bandchain/pull/2222) Fix account_transactions table name
 - (impv) [\#2196](https://github.com/bandprotocol/bandchain/pull/2196) Fix create view table command
 - (impv) [\#2186](https://github.com/bandprotocol/bandchain/pull/2186) Add temporary view tables.
