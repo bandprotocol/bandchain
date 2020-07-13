@@ -9,6 +9,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	"github.com/cosmos/go-bip39"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -16,6 +17,7 @@ const (
 	flagIndex    = "index"
 	flagCoinType = "coin-type"
 	flagRecover  = "recover"
+	flagAddress  = "address"
 )
 
 func keysCmd(c *Context) *cobra.Command {
@@ -135,12 +137,19 @@ func keysListCmd(c *Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			isShowAddr := viper.GetBool(flagAddress)
 			for _, key := range keys {
-				fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
+				if isShowAddr {
+					fmt.Printf("%s ", key.GetAddress().String())
+				} else {
+					fmt.Printf("%s => %s\n", key.GetName(), key.GetAddress().String())
+				}
 			}
 			return nil
 		},
 	}
+	cmd.Flags().BoolP(flagAddress, "a", false, "Output the address only")
+	viper.BindPFlag(flagAddress, cmd.Flags().Lookup(flagAddress))
 	return cmd
 }
 

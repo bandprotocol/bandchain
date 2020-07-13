@@ -188,7 +188,7 @@ func TestMsgReportDataValidation(t *testing.T) {
 	performValidateTests(t, []validateTestCase{
 		{true, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{}, GoodTestValAddr, GoodTestAddr)},
-		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte(strings.Repeat("x", 2000))}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
+		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte(strings.Repeat("x", 500))}, {2, 2, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {1, 1, []byte("data2")}}, GoodTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, BadTestValAddr, GoodTestAddr)},
 		{false, NewMsgReportData(1, []RawReport{{1, 1, []byte("data1")}, {2, 2, []byte("data2")}}, GoodTestValAddr, BadTestAddr)},

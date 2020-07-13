@@ -19,7 +19,7 @@ from .db import (
     validator_votes,
     unbonding_delegations,
     redelegations,
-    account_transcations,
+    account_transactions,
 )
 
 
@@ -52,7 +52,7 @@ class Handler(object):
         tx_id = self.get_transaction_id(msg["hash"])
         for account in related_tx_accounts:
             self.conn.execute(
-                account_transcations.insert(),
+                account_transactions.insert(),
                 {"transaction_id": tx_id, "account_id": self.get_account_id(account)},
             )
 
