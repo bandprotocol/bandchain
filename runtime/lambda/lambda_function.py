@@ -62,13 +62,12 @@ def lambda_handler(event, context):
         return bad_request("Calldata exceeds max size")
     if "timeout" not in body:
         return bad_request("Missing timeout value")
-    timeout = 0
     try:
         timeout = int(body["timeout"])
     except ValueError:
-        return bad_request("Timout format invalid")
+        return bad_request("Timeout format invalid")
     if timeout > MAX_TIMEOUT:
-        return bad_request("Timout exceeded")
+        return bad_request("Timeout exceeded")
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
