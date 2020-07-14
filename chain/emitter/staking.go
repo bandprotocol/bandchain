@@ -59,13 +59,12 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
 	delegation, found := app.StakingKeeper.GetDelegation(app.DeliverContext, delegatorAddress, operatorAddress)
 	if found {
-		info := app.DistrKeeper.GetDelegatorStartingInfo(app.DeliverContext, operatorAddress, delegatorAddress)
-		latestReward := app.DistrKeeper.GetValidatorHistoricalRewards(app.DeliverContext, operatorAddress, info.PreviousPeriod)
+		_, ratio := app.getCurrentRewardAndCurrentRatio(operatorAddress)
 		app.Write("SET_DELEGATION", JsDict{
 			"delegator_address": delegatorAddress,
 			"operator_address":  operatorAddress,
 			"shares":            delegation.Shares.String(),
-			"last_ratio":        latestReward.CumulativeRewardRatio[0].Amount.String(),
+			"last_ratio":        ratio,
 		})
 	} else {
 		app.Write("REMOVE_DELEGATION", JsDict{
@@ -80,6 +79,7 @@ func (app *App) handleMsgCreateValidator(
 	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
 ) {
 	app.emitSetValidator(msg.ValidatorAddress)
+	app.emitDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 }
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.

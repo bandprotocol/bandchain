@@ -12,9 +12,7 @@ Fixed: #XXXX
 
 ## Implementation details
 
----
-
-Please ensure the following requirements are met before submitting a pull request:
+## Please ensure the following requirements are met before submitting a pull request:
 
 - [ ] The pull request is targeted against the correct target branch
 - [ ] The pull request is linked to an issue with appropriate discussion and an accepted design OR is linked to a spec that describes the work.
