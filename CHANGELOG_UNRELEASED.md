@@ -14,6 +14,8 @@
 
 ### Yoda
 
+- (feat) [\#2218](https://github.com/bandprotocol/bandchain/pull/2218) Implement MultiExec to combine multiple executors.
+
 ### Emitter & Flusher
 
 ### Scan
