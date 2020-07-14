@@ -49,10 +49,8 @@ def lambda_handler(event, context):
     env = os.environ.copy()
 
     MAX_EXECUTABLE = get_env(env, "MAX_EXECUTABLE")
-    MAX_CALLDATA = get_env(env, "MAX_CALLDATA")
+    MAX_DATA_SIZE = get_env(env, "MAX_DATA_SIZE")
     MAX_TIMEOUT = get_env(env, "MAX_TIMEOUT")
-    MAX_STDOUT = get_env(env, "MAX_STDOUT")
-    MAX_STDERR = get_env(env, "MAX_STDERR")
 
     if "executable" not in body:
         return bad_request("Missing executable value")
@@ -60,7 +58,7 @@ def lambda_handler(event, context):
         return bad_request("Executable exceeds max size")
     if "calldata" not in body:
         return bad_request("Missing calldata value")
-    if len(body["calldata"]) > MAX_CALLDATA:
+    if len(body["calldata"]) > MAX_DATA_SIZE:
         return bad_request("Calldata exceeds max size")
     if "timeout" not in body:
         return bad_request("Missing timeout value")
@@ -89,8 +87,8 @@ def lambda_handler(event, context):
 
         proc.wait(timeout=(timeout / 1000))
         returncode = proc.returncode
-        stdout = proc.stdout.read(MAX_STDOUT).decode()
-        stderr = proc.stderr.read(MAX_STDERR).decode()
+        stdout = proc.stdout.read(MAX_DATA_SIZE).decode()
+        stderr = proc.stderr.read(MAX_DATA_SIZE).decode()
         return success(returncode, stdout, stderr, "")
     except OSError:
         return success(126, "", "", "Execution fail")
