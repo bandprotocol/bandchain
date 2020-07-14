@@ -34,6 +34,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdRequestSearch(storeKey, cdc),
 		GetQueryCmdValidatorStatus(storeKey, cdc),
 		GetQueryCmdReporters(storeKey, cdc),
+		GetQueryActiveValidators(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -174,6 +175,22 @@ func GetQueryCmdReporters(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			return printOutput(cliCtx, cdc, bz, &[]sdk.AccAddress{})
+		},
+	}
+}
+
+// GetQueryActiveValidators implements the query active validators command.
+func GetQueryActiveValidators(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "active-validators",
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryActiveValidators))
+			if err != nil {
+				return err
+			}
+			return printOutput(cliCtx, cdc, bz, &[]types.QueryActiveValidatorResult{})
 		},
 	}
 }

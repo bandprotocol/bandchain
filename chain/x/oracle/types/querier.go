@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Query endpoints supported by the oracle Querier.
@@ -62,4 +63,10 @@ type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
 	Result  *Result  `json:"result"`
+}
+
+// QueryActiveValidatorResult is the struct for the result of request active validators.
+type QueryActiveValidatorResult struct {
+	Address sdk.ValAddress `json:"address"`
+	Power   uint64         `json:"power"`
 }
