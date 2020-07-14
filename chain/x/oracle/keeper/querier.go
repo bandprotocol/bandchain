@@ -30,6 +30,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryValidatorStatus(ctx, path[1:], keeper)
 		case types.QueryReporters:
 			return queryReporters(ctx, path[1:], keeper)
+		case types.QueryActiveValidators:
+			return queryActiveValidators(ctx, req, keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -133,4 +135,37 @@ func queryReporters(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 		return types.QueryBadRequest(err.Error())
 	}
 	return types.QueryOK(k.GetReporters(ctx, validatorAddress))
+}
+
+func queryActiveOracleValidators(ctx sdk.Context, req abci.RequestQuery, k Keeper) ([]byte, error) {
+	// 	var params staking.QueryValidatorsParams
+
+	// 	err := types.ModuleCdc.UnmarshalJSON(req.Data, &params)
+	// 	if err != nil {
+	// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONUnmarshal, err.Error())
+	// 	}
+
+	// 	validators := k.stakingKeeper.GetAllValidators(ctx)
+	// 	filteredVals := make([]types.Validator, 0, len(validators))
+
+	// 	for _, val := range validators {
+	// 		if strings.EqualFold(val.GetStatus().String(), params.Status) {
+	// 			filteredVals = append(filteredVals, val)
+	// 		}
+	// 	}
+
+	// 	start, end := client.Paginate(len(filteredVals), params.Page, params.Limit, int(k.GetParams(ctx).MaxValidators))
+	// 	if start < 0 || end < 0 {
+	// 		filteredVals = []types.Validator{}
+	// 	} else {
+	// 		filteredVals = filteredVals[start:end]
+	// 	}
+
+	// 	res, err := codec.MarshalJSONIndent(types.ModuleCdc, filteredVals)
+	// 	if err != nil {
+	// 		return nil, sdkerrors.Wrap(sdkerrors.ErrJSONMarshal, err.Error())
+	// 	}
+
+	// 	return res, nil
+	return []byte{}, nil
 }
