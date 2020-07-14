@@ -22,6 +22,8 @@
 
 ### Runtime
 
+- (impv) [\#2230](https://github.com/bandprotocol/bandchain/pull/2230) Update lambda function follow Remote data source executor.
+
 ### Owasm
 
 - (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Maintain gas used and gas limit in VMConfig.
