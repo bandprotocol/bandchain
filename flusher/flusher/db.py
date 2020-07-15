@@ -11,12 +11,29 @@ class ResolveStatus(enum.Enum):
     Expired = 3
 
 
+class ProposalStatus(enum.Enum):
+    Nil = 0
+    DepositPeriod = 1
+    VotingPeriod = 2
+    Passed = 3
+    Rejected = 4
+    Failed = 5
+
+
 class CustomResolveStatus(sa.types.TypeDecorator):
 
     impl = sa.Enum(ResolveStatus)
 
     def process_bind_param(self, value, dialect):
         return ResolveStatus(value)
+
+
+class CustomProposalStatus(sa.types.TypeDecorator):
+
+    impl = sa.Enum(ProposalStatus)
+
+    def process_bind_param(self, value, dialect):
+        return ProposalStatus(value)
 
 
 class CustomDateTime(sa.types.TypeDecorator):
@@ -247,4 +264,22 @@ account_transactions = sa.Table(
     metadata,
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
     Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+)
+
+proposals = sa.Table(
+    "proposals",
+    metadata,
+    Column("proposal_id", sa.Integer, primary_key=True),
+    Column("detail", sa.JSON),
+    Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("type", sa.String),
+    Column("title", sa.String),
+    Column("description", sa.String),
+    Column("proposal_route", sa.String),
+    Column("status", CustomProposalStatus),
+    Column("submit_time", CustomDateTime),
+    Column("deposit_end_time", CustomDateTime),
+    Column("total_deposit", sa.String),  # uband suffix
+    Column("voting_time", CustomDateTime),
+    Column("voting_end_time", CustomDateTime),
 )

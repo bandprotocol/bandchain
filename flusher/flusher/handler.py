@@ -20,6 +20,7 @@ from .db import (
     unbonding_delegations,
     redelegations,
     account_transactions,
+    proposals,
 )
 
 
@@ -173,3 +174,13 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_set_proposal(self, msg):
+        msg["proposer_id"] = self.get_account_id(msg["proposer"])
+        del msg["proposer"]
+        print(msg)
+        self.conn.execute(
+            insert(proposals)
+            .values(**msg)
+            .on_conflict_do_update(index_elements=[proposals.c.proposal_id], set_=msg)
+        )
