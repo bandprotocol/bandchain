@@ -20,7 +20,7 @@
 
 ### Emitter & Flusher
 
-- (impv) [\#2238](https://github.com/bandprotocol/bandchain/pull/2238) Add proposals table and MsgSubmitProposal handler.
+- (impv) [\#2238](https://github.com/bandprotocol/bandchain/pull/2238) Implement handle MsgSubmitProposal for emitter and flusher.
 
 ### Scan
 
