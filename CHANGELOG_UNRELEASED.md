@@ -53,6 +53,7 @@
 ### Scan
 
 - (impv) [\#2235](https://github.com/bandprotocol/bandchain/pull/2235) added `unbonding` and `redelegate` tabs to account index page.
+- (bugs) [\#2236](https://github.com/bandprotocol/bandchain/pull/2236) Fixed uptime query on ValidatorIndexPage
 - (impv) [\#2203](https://github.com/bandprotocol/bandchain/pull/2203/files) Patch request, report subscription for new cacher.
 - (impv) [\#2176](https://github.com/bandprotocol/bandchain/pull/2176/files) Fixed delegations/unbonding subs, avg blocktime and validator uptime to work with new cacher.
 - (impv) [\#2005](https://github.com/bandprotocol/bandchain/pull/2005) Show max commission rate and max commission change on validator index page

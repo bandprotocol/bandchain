@@ -250,7 +250,7 @@ let getUptime = consensusAddress => {
       SingleLast250VotedConfig.definition,
       ~variables=
         SingleLast250VotedConfig.makeVariables(
-          ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
+          ~consensusAddress=consensusAddress |> Address.toHex,
           (),
         ),
     );
