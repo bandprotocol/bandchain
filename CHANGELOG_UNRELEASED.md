@@ -20,6 +20,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2240](https://github.com/bandprotocol/bandchain/pull/2240) Emit Kafka msg for staking genesis state.
 - (feat) [\#2238](https://github.com/bandprotocol/bandchain/pull/2238) Implement handle MsgSubmitProposal for emitter and flusher.
 
 ### Scan
