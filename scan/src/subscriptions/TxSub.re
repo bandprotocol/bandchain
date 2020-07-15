@@ -16,6 +16,7 @@ module RawDataReport = {
 module Msg = {
   type badge_t =
     | SendBadge
+    | ReceiveBadge
     | CreateDataSourceBadge
     | EditDataSourceBadge
     | CreateOracleScriptBadge
@@ -59,6 +60,7 @@ module Msg = {
   let getBadgeVariantFromString = badge => {
     switch (badge) {
     | "send" => SendBadge
+    | "receive" => raise(Not_found)
     | "create_data_source" => CreateDataSourceBadge
     | "edit_data_source" => EditDataSourceBadge
     | "create_oracle_script" => CreateOracleScriptBadge
@@ -114,6 +116,14 @@ module Msg = {
         toAddress: json |> at(["msg", "to_address"], string) |> Address.fromBech32,
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
+  };
+
+  module Receive = {
+    type t = {
+      fromAddress: Address.t,
+      toAddress: Address.t,
+      amount: list(Coin.t),
+    };
   };
 
   module CreateDataSource = {
@@ -832,6 +842,7 @@ module Msg = {
 
   type t =
     | SendMsg(Send.t)
+    | ReceiveMsg(Receive.t)
     | CreateDataSourceMsg(CreateDataSource.t)
     | EditDataSourceMsg(EditDataSource.t)
     | CreateOracleScriptMsg(CreateOracleScript.t)
@@ -930,6 +941,7 @@ module Msg = {
   let getBadge = badgeVariant => {
     switch (badgeVariant) {
     | SendBadge => {text: "SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.blue7, bgColor: Colors.blue1}
     | CreateDataSourceBadge => {
         text: "CREATE DATA SOURCE",
         textColor: Colors.yellow5,
@@ -1071,6 +1083,7 @@ module Msg = {
   let getBadgeTheme = msg => {
     switch (msg) {
     | SendMsg(_) => getBadge(SendBadge)
+    | ReceiveMsg(_) => getBadge(ReceiveBadge)
     | CreateDataSourceMsg(_) => getBadge(CreateDataSourceBadge)
     | EditDataSourceMsg(_) => getBadge(EditDataSourceBadge)
     | CreateOracleScriptMsg(_) => getBadge(CreateOracleScriptBadge)
@@ -1118,6 +1131,7 @@ module Msg = {
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
       | SendBadge => SendMsg(json |> Send.decode)
+      | ReceiveBadge => raise(Not_found)
       | CreateDataSourceBadge => CreateDataSourceMsg(json |> CreateDataSource.decode)
       | EditDataSourceBadge => EditDataSourceMsg(json |> EditDataSource.decode)
       | CreateOracleScriptBadge => CreateOracleScriptMsg(json |> CreateOracleScript.decode)
@@ -1196,6 +1210,8 @@ type internal_t = {
   memo: string,
   errMsg: option(string),
 };
+
+type account_transaction_t = {transaction: internal_t};
 
 module Mini = {
   type block_t = {timestamp: MomentRe.Moment.t};
@@ -1309,26 +1325,26 @@ module MultiByHeightConfig = [%graphql
 module MultiBySenderConfig = [%graphql
   {|
   subscription TransactionsBySender($sender: String!, $limit: Int!, $offset: Int!) {
-    transactions(
-      where: {sender: {_eq: $sender}},
-      offset: $offset,
-      limit: $limit,
-      order_by: {block_height: desc,id: desc},
-    ) @bsRecord {
-      txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
-      success
-      memo
-      gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit
-      gasUsed: gas_used
-      sender  @bsDecoder(fn: "Address.fromBech32")
-      messages
-      errMsg: err_msg
-      block @bsRecord {
-        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+    accounts_by_pk(address: $sender) {
+      account_transcations(offset: $offset, limit: $limit, order_by: {transaction_id: desc}) @bsRecord{
+        transaction @bsRecord {
+          txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
+          blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+          success
+          memo
+          gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+          gasLimit: gas_limit
+          gasUsed: gas_used
+          sender  @bsDecoder(fn: "Address.fromBech32")
+          messages
+          errMsg: err_msg
+          block @bsRecord {
+            timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+          }
+        }
       }
     }
+
   }
 |}
 ];
@@ -1397,7 +1413,14 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
           (),
         ),
     );
-  result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
+  result
+  |> Sub.map(_, x => {
+       switch (x##accounts_by_pk) {
+       | Some(x') =>
+         x'##account_transcations->Belt_Array.map(({transaction}) => transaction->toExternal)
+       | None => [||]
+       }
+     });
 };
 
 let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {

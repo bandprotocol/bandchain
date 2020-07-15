@@ -7,7 +7,12 @@ module Styles = {
   let logo = style([width(`px(20)), marginLeft(`auto), marginRight(`px(15))]);
 };
 
-let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+let renderBody =
+    (
+      reserveIndex,
+      txSub: ApolloHooks.Subscription.variant(TxSub.t),
+      msgTransform: TxSub.Msg.t => TxSub.Msg.t,
+    ) => {
   <TBody
     key={
       switch (txSub) {
@@ -76,7 +81,15 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       <Col size=5.>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
-           <div> <TxMessages txHash messages success errMsg width=460 /> </div>
+           <div>
+             <TxMessages
+               txHash
+               messages={messages->Belt_List.map(msgTransform)}
+               success
+               errMsg
+               width=460
+             />
+           </div>
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=450 height=15 /> </>
          }}
       </Col>
@@ -86,7 +99,11 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
 };
 
 [@react.component]
-let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
+let make =
+    (
+      ~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t)),
+      ~msgTransform: TxSub.Msg.t => TxSub.Msg.t=x => x,
+    ) => {
   <>
     <THead>
       <Row>
@@ -153,10 +170,12 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
     </THead>
     {switch (txsSub) {
      | Data(txs) =>
-       txs->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array
+       txs
+       ->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e), msgTransform))
+       ->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData, msgTransform))
        ->React.array
      }}
   </>;
