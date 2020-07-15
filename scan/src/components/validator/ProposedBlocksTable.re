@@ -49,16 +49,10 @@ module TableHeader = {
 
 module Loading = {
   [@react.component]
-  let make = (~withCount=true) => {
+  let make = () => {
     <>
-      {withCount
-         ? <>
-             <Row> <LoadingCensorBar width=100 height=15 /> </Row>
-             <VSpacing size=Spacing.lg />
-           </>
-         : React.null}
       {Belt_Array.make(
-         5,
+         10,
          <Row>
            <Col> <HSpacing size=Spacing.lg /> </Col>
            <Col size=1.5> <LoadingCensorBar width=50 height=20 /> </Col>
@@ -76,9 +70,14 @@ module Loading = {
        )
        ->Belt.Array.mapWithIndex((i, e) => {<TBody key={i |> string_of_int}> e </TBody>})
        ->React.array}
-      <VSpacing size=Spacing.lg />
-      <div className=Styles.pagination />
     </>;
+  };
+};
+
+module LoadingWithHeader = {
+  [@react.component]
+  let make = () => {
+    <div className=Styles.tableWrapper> <TableHeader /> <Loading /> </div>;
   };
 };
 
@@ -137,43 +136,24 @@ module ProposedBlockCount = {
 
 [@react.component]
 let make = (~consensusAddress) => {
-  let (page, setPage) = React.useState(_ => 1);
-  let pageSize = 5;
-
-  let blocksCountSub = BlockSub.countByConsensusAddress(~address=consensusAddress, ());
   let blocksSub =
-    BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page, ());
-
-  let allSub = Sub.all2(blocksSub, blocksCountSub);
+    BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize=10, ~page=1, ());
 
   <div className=Styles.tableWrapper>
-    <ProposedBlockCount consensusAddress />
-    <VSpacing size=Spacing.lg />
     <TableHeader />
-    {switch (allSub) {
-     | Data((blocks, blocksCount)) =>
-       let pageCount = Page.getPageCount(blocksCount, pageSize);
+    {switch (blocksSub) {
+     | Data(blocks) =>
        blocks->Belt.Array.size > 0
-         ? <>
-             <BlocksTable blocks />
-             <VSpacing size=Spacing.lg />
-             <div className=Styles.pagination>
-               <Pagination
-                 currentPage=page
-                 pageCount
-                 onPageChange={newPage => setPage(_ => newPage)}
-               />
-             </div>
-           </>
+         ? <> <BlocksTable blocks /> </>
          : <div className=Styles.iconWrapper>
              <VSpacing size={`px(30)} />
              <img src=Images.noRequestIcon className=Styles.icon />
              <VSpacing size={`px(40)} />
              <Text block=true value="NO BLOCK" weight=Text.Regular color=Colors.blue4 />
              <VSpacing size={`px(15)} />
-           </div>;
+           </div>
 
-     | _ => <Loading withCount=false />
+     | _ => <Loading />
      }}
   </div>;
 };
