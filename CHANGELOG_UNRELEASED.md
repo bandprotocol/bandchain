@@ -12,7 +12,7 @@
 
 ### Chain (Non-consensus)
 
-- (impv) [\#2232](https://github.com/bandprotocol/bandchain/pull/2218) CLI/REST for query active oracle validator.
+- (impv) [\#2232](https://github.com/bandprotocol/bandchain/pull/2218) CLI/REST for query active oracle validators.
 
 ### Yoda
 
