@@ -21,6 +21,7 @@
 ### Scan
 
 - (impv) [\#2199](https://github.com/bandprotocol/bandchain/pull/2199) Remove proposed blocks count & adjust ui
+- (impv) [\#2228](https://github.com/bandprotocol/bandchain/pull/2228) Add `expired` request status to Scan
 
 ### Bridges
 
