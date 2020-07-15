@@ -107,7 +107,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, account.GetAddress()).String(),
 		})
 	}
-	// GenUtil module for create validator genesis transaction.
+	// GenUtil module for create validator genesis transactions.
 	var genutilState genutil.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 	for _, genTx := range genutilState.GenTxs {
