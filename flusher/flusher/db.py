@@ -270,7 +270,6 @@ proposals = sa.Table(
     "proposals",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("detail", sa.JSON),
     Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("type", sa.String),
     Column("title", sa.String),

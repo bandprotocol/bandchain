@@ -23,7 +23,6 @@ func (app *App) handleMsgSubmitProposal(
 	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, proposalId)
 	app.Write("NEW_PROPOSAL", JsDict{
 		"id":               proposalId,
-		"detail":           string(app.Codec().MustMarshalJSON(proposal)),
 		"proposer":         msg.Proposer,
 		"type":             msg.Content.ProposalType(),
 		"title":            msg.Content.GetTitle(),
