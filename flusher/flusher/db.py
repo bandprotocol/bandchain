@@ -269,7 +269,7 @@ account_transactions = sa.Table(
 proposals = sa.Table(
     "proposals",
     metadata,
-    Column("proposal_id", sa.Integer, primary_key=True),
+    Column("id", sa.Integer, primary_key=True),
     Column("detail", sa.JSON),
     Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("type", sa.String),
@@ -282,4 +282,13 @@ proposals = sa.Table(
     Column("total_deposit", sa.String),  # uband suffix
     Column("voting_time", CustomDateTime),
     Column("voting_end_time", CustomDateTime),
+)
+
+deposits = sa.Table(
+    "deposits",
+    metadata,
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("amount", sa.String),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
