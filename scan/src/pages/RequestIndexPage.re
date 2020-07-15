@@ -254,8 +254,8 @@ let make = (~reqID) =>
             ->Belt_List.fromArray
           }
         />
-        {switch (request.result) {
-         | Some(result) =>
+        {switch (request.result, request.resolveStatus) {
+         | (Some(result), RequestSub.Success) =>
            let resultKVs =
              Obi.decode(request.oracleScript.schema, "output", result)
              ->Belt_Option.getWithDefault([||]);
@@ -288,7 +288,7 @@ let make = (~reqID) =>
                }
              />
            </>;
-         | None => React.null
+         | (_, _) => React.null
          }}
         {numReport >= request.minCount
            ? {
@@ -344,9 +344,9 @@ let make = (~reqID) =>
            ? <KVTable
                tableWidth=880
                theme=KVTable.RequestMiniTable
-               sizes=[0.92, 0.73, 2., 0.63, 2.4]
-               isRights=[false, false, false, true, true]
-               headers=["REPORT BY", "BLOCK", "TX HASH", "EXTERNAL ID", "VALUE"]
+               sizes=[0.92, 0.73, 2., 0.63, 0.6, 2.]
+               isRights=[false, false, false, true, true, true]
+               headers=["REPORT BY", "BLOCK", "TX HASH", "EXTERNAL ID", "EXIT CODE", "VALUE"]
                rows={
                  request.reports
                  ->Belt_Array.map(report =>
@@ -357,6 +357,11 @@ let make = (~reqID) =>
                        KVTable.Values(
                          report.reportDetails
                          ->Belt_Array.map(({externalID}) => externalID |> Format.iPretty)
+                         ->Belt_List.fromArray,
+                       ),
+                       KVTable.Values(
+                         report.reportDetails
+                         ->Belt_Array.map(({exitCode}) => exitCode |> Format.iPretty)
                          ->Belt_List.fromArray,
                        ),
                        KVTable.Values(

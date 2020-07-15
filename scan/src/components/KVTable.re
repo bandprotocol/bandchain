@@ -126,6 +126,7 @@ let renderField = (field, maxWidth, isRight) => {
                ellipsis=true
                block=true
                code=true
+               align=Text.Right
              />
            </div>
          )

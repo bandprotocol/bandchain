@@ -1,6 +1,6 @@
 module ValidatorReport = {
   type oracle_script_t = {
-    id: ID.OracleScript.t,
+    oracleScriptID: ID.OracleScript.t,
     name: string,
   };
 
@@ -46,7 +46,7 @@ module ValidatorReport = {
               request @bsRecord {
                 id @bsDecoder (fn: "ID.Request.fromInt")
                 oracleScript: oracle_script @bsRecord {
-                  id @bsDecoder (fn: "ID.OracleScript.fromInt")
+                  oracleScriptID: id @bsDecoder (fn: "ID.OracleScript.fromInt")
                   name
                 }
               }
