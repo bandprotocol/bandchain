@@ -289,6 +289,6 @@ deposits = sa.Table(
     metadata,
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
-    Column("amount", sa.String),
+    Column("amount", sa.String),  # uband suffix
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
