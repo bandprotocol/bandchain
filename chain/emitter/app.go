@@ -107,7 +107,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, account.GetAddress()).String(),
 		})
 	}
-	// Staking module
+	// GenUtil module for create validator genesis transaction.
 	var genutilState genutil.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
 	for _, genTx := range genutilState.GenTxs {
@@ -117,6 +117,40 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 			if msg, ok := msg.(staking.MsgCreateValidator); ok {
 				app.handleMsgCreateValidator(nil, msg, nil, nil)
 			}
+		}
+	}
+
+	// Staking module
+	var stakingState staking.GenesisState
+	app.Codec().MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingState)
+	for _, val := range stakingState.Validators {
+		app.emitSetValidator(val.OperatorAddress)
+	}
+
+	for _, del := range stakingState.Delegations {
+		app.emitDelegation(del.ValidatorAddress, del.DelegatorAddress)
+	}
+
+	for _, unbonding := range stakingState.UnbondingDelegations {
+		for _, entry := range unbonding.Entries {
+			app.Write("NEW_UNBONDING_DELEGATION", JsDict{
+				"delegator_address": unbonding.DelegatorAddress,
+				"operator_address":  unbonding.ValidatorAddress,
+				"completion_time":   entry.CompletionTime.UnixNano(),
+				"amount":            entry.Balance,
+			})
+		}
+	}
+
+	for _, redelegate := range stakingState.Redelegations {
+		for _, entry := range redelegate.Entries {
+			app.Write("NEW_REDELEGATION", JsDict{
+				"delegator_address":    redelegate.DelegatorAddress,
+				"operator_src_address": redelegate.ValidatorSrcAddress,
+				"operator_dst_address": redelegate.ValidatorDstAddress,
+				"completion_time":      entry.CompletionTime.UnixNano(),
+				"amount":               entry.InitialBalance,
+			})
 		}
 	}
 
