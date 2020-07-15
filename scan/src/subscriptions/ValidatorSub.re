@@ -245,12 +245,13 @@ let getTotalBondedAmount = () => {
 };
 
 let getUptime = consensusAddress => {
+  Js.Console.log(consensusAddress);
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleLast250VotedConfig.definition,
       ~variables=
         SingleLast250VotedConfig.makeVariables(
-          ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
+          ~consensusAddress=consensusAddress |> Address.toHex,
           (),
         ),
     );
