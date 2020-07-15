@@ -35,6 +35,5 @@ func (app *App) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
-
 	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit.String())
 }
