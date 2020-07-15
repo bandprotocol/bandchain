@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (impv) [\#2228](https://github.com/bandprotocol/bandchain/pull/2228) Add `expired` request status to Scan
+
 ### Bridges
 
 ### Runtime
