@@ -165,6 +165,7 @@ let renderRequestStatus = status => {
         | RequestSub.Success => "Success"
         | RequestSub.Failure => "Fail"
         | RequestSub.Pending => "Pending"
+        | RequestSub.Expired => "Expired"
         | RequestSub.Unknown => "???"
         }
       }
@@ -175,6 +176,7 @@ let renderRequestStatus = status => {
         | RequestSub.Success => Images.success
         | RequestSub.Failure => Images.fail
         | RequestSub.Pending => Images.pending
+        | RequestSub.Expired => Images.expired
         | RequestSub.Unknown => Images.unknown
         }
       }
