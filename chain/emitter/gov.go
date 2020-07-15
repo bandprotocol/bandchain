@@ -10,7 +10,7 @@ func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddres
 	app.Write("SET_DEPOSIT", JsDict{
 		"proposal_id": id,
 		"depositor":   depositor,
-		"amount":      amount,
+		"amount":      amount.String(),
 		"tx_hash":     txHash,
 	})
 }
