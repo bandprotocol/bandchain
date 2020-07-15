@@ -6,11 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress, amount sdk.Coins) {
+func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
+	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
 	app.Write("SET_DEPOSIT", JsDict{
 		"proposal_id": id,
 		"depositor":   depositor,
-		"amount":      amount.String(),
+		"amount":      deposit.Amount.String(),
 		"tx_hash":     txHash,
 	})
 }
@@ -46,13 +47,13 @@ func (app *App) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
-	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit)
+	app.emitSetDeposit(txHash, proposalId, msg.Proposer)
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
 func (app *App) handleMsgDeposit(
 	txHash []byte, msg gov.MsgDeposit, evMap EvMap, extra JsDict,
 ) {
-	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor, msg.Amount)
+	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor)
 	app.emitUpdateProposalAfterDeposit(msg.ProposalID)
 }
