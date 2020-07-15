@@ -26,6 +26,7 @@
 
 ### Runtime
 
+- (impv) [\#2233](https://github.com/bandprotocol/bandchain/pull/2233) Remove max timeout variable.
 - (impv) [\#2230](https://github.com/bandprotocol/bandchain/pull/2230) Update lambda function follow Remote data source executor.
 
 ### Owasm

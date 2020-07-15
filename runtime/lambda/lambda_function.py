@@ -50,7 +50,6 @@ def lambda_handler(event, context):
 
     MAX_EXECUTABLE = get_env(env, "MAX_EXECUTABLE")
     MAX_DATA_SIZE = get_env(env, "MAX_DATA_SIZE")
-    MAX_TIMEOUT = get_env(env, "MAX_TIMEOUT")
 
     if "executable" not in body:
         return bad_request("Missing executable value")
@@ -66,8 +65,6 @@ def lambda_handler(event, context):
         timeout = int(body["timeout"])
     except ValueError:
         return bad_request("Timeout format invalid")
-    if timeout > MAX_TIMEOUT:
-        return bad_request("Timeout exceeded")
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
