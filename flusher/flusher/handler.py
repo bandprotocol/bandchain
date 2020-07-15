@@ -20,6 +20,8 @@ from .db import (
     unbonding_delegations,
     redelegations,
     account_transactions,
+    proposals,
+    deposits,
 )
 
 
@@ -173,3 +175,19 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_new_proposal(self, msg):
+        msg["proposer_id"] = self.get_account_id(msg["proposer"])
+        del msg["proposer"]
+        self.conn.execute(proposals.insert(), msg)
+
+    def handle_set_deposit(self, msg):
+        msg["depositor_id"] = self.get_account_id(msg["depositor"])
+        del msg["depositor"]
+        msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
+        self.conn.execute(
+            insert(deposits)
+            .values(**msg)
+            .on_conflict_do_update(constraint="deposits_pkey", set_=msg)
+        )

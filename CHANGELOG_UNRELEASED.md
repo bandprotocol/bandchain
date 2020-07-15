@@ -20,6 +20,8 @@
 
 ### Emitter & Flusher
 
+- (feat) [\#2238](https://github.com/bandprotocol/bandchain/pull/2238) Implement handle MsgSubmitProposal for emitter and flusher.
+
 ### Scan
 
 - (impv) [\#2199](https://github.com/bandprotocol/bandchain/pull/2199) Remove proposed blocks count & adjust ui
