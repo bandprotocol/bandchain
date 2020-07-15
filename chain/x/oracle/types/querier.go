@@ -5,18 +5,20 @@ import (
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/codec"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // Query endpoints supported by the oracle Querier.
 const (
-	QueryParams          = "params"
-	QueryCounts          = "counts"
-	QueryData            = "data"
-	QueryDataSources     = "data_sources"
-	QueryOracleScripts   = "oracle_scripts"
-	QueryRequests        = "requests"
-	QueryValidatorStatus = "validators"
-	QueryReporters       = "reporters"
+	QueryParams           = "params"
+	QueryCounts           = "counts"
+	QueryData             = "data"
+	QueryDataSources      = "data_sources"
+	QueryOracleScripts    = "oracle_scripts"
+	QueryRequests         = "requests"
+	QueryValidatorStatus  = "validator_status"
+	QueryReporters        = "reporters"
+	QueryActiveValidators = "active_validators"
 )
 
 // QueryResult wraps querier result with HTTP status to return to application.
@@ -61,4 +63,10 @@ type QueryRequestResult struct {
 	Request Request  `json:"request"`
 	Reports []Report `json:"reports"`
 	Result  *Result  `json:"result"`
+}
+
+// QueryActiveValidatorResult is the struct for the result of request active validators.
+type QueryActiveValidatorResult struct {
+	Address sdk.ValAddress `json:"address"`
+	Power   uint64         `json:"power"`
 }

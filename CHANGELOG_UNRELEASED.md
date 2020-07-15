@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2232](https://github.com/bandprotocol/bandchain/pull/2218) CLI/REST for query active oracle validators.
+
 ### Yoda
 
 - (feat) [\#2218](https://github.com/bandprotocol/bandchain/pull/2218) Implement MultiExec to combine multiple executors.

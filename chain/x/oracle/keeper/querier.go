@@ -5,6 +5,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -30,6 +31,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryValidatorStatus(ctx, path[1:], keeper)
 		case types.QueryReporters:
 			return queryReporters(ctx, path[1:], keeper)
+		case types.QueryActiveValidators:
+			return queryActiveValidators(ctx, keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -133,4 +136,19 @@ func queryReporters(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 		return types.QueryBadRequest(err.Error())
 	}
 	return types.QueryOK(k.GetReporters(ctx, validatorAddress))
+}
+
+func queryActiveValidators(ctx sdk.Context, k Keeper) ([]byte, error) {
+	vals := []types.QueryActiveValidatorResult{}
+	k.stakingKeeper.IterateBondedValidatorsByPower(ctx,
+		func(idx int64, val exported.ValidatorI) (stop bool) {
+			if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
+				vals = append(vals, types.QueryActiveValidatorResult{
+					Address: val.GetOperator(),
+					Power:   val.GetTokens().Uint64(),
+				})
+			}
+			return false
+		})
+	return types.QueryOK(vals)
 }
