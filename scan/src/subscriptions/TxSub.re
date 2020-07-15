@@ -1326,7 +1326,7 @@ module MultiBySenderConfig = [%graphql
   {|
   subscription TransactionsBySender($sender: String!, $limit: Int!, $offset: Int!) {
     accounts_by_pk(address: $sender) {
-      account_transcations(offset: $offset, limit: $limit, order_by: {transaction_id: desc}) @bsRecord{
+      account_transactions(offset: $offset, limit: $limit, order_by: {transaction_id: desc}) @bsRecord{
         transaction @bsRecord {
           txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
           blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
@@ -1417,7 +1417,7 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
   |> Sub.map(_, x => {
        switch (x##accounts_by_pk) {
        | Some(x') =>
-         x'##account_transcations->Belt_Array.map(({transaction}) => transaction->toExternal)
+         x'##account_transactions->Belt_Array.map(({transaction}) => transaction->toExternal)
        | None => [||]
        }
      });
