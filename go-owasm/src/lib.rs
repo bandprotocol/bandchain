@@ -282,7 +282,6 @@ mod test {
     fn test_inject_memory_ok() {
         let wasm = wat2wasm(r#"(module (memory 1))"#);
         let module = get_module_from_wasm(&wasm);
-
         assert_matches!(inject_memory(module), Ok(_));
     }
 
@@ -311,7 +310,6 @@ mod test {
           "#,
         );
         let code = compile(&wasm).unwrap();
-
         let expected = wat2wasm(
             r#"(module
                 (type (;0;) (func (param i64 i64 i32 i64) (result i64)))
@@ -360,8 +358,7 @@ mod test {
                 (global (;0;) (mut i32) (i32.const 0))
                 (export "prepare" (func 0))
                 (export "execute" (func 4))
-                (data (;0;) (i32.const 1048576) "beeb"))
-          "#,
+                (data (;0;) (i32.const 1048576) "beeb"))"#,
         );
         assert_eq!(code, expected);
     }
@@ -370,7 +367,6 @@ mod test {
     fn test_inject_memory_no_memory() {
         let wasm = wat2wasm("(module)");
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
     #[test]
@@ -396,7 +392,6 @@ mod test {
         let wasm_ok = wat2wasm("(module (memory 512))");
         let module = get_module_from_wasm(&wasm_ok);
         assert_matches!(inject_memory(module), Ok(_));
-
         let wasm_too_big = wat2wasm("(module (memory 513))");
         let module = get_module_from_wasm(&wasm_too_big);
         assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
@@ -406,7 +401,6 @@ mod test {
     fn test_inject_memory_maximum_size() {
         let wasm = wat2wasm("(module (memory 1 5))");
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
 
@@ -432,10 +426,8 @@ mod test {
             (export "execute" (func 1)))
           "#,
         );
-
         let module = inject_stack_height(get_module_from_wasm(&wasm)).unwrap();
         let wasm = elements::serialize(module).unwrap();
-
         let expected = wat2wasm(
             r#"(module
                 (type (;0;) (func))
@@ -476,8 +468,7 @@ mod test {
                 (global (;0;) (mut i32) (i32.const 0))
                 (export "prepare" (func 2))
                 (export "execute" (func 1))
-                (data (;0;) (i32.const 1048576) "beeb"))
-          "#,
+                (data (;0;) (i32.const 1048576) "beeb"))"#,
         );
         assert_eq!(wasm, expected);
     }
@@ -490,16 +481,13 @@ mod test {
                 (import "env" "beeb" (func (type 0))))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_imports(&module), Err(Error::InvalidImportsError));
-
         let wasm = wat2wasm(
             r#"(module
                 (type (func (param i64 i64 i32 i64) (result i64)))
                 (import "env" "ask_external_data" (func  (type 0))))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_imports(&module), Ok(()));
     }
 
@@ -510,9 +498,7 @@ mod test {
             (func $execute (export "execute")))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_exports(&module), Err(Error::InvalidExportsError));
-
         let wasm = wat2wasm(
             r#"(module
                 (func $execute (export "execute"))
@@ -520,7 +506,6 @@ mod test {
               )"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_exports(&module), Ok(()));
     }
 }

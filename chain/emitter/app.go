@@ -114,8 +114,8 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		var tx auth.StdTx
 		app.Codec().MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
-			if createMsg, ok := msg.(staking.MsgCreateValidator); ok {
-				app.emitSetValidator(createMsg.ValidatorAddress)
+			if msg, ok := msg.(staking.MsgCreateValidator); ok {
+				app.handleMsgCreateValidator(nil, msg, nil, nil)
 			}
 		}
 	}

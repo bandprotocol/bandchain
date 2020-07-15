@@ -133,21 +133,21 @@ do
 
     for i in $(eval echo {1..5})
     do
-    # add reporter key
-    yoda keys add reporter$i
+        # add reporter key
+        yoda keys add reporter$i
+    done
 
-    # send band tokens to reporter
-    echo "y" | bandcli tx send validator$v $(yoda keys show reporter$i) 1000000uband --keyring-backend test
+    # send band tokens to reporters
+    echo "y" | bandcli tx multi-send 1000000uband $(yoda keys list -a) --from $1 --keyring-backend test
 
     # wait for sending band tokens transaction success
     sleep 2
 
     # add reporter to bandchain
-    echo "y" | bandcli tx oracle add-reporter $(yoda keys show reporter$i) --from validator$v --keyring-backend test
+    echo "y" | bandcli tx oracle add-reporters $(yoda keys list -a) --from $1 --keyring-backend test
 
     # wait for addding reporter transaction success
     sleep 2
-    done
 
     docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest yoda r
     docker cp ~/.yoda bandchain_oracle${v}:/root/.yoda
