@@ -15,6 +15,17 @@ func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddres
 	})
 }
 
+func (app *App) emitUpdateProposalAfterDeposit(id uint64) {
+	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, id)
+	app.Write("UPDATE_PROPOSAL", JsDict{
+		"id":              id,
+		"status":          int(proposal.Status),
+		"total_deposit":   proposal.TotalDeposit.String(),
+		"voting_time":     proposal.VotingStartTime.UnixNano(),
+		"voting_end_time": proposal.VotingEndTime.UnixNano(),
+	})
+}
+
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
 func (app *App) handleMsgSubmitProposal(
 	txHash []byte, msg gov.MsgSubmitProposal, evMap EvMap, extra JsDict,
@@ -36,4 +47,12 @@ func (app *App) handleMsgSubmitProposal(
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
 	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit)
+}
+
+// handleMsgDeposit implements emitter handler for MsgDeposit.
+func (app *App) handleMsgDeposit(
+	txHash []byte, msg gov.MsgDeposit, evMap EvMap, extra JsDict,
+) {
+	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor, msg.Amount)
+	app.emitUpdateProposalAfterDeposit(msg.ProposalID)
 }
