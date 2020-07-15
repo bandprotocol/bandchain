@@ -60,7 +60,7 @@ module Msg = {
   let getBadgeVariantFromString = badge => {
     switch (badge) {
     | "send" => SendBadge
-    | "receive" => ReceiveBadge
+    | "receive" => raise(Not_found)
     | "create_data_source" => CreateDataSourceBadge
     | "edit_data_source" => EditDataSourceBadge
     | "create_oracle_script" => CreateOracleScriptBadge
