@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
-func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress, amount string) {
+func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress, amount sdk.Coins) {
 	app.Write("SET_DEPOSIT", JsDict{
 		"proposal_id": id,
 		"depositor":   depositor,
@@ -35,5 +35,5 @@ func (app *App) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
-	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit.String())
+	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit)
 }
