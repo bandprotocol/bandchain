@@ -9,7 +9,8 @@ type validator_t = {
 type redelegate_list_t = {
   amount: Coin.t,
   completionTime: MomentRe.Moment.t,
-  validator: validator_t,
+  dstValidator: validator_t,
+  srcValidator: validator_t,
 };
 
 module RedelegationByDelegatorConfig = [%graphql
@@ -19,7 +20,12 @@ module RedelegationByDelegatorConfig = [%graphql
         redelegations(offset: $offset, limit: $limit, order_by: {completion_time: asc}, where: {completion_time: {_gte: $current_time}}) @bsRecord{
           amount @bsDecoder(fn: "GraphQLParser.coin")
           completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
-          validator @bsRecord{
+          srcValidator: validatorByValidatorSrcId @bsRecord{
+            operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+            moniker
+            identity
+          }
+          dstValidator: validator @bsRecord{
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
             identity

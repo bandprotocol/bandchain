@@ -109,7 +109,7 @@ let make = (~address) =>
                      <Text
                        value={
                          unbondingEntry.completionTime
-                         |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                         |> MomentRe.Moment.format(Config.timestampFormat)
                          |> String.uppercase_ascii
                        }
                        code=true

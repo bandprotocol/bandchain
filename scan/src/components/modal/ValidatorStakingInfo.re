@@ -279,7 +279,7 @@ module StakingInfo = {
                          KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
-                           |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                           |> MomentRe.Moment.format(Config.timestampFormat)
                            |> String.uppercase_ascii,
                          ),
                        ]

@@ -6,6 +6,7 @@ module Styles = {
   let hFlex = style([display(`flex)]);
 
   let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
+  let alignLeft = style([display(`flex), justifyContent(`flexStart)]);
 };
 
 [@react.component]
@@ -43,12 +44,24 @@ let make = (~address) =>
             <Col size=1.>
               <Text
                 block=true
-                value="VALIDATOR"
+                value="SOURCE VALIDATOR"
                 size=Text.Sm
                 weight=Text.Bold
                 spacing={Text.Em(0.05)}
                 color=Colors.gray6
               />
+            </Col>
+            <Col size=1.>
+              <div className=Styles.alignLeft>
+                <Text
+                  block=true
+                  value="DESTINATION VALIDATOR"
+                  size=Text.Sm
+                  weight=Text.Bold
+                  spacing={Text.Em(0.05)}
+                  color=Colors.gray6
+                />
+              </div>
             </Col>
             <Col size=0.6>
               <div className=Styles.alignRight>
@@ -56,8 +69,8 @@ let make = (~address) =>
                   block=true
                   value="AMOUNT (BAND)"
                   size=Text.Sm
-                  weight=Text.Bold
                   spacing={Text.Em(0.05)}
+                  weight=Text.Bold
                   color=Colors.gray6
                 />
               </div>
@@ -66,7 +79,7 @@ let make = (~address) =>
               <div className=Styles.alignRight>
                 <Text
                   block=true
-                  value="UNBONDED AT"
+                  value="REDELEGATE COMPLETE AT"
                   size=Text.Sm
                   spacing={Text.Em(0.05)}
                   weight=Text.Bold
@@ -80,16 +93,24 @@ let make = (~address) =>
         {redelegateList
          ->Belt.Array.map(redelegateEntry => {
              <TBody
-               key={redelegateEntry.validator.operatorAddress |> Address.toBech32} minHeight=50>
+               key={redelegateEntry.srcValidator.operatorAddress |> Address.toBech32} minHeight=50>
                <Row>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                  <Col size=1.>
-                   <div className=Styles.hFlex>
+                   <ValidatorMonikerLink
+                     validatorAddress={redelegateEntry.srcValidator.operatorAddress}
+                     moniker={redelegateEntry.srcValidator.moniker}
+                     identity={redelegateEntry.srcValidator.identity}
+                     width={`px(200)}
+                   />
+                 </Col>
+                 <Col size=1.>
+                   <div className=Styles.alignLeft>
                      <ValidatorMonikerLink
-                       validatorAddress={redelegateEntry.validator.operatorAddress}
-                       moniker={redelegateEntry.validator.moniker}
-                       identity={redelegateEntry.validator.identity}
-                       width={`px(300)}
+                       validatorAddress={redelegateEntry.dstValidator.operatorAddress}
+                       moniker={redelegateEntry.dstValidator.moniker}
+                       identity={redelegateEntry.dstValidator.identity}
+                       width={`px(200)}
                      />
                    </div>
                  </Col>
@@ -108,7 +129,7 @@ let make = (~address) =>
                      <Text
                        value={
                          redelegateEntry.completionTime
-                         |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                         |> MomentRe.Moment.format(Config.timestampFormat)
                          |> String.uppercase_ascii
                        }
                        code=true
