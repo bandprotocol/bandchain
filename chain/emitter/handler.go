@@ -71,6 +71,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgUnjail(txHash, msg, evMap, extra)
 	case gov.MsgSubmitProposal:
 		app.handleMsgSubmitProposal(txHash, msg, evMap, extra)
+	case gov.MsgVote:
+		app.handleMsgVote(txHash, msg, evMap, extra)
 	}
 }
 
