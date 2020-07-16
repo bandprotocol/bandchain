@@ -266,11 +266,15 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	modifiedMsgs := []Message{app.msgs[0]}
 	for accStr, _ := range app.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
+		balance := "0uband"
+		if !app.BankKeeper.GetCoins(app.DeliverContext, acc).IsZero() {
+			balance = app.BankKeeper.GetCoins(app.DeliverContext, acc).String()
+		}
 		modifiedMsgs = append(modifiedMsgs, Message{
 			Key: "SET_ACCOUNT",
 			Value: JsDict{
 				"address": acc,
-				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
+				"balance": balance,
 			}})
 	}
 	app.msgs = append(modifiedMsgs, app.msgs[1:]...)

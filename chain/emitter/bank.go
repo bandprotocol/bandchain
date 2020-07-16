@@ -1,6 +1,7 @@
 package emitter
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 )
 
@@ -18,4 +19,12 @@ func (app *App) handleMsgMultiSend(
 	for _, output := range msg.Outputs {
 		app.AddAccountsInTx(output.Address)
 	}
+}
+
+func (app *App) handleEventTypeTransfer(evMap EvMap) {
+	address, err := sdk.AccAddressFromBech32(evMap[bank.EventTypeTransfer+"."+bank.AttributeKeyRecipient][0])
+	if err != nil {
+		return
+	}
+	app.AddAccountsInBlock(address)
 }
