@@ -10,11 +10,9 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/google/shlex"
 )
-
-// TODO: Make this configurable
-const MAX_OUTPUT_SIZE = 512
 
 type DockerExec struct {
 	image string
@@ -65,7 +63,7 @@ func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecR
 			return ExecResult{}, nil
 		}
 	}
-	output, err := ioutil.ReadAll(io.LimitReader(&buf, MAX_OUTPUT_SIZE))
+	output, err := ioutil.ReadAll(io.LimitReader(&buf, types.MaxDataSize))
 	if err != nil {
 		return ExecResult{}, err
 	}
