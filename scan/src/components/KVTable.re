@@ -114,8 +114,8 @@ let renderField = (field, maxWidth, isRight) => {
   | Values(vals) =>
     <div className=Styles.vFlex>
       {vals
-       ->Belt_List.map(v =>
-           <div key=v className={Styles.valueContainer(maxWidth)}>
+       ->Belt_List.mapWithIndex((i, v) =>
+           <div key={i->string_of_int ++ v} className={Styles.valueContainer(maxWidth)}>
              {isRight ? <div className=Styles.fillRight /> : React.null}
              <Text
                value=v
