@@ -78,7 +78,7 @@ module TableHeader = {
             spacing={Text.Em(0.05)}
           />
         </Col>
-        <Col size=1.5>
+        <Col size=0.9>
           <div className={Styles.vFlex(`flexEnd)}>
             <div className=Styles.fillLeft />
             <Text
@@ -91,7 +91,21 @@ module TableHeader = {
             />
           </div>
         </Col>
-        <Col size=2.2>
+        <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
+        <Col size=0.7>
+          <div className={Styles.vFlex(`flexEnd)}>
+            <div className=Styles.fillLeft />
+            <Text
+              block=true
+              value="EXIT CODE"
+              size=Text.Sm
+              weight=Text.Semibold
+              color=Colors.gray6
+              spacing={Text.Em(0.05)}
+            />
+          </div>
+        </Col>
+        <Col size=2.>
           <div className={Styles.vFlex(`flexEnd)}>
             <div className=Styles.fillLeft />
             <Text
@@ -142,7 +156,7 @@ module Reports = {
             </Col>
             <Col size=2.3 alignSelf=Col.Start>
               <Row>
-                <TypeID.OracleScript id={request.oracleScript.id} />
+                <TypeID.OracleScript id={request.oracleScript.oracleScriptID} />
                 <HSpacing size=Spacing.sm />
                 <HSpacing size=Spacing.xs />
                 <div className={Styles.withWidth(140)}>
@@ -170,15 +184,14 @@ module Reports = {
                  })
                ->React.array}
             </Col>
-            <Col size=1.5>
+            <Col size=0.9>
               {reportDetails
-               ->Belt_Array.map(({externalID}) => externalID)
-               ->Belt_Array.map(externalDataID => {
-                   <div key={externalDataID |> string_of_int}>
+               ->Belt_Array.map(({externalID}) => {
+                   <div key={externalID |> string_of_int}>
                      <div className={Styles.vFlex(`flexEnd)}>
                        <Row>
                          <div className=Styles.fillLeft />
-                         <Text value={externalDataID |> string_of_int} block=true code=true />
+                         <Text value={externalID |> string_of_int} block=true code=true />
                        </Row>
                      </div>
                      <VSpacing size=Spacing.md />
@@ -186,13 +199,26 @@ module Reports = {
                  })
                ->React.array}
             </Col>
-            <Col size=2.2>
+            <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
+            <Col size=0.7>
               {reportDetails
-               ->Belt_Array.map(({data, externalID}) => (data, externalID))
-               ->Belt_Array.map(value => {
-                   let (data, _) = value;
-                   let (_, id) = value;
-                   <div key={id |> string_of_int}>
+               ->Belt_Array.map(({exitCode, externalID}) => {
+                   <div key={externalID |> string_of_int}>
+                     <div className={Styles.vFlex(`flexEnd)}>
+                       <Row>
+                         <div className=Styles.fillLeft />
+                         <Text value={exitCode |> string_of_int} block=true code=true />
+                       </Row>
+                     </div>
+                     <VSpacing size=Spacing.md />
+                   </div>
+                 })
+               ->React.array}
+            </Col>
+            <Col size=2.>
+              {reportDetails
+               ->Belt_Array.map(({data, externalID}) => {
+                   <div key={externalID |> string_of_int}>
                      <div className=Styles.valueContainer>
                        <div className=Styles.fillLeft />
                        <Text
@@ -204,7 +230,7 @@ module Reports = {
                        />
                      </div>
                      <VSpacing size=Spacing.md />
-                   </div>;
+                   </div>
                  })
                ->React.array}
             </Col>
@@ -230,18 +256,30 @@ module Loading = {
              <Row> <LoadingCensorBar width=180 height=20 /> </Row>
            </Col>
            <Col size=1.> <div> <LoadingCensorBar width=50 height=20 /> </div> </Col>
-           <Col size=1.5>
+           <Col size=0.9>
              <div>
                <div className={Styles.vFlex(`flexEnd)}>
                  <Row>
                    <div className=Styles.fillLeft />
-                   <LoadingCensorBar width=50 height=20 />
+                   <LoadingCensorBar width=30 height=20 />
                  </Row>
                </div>
                <VSpacing size=Spacing.md />
              </div>
            </Col>
-           <Col size=2.2>
+           <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
+           <Col size=0.7>
+             <div>
+               <div className={Styles.vFlex(`flexEnd)}>
+                 <Row>
+                   <div className=Styles.fillLeft />
+                   <LoadingCensorBar width=30 height=20 />
+                 </Row>
+               </div>
+               <VSpacing size=Spacing.md />
+             </div>
+           </Col>
+           <Col size=2.>
              <div>
                <div className=Styles.valueContainer>
                  <div className=Styles.fillLeft />

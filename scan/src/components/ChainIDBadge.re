@@ -65,10 +65,10 @@ let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
   | "band-wenchang-mainnet" => WenchangMainnet
-  | "band-guanyu-devnet"
-  | "band-guanyu-devnet-2"
-  | "band-guanyu-devnet-3"
-  | "band-guanyu-devnet-4"
+  | "band-guanyu-devnet5"
+  | "band-guanyu-devnet6"
+  | "band-guanyu-devnet7"
+  | "band-guanyu-devnet8"
   | "bandchain" => GuanYuDevnet
   | "band-guanyu-testnet1"
   | "band-guanyu-testnet2" => GuanYuTestnet

@@ -174,7 +174,7 @@ let getListByConsensusAddress = (~address, ~page, ~pageSize, ()) => {
       MultiConsensusAddressConfig.definition,
       ~variables=
         MultiConsensusAddressConfig.makeVariables(
-          ~address=address |> Address.toHex(~upper=true),
+          ~address=address |> Address.toHex,
           ~limit=pageSize,
           ~offset,
           (),
@@ -220,10 +220,7 @@ let countByConsensusAddress = (~address, ()) => {
     ApolloHooks.useSubscription(
       BlockCountConsensusAddressConfig.definition,
       ~variables=
-        BlockCountConsensusAddressConfig.makeVariables(
-          ~address=address |> Address.toHex(~upper=true),
-          (),
-        ),
+        BlockCountConsensusAddressConfig.makeVariables(~address=address |> Address.toHex, ()),
     );
   result
   |> Sub.map(_, x => x##blocks_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));

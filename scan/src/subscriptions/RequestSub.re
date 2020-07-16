@@ -5,6 +5,7 @@ type resolve_status_t =
   | Pending
   | Success
   | Failure
+  | Expired
   | Unknown;
 
 let parseResolveStatus = json => {
@@ -13,6 +14,7 @@ let parseResolveStatus = json => {
   | "Pending" => Pending
   | "Success" => Success
   | "Failure" => Failure
+  | "Expired" => Expired
   | _ => Unknown
   };
 };
@@ -357,6 +359,7 @@ module RequestCountByOracleScriptConfig = [%graphql
 
 type report_detail_t = {
   externalID: int,
+  exitCode: int,
   data: JsBuffer.t,
 };
 
@@ -426,6 +429,7 @@ module SingleRequestConfig = [%graphql
           }
           reportDetails: raw_reports @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.int64")
+            exitCode: exit_code
             data @bsDecoder(fn: "GraphQLParser.buffer")
           }
           reportValidator: validator @bsRecord {
@@ -491,6 +495,7 @@ module MultiRequestConfig = [%graphql
           }
           reportDetails: raw_reports @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.int64")
+            exitCode: exit_code
             data @bsDecoder(fn: "GraphQLParser.buffer")
           }
           reportValidator: validator @bsRecord {
