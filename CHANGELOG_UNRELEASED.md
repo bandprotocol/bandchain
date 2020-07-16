@@ -16,6 +16,7 @@
 
 ### Yoda
 
+- (impv) [\#2247](https://github.com/bandprotocol/bandchain/pull/2247) Use max data size configurations from oracle module
 - (feat) [\#2218](https://github.com/bandprotocol/bandchain/pull/2218) Implement MultiExec to combine multiple executors.
 
 ### Emitter & Flusher
