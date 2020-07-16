@@ -21,7 +21,6 @@ let make = (~accountAddress: Address.t) => {
 
   let txsSub = TxSub.getListBySender(accountAddress, ~pageSize, ~page, ());
   let txsCountSub = TxSub.countBySender(accountAddress);
-  Js.Console.log(txsSub);
 
   <div className=Styles.tableLowerContainer>
     <VSpacing size=Spacing.md />
