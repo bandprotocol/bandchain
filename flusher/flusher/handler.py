@@ -191,3 +191,9 @@ class Handler(object):
             .values(**msg)
             .on_conflict_do_update(constraint="deposits_pkey", set_=msg)
         )
+
+    def handle_update_proposal(self, msg):
+        condition = True
+        for col in proposals.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(proposals.update().where(condition).values(**msg))
