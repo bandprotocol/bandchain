@@ -73,6 +73,8 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgSubmitProposal(txHash, msg, evMap, extra)
 	case gov.MsgVote:
 		app.handleMsgVote(txHash, msg, evMap, extra)
+	case gov.MsgDeposit:
+		app.handleMsgDeposit(txHash, msg, evMap, extra)
 	}
 }
 
