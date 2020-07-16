@@ -22,6 +22,7 @@ from .db import (
     account_transactions,
     proposals,
     deposits,
+    votes,
 )
 
 
@@ -192,6 +193,15 @@ class Handler(object):
             .on_conflict_do_update(constraint="deposits_pkey", set_=msg)
         )
 
+    def handle_set_vote(self, msg):
+        msg["voter_id"] = self.get_account_id(msg["voter"])
+        del msg["voter"]
+        msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
+        self.conn.execute(
+            insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
+        )
+        
     def handle_update_proposal(self, msg):
         condition = True
         for col in proposals.primary_key.columns.values():

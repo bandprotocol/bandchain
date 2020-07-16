@@ -57,3 +57,15 @@ func (app *App) handleMsgDeposit(
 	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor)
 	app.emitUpdateProposalAfterDeposit(msg.ProposalID)
 }
+
+// handleMsgVote implements emitter handler for MsgVote.
+func (app *App) handleMsgVote(
+	txHash []byte, msg gov.MsgVote, evMap EvMap, extra JsDict,
+) {
+	app.Write("SET_VOTE", JsDict{
+		"proposal_id": msg.ProposalID,
+		"voter":       msg.Voter,
+		"answer":      int(msg.Option),
+		"tx_hash":     txHash,
+	})
+}

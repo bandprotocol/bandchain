@@ -20,6 +20,14 @@ class ProposalStatus(enum.Enum):
     Failed = 5
 
 
+class VoteOption(enum.Enum):
+    Empty = 0
+    Yes = 1
+    Abstain = 2
+    No = 3
+    NoWithVeto = 4
+
+
 class CustomResolveStatus(sa.types.TypeDecorator):
 
     impl = sa.Enum(ResolveStatus)
@@ -34,6 +42,14 @@ class CustomProposalStatus(sa.types.TypeDecorator):
 
     def process_bind_param(self, value, dialect):
         return ProposalStatus(value)
+
+
+class CustomVoteOption(sa.types.TypeDecorator):
+
+    impl = sa.Enum(VoteOption)
+
+    def process_bind_param(self, value, dialect):
+        return VoteOption(value)
 
 
 class CustomDateTime(sa.types.TypeDecorator):
@@ -289,5 +305,14 @@ deposits = sa.Table(
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("amount", sa.String),  # uband suffix
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
+)
+
+votes = sa.Table(
+    "votes",
+    metadata,
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("voter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("answer", CustomVoteOption),
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
