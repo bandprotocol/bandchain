@@ -2,6 +2,7 @@
 type t = {
   executable: string,
   calldata: string,
+  timeout: int,
 };
 
 /* TODO: FIX THIS MESS */
