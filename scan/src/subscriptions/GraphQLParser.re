@@ -31,11 +31,9 @@ let timeMS = json => {
   |> MomentRe.Moment.defaultUtc;
 };
 
-let timestamp = json =>
-  json
-  |> Js.Json.decodeString
-  |> Belt.Option.getExn
-  |> MomentRe.momentWithFormat(_, "YYYY-MM-DDTHH:mm:ss.SSSSSS");
+let timestamp = json => {
+  json |> Js.Json.decodeString |> Belt.Option.getExn |> MomentRe.momentUtcDefaultFormat;
+};
 
 let timestampOpt = Belt_Option.map(_, timestamp);
 
