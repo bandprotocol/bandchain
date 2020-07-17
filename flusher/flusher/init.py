@@ -28,6 +28,7 @@ def init(chain_id, topic, db):
             CAST(shares AS DECIMAL) * CAST(current_reward AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) + (CAST(current_ratio AS DECIMAL) - CAST(last_ratio AS DECIMAL)) * CAST(shares AS DECIMAL) as reward,
             validators.operator_address,
             moniker,
+            identity,
             accounts.address AS delegator_address
             FROM delegations JOIN validators ON delegations.validator_id=validators.id
             JOIN accounts ON accounts.id=delegations.delegator_id;''')
