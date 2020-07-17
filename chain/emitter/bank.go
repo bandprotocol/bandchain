@@ -22,9 +22,13 @@ func (app *App) handleMsgMultiSend(
 }
 
 func (app *App) handleEventTypeTransfer(evMap EvMap) {
-	address, err := sdk.AccAddressFromBech32(evMap[bank.EventTypeTransfer+"."+bank.AttributeKeyRecipient][0])
-	if err != nil {
-		return
+	if recipient, err := sdk.AccAddressFromBech32(evMap[bank.EventTypeTransfer+"."+bank.AttributeKeyRecipient][0]); err == nil {
+		app.AddAccountsInBlock(recipient)
 	}
-	app.AddAccountsInBlock(address)
+}
+
+func (app *App) handleEventTypeMessage(evMap EvMap) {
+	if sender, err := sdk.AccAddressFromBech32(evMap[sdk.EventTypeMessage+"."+bank.AttributeKeySender][0]); err == nil {
+		app.AddAccountsInBlock(sender)
+	}
 }
