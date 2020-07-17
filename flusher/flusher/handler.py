@@ -60,8 +60,7 @@ class Handler(object):
             )
 
     def handle_set_account(self, msg):
-        id = self.get_account_id(msg["address"])
-        if id is None:
+        if self.get_account_id(msg["address"]) is None:
             self.conn.execute(accounts.insert(), msg)
         else:
             condition = True
@@ -127,11 +126,15 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
-        self.conn.execute(
-            insert(validators)
-            .values(**msg)
-            .on_conflict_do_update(index_elements=[validators.c.operator_address], set_=msg)
-        )
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
+        if self.get_account_id(msg["operator_address"]) is None:
+            self.conn.execute(validators.insert(), msg)
+        else:
+            condition = True
+            for col in validators.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(validators.update().where(condition).values(**msg))
 
     def handle_update_validator(self, msg):
         self.conn.execute(
