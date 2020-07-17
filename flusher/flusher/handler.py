@@ -60,11 +60,14 @@ class Handler(object):
             )
 
     def handle_set_account(self, msg):
-        self.conn.execute(
-            insert(accounts)
-            .values(**msg)
-            .on_conflict_do_update(index_elements=[accounts.c.address], set_=msg)
-        )
+        id = self.get_account_id(msg["address"])
+        if id is None:
+            self.conn.execute(accounts.insert(), msg)
+        else:
+            condition = True
+            for col in accounts.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(accounts.update().where(condition).values(**msg))
 
     def handle_set_data_source(self, msg):
         if msg["tx_hash"] is not None:
@@ -201,7 +204,7 @@ class Handler(object):
         self.conn.execute(
             insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
         )
-        
+
     def handle_update_proposal(self, msg):
         condition = True
         for col in proposals.primary_key.columns.values():

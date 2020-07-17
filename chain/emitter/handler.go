@@ -90,6 +90,12 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventDeactivate(evMap)
 	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
+	case EventTypeInactiveProposal:
+		app.handleEventInactiveProposal(evMap)
+	case EventTypeActiveProposal:
+		app.handleEventTypeActiveProposal(evMap)
+	case bank.EventTypeTransfer:
+		app.handleEventTypeTransfer(evMap)
 	default:
 		break
 	}
