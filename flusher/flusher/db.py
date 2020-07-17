@@ -214,7 +214,7 @@ validators = sa.Table(
     "validators",
     metadata,
     Column("id", sa.Integer, sa.Sequence("seq_validator_id"), unique=True),
-    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id"), unique=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), unique=True),
     Column("operator_address", sa.String, primary_key=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),

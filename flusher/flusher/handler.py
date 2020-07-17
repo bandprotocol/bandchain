@@ -126,7 +126,7 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
-        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         if self.get_account_id(msg["operator_address"]) is None:
             self.conn.execute(validators.insert(), msg)
@@ -189,8 +189,8 @@ class Handler(object):
         self.conn.execute(proposals.insert(), msg)
 
     def handle_set_deposit(self, msg):
-        msg["depositor_id"] = self.get_account_id(msg["depositor_address"])
-        del msg["depositor_address"]
+        msg["depositor_id"] = self.get_account_id(msg["depositor"])
+        del msg["depositor"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(
@@ -200,8 +200,8 @@ class Handler(object):
         )
 
     def handle_set_vote(self, msg):
-        msg["voter_id"] = self.get_account_id(msg["voter_address"])
-        del msg["voter_address"]
+        msg["voter_id"] = self.get_account_id(msg["voter"])
+        del msg["voter"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(

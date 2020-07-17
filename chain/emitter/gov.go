@@ -15,10 +15,10 @@ var (
 func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
 	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
 	app.Write("SET_DEPOSIT", JsDict{
-		"proposal_id":       id,
-		"depositor_address": depositor,
-		"amount":            deposit.Amount.String(),
-		"tx_hash":           txHash,
+		"proposal_id": id,
+		"depositor":   depositor,
+		"amount":      deposit.Amount.String(),
+		"tx_hash":     txHash,
 	})
 }
 
@@ -69,10 +69,10 @@ func (app *App) handleMsgVote(
 	txHash []byte, msg gov.MsgVote, evMap EvMap, extra JsDict,
 ) {
 	app.Write("SET_VOTE", JsDict{
-		"proposal_id":   msg.ProposalID,
-		"voter_address": msg.Voter,
-		"answer":        int(msg.Option),
-		"tx_hash":       txHash,
+		"proposal_id": msg.ProposalID,
+		"voter":       msg.Voter,
+		"answer":      int(msg.Option),
+		"tx_hash":     txHash,
 	})
 }
 
