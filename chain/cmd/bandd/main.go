@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
@@ -23,13 +22,12 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	banddb "github.com/bandprotocol/bandchain/chain/db"
+	"github.com/bandprotocol/bandchain/chain/emitter"
 )
 
 const (
-	flagInvCheckPeriod         = "inv-check-period"
-	flagWithDB                 = "with-db"
-	flagUptimeLookBackDuration = "uptime-look-back"
+	flagInvCheckPeriod = "inv-check-period"
+	flagWithEmitter    = "with-emitter"
 )
 
 var (
@@ -70,10 +68,9 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
-	rootCmd.PersistentFlags().Int64(flagUptimeLookBackDuration, 1000, "[Experimental] Historical node uptime lookback duration")
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
 		0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -81,23 +78,13 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	if viper.IsSet(flagWithDB) {
-		dbSplit := strings.SplitN(viper.GetString(flagWithDB), ":", 2)
-		if len(dbSplit) != 2 {
-			panic("Invalid DB string format")
-		}
-		metadata := map[string]string{
-			banddb.KeyUptimeLookBackDuration: viper.GetString(flagUptimeLookBackDuration),
-		}
-		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1], metadata)
-		if err != nil {
-			panic(err)
-		}
-		return app.NewDBBandApp(
-			logger, db, traceStore, true, invCheckPeriod, bandDB,
+	if viper.IsSet(flagWithEmitter) {
+		return emitter.NewBandAppWithEmitter(
+			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
+			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+		)
 	} else {
 		return app.NewBandApp(
 			logger, db, traceStore, true, invCheckPeriod,
