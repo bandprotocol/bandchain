@@ -140,6 +140,9 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      let currentTime =
+        React.useContext(TimeContext.context)
+        |> MomentRe.Moment.format(Config.timestampUseFormat);
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
@@ -148,7 +151,8 @@ module StakingInfo = {
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
-      let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);
+      let unbondingListSub =
+        UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress, currentTime);
 
       let%Sub info = infoSub;
       let%Sub balanceAtStake = balanceAtStakeSub;
@@ -274,7 +278,7 @@ module StakingInfo = {
                          KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
-                           |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                           |> MomentRe.Moment.format(Config.timestampDisplayFormat)
                            |> String.uppercase_ascii,
                          ),
                        ]

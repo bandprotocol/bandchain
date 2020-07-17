@@ -13,7 +13,9 @@ type oracle_script_tab_t =
 
 type account_tab_t =
   | AccountTransactions
-  | AccountDelegations;
+  | AccountDelegations
+  | AccountUnbonding
+  | AccountRedelegate;
 
 type validator_tab_t =
   | ProposedBlocks
@@ -71,6 +73,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
   | (["account", address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
+  | (["account", address], "unbonding") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountUnbonding)
+  | (["account", address], "redelegate") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountRedelegate)
   | (["account", address], _) =>
     AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
   | (["validator", address], "delegators") =>
@@ -111,6 +117,14 @@ let toString =
   | AccountIndexPage(address, AccountDelegations) => {
       let addressBech32 = address |> Address.toBech32;
       {j|/account/$addressBech32#delegations|j};
+    }
+  | AccountIndexPage(address, AccountUnbonding) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#unbonding|j};
+    }
+  | AccountIndexPage(address, AccountRedelegate) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#redelegate|j};
     }
   | ValidatorIndexPage(validatorAddress, Delegators) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;

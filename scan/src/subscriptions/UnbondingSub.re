@@ -5,6 +5,18 @@ type unbonding_status_t = {
   amount: Coin.t,
 };
 
+type validator_t = {
+  operatorAddress: Address.t,
+  moniker: string,
+  identity: string,
+};
+
+type unbonding_list_t = {
+  amount: Coin.t,
+  completionTime: MomentRe.Moment.t,
+  validator: validator_t,
+};
+
 module SingleConfig = [%graphql
   {|
     subscription Unbonding($delegator_address: String!) {
@@ -23,9 +35,9 @@ module SingleConfig = [%graphql
 
 module MultiConfig = [%graphql
   {|
-  subscription Unbonding($delegator_address: String!, $operator_address: String!) {
+  subscription Unbonding($delegator_address: String!, $operator_address: String!, $completion_time: timestamp) {
   accounts_by_pk(address: $delegator_address) {
-    unbonding_delegations(where: {validator: {operator_address: {_eq: $operator_address}}}) @bsRecord {
+    unbonding_delegations(order_by: {completion_time: asc}, where: {_and: {completion_time: {_gte: $completion_time}, validator: {operator_address: {_eq: $operator_address}}}}) @bsRecord {
       completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
       amount @bsDecoder(fn: "GraphQLParser.coin")
     }
@@ -48,6 +60,38 @@ module UnbondingByValidatorConfig = [%graphql
       }
     }
 |}
+];
+
+module UnbondingByDelegatorConfig = [%graphql
+  {|
+    subscription UnbondingByDelegator($limit: Int!, $offset: Int!, $delegator_address: String!, $current_time: timestamp) {
+      accounts_by_pk(address: $delegator_address) {
+        unbonding_delegations(offset: $offset, limit: $limit, order_by: {completion_time: asc}, where: {completion_time: {_gte: $current_time}}) @bsRecord{
+          amount @bsDecoder(fn: "GraphQLParser.coin")
+          completionTime: completion_time @bsDecoder(fn: "GraphQLParser.timestamp")
+          validator @bsRecord{
+            operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
+            moniker
+            identity
+          }
+        }
+      }
+    }
+  |}
+];
+
+module UnbondingCountByDelegatorConfig = [%graphql
+  {|
+    subscription UnbondingCountByDelegator($delegator_address: String!, $current_time: timestamp) {
+      accounts_by_pk(address: $delegator_address) {
+        unbonding_delegations_aggregate(where: {completion_time: {_gte: $current_time}}) {
+          aggregate{
+            count @bsDecoder(fn: "Belt_Option.getExn")
+          }
+        }
+      }
+    }
+  |}
 ];
 
 let getUnbondingBalance = delegatorAddress => {
@@ -104,7 +148,52 @@ let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
   unbondingInfo |> Sub.resolve;
 };
 
-let getUnbondingList = (delegatorAddress, operatorAddress) => {
+let getUnbondingByDelegator = (delegatorAddress, currentTime, ~page, ~pageSize, ()) => {
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      UnbondingByDelegatorConfig.definition,
+      ~variables=
+        UnbondingByDelegatorConfig.makeVariables(
+          ~delegator_address=delegatorAddress |> Address.toBech32,
+          ~limit=pageSize,
+          ~current_time=currentTime |> Js.Json.string,
+          ~offset,
+          (),
+        ),
+    );
+
+  result
+  |> Sub.map(_, x => {
+       switch (x##accounts_by_pk) {
+       | Some(x') => x'##unbonding_delegations
+       | None => [||]
+       }
+     });
+};
+
+let getUnbondingCountByDelegator = (delegatorAddress, currentTime) => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      UnbondingCountByDelegatorConfig.definition,
+      ~variables=
+        UnbondingCountByDelegatorConfig.makeVariables(
+          ~delegator_address=delegatorAddress |> Address.toBech32,
+          ~current_time=currentTime |> Js.Json.string,
+          (),
+        ),
+    );
+  result
+  |> Sub.map(_, x => {
+       switch (x##accounts_by_pk) {
+       | Some(x') =>
+         x'##unbonding_delegations_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
+       | None => 0
+       }
+     });
+};
+
+let getUnbondingList = (delegatorAddress, operatorAddress, completionTime) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
@@ -112,6 +201,7 @@ let getUnbondingList = (delegatorAddress, operatorAddress) => {
         MultiConfig.makeVariables(
           ~delegator_address=delegatorAddress |> Address.toBech32,
           ~operator_address=operatorAddress |> Address.toOperatorBech32,
+          ~completion_time=completionTime |> Js.Json.string,
           (),
         ),
     );

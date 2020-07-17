@@ -501,28 +501,23 @@ module ValidatorList = {
 let getPrevDay = _ => {
   MomentRe.momentNow()
   |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-  |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+  |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 let getCurrentDay = _ => {
-  MomentRe.momentNow() |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+  MomentRe.momentNow() |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 [@react.component]
 let make = () => {
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
-  let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
   let (searchTerm, setSearchTerm) = React.useState(_ => "");
 
   React.useEffect0(() => {
-    let timeOutID =
-      Js.Global.setInterval(
-        () => {
-          setPrevDayTime(getPrevDay);
-          setCurrentTime(getCurrentDay);
-        },
-        60_000,
-      );
+    let timeOutID = Js.Global.setInterval(() => {setPrevDayTime(getPrevDay)}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
 

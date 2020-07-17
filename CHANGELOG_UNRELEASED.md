@@ -52,6 +52,7 @@
 
 ### Scan
 
+- (impv) [\#2235](https://github.com/bandprotocol/bandchain/pull/2235) added `unbonding` and `redelegate` tabs to account index page.
 - (impv) [\#2245](https://github.com/bandprotocol/bandchain/pull/2245) Added more features and patch for guanyu testnet
 - (impv) [\#2234](https://github.com/bandprotocol/bandchain/pull/2234) Added support for `received` transaction on scan
 - (bugs) [\#2236](https://github.com/bandprotocol/bandchain/pull/2236) Fixed uptime query on ValidatorIndexPage
