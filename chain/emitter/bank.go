@@ -26,9 +26,3 @@ func (app *App) handleEventTypeTransfer(evMap EvMap) {
 		app.AddAccountsInBlock(recipient)
 	}
 }
-
-func (app *App) handleEventTypeMessage(evMap EvMap) {
-	if sender, err := sdk.AccAddressFromBech32(evMap[sdk.EventTypeMessage+"."+bank.AttributeKeySender][0]); err == nil {
-		app.AddAccountsInBlock(sender)
-	}
-}

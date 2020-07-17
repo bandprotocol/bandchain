@@ -96,8 +96,6 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventTypeActiveProposal(evMap)
 	case bank.EventTypeTransfer:
 		app.handleEventTypeTransfer(evMap)
-	case sdk.EventTypeMessage:
-		app.handleEventTypeMessage(evMap)
 	default:
 		break
 	}
