@@ -1364,9 +1364,11 @@ module TxCountConfig = [%graphql
 module TxCountBySenderConfig = [%graphql
   {|
   subscription TransactionsCountBySender($sender: String!) {
-    transactions_aggregate(where: {sender: {_eq: $sender}}) {
-      aggregate {
-        count @bsDecoder(fn: "Belt_Option.getExn")
+    accounts_by_pk(address: $sender) {
+      account_transactions_aggregate {
+        aggregate {
+          count @bsDecoder(fn: "Belt_Option.getExn")
+        }
       }
     }
   }
@@ -1447,5 +1449,13 @@ let countBySender = sender => {
       ~variables=TxCountBySenderConfig.makeVariables(~sender=sender |> Address.toBech32, ()),
     );
   result
-  |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  |> Sub.map(_, a => {
+       switch (a##accounts_by_pk) {
+       | Some(account) =>
+         account##account_transactions_aggregate##aggregate
+         |> Belt_Option.getExn
+         |> (y => y##count)
+       | None => 0
+       }
+     });
 };

@@ -87,7 +87,7 @@ let renderBody =
                messages={messages->Belt_List.map(msgTransform)}
                success
                errMsg
-               width=460
+               width=450
              />
            </div>
          | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=450 height=15 /> </>
