@@ -86,8 +86,5 @@ func cGetExternalData(e *C.env_t, eid C.int64_t, vid C.int64_t, data *C.Span) C.
 	if err != nil {
 		return toCError(err)
 	}
-	if extData == nil {
-		return C.Error_UnavailableExternalDataError
-	}
 	return writeSpan(data, extData)
 }
