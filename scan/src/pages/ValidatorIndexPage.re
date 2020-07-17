@@ -189,15 +189,15 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
            <HSpacing size=Spacing.md />
            <div className=Styles.hFlex>
              <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
-             <VSpacing size=Spacing.sm />
-             <div className={Styles.oracleBadge(oracleStatus)}>
-               <Text value="ORACLE" color=Colors.white weight=Text.Medium height={Text.Px(11)} />
-               <HSpacing size=Spacing.sm />
-               <img
-                 src={oracleStatus ? Images.whiteCheck : Images.whiteClose}
-                 className=Styles.oracleStatusLogo
-               />
-             </div>
+            //  <VSpacing size=Spacing.sm />
+            //  <div className={Styles.oracleBadge(oracleStatus)}>
+            //    <Text value="ORACLE" color=Colors.white weight=Text.Medium height={Text.Px(11)} />
+            //    <HSpacing size=Spacing.sm />
+            //    <img
+            //      src={oracleStatus ? Images.whiteCheck : Images.whiteClose}
+            //      className=Styles.oracleStatusLogo
+            //    />
+            //  </div>
            </div>
          </>
        | _ => <LoadingCensorBar width=150 height=30 />
@@ -372,7 +372,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
           route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
         },
         {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
-        {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
       |]
       currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
       {switch (hashtag) {

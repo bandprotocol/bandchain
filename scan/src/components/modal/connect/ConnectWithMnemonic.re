@@ -80,7 +80,7 @@ let make = (~chainID) => {
     };
 
   <div className=Styles.container>
-    <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
+    <Text value="Enter Your Name" size=Text.Md weight=Text.Medium />
     <VSpacing size=Spacing.sm />
     <input
       autoFocus=true
