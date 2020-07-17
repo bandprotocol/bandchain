@@ -11,7 +11,7 @@ type resolve_status_t =
 let parseResolveStatus = json => {
   let status = json |> Js.Json.decodeString |> Belt_Option.getExn;
   switch (status) {
-  | "Pending" => Pending
+  | "Open" => Pending
   | "Success" => Success
   | "Failure" => Failure
   | "Expired" => Expired
