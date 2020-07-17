@@ -20,6 +20,7 @@
 
 ### Emitter & Flusher
 
+- (feat) [\#2248](https://github.com/bandprotocol/bandchain/pull/2248) Add identity column on delegation view table.
 - (feat) [\#2242](https://github.com/bandprotocol/bandchain/pull/2242) Implement handle MsgVote for emitter and flusher.
 - (feat) [\#2241](https://github.com/bandprotocol/bandchain/pull/2241) Implement handle MsgDeposit for emitter and flusher.
 - (impv) [\#2240](https://github.com/bandprotocol/bandchain/pull/2240) Emit Kafka msg for staking genesis state.
