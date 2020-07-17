@@ -10,6 +10,8 @@
 
 ### Chain (Consensus)
 
+- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251)  go-owasm: Allow OEI to read nil external data
+
 ### Chain (Non-consensus)
 
 - (impv) [\#2232](https://github.com/bandprotocol/bandchain/pull/2218) CLI/REST for query active oracle validators.
