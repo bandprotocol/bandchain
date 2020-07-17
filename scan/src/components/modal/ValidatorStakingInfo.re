@@ -142,8 +142,7 @@ module StakingInfo = {
     {
       let currentTime =
         React.useContext(TimeContext.context)
-        |> MomentRe.Moment.defaultUtc
-        |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+        |> MomentRe.Moment.format(Config.timestampUseFormat);
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
@@ -279,7 +278,7 @@ module StakingInfo = {
                          KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
-                           |> MomentRe.Moment.format(Config.timestampFormat)
+                           |> MomentRe.Moment.format(Config.timestampDisplayFormat)
                            |> String.uppercase_ascii,
                          ),
                        ]

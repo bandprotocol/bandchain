@@ -100,7 +100,9 @@ let make = (~info, ~header, ~isLeft=true) => {
        <div className=Styles.vFlex>
          <Text
            value={
-             time |> MomentRe.Moment.format(Config.timestampFormat) |> String.uppercase_ascii
+             time
+             |> MomentRe.Moment.format(Config.timestampDisplayFormat)
+             |> String.uppercase_ascii
            }
            size=Text.Lg
            weight=Text.Semibold

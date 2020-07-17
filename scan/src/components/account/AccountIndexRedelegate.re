@@ -13,9 +13,7 @@ module Styles = {
 let make = (~address) =>
   {
     let currentTime =
-      React.useContext(TimeContext.context)
-      |> MomentRe.Moment.defaultUtc
-      |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
 
     let (page, setPage) = React.useState(_ => 1);
     let pageSize = 10;
@@ -28,7 +26,7 @@ let make = (~address) =>
     let%Sub redelegateList = redelegateListSub;
 
     let pageCount = Page.getPageCount(redelegateCount, pageSize);
-    <div>
+    <div className=Styles.tableLowerContainer>
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
         <HSpacing size=Spacing.lg />
@@ -129,7 +127,7 @@ let make = (~address) =>
                      <Text
                        value={
                          redelegateEntry.completionTime
-                         |> MomentRe.Moment.format(Config.timestampFormat)
+                         |> MomentRe.Moment.format(Config.timestampDisplayFormat)
                          |> String.uppercase_ascii
                        }
                        code=true

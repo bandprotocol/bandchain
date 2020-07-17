@@ -2,9 +2,7 @@ type t = {currentTime: MomentRe.Moment.t};
 
 let context = React.createContext(ContextHelper.default);
 
-let getCurrentDay = _ => {
-  MomentRe.momentNow();
-};
+let getCurrentDay = _ => MomentRe.momentNow() |> MomentRe.Moment.defaultUtc;
 
 [@react.component]
 let make = (~children) => {

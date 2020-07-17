@@ -501,16 +501,17 @@ module ValidatorList = {
 let getPrevDay = _ => {
   MomentRe.momentNow()
   |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-  |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+  |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 let getCurrentDay = _ => {
-  MomentRe.momentNow() |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS");
+  MomentRe.momentNow() |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 [@react.component]
 let make = () => {
-  let currentTime = React.useContext(TimeContext.context);
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
 
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
   let (searchTerm, setSearchTerm) = React.useState(_ => "");
@@ -526,11 +527,7 @@ let make = () => {
   let validatorsCountSub = ValidatorSub.count();
   let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-  let avgBlockTimeSub =
-    BlockSub.getAvgBlockTime(
-      prevDayTime,
-      currentTime |> MomentRe.Moment.format("YYYY-MM-DDTHH:mm:ss.SSSSSS"),
-    );
+  let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
   let latestBlock = BlockSub.getLatest();
   let votesBlockSub = ValidatorSub.getListVotesBlock();
 

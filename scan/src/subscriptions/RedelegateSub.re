@@ -90,7 +90,7 @@ let getRedelegateCountByDelegator = (delegatorAddress, currentTime) => {
        switch (x##accounts_by_pk) {
        | Some(x') =>
          x'##redelegations_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
-       | None => 10
+       | None => 0
        }
      });
 };
