@@ -16,6 +16,7 @@
 
 ### Yoda
 
+- (impv) [\#2249](https://github.com/bandprotocol/bandchain/pull/2249) docker: Run test program during initialization.
 - (feat) [\#2218](https://github.com/bandprotocol/bandchain/pull/2218) Implement MultiExec to combine multiple executors.
 
 ### Emitter & Flusher
