@@ -18,6 +18,7 @@ class ProposalStatus(enum.Enum):
     Passed = 3
     Rejected = 4
     Failed = 5
+    Inactive = 6
 
 
 class VoteOption(enum.Enum):

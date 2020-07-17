@@ -6,6 +6,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 )
 
+var (
+	EventTypeInactiveProposal = types.EventTypeInactiveProposal
+	EventTypeActiveProposal   = types.EventTypeActiveProposal
+	StatusInactive            = 6
+)
+
 func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
 	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
 	app.Write("SET_DEPOSIT", JsDict{
@@ -67,5 +73,21 @@ func (app *App) handleMsgVote(
 		"voter":       msg.Voter,
 		"answer":      int(msg.Option),
 		"tx_hash":     txHash,
+	})
+}
+
+func (app *App) handleEventInactiveProposal(evMap EvMap) {
+	app.Write("UPDATE_PROPOSAL", JsDict{
+		"id":     atoi(evMap[types.EventTypeInactiveProposal+"."+types.AttributeKeyProposalID][0]),
+		"status": StatusInactive,
+	})
+}
+
+func (app *App) handleEventTypeActiveProposal(evMap EvMap) {
+	id := uint64(atoi(evMap[types.EventTypeActiveProposal+"."+types.AttributeKeyProposalID][0]))
+	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, id)
+	app.Write("UPDATE_PROPOSAL", JsDict{
+		"id":     id,
+		"status": int(proposal.Status),
 	})
 }
