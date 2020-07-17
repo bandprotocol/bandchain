@@ -25,7 +25,7 @@ let make = (~address) =>
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
         <HSpacing size=Spacing.lg />
-        <Text value={delegations |> Belt_Array.length |> string_of_int} weight=Text.Semibold />
+        <Text value={delegationsCount |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.xs />
         <Text value="Validators Delegated" />
       </div>
