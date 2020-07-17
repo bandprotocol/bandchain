@@ -126,8 +126,8 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
-        msg["account_id"] = self.get_account_id(msg["account_address"])
-        del msg["account_address"]
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
         if self.get_account_id(msg["operator_address"]) is None:
             self.conn.execute(validators.insert(), msg)
         else:
@@ -193,8 +193,6 @@ class Handler(object):
         del msg["depositor_address"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        msg["depositor_operator_id"] = self.get_validator_id(msg["depositor_operator_address"])
-        del msg["depositor_operator_address"]
         self.conn.execute(
             insert(deposits)
             .values(**msg)
@@ -206,8 +204,6 @@ class Handler(object):
         del msg["voter_address"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        msg["voter_operator_id"] = self.get_validator_id(msg["voter_operator_address"])
-        del msg["voter_operator_address"]
         self.conn.execute(
             insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
         )

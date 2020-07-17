@@ -214,7 +214,7 @@ validators = sa.Table(
     "validators",
     metadata,
     Column("id", sa.Integer, sa.Sequence("seq_validator_id"), unique=True),
-    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), unique=True),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id"), unique=True),
     Column("operator_address", sa.String, primary_key=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
@@ -306,7 +306,6 @@ deposits = sa.Table(
     metadata,
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
-    Column("depositor_operator_id", sa.Integer, sa.ForeignKey("validators.id"), nullable=True),
     Column("amount", sa.String),  # uband suffix
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
@@ -316,7 +315,6 @@ votes = sa.Table(
     metadata,
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("voter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
-    Column("voter_operator_id", sa.Integer, sa.ForeignKey("validators.id"), nullable=True),
     Column("answer", CustomVoteOption),
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
