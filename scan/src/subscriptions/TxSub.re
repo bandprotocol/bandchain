@@ -1281,7 +1281,7 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
   subscription Transactions($limit: Int!, $offset: Int!) {
-    transactions(offset: $offset, limit: $limit, order_by: {block_height: desc, id: desc}) @bsRecord {
+    transactions(offset: $offset, limit: $limit, order_by: {id: desc}) @bsRecord {
       txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
