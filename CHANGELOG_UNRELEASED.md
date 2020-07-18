@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2252](https://github.com/bandprotocol/bandchain/pull/2252) `handle_set_validator` get wrong validator id.
 - (impv) [\#2250](https://github.com/bandprotocol/bandchain/pull/2250) Add account id in `validators` table.
 - (feat) [\#2246](https://github.com/bandprotocol/bandchain/pull/2246) Implement handle all resolve proposal status.
 - (feat) [\#2242](https://github.com/bandprotocol/bandchain/pull/2242) Implement handle MsgVote for emitter and flusher.
