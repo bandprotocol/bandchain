@@ -68,12 +68,12 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
         <Col size=1.>
           <InfoHL header="OWNER" info={InfoHL.Address(oracleScript.owner, 430)} />
         </Col>
-        <Col size=0.95>
-          <InfoHL
-            info={InfoHL.DataSources(oracleScript.relatedDataSources)}
-            header="RELATED DATA SOURCES"
-          />
-        </Col>
+        // <Col size=0.95>
+        //   <InfoHL
+        //     info={InfoHL.DataSources(oracleScript.relatedDataSources)}
+        //     header="RELATED DATA SOURCES"
+        //   />
+        // </Col>
       </Row>
       <VSpacing size=Spacing.sm />
       <Row>
@@ -103,11 +103,11 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) =>
             route:
               oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRequests),
           },
-          {
-            name: "REVISIONS",
-            route:
-              oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
-          },
+          // {
+          //   name: "REVISIONS",
+          //   route:
+          //     oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
+          // },
         |]
         currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
         {switch (hashtag) {
