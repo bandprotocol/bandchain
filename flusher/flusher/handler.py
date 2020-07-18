@@ -128,7 +128,7 @@ class Handler(object):
     def handle_set_validator(self, msg):
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
-        if self.get_account_id(msg["operator_address"]) is None:
+        if self.get_validator_id(msg["operator_address"]) is None:
             self.conn.execute(validators.insert(), msg)
         else:
             condition = True
