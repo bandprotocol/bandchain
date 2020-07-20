@@ -57,6 +57,15 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 	})
 }
 
+func (app *App) emitDelegationAfterWithdrawReward(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
+	_, ratio := app.getCurrentRewardAndCurrentRatio(operatorAddress)
+	app.Write("UPDATE_DELEGATION", JsDict{
+		"delegator_address": delegatorAddress,
+		"operator_address":  operatorAddress,
+		"last_ratio":        ratio,
+	})
+}
+
 func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
 	delegation, found := app.StakingKeeper.GetDelegation(app.DeliverContext, delegatorAddress, operatorAddress)
 	if found {
