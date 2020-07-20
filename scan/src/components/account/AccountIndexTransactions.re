@@ -6,6 +6,14 @@ module Styles = {
   let hFlex = style([display(`flex)]);
 };
 
+let transform = (account, msg: TxSub.Msg.t) => {
+  switch (msg) {
+  | SendMsg({toAddress, fromAddress, amount}) when toAddress == account =>
+    TxSub.Msg.ReceiveMsg({toAddress, fromAddress, amount})
+  | _ => msg
+  };
+};
+
 [@react.component]
 let make = (~accountAddress: Address.t) => {
   let (page, setPage) = React.useState(_ => 1);
@@ -31,7 +39,7 @@ let make = (~accountAddress: Address.t) => {
        </div>
      }}
     <VSpacing size=Spacing.lg />
-    <TxsTable txsSub />
+    <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {
      | Data(txsCount) =>
        let pageCount = Page.getPageCount(txsCount, pageSize);

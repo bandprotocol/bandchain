@@ -23,7 +23,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: string) => {
+let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: string) => {
   let (overflowed, setOverflowed) = React.useState(_ => false);
   let (expanded, setExpanded) = React.useState(_ => false);
 
@@ -52,7 +52,7 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~rawLog: st
            </React.Fragment>
          )
        ->React.array}
-      {success ? React.null : <TxError.Mini msg=rawLog />}
+      {success ? React.null : <TxError.Mini msg=errMsg />}
     </div>
     {overflowed || expanded
        ? <div>

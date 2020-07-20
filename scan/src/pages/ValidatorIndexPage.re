@@ -2,9 +2,21 @@ module Styles = {
   open Css;
 
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let hFlex = style([display(`flex), flexDirection(`column), alignItems(`flexStart)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
   let logoSmall = style([width(`px(20))]);
+
+  let oracleStatusLogo = style([width(`px(12))]);
+
+  let oracleBadge = active =>
+    style([
+      display(`flex),
+      flexDirection(`row),
+      backgroundColor(active ? Colors.green4 : `hex("E74A4B")),
+      borderRadius(`px(12)),
+      padding2(~v=`px(5), ~h=`px(7)),
+    ]);
 
   let fillLeft = style([marginLeft(`auto)]);
 
@@ -171,11 +183,22 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
     <VSpacing size=Spacing.xl />
     <div className=Styles.vFlex>
       {switch (allSub) {
-       | Data((validator, _)) =>
+       | Data(({moniker, identity, oracleStatus}, _)) =>
          <>
-           <Avatar moniker={validator.moniker} identity={validator.identity} width=40 />
+           <Avatar moniker identity width=40 />
            <HSpacing size=Spacing.md />
-           <Text value={validator.moniker} size=Text.Xxl weight=Text.Bold nowrap=true />
+           <div className=Styles.hFlex>
+             <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
+             <VSpacing size=Spacing.sm />
+             <div className={Styles.oracleBadge(oracleStatus)}>
+               <Text value="ORACLE" color=Colors.white weight=Text.Medium height={Text.Px(11)} />
+               <HSpacing size=Spacing.sm />
+               <img
+                 src={oracleStatus ? Images.whiteCheck : Images.whiteClose}
+                 className=Styles.oracleStatusLogo
+               />
+             </div>
+           </div>
          </>
        | _ => <LoadingCensorBar width=150 height=30 />
        }}
@@ -272,19 +295,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
            switch (allSub) {
            | Data((validator, _)) =>
              VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
-           | _ => Loading(100, 16)
-           };
-         },
-       )}
-      <VSpacing size=Spacing.lg />
-      {kvRow(
-         "BONDED HEIGHT",
-         {
-           "The block height at which the entity registers as a validator" |> React.string;
-         },
-         {
-           switch (allSub) {
-           | Data((validator, _)) => VCode(validator.bondedHeight->Format.iPretty)
            | _ => Loading(100, 16)
            };
          },
