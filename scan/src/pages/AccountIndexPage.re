@@ -144,7 +144,7 @@ let totalBalanceRender = (title, amount, symbol) => {
 let make = (~address, ~hashtag: Route.account_tab_t) =>
   {
     let accountSub = AccountSub.get(address);
-    let metadataSub = MetadataSub.use();
+    let trackingSub = TrackingSub.use();
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
     let unbondingSub = UnbondingSub.getUnbondingBalance(address);
     let infoSub = React.useContext(GlobalContext.context);
@@ -155,7 +155,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
     let%Sub unbonding = unbondingSub;
-    let%Sub metadata = metadataSub;
+    let%Sub tracking = trackingSub;
 
     let usdPrice = info.financial.usdPrice;
 
@@ -176,7 +176,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         } else {
           openSendModal();
         };
-      | None => dispatchModal(OpenModal(Connect(metadata.chainID)))
+      | None => dispatchModal(OpenModal(Connect(tracking.chainID)))
       };
     };
 
@@ -290,11 +290,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
             name: "DELEGATIONS",
             route: Route.AccountIndexPage(address, Route.AccountDelegations),
           },
+          {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
+          {name: "REDELEGATE", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
         |]
         currentRoute={Route.AccountIndexPage(address, hashtag)}>
         {switch (hashtag) {
          | AccountTransactions => <AccountIndexTransactions accountAddress=address />
          | AccountDelegations => <AccountIndexDelegations address />
+         | AccountUnbonding => <AccountIndexUnbonding address />
+         | AccountRedelegate => <AccountIndexRedelegate address />
          }}
       </Tab>
     </>

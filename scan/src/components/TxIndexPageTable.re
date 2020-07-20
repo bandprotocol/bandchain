@@ -138,12 +138,13 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
     <VSpacing size=Spacing.md />
     <KVTable
       tableWidth=480
-      headers=["EXTERNAL ID", "VALUE"]
+      headers=["EXTERNAL ID", "EXIT CODE", "VALUE"]
       rows={
         report.rawReports
         |> Belt_List.map(_, rawReport =>
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
+               KVTable.Value(rawReport.exitCode |> string_of_int),
                KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
              ]
            )
@@ -253,7 +254,7 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
   </Col>;
 };
 
-let renderAddOracleAddress = (address: TxSub.Msg.AddOracleAddress.t) => {
+let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -268,7 +269,7 @@ let renderAddOracleAddress = (address: TxSub.Msg.AddOracleAddress.t) => {
   </Col>;
 };
 
-let renderRemoveOracleAddress = (address: TxSub.Msg.RemoveOracleAddress.t) => {
+let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -919,6 +920,19 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
      ->React.array}
   </Col>;
 };
+
+let renderActivate = (activate: TxSub.Msg.Activate.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={activate.validatorAddress} validator=true />
+      </div>
+    </div>
+  </Col>;
+};
+
 let renderFailMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
@@ -948,8 +962,8 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | EditOracleScriptMsg(oracleScript) => renderEditOracleScript(oracleScript)
   | RequestMsg(request) => renderRequest(request)
   | ReportMsg(report) => renderReport(report)
-  | AddOracleAddressMsg(address) => renderAddOracleAddress(address)
-  | RemoveOracleAddressMsg(address) => renderRemoveOracleAddress(address)
+  | AddReporterMsg(address) => renderAddReporter(address)
+  | RemoveReporterMsg(address) => renderRemoveReporter(address)
   | CreateValidatorMsg(validator) => renderCreateValidator(validator)
   | EditValidatorMsg(validator) => renderEditValidator(validator)
   | CreateClientMsg(info) => renderCreateClient(info)
@@ -979,6 +993,7 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | DepositMsg(deposit) => renderDeposit(deposit)
   | VoteMsg(vote) => renderVote(vote)
   | MultiSendMsg(tx) => renderMultiSend(tx)
+  | ActivateMsg(activate) => renderActivate(activate)
   | FailMsg(_) => renderFailMessage()
   | UnknownMsg => renderUnknownMessage()
   };

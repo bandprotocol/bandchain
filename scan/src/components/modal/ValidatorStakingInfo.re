@@ -140,6 +140,9 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      let currentTime =
+        React.useContext(TimeContext.context)
+        |> MomentRe.Moment.format(Config.timestampUseFormat);
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
@@ -148,7 +151,8 @@ module StakingInfo = {
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
-      let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);
+      let unbondingListSub =
+        UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress, currentTime);
 
       let%Sub info = infoSub;
       let%Sub balanceAtStake = balanceAtStakeSub;
@@ -269,12 +273,12 @@ module StakingInfo = {
                  headers=["AMOUNT (BAND)", "UNBONDED AT"]
                  rows={
                    unbondingList
-                   ->Belt_Array.map(({completionTime, balance}) =>
+                   ->Belt_Array.map(({completionTime, amount}) =>
                        [
-                         KVTable.Value(balance |> Coin.getBandAmountFromCoin |> Format.fPretty),
+                         KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
-                           |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                           |> MomentRe.Moment.format(Config.timestampDisplayFormat)
                            |> String.uppercase_ascii,
                          ),
                        ]
@@ -321,7 +325,7 @@ module ConnectBtn = {
 
 [@react.component]
 let make = (~validatorAddress) => {
-  let metadataSub = MetadataSub.use();
+  let trackingSub = TrackingSub.use();
   let (accountOpt, _) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
@@ -333,7 +337,7 @@ let make = (~validatorAddress) => {
     {switch (accountOpt) {
      | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
      | None =>
-       switch (metadataSub) {
+       switch (trackingSub) {
        | Data({chainID}) =>
          <div>
            <Row>

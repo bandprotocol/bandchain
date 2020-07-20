@@ -58,17 +58,20 @@ type chainID =
   | WenchangTestnet
   | WenchangMainnet
   | GuanYuDevnet
+  | GuanYuTestnet
   | Unknown;
 
 let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
   | "band-wenchang-mainnet" => WenchangMainnet
-  | "band-guanyu-devnet"
-  | "band-guanyu-devnet-2"
-  | "band-guanyu-devnet-3"
-  | "band-guanyu-devnet-4"
+  | "band-guanyu-devnet5"
+  | "band-guanyu-devnet6"
+  | "band-guanyu-devnet7"
+  | "band-guanyu-devnet8"
   | "bandchain" => GuanYuDevnet
+  | "band-guanyu-testnet1"
+  | "band-guanyu-testnet2" => GuanYuTestnet
   | _ => Unknown;
 
 let getLink =
@@ -76,6 +79,7 @@ let getLink =
   | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
+  | GuanYuTestnet
   | Unknown => "";
 
 let getName =
@@ -83,15 +87,16 @@ let getName =
   | WenchangTestnet => "wenchang-testnet"
   | WenchangMainnet => "wenchang-mainnet"
   | GuanYuDevnet => "guanyu-devnet"
+  | GuanYuTestnet => "guanyu-testnet"
   | Unknown => "unknown";
 
 [@react.component]
 let make = () =>
   {
     let (show, setShow) = React.useState(_ => false);
-    let metadataSub = MetadataSub.use();
-    let%Sub metadata = metadataSub;
-    let currentChainID = metadata.chainID->parseChainID;
+    let trackingSub = TrackingSub.use();
+    let%Sub tracking = trackingSub;
+    let currentChainID = tracking.chainID->parseChainID;
 
     <div
       className=Styles.version

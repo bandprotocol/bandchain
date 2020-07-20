@@ -140,7 +140,7 @@ let make = () =>
                    <Col> <HSpacing size=Spacing.lg /> </Col>
                    <Col size=0.5> <TElement elementType={TElement.Request(id)} /> </Col>
                    <Col size=1.0>
-                     <TElement elementType={transaction.timestamp->TElement.Timestamp} />
+                     <TElement elementType={transaction.block.timestamp->TElement.Timestamp} />
                    </Col>
                    <Col size=1.15>
                      <TElement
