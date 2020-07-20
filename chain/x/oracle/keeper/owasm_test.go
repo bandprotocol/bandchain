@@ -270,7 +270,7 @@ func TestResolveRequestSuccessComplex(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
 	k.SetRequest(ctx, 42, types.NewRequest(
-		// 4st Wasm. Append all reports from all validators.
+		// 4th Wasm. Append all reports from all validators.
 		4, obi.MustEncode(testapp.Wasm4Input{
 			IDs:      []int64{1, 2},
 			Calldata: string(BasicCalldata),
@@ -317,7 +317,7 @@ func TestResolveReadNilExternalData(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
 	k.SetRequest(ctx, 42, types.NewRequest(
-		// 4st Wasm. Append all reports from all validators.
+		// 4th Wasm. Append all reports from all validators.
 		4, obi.MustEncode(testapp.Wasm4Input{
 			IDs:      []int64{1, 2},
 			Calldata: string(BasicCalldata),
