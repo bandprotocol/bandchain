@@ -82,7 +82,7 @@ let make = (~id) =>
                   <TBody
                     key={
                       switch (transaction) {
-                      | Some(tx) => tx.txHash |> Hash.toHex(~upper=true)
+                      | Some(tx) => tx.hash |> Hash.toHex(~upper=true)
                       | None => "Genesis"
                       }
                     }>
@@ -103,7 +103,7 @@ let make = (~id) =>
                       <Col size=2.>
                         {switch (transaction) {
                          | Some(tx) =>
-                           <TimeAgos time={tx.timestamp} size=Text.Md weight=Text.Medium />
+                           <TimeAgos time={tx.block.timestamp} size=Text.Md weight=Text.Medium />
                          | None => <Text value="GENESIS" />
                          }}
                       </Col>
@@ -115,7 +115,7 @@ let make = (~id) =>
                       </Col>
                       <Col size=3.5>
                         {switch (transaction) {
-                         | Some(tx) => <TxLink txHash={tx.txHash} width=300 weight=Text.Medium />
+                         | Some(tx) => <TxLink txHash={tx.hash} width=300 weight=Text.Medium />
                          | None =>
                            <Text
                              block=true
