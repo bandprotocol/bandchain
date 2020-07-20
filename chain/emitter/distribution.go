@@ -23,6 +23,16 @@ func (app *App) getCurrentRewardAndCurrentRatio(addr sdk.ValAddress) (string, st
 	return currentReward, currentRatio
 }
 
+func (app *App) emitUpdateValidatorRewardAndAccumulatedCommission(addr sdk.ValAddress) {
+	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
+	app.Write("UPDATE_VALIDATOR", JsDict{
+		"operator_address":       addr.String(),
+		"current_reward":         currentReward,
+		"current_ratio":          currentRatio,
+		"accumulated_commission": app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).String(),
+	})
+}
+
 func (app *App) emitUpdateValidatorReward(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	app.Write("UPDATE_VALIDATOR", JsDict{
@@ -55,6 +65,6 @@ func (app *App) handleMsgWithdrawValidatorCommission(
 ) {
 	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, sdk.AccAddress(msg.ValidatorAddress))
 	app.AddAccountsInTx(withdrawAddr)
-	app.emitUpdateValidatorReward(msg.ValidatorAddress)
+	app.emitUpdateValidatorRewardAndAccumulatedCommission(msg.ValidatorAddress)
 	extra["commission_amount"] = evMap[types.EventTypeWithdrawCommission+"."+sdk.AttributeKeyAmount][0]
 }
