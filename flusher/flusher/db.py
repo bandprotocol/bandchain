@@ -11,12 +11,46 @@ class ResolveStatus(enum.Enum):
     Expired = 3
 
 
+class ProposalStatus(enum.Enum):
+    Nil = 0
+    DepositPeriod = 1
+    VotingPeriod = 2
+    Passed = 3
+    Rejected = 4
+    Failed = 5
+    Inactive = 6
+
+
+class VoteOption(enum.Enum):
+    Empty = 0
+    Yes = 1
+    Abstain = 2
+    No = 3
+    NoWithVeto = 4
+
+
 class CustomResolveStatus(sa.types.TypeDecorator):
 
     impl = sa.Enum(ResolveStatus)
 
     def process_bind_param(self, value, dialect):
         return ResolveStatus(value)
+
+
+class CustomProposalStatus(sa.types.TypeDecorator):
+
+    impl = sa.Enum(ProposalStatus)
+
+    def process_bind_param(self, value, dialect):
+        return ProposalStatus(value)
+
+
+class CustomVoteOption(sa.types.TypeDecorator):
+
+    impl = sa.Enum(VoteOption)
+
+    def process_bind_param(self, value, dialect):
+        return VoteOption(value)
 
 
 class CustomDateTime(sa.types.TypeDecorator):
@@ -180,6 +214,7 @@ validators = sa.Table(
     "validators",
     metadata,
     Column("id", sa.Integer, sa.Sequence("seq_validator_id"), unique=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), unique=True),
     Column("operator_address", sa.String, primary_key=True),
     Column("consensus_address", sa.String, unique=True),
     Column("consensus_pubkey", sa.String),
@@ -227,7 +262,7 @@ unbonding_delegations = sa.Table(
     metadata,
     Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
-    Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height")),
+    Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height"), nullable=True),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
 )
@@ -247,4 +282,39 @@ account_transactions = sa.Table(
     metadata,
     Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
     Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+)
+
+proposals = sa.Table(
+    "proposals",
+    metadata,
+    Column("id", sa.Integer, primary_key=True),
+    Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("type", sa.String),
+    Column("title", sa.String),
+    Column("description", sa.String),
+    Column("proposal_route", sa.String),
+    Column("status", CustomProposalStatus),
+    Column("submit_time", CustomDateTime),
+    Column("deposit_end_time", CustomDateTime),
+    Column("total_deposit", sa.String),  # uband suffix
+    Column("voting_time", CustomDateTime),
+    Column("voting_end_time", CustomDateTime),
+)
+
+deposits = sa.Table(
+    "deposits",
+    metadata,
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("amount", sa.String),  # uband suffix
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
+)
+
+votes = sa.Table(
+    "votes",
+    metadata,
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("voter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("answer", CustomVoteOption),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )

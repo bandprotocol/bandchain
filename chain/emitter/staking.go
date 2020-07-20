@@ -17,6 +17,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":      addr.String(),
+		"delegator_address":     sdk.AccAddress(addr).String(),
 		"consensus_address":     sdk.ConsAddress(val.ConsPubKey.Address()).String(),
 		"consensus_pubkey":      sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, val.ConsPubKey),
 		"moniker":               val.Description.Moniker,

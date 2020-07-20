@@ -3,6 +3,7 @@ package executor
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -18,8 +19,21 @@ type DockerExec struct {
 	image string
 }
 
+var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
+
 func NewDockerExec(image string) *DockerExec {
-	return &DockerExec{image: image}
+	exec := &DockerExec{image: image}
+	res, err := exec.Exec(5*time.Second, testProgram, "TEST_ARG")
+	if err != nil {
+		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
+	}
+	if res.Code != 0 {
+		panic(fmt.Sprintf("NewDockerExec: test program returned nonzero code: %d", res.Code))
+	}
+	if string(res.Output) != "TEST_ARG\n" {
+		panic(fmt.Sprintf("NewDockerExec: test program returned wrong output: %s", res.Output))
+	}
+	return exec
 }
 
 func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
@@ -60,7 +74,7 @@ func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecR
 		if exitError, ok := err.(*exec.ExitError); ok {
 			exitCode = uint32(exitError.ExitCode())
 		} else {
-			return ExecResult{}, nil
+			return ExecResult{}, err
 		}
 	}
 	output, err := ioutil.ReadAll(io.LimitReader(&buf, types.MaxDataSize))

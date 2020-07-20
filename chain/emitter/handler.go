@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
+	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -68,6 +69,12 @@ func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, ex
 		app.handleMsgWithdrawValidatorCommission(txHash, msg, evMap, extra)
 	case slashing.MsgUnjail:
 		app.handleMsgUnjail(txHash, msg, evMap, extra)
+	case gov.MsgSubmitProposal:
+		app.handleMsgSubmitProposal(txHash, msg, evMap, extra)
+	case gov.MsgVote:
+		app.handleMsgVote(txHash, msg, evMap, extra)
+	case gov.MsgDeposit:
+		app.handleMsgDeposit(txHash, msg, evMap, extra)
 	}
 }
 
@@ -83,6 +90,12 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventDeactivate(evMap)
 	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
+	case EventTypeInactiveProposal:
+		app.handleEventInactiveProposal(evMap)
+	case EventTypeActiveProposal:
+		app.handleEventTypeActiveProposal(evMap)
+	case bank.EventTypeTransfer:
+		app.handleEventTypeTransfer(evMap)
 	default:
 		break
 	}

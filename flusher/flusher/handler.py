@@ -20,6 +20,9 @@ from .db import (
     unbonding_delegations,
     redelegations,
     account_transactions,
+    proposals,
+    deposits,
+    votes,
 )
 
 
@@ -57,11 +60,13 @@ class Handler(object):
             )
 
     def handle_set_account(self, msg):
-        self.conn.execute(
-            insert(accounts)
-            .values(**msg)
-            .on_conflict_do_update(index_elements=[accounts.c.address], set_=msg)
-        )
+        if self.get_account_id(msg["address"]) is None:
+            self.conn.execute(accounts.insert(), msg)
+        else:
+            condition = True
+            for col in accounts.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(accounts.update().where(condition).values(**msg))
 
     def handle_set_data_source(self, msg):
         if msg["tx_hash"] is not None:
@@ -121,11 +126,15 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
-        self.conn.execute(
-            insert(validators)
-            .values(**msg)
-            .on_conflict_do_update(index_elements=[validators.c.operator_address], set_=msg)
-        )
+        msg["account_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
+        if self.get_validator_id(msg["operator_address"]) is None:
+            self.conn.execute(validators.insert(), msg)
+        else:
+            condition = True
+            for col in validators.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(validators.update().where(condition).values(**msg))
 
     def handle_update_validator(self, msg):
         self.conn.execute(
@@ -173,3 +182,34 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_new_proposal(self, msg):
+        msg["proposer_id"] = self.get_account_id(msg["proposer"])
+        del msg["proposer"]
+        self.conn.execute(proposals.insert(), msg)
+
+    def handle_set_deposit(self, msg):
+        msg["depositor_id"] = self.get_account_id(msg["depositor"])
+        del msg["depositor"]
+        msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
+        self.conn.execute(
+            insert(deposits)
+            .values(**msg)
+            .on_conflict_do_update(constraint="deposits_pkey", set_=msg)
+        )
+
+    def handle_set_vote(self, msg):
+        msg["voter_id"] = self.get_account_id(msg["voter"])
+        del msg["voter"]
+        msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
+        self.conn.execute(
+            insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
+        )
+
+    def handle_update_proposal(self, msg):
+        condition = True
+        for col in proposals.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(proposals.update().where(condition).values(**msg))
