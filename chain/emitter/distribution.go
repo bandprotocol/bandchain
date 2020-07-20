@@ -39,6 +39,7 @@ func (app *App) handleMsgWithdrawDelegatorReward(
 	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, msg.DelegatorAddress)
 	app.AddAccountsInTx(withdrawAddr)
 	app.emitUpdateValidatorReward(msg.ValidatorAddress)
+	app.emitDelegationAfterWithdrawReward(msg.ValidatorAddress, withdrawAddr)
 	extra["reward_amount"] = evMap[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount][0]
 }
 
