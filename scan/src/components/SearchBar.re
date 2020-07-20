@@ -1,9 +1,9 @@
 module Styles = {
   open Css;
 
-  let container =
+  let container = isMobile =>
     style([
-      maxWidth(`px(600)),
+      maxWidth(isMobile ? `px(344) : `px(600)),
       width(`percent(100.)),
       height(`percent(100.)),
       position(`relative),
@@ -175,10 +175,11 @@ let reducer = state =>
 
 [@react.component]
 let make = () => {
+  let isMobile = Media.isMobile();
   let ({searchTerm, resultState}, dispatch) =
     React.useReducer(reducer, {searchTerm: "", resultState: Hidden});
 
-  <div className=Styles.container>
+  <div className={Styles.container(isMobile)}>
     <input
       onFocus={_evt => dispatch(StartTyping)}
       onBlur={_evt => dispatch(StopTyping)}
