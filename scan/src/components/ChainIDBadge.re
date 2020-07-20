@@ -14,6 +14,7 @@ module Styles = {
       marginTop(`px(1)),
       position(`relative),
       cursor(`pointer),
+      Media.mobile([minWidth(`px(160))]),
     ]);
 
   let versionLoading =
@@ -28,6 +29,7 @@ module Styles = {
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
+      Media.mobile([height(`px(25)), width(`px(160))]),
     ]);
 
   let downIcon = show =>
@@ -49,6 +51,7 @@ module Styles = {
       padding4(~top=`pxFloat(4.), ~bottom=`zero, ~left=`px(8), ~right=`px(8)),
       opacity(show ? 1. : 0.),
       pointerEvents(show ? `auto : `none),
+      Media.mobile([top(`px(35))]),
     ]);
 
   let link = style([textDecoration(`none)]);
@@ -93,6 +96,7 @@ let getName =
 [@react.component]
 let make = () =>
   {
+    let isMobile = Media.isMobile();
     let (show, setShow) = React.useState(_ => false);
     let trackingSub = TrackingSub.use();
     let%Sub tracking = trackingSub;
@@ -106,7 +110,7 @@ let make = () =>
       }}>
       <Text
         value={currentChainID->getName}
-        size=Text.Sm
+        size={isMobile ? Text.Md : Text.Sm}
         color=Colors.blue6
         nowrap=true
         weight=Text.Semibold
@@ -127,7 +131,7 @@ let make = () =>
                rel="noopener">
                <Text
                  value=name
-                 size=Text.Sm
+                 size={isMobile ? Text.Md : Text.Sm}
                  color=Colors.blue6
                  nowrap=true
                  weight=Text.Semibold
@@ -144,6 +148,18 @@ let make = () =>
   |> Sub.default(
        _,
        <div className=Styles.versionLoading>
-         <LoadingCensorBar width=120 height=16 colorBase=Colors.blue1 colorLighter=Colors.white />
+         {Media.isMobile()
+            ? <LoadingCensorBar
+                width=160
+                height=25
+                colorBase=Colors.blue1
+                colorLighter=Colors.white
+              />
+            : <LoadingCensorBar
+                width=120
+                height=16
+                colorBase=Colors.blue1
+                colorLighter=Colors.white
+              />}
        </div>,
      );
