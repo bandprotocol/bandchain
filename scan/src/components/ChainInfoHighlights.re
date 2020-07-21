@@ -1,16 +1,21 @@
 module Styles = {
   open Css;
 
-  let card = isMobile =>
+  let card =
     style([
       display(`flex),
-      width(isMobile ? `px(164) : `px(210)),
-      height(isMobile ? `px(128) : `px(115)),
+      width(`px(210)),
+      height(`px(115)),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(0, 0, 0, 0.1))),
       position(`relative),
-      Media.mobile([flexBasis(`calc((`sub, `percent(50.), `px(20)))), margin(`px(10))]),
+      Media.mobile([
+        flexBasis(`calc((`sub, `percent(50.), `px(20)))),
+        margin(`px(10)),
+        width(`px(164)),
+        height(`px(128)),
+      ]),
     ]);
 
   let innerCard =
@@ -33,7 +38,7 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row)]);
 
-  let withWidth = (w: int) => style([width(`px(w))]);
+  let withWidth = style([width(`px(170)), Media.mobile([width(`px(142))])]);
 
   let bgCard = (url: string) =>
     style([
@@ -56,8 +61,7 @@ module Styles = {
 module HighlightCard = {
   [@react.component]
   let make = (~label, ~valueAndExtraComponentSub: ApolloHooks.Subscription.variant(_), ~bgUrl=?) => {
-    let isMobile = Media.isMobile();
-    <div className={Styles.card(isMobile)}>
+    <div className=Styles.card>
       {switch (bgUrl, valueAndExtraComponentSub) {
        | (Some(url), Data(_)) => <div className={Styles.bgCard(url)} />
        | _ => React.null
@@ -90,12 +94,10 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
 
   let isMobile = Media.isMobile();
 
-  let subtitleWidth = isMobile ? 142 : 170;
-
   <div className=Styles.bg>
-    <VSpacing size={`px(16)} />
-    <SearchBar />
-    <VSpacing size={`px(16)} />
+    {isMobile
+       ? <> <VSpacing size={`px(16)} /> <SearchBar /> <VSpacing size={`px(16)} /> </>
+       : React.null}
     <Row justify=Row.Between wrap=true>
       <>
         <HighlightCard
@@ -117,7 +119,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
               {
                 let bandPriceInBTC = financial.btcPrice;
                 let usd24HrChange = financial.usd24HrChange;
-                <div className={Styles.withWidth(subtitleWidth)}>
+                <div className=Styles.withWidth>
                   <div className=Styles.bandPriceExtra>
                     <div className=Styles.vFlex>
                       <Text
@@ -164,7 +166,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
               },
               {
                 let marketcap = financial.btcMarketCap;
-                <div className={Styles.withWidth(subtitleWidth)}>
+                <div className=Styles.withWidth>
                   <div className=Styles.vFlex>
                     <Text value={marketcap->Format.fPretty} code=true weight=Text.Thin />
                     <HSpacing size=Spacing.xs />
@@ -189,7 +191,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
             let%Sub ({height, validator: {moniker}}, _, _) = allSub;
             (
               <TypeID.Block id=height position=TypeID.Landing />,
-              <div className={Styles.withWidth(subtitleWidth)}>
+              <div className=Styles.withWidth>
                 <Text value=moniker nowrap=true ellipsis=true block=true />
               </div>,
             )
@@ -210,7 +212,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
                   color=Colors.gray8
                 />;
               },
-              <div className={Styles.withWidth(subtitleWidth)}>
+              <div className=Styles.withWidth>
                 <div className=Styles.vFlex>
                   <Text
                     value={bondedTokenCount |> Coin.getBandAmountFromCoin |> Format.fPretty}
