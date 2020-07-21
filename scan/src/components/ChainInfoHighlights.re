@@ -92,10 +92,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let validatorInfoSub = Sub.all2(activeValidatorCountSub, bondedTokenCountSub);
   let allSub = Sub.all3(latestBlockSub, infoSub, validatorInfoSub);
 
-  let isMobile = Media.isMobile();
-
   <div className=Styles.bg>
-    {isMobile
+    {Media.isMobile()
        ? <> <VSpacing size={`px(16)} /> <SearchBar /> <VSpacing size={`px(16)} /> </>
        : React.null}
     <Row justify=Row.Between wrap=true>
