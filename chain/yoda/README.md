@@ -5,10 +5,12 @@
 1. Install PostgresSQL `brew install postgresql`
 2. Install Golang
 3. Install Rust
-4. run `cd owasm/chaintests/bitcoin_block_count/`
-5. run `wasm-pack build .`
-6. `make install` in chain directory
-7. Open 3 tabs on cmd
+4. Install Docker
+5. run `cd owasm/chaintests/bitcoin_block_count/`
+6. run `wasm-pack build .`
+7. `make install` in chain directory
+8. Open 3 tabs on cmd
+9. run `docker pull bandprotocol/runtime:1.0.1`
 
 ## How to install and run Yoda
 
