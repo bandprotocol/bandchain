@@ -56,7 +56,7 @@ module Styles = {
       opacity(0.4),
     ]);
 
-  let bottom = isMobile => style([marginTop(isMobile ? `px(10) : `zero)]);
+  let bottom = style([marginTop(`zero), Media.mobile([marginTop(`px(10))])]);
 
   let bg = style([Media.mobile([backgroundColor(`hex("EBF1FF"))])]);
 };
