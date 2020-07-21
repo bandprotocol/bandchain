@@ -9,7 +9,7 @@ module Styles = {
       position(`relative),
       marginLeft(Spacing.lg),
       marginTop(Spacing.xs),
-      Media.mobile([maxWidth(`px(344))])
+      Media.mobile([maxWidth(`px(344))]),
     ]);
   let searchIcon =
     style([
@@ -176,11 +176,10 @@ let reducer = state =>
 
 [@react.component]
 let make = () => {
-  let isMobile = Media.isMobile();
   let ({searchTerm, resultState}, dispatch) =
     React.useReducer(reducer, {searchTerm: "", resultState: Hidden});
 
-  <div className={Styles.container}>
+  <div className=Styles.container>
     <input
       onFocus={_evt => dispatch(StartTyping)}
       onBlur={_evt => dispatch(StopTyping)}
