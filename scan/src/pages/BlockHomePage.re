@@ -94,13 +94,13 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
   | Data({height, timestamp, validator, txn}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("BLOCK", BlockHeight(height)),
+        ("BLOCK", Height(height)),
         ("TIMESTAMP", Timestamp(timestamp)),
         (
           "PROPERSER",
           Validator(validator.operatorAddress, validator.moniker, validator.identity),
         ),
-        ("TXN", BlockTXNCount(txn)),
+        ("TXN", Count(txn)),
       ]
       key={height |> ID.Block.toString}
       idx={height |> ID.Block.toString}

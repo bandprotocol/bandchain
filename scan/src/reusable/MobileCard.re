@@ -7,12 +7,7 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       selector("+ div", [marginTop(`px(10))]),
     ]);
-  let cardItem =
-    style([
-      display(`flex),
-      alignItems(`center),
-      padding(`px(5)),
-    ]);
+  let cardItem = style([display(`flex), alignItems(`center), padding(`px(5))]);
   let cardItemHeading =
     style([display(`flex), alignItems(`center), flexBasis(`percent(25.))]);
 };
@@ -33,10 +28,9 @@ let make = (~values, ~idx) => {
              />
            </div>
            <div> <InfoMobileCard info=value /> </div>
-         </div>;
+         </div>
        })
      ->Belt.List.toArray
      ->React.array}
   </div>;
 };
-
