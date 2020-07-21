@@ -10,7 +10,7 @@
 
 ### Chain (Consensus)
 
-- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251)  go-owasm: Allow OEI to read nil external data
+- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
 ### Chain (Non-consensus)
 
@@ -63,3 +63,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [/#2281] Update docker script for development deployment flow.
