@@ -317,10 +317,10 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        moniker: json |> at(["msg", "description", "moniker"], string),
-        identity: json |> at(["msg", "description", "identity"], string),
-        website: json |> at(["msg", "description", "website"], string),
-        details: json |> at(["msg", "description", "details"], string),
+        moniker: json |> at(["msg", "moniker"], string),
+        identity: json |> at(["msg", "identity"], string),
+        website: json |> at(["msg", "website"], string),
+        details: json |> at(["msg", "details"], string),
         commissionRate: json |> optional(at(["msg", "commission_rate"], floatstr)),
         sender: json |> at(["msg", "address"], string) |> Address.fromBech32,
         minSelfDelegation:
