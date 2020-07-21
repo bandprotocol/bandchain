@@ -9,6 +9,7 @@ module Styles = {
       position(`relative),
       marginLeft(Spacing.lg),
       marginTop(Spacing.xs),
+      Media.mobile([maxWidth(`px(344))]),
     ]);
   let searchIcon =
     style([
