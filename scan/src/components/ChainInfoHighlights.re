@@ -38,6 +38,9 @@ module Styles = {
 
   let vFlex = style([display(`flex), flexDirection(`row)]);
 
+  let vFlexWithMobile =
+    style([display(`flex), flexDirection(`row), Media.mobile([flexDirection(`column)])]);
+
   let withWidth = style([width(`px(170)), Media.mobile([width(`px(142))])]);
 
   let bgCard = (url: string) =>
@@ -211,7 +214,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
                 />;
               },
               <div className=Styles.withWidth>
-                <div className=Styles.vFlex>
+                <div className=Styles.vFlexWithMobile>
                   <Text
                     value={bondedTokenCount |> Coin.getBandAmountFromCoin |> Format.fPretty}
                     code=true
