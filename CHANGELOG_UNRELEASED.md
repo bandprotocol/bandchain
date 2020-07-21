@@ -10,7 +10,8 @@
 
 ### Chain (Consensus)
 
-- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251)  go-owasm: Allow OEI to read nil external data
+- (patch) [\#2288](https://github.com/bandprotocol/bandchain/pull/2288) Upgrade to Cosmos-SDK v0.39
+- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
 ### Chain (Non-consensus)
 
