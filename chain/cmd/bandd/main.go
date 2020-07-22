@@ -77,11 +77,15 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
 		skipUpgradeHeights[int64(h)] = true
 	}
+	pruningOpts, err := server.GetPruningOptionsFromFlags()
+	if err != nil {
+		panic(err)
+	}
 	if viper.IsSet(flagWithEmitter) {
 		return emitter.NewBandAppWithEmitter(
 			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			skipUpgradeHeights, viper.GetString(flags.FlagHome),
-			baseapp.SetPruning(store.NewPruningOptionsFromString("nothing")),
+			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
@@ -91,7 +95,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		return app.NewBandApp(
 			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 			viper.GetString(flags.FlagHome),
-			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
+			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
 			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),

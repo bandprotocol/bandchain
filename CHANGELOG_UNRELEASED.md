@@ -10,6 +10,7 @@
 
 ### Chain (Consensus)
 
+- (patch) [\#2288](https://github.com/bandprotocol/bandchain/pull/2288) Upgrade to Cosmos-SDK v0.39
 - (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
 ### Chain (Non-consensus)
@@ -37,6 +38,7 @@
 
 ### Scan
 
+- (feat) [\#2276](https://github.com/bandprotocol/bandchain/pull/2276) Implemented mobile version of homepage top part
 - (impv) [\#2245](https://github.com/bandprotocol/bandchain/pull/2245) Added more features and patch for guanyu testnet
 - (impv) [\#2237](https://github.com/bandprotocol/bandchain/pull/2237/files) Add validator's oracle status.
 - (bugs) [\#2236](https://github.com/bandprotocol/bandchain/pull/2236) Fixed uptime query on ValidatorIndexPage
