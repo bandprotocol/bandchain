@@ -66,4 +66,4 @@
 
 ### MISC
 
-- (chore) [/#2281] Update docker script for development deployment flow.
+- (chore) [\#2281](https://github.com/bandprotocol/bandchain/pull/2281) Update docker script for development deployment flow.
