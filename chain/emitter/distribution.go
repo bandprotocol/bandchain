@@ -25,11 +25,12 @@ func (app *App) getCurrentRewardAndCurrentRatio(addr sdk.ValAddress) (string, st
 
 func (app *App) emitUpdateValidatorRewardAndAccumulatedCommission(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
+	accCommission, _ := app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).TruncateDecimal()
 	app.Write("UPDATE_VALIDATOR", JsDict{
 		"operator_address":       addr.String(),
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
-		"accumulated_commission": app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).String(),
+		"accumulated_commission": accCommission.String(),
 	})
 }
 

@@ -22,6 +22,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2295](https://github.com/bandprotocol/bandchain/pull/2295) Truncate `accumulated_commission` precision.
 - (impv) [\#2275](https://github.com/bandprotocol/bandchain/pull/2275) Add field `accumulated_commission` in `validators` table.
 - (feat) [\#2248](https://github.com/bandprotocol/bandchain/pull/2248) Add identity column on delegation view table.
 - (bugs) [\#2273](https://github.com/bandprotocol/bandchain/pull/2273) Fix bug update delegators table after withdraw reward.
