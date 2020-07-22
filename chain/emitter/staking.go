@@ -15,6 +15,7 @@ var (
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
+	accCommission, _ := app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).TruncateDecimal()
 	app.Write("SET_VALIDATOR", JsDict{
 		"operator_address":       addr.String(),
 		"delegator_address":      sdk.AccAddress(addr).String(),
@@ -33,7 +34,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"delegator_shares":       val.DelegatorShares.String(),
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
-		"accumulated_commission": app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).String(),
+		"accumulated_commission": accCommission,
 	})
 }
 
