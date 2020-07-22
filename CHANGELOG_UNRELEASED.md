@@ -10,7 +10,7 @@
 
 ### Chain (Consensus)
 
-- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251)  go-owasm: Allow OEI to read nil external data
+- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
 ### Chain (Non-consensus)
 
@@ -57,6 +57,7 @@
 
 ### Owasm
 
+- (impv) [\#2285](https://github.com/bandprotocol/bandchain/pull/2285) Use centos as docker image base.
 - (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Maintain gas used and gas limit in VMConfig.
 
 ### Oracle Binary Encoding (OBI)
