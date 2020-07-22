@@ -110,7 +110,7 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
       values=InfoMobileCard.[
         ("BLOCK", Loading(70)),
         ("TIMESTAMP", Loading(166)),
-        ("PROPERSER", Loading(136)),
+        ("PROPOSER", Loading(136)),
         ("TXN", Loading(20)),
       ]
       key={reserveIndex |> string_of_int}
