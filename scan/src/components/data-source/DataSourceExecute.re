@@ -197,12 +197,13 @@ let make = (~executable: JsBuffer.t) => {
             let _ =
               AxiosRequest.execute(
                 AxiosRequest.t(
-                  ~executable=executable->JsBuffer.toUTF8,
+                  ~executable=executable->JsBuffer.toBase64,
                   ~calldata={
                     callDataList
                     ->Belt_List.reduce("", (acc, calldata) => acc ++ " " ++ calldata)
                     ->String.trim;
                   },
+                  ~timeout=5000,
                 ),
               )
               |> Js.Promise.then_(res => {

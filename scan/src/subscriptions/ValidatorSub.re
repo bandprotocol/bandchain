@@ -18,8 +18,8 @@ type internal_t = {
   commissionMaxChange: float,
   commissionMaxRate: float,
   consensusPubKey: PubKey.t,
-  bondedHeight: int,
   jailed: bool,
+  oracleStatus: bool,
   details: string,
 };
 
@@ -27,6 +27,7 @@ type t = {
   rank: int,
   avgResponseTime: int,
   isActive: bool,
+  oracleStatus: bool,
   operatorAddress: Address.t,
   consensusAddress: Address.t,
   consensusPubKey: PubKey.t,
@@ -39,7 +40,6 @@ type t = {
   commission: float,
   commissionMaxChange: float,
   commissionMaxRate: float,
-  bondedHeight: int,
   completedRequestCount: int,
   missedRequestCount: int,
   uptime: option(float),
@@ -58,14 +58,15 @@ let toExternal =
         consensusPubKey,
         commissionMaxChange,
         commissionMaxRate,
-        bondedHeight,
         jailed,
+        oracleStatus,
         details,
       }: internal_t,
       rank,
     ) => {
   rank,
   isActive: !jailed,
+  oracleStatus,
   operatorAddress,
   consensusAddress,
   consensusPubKey,
@@ -78,7 +79,6 @@ let toExternal =
   commission: commissionRate *. 100.,
   commissionMaxChange: commissionMaxChange *. 100.,
   commissionMaxRate: commissionMaxRate *. 100.,
-  bondedHeight,
   // TODO: remove hardcoded when somewhere use it
   avgResponseTime: 2,
   completedRequestCount: 23459,
@@ -106,9 +106,9 @@ module SingleConfig = [%graphql
           commissionMaxChange: commission_max_change @bsDecoder(fn: "float_of_string")
           commissionMaxRate: commission_max_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
-          bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed
           details
+          oracleStatus: status
         }
       }
   |}
@@ -128,9 +128,9 @@ module MultiConfig = [%graphql
           commissionMaxChange: commission_max_change @bsDecoder(fn: "float_of_string")
           commissionMaxRate: commission_max_rate @bsDecoder(fn: "float_of_string")
           consensusPubKey: consensus_pubkey @bsDecoder(fn: "PubKey.fromBech32")
-          bondedHeight: bonded_height @bsDecoder(fn: "GraphQLParser.int64")
           jailed
           details
+          oracleStatus: status
         }
       }
   |}
@@ -256,11 +256,10 @@ let getUptime = consensusAddress => {
       SingleLast250VotedConfig.definition,
       ~variables=
         SingleLast250VotedConfig.makeVariables(
-          ~consensusAddress=consensusAddress |> Address.toHex(~upper=true),
+          ~consensusAddress=consensusAddress |> Address.toHex,
           (),
         ),
     );
-
   let%Sub x = result;
   let validatorVotes = x##validator_last_250_votes;
   let signedBlock =
@@ -270,7 +269,6 @@ let getUptime = consensusAddress => {
     ->Belt.Option.flatMap(each => each##count)
     ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
     |> float_of_int;
-
   let missedBlock =
     validatorVotes
     ->Belt.Array.keep(each => each##voted == Some(false))
@@ -278,7 +276,6 @@ let getUptime = consensusAddress => {
     ->Belt.Option.flatMap(each => each##count)
     ->Belt.Option.mapWithDefault(0, GraphQLParser.int64)
     |> float_of_int;
-
   if (signedBlock == 0. && missedBlock == 0.) {
     Sub.resolve(None);
   } else {
@@ -290,7 +287,6 @@ let getUptime = consensusAddress => {
 // For computing uptime on Validator home page
 let getListVotesBlock = () => {
   let (result, _) = ApolloHooks.useSubscription(MultiLast250VotedConfig.definition);
-
   let%Sub x = result;
   let validatorVotes =
     x##validator_last_250_votes
@@ -301,6 +297,5 @@ let getListVotesBlock = () => {
           voted: each##voted->Belt.Option.getExn,
         }
       );
-
   Sub.resolve(validatorVotes);
 };

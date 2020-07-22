@@ -45,14 +45,14 @@ module Styles = {
 let make = (~reqID) =>
   {
     let requestSub = RequestSub.get(reqID);
-    let blockCountSub = BlockSub.count();
+    // let blockCountSub = BlockSub.count();
 
     let%Sub request = requestSub;
-    let%Sub blockCount = blockCountSub;
+    // let%Sub blockCount = blockCountSub;
 
     let numReport = request.reports |> Belt_Array.size;
-    let remainingBlock =
-      blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
+    // let remainingBlock =
+    //   blockCount >= request.expirationHeight ? 0 : request.expirationHeight - blockCount;
     let calldataKVs =
       Obi.decode(request.oracleScript.schema, "input", request.calldata)
       ->Belt_Option.getWithDefault([||]);
@@ -74,7 +74,7 @@ let make = (~reqID) =>
             />
             <div className=Styles.seperatedLine />
             <Timestamp
-              time={request.transaction.timestamp}
+              time={request.transaction.block.timestamp}
               size=Text.Md
               weight=Text.Thin
               spacing={Text.Em(0.06)}
@@ -100,7 +100,7 @@ let make = (~reqID) =>
           <InfoHL header="SENDER" info={InfoHL.Address(request.requester, 280)} />
         </Col>
         <Col size=4.0>
-          <InfoHL header="TX HASH" info={InfoHL.TxHash(request.transaction.txHash, 385)} />
+          <InfoHL header="TX HASH" info={InfoHL.TxHash(request.transaction.hash, 385)} />
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
@@ -176,26 +176,26 @@ let make = (~reqID) =>
               color=Colors.gray6
             />
           </Col>
-          <Col size=1.>
-            <div className=Styles.hFlex>
-              <div className=Styles.fillRight />
-              <TypeID.Block id={ID.Block.ID(request.expirationHeight)} />
-              {switch (request.resolveStatus) {
-               | RequestSub.Pending =>
-                 <>
-                   <HSpacing size=Spacing.sm />
-                   <Text
-                     value={j|($remainingBlock blocks remaining)|j}
-                     weight=Text.Regular
-                     code=true
-                     color=Colors.gray8
-                   />
-                 </>
-               | _ => React.null
-               }}
-            </div>
-          </Col>
         </div>
+        // <Col size=1.>
+        //   <div className=Styles.hFlex>
+        //     <div className=Styles.fillRight />
+        //     <TypeID.Block id={ID.Block.ID(12345678)} />
+        //     {switch (request.resolveStatus) {
+        //      | RequestSub.Pending =>
+        //        <>
+        //          <HSpacing size=Spacing.sm />
+        //          <Text
+        //            value={j|($remainingBlock blocks remaining)|j}
+        //            weight=Text.Regular
+        //            code=true
+        //            color=Colors.gray8
+        //          />
+        //        </>
+        //      | _ => React.null
+        //      }}
+        //   </div>
+        // </Col>
         <VSpacing size=Spacing.sm />
         <div className={Styles.topicContainer(40)}>
           <Col size=1.>
@@ -254,8 +254,8 @@ let make = (~reqID) =>
             ->Belt_List.fromArray
           }
         />
-        {switch (request.result) {
-         | Some(result) =>
+        {switch (request.result, request.resolveStatus) {
+         | (Some(result), RequestSub.Success) =>
            let resultKVs =
              Obi.decode(request.oracleScript.schema, "output", result)
              ->Belt_Option.getWithDefault([||]);
@@ -288,7 +288,7 @@ let make = (~reqID) =>
                }
              />
            </>;
-         | None => React.null
+         | (_, _) => React.null
          }}
         {numReport >= request.minCount
            ? {
@@ -344,19 +344,24 @@ let make = (~reqID) =>
            ? <KVTable
                tableWidth=880
                theme=KVTable.RequestMiniTable
-               sizes=[0.92, 0.73, 2., 0.63, 2.4]
-               isRights=[false, false, false, true, true]
-               headers=["REPORT BY", "BLOCK", "TX HASH", "EXTERNAL ID", "VALUE"]
+               sizes=[0.92, 0.73, 2., 0.63, 0.6, 2.]
+               isRights=[false, false, false, true, true, true]
+               headers=["REPORT BY", "BLOCK", "TX HASH", "EXTERNAL ID", "EXIT CODE", "VALUE"]
                rows={
                  request.reports
                  ->Belt_Array.map(report =>
                      [
-                       KVTable.Validator(report.validatorByValidator),
+                       KVTable.Validator(report.reportValidator),
                        KVTable.Block(report.transaction.blockHeight),
-                       KVTable.TxHash(report.transaction.txHash),
+                       KVTable.TxHash(report.transaction.hash),
                        KVTable.Values(
                          report.reportDetails
                          ->Belt_Array.map(({externalID}) => externalID |> Format.iPretty)
+                         ->Belt_List.fromArray,
+                       ),
+                       KVTable.Values(
+                         report.reportDetails
+                         ->Belt_Array.map(({exitCode}) => exitCode |> Format.iPretty)
                          ->Belt_List.fromArray,
                        ),
                        KVTable.Values(

@@ -68,3 +68,5 @@
 [@bs.module] external triangleDown: string = "./triangle-down.svg";
 [@bs.module] external sortDown: string = "./down-arrow.svg";
 [@bs.module] external closeButton: string = "./closeButton.svg";
+[@bs.module] external whiteCheck: string = "./white-check.svg";
+[@bs.module] external whiteClose: string = "./white-close.svg";

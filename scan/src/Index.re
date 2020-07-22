@@ -21,7 +21,9 @@ setupSentry();
 ReactDOMRe.render(
   <ApolloClient>
     <GlobalContext>
-      <ModalContext> <AccountContext> <App /> </AccountContext> </ModalContext>
+      <TimeContext>
+        <ModalContext> <AccountContext> <App /> </AccountContext> </ModalContext>
+      </TimeContext>
     </GlobalContext>
   </ApolloClient>,
   document##getElementById("root"),

@@ -1,27 +1,30 @@
 module RawDataReport = {
   type t = {
     externalDataID: int,
+    exitCode: int,
     data: JsBuffer.t,
   };
 
   let decode = json =>
     JsonUtils.Decode.{
-      externalDataID: json |> field("external_id", int),
-      data: json |> field("data", string) |> JsBuffer.fromBase64,
+      externalDataID: json |> intWithDefault(field("external_id")),
+      exitCode: json |> intWithDefault(field("exit_code")),
+      data: json |> bufferWithDefault(field("data")),
     };
 };
 
 module Msg = {
   type badge_t =
     | SendBadge
+    | ReceiveBadge
     | CreateDataSourceBadge
     | EditDataSourceBadge
     | CreateOracleScriptBadge
     | EditOracleScriptBadge
     | RequestBadge
     | ReportBadge
-    | AddOracleAddressBadge
-    | RemoveOracleAddressBadge
+    | AddReporterBadge
+    | RemoveReporterBadge
     | CreateValidatorBadge
     | EditValidatorBadge
     | CreateClientBadge
@@ -51,19 +54,21 @@ module Msg = {
     | VoteBadge
     | WithdrawCommissionBadge
     | MultiSendBadge
+    | ActivateBadge
     | UnknownBadge;
 
   let getBadgeVariantFromString = badge => {
     switch (badge) {
     | "send" => SendBadge
+    | "receive" => raise(Not_found)
     | "create_data_source" => CreateDataSourceBadge
     | "edit_data_source" => EditDataSourceBadge
     | "create_oracle_script" => CreateOracleScriptBadge
     | "edit_oracle_script" => EditOracleScriptBadge
     | "request" => RequestBadge
     | "report" => ReportBadge
-    | "add_reporter" => AddOracleAddressBadge
-    | "remove_reporter" => RemoveOracleAddressBadge
+    | "add_reporter" => AddReporterBadge
+    | "remove_reporter" => RemoveReporterBadge
     | "create_validator" => CreateValidatorBadge
     | "edit_validator" => EditValidatorBadge
     | "create_client" => CreateClientBadge
@@ -93,6 +98,7 @@ module Msg = {
     | "vote" => VoteBadge
     | "withdraw_validator_commission" => WithdrawCommissionBadge
     | "multisend" => MultiSendBadge
+    | "activate" => ActivateBadge
     | _ => UnknownBadge
     };
   };
@@ -106,10 +112,18 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        fromAddress: json |> field("from_address", string) |> Address.fromBech32,
-        toAddress: json |> field("to_address", string) |> Address.fromBech32,
-        amount: json |> field("amount", list(Coin.decodeCoin)),
+        fromAddress: json |> at(["msg", "from_address"], string) |> Address.fromBech32,
+        toAddress: json |> at(["msg", "to_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
+  };
+
+  module Receive = {
+    type t = {
+      fromAddress: Address.t,
+      toAddress: Address.t,
+      amount: list(Coin.t),
+    };
   };
 
   module CreateDataSource = {
@@ -123,11 +137,11 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("data_source_id", ID.DataSource.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32,
-        name: json |> field("name", string),
-        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        id: json |> at(["extra", "id"], ID.DataSource.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
   };
 
@@ -142,11 +156,11 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("data_source_id", ID.DataSource.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32,
-        name: json |> field("name", string),
-        executable: json |> field("executable", string) |> JsBuffer.fromBase64,
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        id: json |> at(["msg", "data_source_id"], ID.DataSource.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
   };
 
@@ -161,11 +175,11 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32,
-        name: json |> field("name", string),
-        code: json |> field("code", string) |> JsBuffer.fromBase64,
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        id: json |> at(["extra", "id"], ID.OracleScript.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
   };
 
@@ -180,11 +194,11 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> field("oracle_script_id", ID.OracleScript.fromJson),
-        owner: json |> field("owner", string) |> Address.fromBech32,
-        name: json |> field("name", string),
-        code: json |> field("code", string) |> JsBuffer.fromBase64,
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        id: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
   };
 
@@ -202,14 +216,14 @@ module Msg = {
 
     let decode = json => {
       JsonUtils.Decode.{
-        id: json |> field("request_id", ID.Request.fromJson),
-        oracleScriptID: json |> field("oracle_script_id", ID.OracleScript.fromJson),
-        oracleScriptName: json |> field("oracle_script_name", string),
-        calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
-        askCount: json |> field("ask_count", int),
-        minCount: json |> field("min_count", int),
-        schema: json |> field("schema", string),
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        id: json |> at(["extra", "id"], ID.Request.fromJson),
+        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        oracleScriptName: json |> at(["extra", "name"], string),
+        calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
+        askCount: json |> at(["msg", "ask_count"], int),
+        minCount: json |> at(["msg", "min_count"], int),
+        schema: json |> at(["extra", "schema"], string),
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
     };
   };
@@ -224,13 +238,13 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        requestID: json |> field("request_id", ID.Request.fromJson),
-        rawReports: json |> field("raw_reports", list(RawDataReport.decode)),
-        validator: json |> field("validator", string) |> Address.fromBech32,
-        reporter: json |> field("reporter", string) |> Address.fromBech32,
+        requestID: json |> at(["msg", "request_id"], ID.Request.fromJson),
+        rawReports: json |> at(["msg", "raw_reports"], list(RawDataReport.decode)),
+        validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
+        reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
       };
   };
-  module AddOracleAddress = {
+  module AddReporter = {
     type t = {
       validator: Address.t,
       reporter: Address.t,
@@ -238,13 +252,13 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        validator: json |> field("validator", string) |> Address.fromBech32,
-        reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validator_moniker", string),
+        validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
+        reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
+        validatorMoniker: json |> at(["extra", "validator_moniker"], string),
       };
   };
 
-  module RemoveOracleAddress = {
+  module RemoveReporter = {
     type t = {
       validator: Address.t,
       reporter: Address.t,
@@ -252,9 +266,9 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        validator: json |> field("validator", string) |> Address.fromBech32,
-        reporter: json |> field("reporter", string) |> Address.fromBech32,
-        validatorMoniker: json |> field("validator_moniker", string),
+        validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
+        reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
+        validatorMoniker: json |> at(["extra", "validator_moniker"], string),
       };
   };
 
@@ -275,19 +289,19 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        moniker: json |> at(["description", "moniker"], string),
-        identity: json |> at(["description", "identity"], string),
-        website: json |> at(["description", "website"], string),
-        details: json |> at(["description", "details"], string),
-        commissionRate: json |> at(["commission", "rate"], floatstr),
-        commissionMaxRate: json |> at(["commission", "max_rate"], floatstr),
-        commissionMaxChange: json |> at(["commission", "max_change_rate"], floatstr),
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        publicKey: json |> field("pubkey", string) |> PubKey.fromBech32,
+        moniker: json |> at(["msg", "description", "moniker"], string),
+        identity: json |> at(["msg", "description", "identity"], string),
+        website: json |> at(["msg", "description", "website"], string),
+        details: json |> at(["msg", "description", "details"], string),
+        commissionRate: json |> at(["msg", "commission", "rate"], floatstr),
+        commissionMaxRate: json |> at(["msg", "commission", "max_rate"], floatstr),
+        commissionMaxChange: json |> at(["msg", "commission", "max_change_rate"], floatstr),
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        publicKey: json |> at(["msg", "pubkey"], string) |> PubKey.fromBech32,
         minSelfDelegation:
-          json |> field("min_self_delegation", floatstr) |> Coin.newUBANDFromAmount,
-        selfDelegation: json |> field("value", Coin.decodeCoin),
+          json |> at(["msg", "min_self_delegation"], floatstr) |> Coin.newUBANDFromAmount,
+        selfDelegation: json |> at(["msg", "value"], Coin.decodeCoin),
       };
   };
 
@@ -303,15 +317,15 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        moniker: json |> field("moniker", string),
-        identity: json |> field("identity", string),
-        website: json |> field("website", string),
-        details: json |> field("details", string),
-        commissionRate: json |> optional(field("commission_rate", floatstr)),
-        sender: json |> field("address", string) |> Address.fromBech32,
+        moniker: json |> at(["msg", "description", "moniker"], string),
+        identity: json |> at(["msg", "description", "identity"], string),
+        website: json |> at(["msg", "description", "website"], string),
+        details: json |> at(["msg", "description", "details"], string),
+        commissionRate: json |> optional(at(["msg", "commission_rate"], floatstr)),
+        sender: json |> at(["msg", "address"], string) |> Address.fromBech32,
         minSelfDelegation:
           json
-          |> optional(field("min_self_delegation", floatstr))
+          |> optional(at(["msg", "min_self_delegation"], floatstr))
           |> Belt.Option.map(_, Coin.newUBANDFromAmount),
       };
   };
@@ -620,9 +634,9 @@ module Msg = {
       sender: Address.t,
       message: badge_t,
     };
-    let decode = json =>
+    let decode = (json, sender) =>
       JsonUtils.Decode.{
-        sender: json |> field("sender", string) |> Address.fromBech32,
+        sender,
         message: json |> field("type", string) |> getBadgeVariantFromString,
       };
   };
@@ -636,9 +650,9 @@ module Msg = {
 
     let decode = json => {
       JsonUtils.Decode.{
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        amount: json |> field("amount", Coin.decodeCoin),
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
       };
     };
   };
@@ -651,9 +665,9 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        amount: json |> field("amount", Coin.decodeCoin),
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
       };
     };
   };
@@ -668,11 +682,11 @@ module Msg = {
     let decode = json => {
       JsonUtils.Decode.{
         validatorSourceAddress:
-          json |> field("validator_src_address", string) |> Address.fromBech32,
+          json |> at(["msg", "validator_src_address"], string) |> Address.fromBech32,
         validatorDestinationAddress:
-          json |> field("validator_dst_address", string) |> Address.fromBech32,
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        amount: json |> field("amount", Coin.decodeCoin),
+          json |> at(["msg", "validator_dst_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
       };
     };
   };
@@ -685,18 +699,18 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         amount: {
           exception WrongNetwork(string);
           switch (Env.network) {
           | "GUANYU"
           | "GUANYU38" =>
             json
-            |> field("reward_amount", array(string))
+            |> at(["extra", "reward_amount"], array(string))
             |> Belt.Array.getExn(_, 0)
             |> GraphQLParser.coins
-          | "WENCHANG" => json |> field("reward_amount", string) |> GraphQLParser.coins
+          | "WENCHANG" => json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins
           | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
           };
         },
@@ -708,7 +722,7 @@ module Msg = {
     type t = {address: Address.t};
 
     let decode = json =>
-      JsonUtils.Decode.{address: json |> field("address", string) |> Address.fromBech32};
+      JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
   };
   module SetWithdrawAddress = {
     type t = {
@@ -717,8 +731,8 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        delegatorAddress: json |> field("delegator_address", string) |> Address.fromBech32,
-        withdrawAddress: json |> field("withdraw_address", string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        withdrawAddress: json |> at(["msg", "withdraw_address"], string) |> Address.fromBech32,
       };
     };
   };
@@ -731,10 +745,10 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        proposer: json |> field("proposer", string) |> Address.fromBech32,
-        title: json |> at(["content", "title"], string),
-        description: json |> at(["content", "description"], string),
-        initialDeposit: json |> field("initial_deposit", list(Coin.decodeCoin)),
+        proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
+        title: json |> at(["msg", "content", "title"], string),
+        description: json |> at(["msg", "content", "description"], string),
+        initialDeposit: json |> at(["msg", "initial_deposit"], list(Coin.decodeCoin)),
       };
     };
   };
@@ -747,9 +761,9 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        depositor: json |> field("depositor", string) |> Address.fromBech32,
-        proposalID: json |> field("proposal_id", int),
-        amount: json |> field("amount", list(Coin.decodeCoin)),
+        depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], int),
+        amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
     };
   };
@@ -761,9 +775,9 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        voterAddress: json |> field("voter", string) |> Address.fromBech32,
-        proposalID: json |> field("proposal_id", int),
-        option: json |> field("option", string),
+        voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], int),
+        option: json |> at(["msg", "option"], string),
       };
     };
   };
@@ -774,8 +788,21 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        validatorAddress: json |> field("validator_address", string) |> Address.fromBech32,
-        amount: json |> field("commission_amount", string) |> GraphQLParser.coins,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: {
+          exception WrongNetwork(string);
+          switch (Env.network) {
+          | "GUANYU"
+          | "GUANYU38" =>
+            json
+            |> at(["extra", "commission_amount"], array(string))
+            |> Belt.Array.getExn(_, 0)
+            |> GraphQLParser.coins
+          | "WENCHANG" =>
+            json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins
+          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
+          };
+        },
       };
     };
   };
@@ -797,22 +824,33 @@ module Msg = {
     };
     let decode = json => {
       JsonUtils.Decode.{
-        inputs: json |> field("inputs", list(decodeSendTx)),
-        outputs: json |> field("outputs", list(decodeSendTx)),
+        inputs: json |> at(["msg", "inputs"], list(decodeSendTx)),
+        outputs: json |> at(["msg", "outputs"], list(decodeSendTx)),
+      };
+    };
+  };
+
+  module Activate = {
+    type t = {validatorAddress: Address.t};
+
+    let decode = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> at(["msg", "validator"], string) |> Address.fromBech32,
       };
     };
   };
 
   type t =
     | SendMsg(Send.t)
+    | ReceiveMsg(Receive.t)
     | CreateDataSourceMsg(CreateDataSource.t)
     | EditDataSourceMsg(EditDataSource.t)
     | CreateOracleScriptMsg(CreateOracleScript.t)
     | EditOracleScriptMsg(EditOracleScript.t)
     | RequestMsg(Request.t)
     | ReportMsg(Report.t)
-    | AddOracleAddressMsg(AddOracleAddress.t)
-    | RemoveOracleAddressMsg(RemoveOracleAddress.t)
+    | AddReporterMsg(AddReporter.t)
+    | RemoveReporterMsg(RemoveReporter.t)
     | CreateValidatorMsg(CreateValidator.t)
     | EditValidatorMsg(EditValidator.t)
     | CreateClientMsg(CreateClient.t)
@@ -843,6 +881,7 @@ module Msg = {
     | VoteMsg(Vote.t)
     | WithdrawCommissionMsg(WithdrawCommission.t)
     | MultiSendMsg(MultiSend.t)
+    | ActivateMsg(Activate.t)
     | UnknownMsg;
 
   let getCreator = msg => {
@@ -854,8 +893,8 @@ module Msg = {
     | EditOracleScriptMsg(oracleScript) => oracleScript.sender
     | RequestMsg(request) => request.sender
     | ReportMsg(report) => report.reporter
-    | AddOracleAddressMsg(address) => address.validator
-    | RemoveOracleAddressMsg(address) => address.validator
+    | AddReporterMsg(address) => address.validator
+    | RemoveReporterMsg(address) => address.validator
     | CreateValidatorMsg(validator) => validator.delegatorAddress
     | EditValidatorMsg(validator) => validator.sender
     | FailMsg(fail) => fail.sender
@@ -888,6 +927,7 @@ module Msg = {
     | MultiSendMsg(tx) =>
       let firstInput = tx.inputs |> Belt_List.getExn(_, 0);
       firstInput.address;
+    | ActivateMsg(activator) => activator.validatorAddress
     | _ => "" |> Address.fromHex
     };
   };
@@ -901,6 +941,7 @@ module Msg = {
   let getBadge = badgeVariant => {
     switch (badgeVariant) {
     | SendBadge => {text: "SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.blue7, bgColor: Colors.blue1}
     | CreateDataSourceBadge => {
         text: "CREATE DATA SOURCE",
         textColor: Colors.yellow5,
@@ -923,13 +964,13 @@ module Msg = {
       }
     | RequestBadge => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
     | ReportBadge => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | AddOracleAddressBadge => {
-        text: "ADD ORACLE ADDRESS",
+    | AddReporterBadge => {
+        text: "ADD REPORTER",
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
-    | RemoveOracleAddressBadge => {
-        text: "REMOVE ORACLE ADDRESS",
+    | RemoveReporterBadge => {
+        text: "REMOVE REPORTER",
         textColor: Colors.purple6,
         bgColor: Colors.purple1,
       }
@@ -1034,6 +1075,7 @@ module Msg = {
         bgColor: Colors.purple1,
       }
     | MultiSendBadge => {text: "MULTI SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | ActivateBadge => {text: "ACTIVATE", textColor: Colors.blue7, bgColor: Colors.blue1}
     | UnknownBadge => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
     };
   };
@@ -1041,14 +1083,15 @@ module Msg = {
   let getBadgeTheme = msg => {
     switch (msg) {
     | SendMsg(_) => getBadge(SendBadge)
+    | ReceiveMsg(_) => getBadge(ReceiveBadge)
     | CreateDataSourceMsg(_) => getBadge(CreateDataSourceBadge)
     | EditDataSourceMsg(_) => getBadge(EditDataSourceBadge)
     | CreateOracleScriptMsg(_) => getBadge(CreateOracleScriptBadge)
     | EditOracleScriptMsg(_) => getBadge(EditOracleScriptBadge)
     | RequestMsg(_) => getBadge(RequestBadge)
     | ReportMsg(_) => getBadge(ReportBadge)
-    | AddOracleAddressMsg(_) => getBadge(AddOracleAddressBadge)
-    | RemoveOracleAddressMsg(_) => getBadge(RemoveOracleAddressBadge)
+    | AddReporterMsg(_) => getBadge(AddReporterBadge)
+    | RemoveReporterMsg(_) => getBadge(RemoveReporterBadge)
     | CreateValidatorMsg(_) => getBadge(CreateValidatorBadge)
     | EditValidatorMsg(_) => getBadge(EditValidatorBadge)
     | CreateClientMsg(_) => getBadge(CreateClientBadge)
@@ -1078,6 +1121,7 @@ module Msg = {
     | DepositMsg(_) => getBadge(DepositBadge)
     | WithdrawCommissionMsg(_) => getBadge(WithdrawCommissionBadge)
     | MultiSendMsg(_) => getBadge(MultiSendBadge)
+    | ActivateMsg(_) => getBadge(ActivateBadge)
     | FailMsg(msg) => getBadge(msg.message)
     | UnknownMsg => getBadge(UnknownBadge)
     };
@@ -1087,14 +1131,15 @@ module Msg = {
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
       | SendBadge => SendMsg(json |> Send.decode)
+      | ReceiveBadge => raise(Not_found)
       | CreateDataSourceBadge => CreateDataSourceMsg(json |> CreateDataSource.decode)
       | EditDataSourceBadge => EditDataSourceMsg(json |> EditDataSource.decode)
       | CreateOracleScriptBadge => CreateOracleScriptMsg(json |> CreateOracleScript.decode)
       | EditOracleScriptBadge => EditOracleScriptMsg(json |> EditOracleScript.decode)
       | RequestBadge => RequestMsg(json |> Request.decode)
       | ReportBadge => ReportMsg(json |> Report.decode)
-      | AddOracleAddressBadge => AddOracleAddressMsg(json |> AddOracleAddress.decode)
-      | RemoveOracleAddressBadge => RemoveOracleAddressMsg(json |> RemoveOracleAddress.decode)
+      | AddReporterBadge => AddReporterMsg(json |> AddReporter.decode)
+      | RemoveReporterBadge => RemoveReporterMsg(json |> RemoveReporter.decode)
       | CreateValidatorBadge => CreateValidatorMsg(json |> CreateValidator.decode)
       | EditValidatorBadge => EditValidatorMsg(json |> EditValidator.decode)
       | CreateClientBadge => CreateClientMsg(json |> CreateClient.decode)
@@ -1127,28 +1172,16 @@ module Msg = {
       | VoteBadge => VoteMsg(json |> Vote.decode)
       | WithdrawCommissionBadge => WithdrawCommissionMsg(json |> WithdrawCommission.decode)
       | MultiSendBadge => MultiSendMsg(json |> MultiSend.decode)
+      | ActivateBadge => ActivateMsg(json |> Activate.decode)
       | UnknownBadge => UnknownMsg
       }
     );
   };
 
-  let decodeFailAction = (json): t => FailMsg(json |> FailMessage.decode);
-
-  let decodeUnknowStatus = _ => {
-    Js.Console.log("Error status messages field");
-    [];
-  };
-
-  let decodeActions = json => {
-    JsonUtils.Decode.(
-      switch (json |> field("status", string)) {
-      | "success" => json |> field("messages", list(decodeAction))
-      | "failure" => json |> field("messages", list(decodeFailAction))
-      | _ => json |> field("messages", decodeUnknowStatus)
-      }
-    );
-  };
+  let decodeFailAction = (json, sender): t => FailMsg(json |> FailMessage.decode(_, sender));
 };
+
+type block_t = {timestamp: MomentRe.Moment.t};
 
 type t = {
   txHash: Hash.t,
@@ -1160,31 +1193,86 @@ type t = {
   sender: Address.t,
   timestamp: MomentRe.Moment.t,
   messages: list(Msg.t),
-  rawLog: string,
+  memo: string,
+  errMsg: string,
 };
 
+type internal_t = {
+  txHash: Hash.t,
+  blockHeight: ID.Block.t,
+  success: bool,
+  gasFee: list(Coin.t),
+  gasLimit: int,
+  gasUsed: int,
+  sender: Address.t,
+  block: block_t,
+  messages: Js.Json.t,
+  memo: string,
+  errMsg: option(string),
+};
+
+type account_transaction_t = {transaction: internal_t};
+
 module Mini = {
+  type block_t = {timestamp: MomentRe.Moment.t};
   type t = {
-    txHash: Hash.t,
+    hash: Hash.t,
     blockHeight: ID.Block.t,
-    timestamp: MomentRe.Moment.t,
+    block: block_t,
   };
+};
+
+let toExternal =
+    (
+      {
+        txHash,
+        blockHeight,
+        success,
+        gasFee,
+        gasLimit,
+        gasUsed,
+        sender,
+        memo,
+        block,
+        messages,
+        errMsg,
+      },
+    ) => {
+  txHash,
+  blockHeight,
+  success,
+  gasFee,
+  gasLimit,
+  gasUsed,
+  sender,
+  memo,
+  timestamp: block.timestamp,
+  messages: {
+    let msg = messages |> Js.Json.decodeArray |> Belt.Option.getExn |> Belt.List.fromArray;
+    success
+      ? msg->Belt.List.map(Msg.decodeAction)
+      : msg->Belt.List.map(each => Msg.decodeFailAction(each, sender));
+  },
+  errMsg: errMsg->Belt.Option.getWithDefault(""),
 };
 
 module SingleConfig = [%graphql
   {|
-  subscription Transaction($tx_hash:bytea!) {
-    transactions_by_pk(tx_hash: $tx_hash) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+  subscription Transaction($tx_hash: bytea!) {
+    transactions_by_pk(hash: $tx_hash) @bsRecord {
+      txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed: gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
-      messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      messages
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   },
 |}
@@ -1193,17 +1281,20 @@ module SingleConfig = [%graphql
 module MultiConfig = [%graphql
   {|
   subscription Transactions($limit: Int!, $offset: Int!) {
-    transactions(offset: $offset, limit: $limit, order_by: {block_height: desc, index: desc}) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+    transactions(offset: $offset, limit: $limit, order_by: {id: desc}) @bsRecord {
+      txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed: gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
-      messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      messages
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   }
 |}
@@ -1211,18 +1302,21 @@ module MultiConfig = [%graphql
 
 module MultiByHeightConfig = [%graphql
   {|
-  subscription TransactionsByHeight($height: bigint!, $limit: Int!, $offset: Int!) {
-    transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit, order_by: {index: desc}) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+  subscription TransactionsByHeight($height: Int!, $limit: Int!, $offset: Int!) {
+    transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit, order_by: {id: desc}) @bsRecord {
+      txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
+      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
+      memo
       gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
+      gasLimit: gas_limit
+      gasUsed: gas_used
       sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
-      messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+      messages
+      errMsg: err_msg
+      block @bsRecord {
+        timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+      }
     }
   }
 |}
@@ -1231,23 +1325,26 @@ module MultiByHeightConfig = [%graphql
 module MultiBySenderConfig = [%graphql
   {|
   subscription TransactionsBySender($sender: String!, $limit: Int!, $offset: Int!) {
-    transactions(
-      where: {sender: {_eq: $sender}},
-      offset: $offset,
-      limit: $limit,
-      order_by: {block_height: desc,index: desc},
-    ) @bsRecord {
-      txHash : tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-      blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
-      success
-      gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
-      gasLimit: gas_limit @bsDecoder(fn: "GraphQLParser.int64")
-      gasUsed : gas_used @bsDecoder(fn: "GraphQLParser.int64")
-      sender  @bsDecoder(fn: "Address.fromBech32")
-      timestamp  @bsDecoder(fn: "GraphQLParser.timeMS")
-      messages @bsDecoder(fn: "Msg.decodeActions")
-      rawLog: raw_log
+    accounts_by_pk(address: $sender) {
+      account_transactions(offset: $offset, limit: $limit, order_by: {transaction_id: desc}) @bsRecord{
+        transaction @bsRecord {
+          txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
+          blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+          success
+          memo
+          gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+          gasLimit: gas_limit
+          gasUsed: gas_used
+          sender  @bsDecoder(fn: "Address.fromBech32")
+          messages
+          errMsg: err_msg
+          block @bsRecord {
+            timestamp  @bsDecoder(fn: "GraphQLParser.timestamp")
+          }
+        }
+      }
     }
+
   }
 |}
 ];
@@ -1267,9 +1364,11 @@ module TxCountConfig = [%graphql
 module TxCountBySenderConfig = [%graphql
   {|
   subscription TransactionsCountBySender($sender: String!) {
-    transactions_aggregate(where: {sender: {_eq: $sender}}) {
-      aggregate {
-        count @bsDecoder(fn: "Belt_Option.getExn")
+    accounts_by_pk(address: $sender) {
+      account_transactions_aggregate {
+        aggregate {
+          count @bsDecoder(fn: "Belt_Option.getExn")
+        }
       }
     }
   }
@@ -1288,7 +1387,7 @@ let get = txHash => {
     );
   let%Sub x = result;
   switch (x##transactions_by_pk) {
-  | Some(data) => Sub.resolve(data)
+  | Some(data) => Sub.resolve(data |> toExternal)
   | None => NoData
   };
 };
@@ -1300,7 +1399,7 @@ let getList = (~page, ~pageSize, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, x => x##transactions);
+  result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };
 
 let getListBySender = (sender, ~page, ~pageSize, ()) => {
@@ -1316,23 +1415,25 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
           (),
         ),
     );
-  result |> Sub.map(_, x => x##transactions);
+  result
+  |> Sub.map(_, x => {
+       switch (x##accounts_by_pk) {
+       | Some(x') =>
+         x'##account_transactions->Belt_Array.map(({transaction}) => transaction->toExternal)
+       | None => [||]
+       }
+     });
 };
 
 let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
+  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiByHeightConfig.definition,
-      ~variables=
-        MultiByHeightConfig.makeVariables(
-          ~height=height |> ID.Block.toJson,
-          ~limit=pageSize,
-          ~offset,
-          (),
-        ),
+      ~variables=MultiByHeightConfig.makeVariables(~height=height_, ~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, x => x##transactions);
+  result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };
 
 let count = () => {
@@ -1348,5 +1449,13 @@ let countBySender = sender => {
       ~variables=TxCountBySenderConfig.makeVariables(~sender=sender |> Address.toBech32, ()),
     );
   result
-  |> Sub.map(_, x => x##transactions_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  |> Sub.map(_, a => {
+       switch (a##accounts_by_pk) {
+       | Some(account) =>
+         account##account_transactions_aggregate##aggregate
+         |> Belt_Option.getExn
+         |> (y => y##count)
+       | None => 0
+       }
+     });
 };

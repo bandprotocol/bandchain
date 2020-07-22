@@ -101,7 +101,7 @@ let make = (~info, ~header, ~isLeft=true) => {
          <Text
            value={
              time
-             |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+             |> MomentRe.Moment.format(Config.timestampDisplayFormat)
              |> String.uppercase_ascii
            }
            size=Text.Lg
