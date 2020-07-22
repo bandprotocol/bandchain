@@ -25,6 +25,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2275](https://github.com/bandprotocol/bandchain/pull/2275) Add field `accumulated_commission` in `validators` table.
 - (feat) [\#2248](https://github.com/bandprotocol/bandchain/pull/2248) Add identity column on delegation view table.
 - (bugs) [\#2273](https://github.com/bandprotocol/bandchain/pull/2273) Fix bug update delegators table after withdraw reward.
 - (bugs) [\#2255](https://github.com/bandprotocol/bandchain/pull/2255) Fix bug `reward_amount` and `commission_amount` in extra field.
@@ -40,6 +41,7 @@
 
 - (impv) [\#2284](https://github.com/bandprotocol/bandchain/pull/2284) Patch to support new type of big number.
 - (feat) [\#2276](https://github.com/bandprotocol/bandchain/pull/2276) Implemented mobile version of homepage top part
+- (impv) [\#2287](https://github.com/bandprotocol/bandchain/pull/2287) Improve UI on blockhomepage, and add new card component for mobile
 - (impv) [\#2245](https://github.com/bandprotocol/bandchain/pull/2245) Added more features and patch for guanyu testnet
 - (impv) [\#2237](https://github.com/bandprotocol/bandchain/pull/2237/files) Add validator's oracle status.
 - (bugs) [\#2236](https://github.com/bandprotocol/bandchain/pull/2236) Fixed uptime query on ValidatorIndexPage
@@ -59,6 +61,7 @@
 
 ### Owasm
 
+- (impv) [\#2285](https://github.com/bandprotocol/bandchain/pull/2285) Use centos as docker image base.
 - (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Maintain gas used and gas limit in VMConfig.
 
 ### Oracle Binary Encoding (OBI)
@@ -66,3 +69,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2281](https://github.com/bandprotocol/bandchain/pull/2281) Update docker script for development deployment flow.
