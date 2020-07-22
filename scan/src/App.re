@@ -25,7 +25,7 @@ let make = () => {
   <div className=Styles.container>
     <TopBar />
     <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
-      <NavBar />
+      {Media.isMobile() ? React.null : <NavBar />}
       <div className=Styles.routeContainer>
         {switch (ReasonReactRouter.useUrl() |> Route.fromUrl) {
          | HomePage => <HomePage />

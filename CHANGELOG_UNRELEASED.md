@@ -10,7 +10,8 @@
 
 ### Chain (Consensus)
 
-- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251)  go-owasm: Allow OEI to read nil external data
+- (patch) [\#2288](https://github.com/bandprotocol/bandchain/pull/2288) Upgrade to Cosmos-SDK v0.39
+- (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
 ### Chain (Non-consensus)
 
@@ -25,6 +26,7 @@
 ### Emitter & Flusher
 
 - (impv) [\#2275](https://github.com/bandprotocol/bandchain/pull/2275) Add field `accumulated_commission` in `validators` table.
+- (feat) [\#2248](https://github.com/bandprotocol/bandchain/pull/2248) Add identity column on delegation view table.
 - (bugs) [\#2273](https://github.com/bandprotocol/bandchain/pull/2273) Fix bug update delegators table after withdraw reward.
 - (bugs) [\#2255](https://github.com/bandprotocol/bandchain/pull/2255) Fix bug `reward_amount` and `commission_amount` in extra field.
 - (bugs) [\#2252](https://github.com/bandprotocol/bandchain/pull/2252) `handle_set_validator` get wrong validator id.
@@ -37,6 +39,7 @@
 
 ### Scan
 
+- (feat) [\#2276](https://github.com/bandprotocol/bandchain/pull/2276) Implemented mobile version of homepage top part
 - (impv) [\#2245](https://github.com/bandprotocol/bandchain/pull/2245) Added more features and patch for guanyu testnet
 - (impv) [\#2237](https://github.com/bandprotocol/bandchain/pull/2237/files) Add validator's oracle status.
 - (bugs) [\#2236](https://github.com/bandprotocol/bandchain/pull/2236) Fixed uptime query on ValidatorIndexPage
