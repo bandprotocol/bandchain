@@ -181,10 +181,11 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
             }),
             "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                if len > vm.get_span_size() {
+                let span_size = vm.get_span_size();
+                if len > span_size {
                     return Err(Error::SpanTooSmallError);
                 }
-                vm.consume_gas(len as u32)?;
+                vm.consume_gas(span_size as u32)?;
                 require_mem_range(ctx.memory(0).size().bytes().0, (ptr + len) as usize)?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.set_return_data(&data)

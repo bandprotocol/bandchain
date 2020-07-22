@@ -122,6 +122,9 @@ func (env *ExecuteEnv) GetAnsCount() (int64, error) {
 
 // SetReturnData implements Owasm ExecEnv interface.
 func (env *ExecuteEnv) SetReturnData(data []byte) error {
+	if env.Retdata != nil {
+		return api.ErrCallReturnDataSeveralTimes
+	}
 	env.Retdata = data
 	return nil
 }

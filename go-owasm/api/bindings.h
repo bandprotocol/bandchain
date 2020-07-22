@@ -31,6 +31,7 @@ enum Error {
   Error_BadValidatorIndexError = 131,
   Error_BadExternalIDError = 132,
   Error_UnavailableExternalDataError = 133,
+  Error_CallReturnDataSeveralTimesError = 134,
   Error_UnknownError = 255,
 };
 typedef int32_t Error;
