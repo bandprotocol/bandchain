@@ -60,6 +60,7 @@
 
 ### Owasm
 
+- (impv) [\#2285](https://github.com/bandprotocol/bandchain/pull/2285) Use centos as docker image base.
 - (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Maintain gas used and gas limit in VMConfig.
 
 ### Oracle Binary Encoding (OBI)
