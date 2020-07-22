@@ -521,9 +521,7 @@ let make = () => {
     let timeOutID = Js.Global.setInterval(() => {setPrevDayTime(getPrevDay)}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
-
-  Js.Console.log(prevDayTime);
-
+  
   let (isActive, setIsActive) = React.useState(_ => true);
 
   let validatorsSub = ValidatorSub.getList(~isActive, ());
