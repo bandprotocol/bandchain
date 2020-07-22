@@ -441,6 +441,6 @@ func TestResolveRequestCallReturnDataSeveralTimes(t *testing.T) {
 		types.EventTypeResolve,
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "2"),
-		sdk.NewAttribute(types.AttributeKeyReason, "call return data reveral times"),
+		sdk.NewAttribute(types.AttributeKeyReason, "set return data is called more than once"),
 	)}, ctx.EventManager().Events())
 }

@@ -20,13 +20,13 @@ pub enum Error {
   BadEntrySignatureError = 13, // Bad execution entry point sigature.
   MemoryOutOfBoundError = 14,  // Out-of-bound memory access while executing the wasm script
   // Go-generated errors while interacting with OEI.
-  WrongPeriodActionError = 128,          // OEI action to invoke is not available.
-  TooManyExternalDataError = 129,        // Too many external data requests.
-  DuplicateExternalIDError = 130,        // Wasm code asks data with duplicate external id.
-  BadValidatorIndexError = 131,          // Bad validator index parameter.
-  BadExternalIDError = 132,              // Bad external ID parameter.
-  UnavailableExternalDataError = 133,    // External data is not available.
-  CallReturnDataSeveralTimesError = 134, // Call Return data reveral times.
+  WrongPeriodActionError = 128,       // OEI action to invoke is not available.
+  TooManyExternalDataError = 129,     // Too many external data requests.
+  DuplicateExternalIDError = 130,     // Wasm code asks data with duplicate external id.
+  BadValidatorIndexError = 131,       // Bad validator index parameter.
+  BadExternalIDError = 132,           // Bad external ID parameter.
+  UnavailableExternalDataError = 133, // External data is not available.
+  RepeatSetReturnDataError = 134,     // Set return data is called more than once.
   // Unexpected error
   UnknownError = 255,
 }
