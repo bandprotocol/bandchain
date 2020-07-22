@@ -233,6 +233,7 @@ validators = sa.Table(
     Column("current_ratio", sa.DECIMAL),
     Column("status", sa.Boolean, default=False),
     Column("status_since", CustomDateTime, default=0),
+    Column("accumulated_commission", sa.String),  # uband suffix
 )
 
 delegations = sa.Table(
