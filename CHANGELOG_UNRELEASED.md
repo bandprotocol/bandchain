@@ -39,6 +39,7 @@
 
 ### Scan
 
+- (impv) [\#2284](https://github.com/bandprotocol/bandchain/pull/2284) Patch to support new type of big number.
 - (feat) [\#2276](https://github.com/bandprotocol/bandchain/pull/2276) Implemented mobile version of homepage top part
 - (impv) [\#2287](https://github.com/bandprotocol/bandchain/pull/2287) Improve UI on blockhomepage, and add new card component for mobile
 - (impv) [\#2245](https://github.com/bandprotocol/bandchain/pull/2245) Added more features and patch for guanyu testnet
