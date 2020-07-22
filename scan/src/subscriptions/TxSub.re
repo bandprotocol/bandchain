@@ -317,10 +317,10 @@ module Msg = {
     };
     let decode = json =>
       JsonUtils.Decode.{
-        moniker: json |> at(["msg", "description", "moniker"], string),
-        identity: json |> at(["msg", "description", "identity"], string),
-        website: json |> at(["msg", "description", "website"], string),
-        details: json |> at(["msg", "description", "details"], string),
+        moniker: json |> at(["msg", "moniker"], string),
+        identity: json |> at(["msg", "identity"], string),
+        website: json |> at(["msg", "website"], string),
+        details: json |> at(["msg", "details"], string),
         commissionRate: json |> optional(at(["msg", "commission_rate"], floatstr)),
         sender: json |> at(["msg", "address"], string) |> Address.fromBech32,
         minSelfDelegation:
@@ -701,19 +701,7 @@ module Msg = {
       JsonUtils.Decode.{
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
-        amount: {
-          exception WrongNetwork(string);
-          switch (Env.network) {
-          | "GUANYU"
-          | "GUANYU38" =>
-            json
-            |> at(["extra", "reward_amount"], array(string))
-            |> Belt.Array.getExn(_, 0)
-            |> GraphQLParser.coins
-          | "WENCHANG" => json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins
-          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
-          };
-        },
+        amount: json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins,
       };
     };
   };
@@ -789,20 +777,7 @@ module Msg = {
     let decode = json => {
       JsonUtils.Decode.{
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
-        amount: {
-          exception WrongNetwork(string);
-          switch (Env.network) {
-          | "GUANYU"
-          | "GUANYU38" =>
-            json
-            |> at(["extra", "commission_amount"], array(string))
-            |> Belt.Array.getExn(_, 0)
-            |> GraphQLParser.coins
-          | "WENCHANG" =>
-            json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins
-          | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
-          };
-        },
+        amount: json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins,
       };
     };
   };

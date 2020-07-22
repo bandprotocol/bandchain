@@ -1,4 +1,4 @@
-let int64 = json => json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float;
+let int64 = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> int_of_string;
 let string = json => json |> Js.Json.decodeString |> Belt.Option.getExn;
 let stringExn = (stringOpt: option(string)) => stringOpt |> Belt_Option.getExn;
 let buffer = json =>
@@ -60,13 +60,14 @@ let coinRegEx = "([0-9]+)([a-z][a-z0-9/]{2,31})" |> Js.Re.fromString;
 let intToCoin = int_ => int_ |> float_of_int |> Coin.newUBANDFromAmount;
 
 let coin = json => {
-  json |> Js.Json.decodeNumber |> Belt_Option.getExn |> Coin.newUBANDFromAmount;
+  json |> Js.Json.decodeString |> Belt_Option.getExn |> float_of_string |> Coin.newUBANDFromAmount;
 };
 
 let coinExn = jsonOpt => {
   jsonOpt
-  |> Belt_Option.flatMap(_, Js.Json.decodeNumber)
+  |> Belt_Option.flatMap(_, Js.Json.decodeString)
   |> Belt.Option.getExn
+  |> float_of_string
   |> Coin.newUBANDFromAmount;
 };
 let coinWithDefault = jsonOpt => {
@@ -100,6 +101,4 @@ let numberWithDefault = jsonOpt =>
 let floatWithDefault = jsonOpt =>
   jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.);
 
-let floatExn = json => {
-  json |> Js.Json.decodeNumber |> Belt.Option.getExn;
-};
+let floatString = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> float_of_string;
