@@ -97,7 +97,7 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
         ("BLOCK", Height(height)),
         ("TIMESTAMP", Timestamp(timestamp)),
         (
-          "PROPERSER",
+          "PROPOSER",
           Validator(validator.operatorAddress, validator.moniker, validator.identity),
         ),
         ("TXN", Count(txn)),
