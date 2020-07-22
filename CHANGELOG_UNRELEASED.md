@@ -10,6 +10,7 @@
 
 ### Chain (Consensus)
 
+- (impv) [\#2292](https://github.com/bandprotocol/bandchain/pull/2292) go-owasm: Change gas consumption amount when call set return data and allow to set return data only one time.
 - (patch) [\#2288](https://github.com/bandprotocol/bandchain/pull/2288) Upgrade to Cosmos-SDK v0.39
 - (bugs) [\#2251](https://github.com/bandprotocol/bandchain/pull/2251) go-owasm: Allow OEI to read nil external data
 
