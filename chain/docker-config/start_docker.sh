@@ -138,13 +138,13 @@ do
     done
 
     # send band tokens to reporters
-    echo "y" | bandcli tx multi-send 1000000uband $(yoda keys list -a) --from $1 --keyring-backend test
+    echo "y" | bandcli tx multi-send 1000000uband $(yoda keys list -a) --from validator$v --keyring-backend test
 
     # wait for sending band tokens transaction success
     sleep 2
 
     # add reporter to bandchain
-    echo "y" | bandcli tx oracle add-reporters $(yoda keys list -a) --from $1 --keyring-backend test
+    echo "y" | bandcli tx oracle add-reporters $(yoda keys list -a) --from validator$v --keyring-backend test
 
     # wait for addding reporter transaction success
     sleep 2

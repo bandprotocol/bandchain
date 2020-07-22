@@ -6,7 +6,8 @@ module Styles = {
   let container =
     style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
-  let innerContainer = style([marginLeft(`auto), marginRight(`auto)]);
+  let innerContainer =
+    style([marginLeft(`auto), marginRight(`auto), padding2(~v=`zero, ~h=`px(15))]);
 
   let routeContainer =
     style([minHeight(`calc((`sub, `vh(100.), `px(200)))), paddingBottom(`px(20))]);
