@@ -59,12 +59,14 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
            <div
              className=Styles.showContainer
              onClick={_ => {
-               setOverflowed(_ => !overflowed);
-               setExpanded(_ => !expanded);
+                setOverflowed(_ => !overflowed);
+                setExpanded(_ => !expanded);
              }}>
              {expanded
                 ? <div className=Styles.showButton> {"show less" |> React.string} </div>
-                : <div className=Styles.showButton> {"..." |> React.string} </div>}
+                : Media.isMobile() ? <Link route=Route.TxIndexPage(txHash) > "Show More" |> React.string </Link>
+                    : <div className=Styles.showButton> {"show more" |> React.string} </div> }
+
            </div>
          </div>
        : React.null}

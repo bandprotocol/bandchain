@@ -1,7 +1,18 @@
 module Styles = {
   open Css;
   let rowWithWidth = (w: int) =>
-    style([width(`px(w)), display(`flex), flexDirection(`row), alignItems(`center)]);
+    style([
+      width(`px(w)),
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`center),
+      Media.mobile([
+        width(`auto),
+        flexWrap(`wrap),
+        selector("> div:nth-child(1)", [width(`px(120)), marginBottom(`px(10))]),
+        selector("> div:nth-child(2)", [flexBasis(`calc((`sub, `percent(100.), `px(200)))), marginBottom(`px(10))]),
+      ]),
+    ]);
   let withWidth = (w: int) => style([width(`px(w))]);
   let withBg = (color: Types.Color.t, mw: int) =>
     style([

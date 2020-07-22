@@ -74,10 +74,36 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
   </TBody>;
 };
 
+let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+  switch (txSub) {
+  | Data({txHash, blockHeight, success, messages, errMsg}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", TxHash(txHash, 200)),
+        ("BLOCK", Height(blockHeight)),
+        ("ACTIONS", Messages(txHash, messages, success, errMsg)),
+      ]
+      key={blockHeight |> ID.Block.toString}
+      idx={blockHeight |> ID.Block.toString}
+      status=success
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", Loading(70)),
+        ("BLOCK", Loading(70)),
+        ("ACTIONS", Loading(70)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
+};
+
 [@react.component]
 let make = () => {
   let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=10, ()), TxSub.count());
-
+  let isMobile = Media.isMobile();
   <>
     <div className=Styles.topicBar>
       <Text
@@ -113,59 +139,67 @@ let make = () => {
       </Link>
     </div>
     <VSpacing size=Spacing.lg />
-    <THead>
-      <Row>
-        <Col> <HSpacing size={`px(12)} /> </Col>
-        <Col size=1.2>
-          <div className=Styles.fullWidth>
-            <Text
-              value="TX HASH"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=0.68>
-          <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
-            <Text
-              value="BLOCK"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=1.>
-          <div className=Styles.statusContainer>
-            <Text
-              value="STATUS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=3.8>
-          <div className=Styles.fullWidth>
-            <Text
-              value="ACTIONS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col> <HSpacing size={`px(12)} /> </Col>
-      </Row>
-    </THead>
+    {isMobile
+       ? React.null
+       : <>
+           <THead>
+             <Row>
+               <Col> <HSpacing size={`px(12)} /> </Col>
+               <Col size=1.2>
+                 <div className=Styles.fullWidth>
+                   <Text
+                     value="TX HASH"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </div>
+               </Col>
+               <Col size=0.68>
+                 <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
+                   <Text
+                     value="BLOCK"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </div>
+               </Col>
+               <Col size=1.>
+                 <div className=Styles.statusContainer>
+                   <Text
+                     value="STATUS"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </div>
+               </Col>
+               <Col size=3.8>
+                 <div className=Styles.fullWidth>
+                   <Text
+                     value="ACTIONS"
+                     size=Text.Sm
+                     weight=Text.Semibold
+                     color=Colors.gray6
+                     spacing={Text.Em(0.05)}
+                   />
+                 </div>
+               </Col>
+               <Col> <HSpacing size={`px(12)} /> </Col>
+             </Row>
+           </THead>
+         </>}
     {switch (allSub) {
      | Data((txs, _)) =>
-       txs->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array
+       txs
+       ->Belt_Array.mapWithIndex((i, e) =>
+           isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+         )
+       ->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
