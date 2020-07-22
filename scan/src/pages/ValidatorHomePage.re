@@ -500,8 +500,8 @@ module ValidatorList = {
 
 let getPrevDay = _ => {
   MomentRe.momentNow()
+  |> MomentRe.Moment.defaultUtc
   |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-  |> MomentRe.Moment.subtract(~duration=MomentRe.duration(7., `hours))
   |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
