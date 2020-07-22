@@ -27,6 +27,7 @@ var (
 	ErrBadValidatorIndex       = errors.New("bad validator index parameter")
 	ErrBadExternalID           = errors.New("bad external ID parameter")
 	ErrUnavailableExternalData = errors.New("external data is not available")
+	ErrRepeatSetReturnData     = errors.New("set return data is called more than once")
 	ErrUnknown                 = errors.New("unknown error")
 )
 
@@ -47,6 +48,8 @@ func toCError(err error) C.Error {
 		return C.Error_BadExternalIDError
 	case ErrUnavailableExternalData:
 		return C.Error_UnavailableExternalDataError
+	case ErrRepeatSetReturnData:
+		return C.Error_RepeatSetReturnDataError
 	default:
 		return C.Error_UnknownError
 	}
@@ -100,6 +103,8 @@ func toGoError(code C.Error) error {
 		return ErrBadExternalID
 	case C.Error_UnavailableExternalDataError:
 		return ErrUnavailableExternalData
+	case C.Error_RepeatSetReturnDataError:
+		return ErrRepeatSetReturnData
 	default:
 		return ErrUnknown
 	}

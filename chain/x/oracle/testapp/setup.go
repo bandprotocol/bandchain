@@ -100,7 +100,7 @@ func getGenesisOracleScripts() []types.OracleScript {
 	fc := filecache.New(dir)
 	OracleScripts = []types.OracleScript{{}} // 0th index should be ignored
 	wasms := [][]byte{
-		Wasm1, Wasm2, Wasm3, Wasm4, Wasm56(10), Wasm56(10000000), Wasm78(10), Wasm78(2000),
+		Wasm1, Wasm2, Wasm3, Wasm4, Wasm56(10), Wasm56(10000000), Wasm78(10), Wasm78(2000), Wasm9,
 	}
 	for idx := 0; idx < len(wasms); idx++ {
 		idxStr := fmt.Sprintf("%d", idx+1)
