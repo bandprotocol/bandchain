@@ -41,7 +41,7 @@ module MultiConfig = [%graphql
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}) @bsRecord {
       height @bsDecoder(fn: "ID.Block.fromInt")
       hash @bsDecoder(fn: "GraphQLParser.hash")
-      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
+      inflation @bsDecoder(fn: "GraphQLParser.floatString")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
@@ -65,7 +65,7 @@ module MultiConsensusAddressConfig = [%graphql
     blocks(limit: $limit, offset: $offset, order_by: {height: desc}, where: {proposer: {_eq: $address}}) @bsRecord {
       height @bsDecoder(fn: "ID.Block.fromInt")
       hash @bsDecoder(fn: "GraphQLParser.hash")
-      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
+      inflation @bsDecoder(fn: "GraphQLParser.floatString")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
@@ -89,7 +89,7 @@ module SingleConfig = [%graphql
     blocks_by_pk(height: $height) @bsRecord {
       height @bsDecoder(fn: "ID.Block.fromInt")
       hash @bsDecoder(fn: "GraphQLParser.hash")
-      inflation @bsDecoder(fn: "GraphQLParser.floatExn")
+      inflation @bsDecoder(fn: "GraphQLParser.floatString")
       validator @bsRecord {
         consensusAddress: consensus_address
         operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
