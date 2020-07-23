@@ -12,10 +12,13 @@
 
 ### Chain (Non-consensus)
 
+- (bugs) [\#2297](https://github.com/bandprotocol/bandchain/pull/2297) Update json key name of request and response packets.
+
 ### Yoda
 
 ### Emitter & Flusher
 
+- (impv) [\#2302](https://github.com/bandprotocol/bandchain/pull/2302) Add offset check before sync flusher.
 - (bugs) [\#2298](https://github.com/bandprotocol/bandchain/pull/2298) Fix bug `accumulated_commission` in `emitSetValidator`.
 - (bugs) [\#2295](https://github.com/bandprotocol/bandchain/pull/2295) Truncate `accumulated_commission` precision.
 
@@ -34,3 +37,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2279](https://github.com/bandprotocol/bandchain/pull/2279) Update `yoda` README.
