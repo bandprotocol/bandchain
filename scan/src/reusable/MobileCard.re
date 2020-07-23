@@ -10,7 +10,13 @@ module Styles = {
     ]);
   let cardItem = style([display(`flex), alignItems(`baseline), padding(`px(5))]);
   let cardItemHeading =
-    style([display(`flex), alignItems(`center), flexGrow(0.), flexShrink(0.), flexBasis(`percent(25.))]);
+    style([
+      display(`flex),
+      alignItems(`center),
+      flexGrow(0.),
+      flexShrink(0.),
+      flexBasis(`percent(25.)),
+    ]);
   let logo = style([width(`px(20)), position(`absolute), top(`px(5)), right(`px(12))]);
 };
 

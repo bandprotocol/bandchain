@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (impv) [\#2299](https://github.com/bandprotocol/bandchain/pull/2299) Update the latest transactions table for mobile version.
+
 ### Bridges
 
 ### Runtime
