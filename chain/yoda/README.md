@@ -10,7 +10,7 @@
 6. run `wasm-pack build .`
 7. `make install` in chain directory
 8. Open 3 tabs on cmd
-9. run `docker pull bandprotocol/runtime:1.0.1`
+9. run `docker pull bandprotocol/runtime:1.0.2`
 
 ## How to install and run Yoda
 
