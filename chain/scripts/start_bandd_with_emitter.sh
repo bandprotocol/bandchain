@@ -18,4 +18,4 @@ python ../flusher/main.py init bandchain test --db localhost:5432/my_db
 
 # start bandchain
 bandd start --with-emitter test@localhost:9092 \
-  --rpc.laddr tcp://0.0.0.0:26657 --pruning=nothing
+  --rpc.laddr tcp://0.0.0.0:26657
