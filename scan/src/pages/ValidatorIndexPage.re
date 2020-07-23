@@ -53,8 +53,7 @@ module Styles = {
 
   let validatorBoxMobile =
     style([
-      height(`px(486)),
-      width(`px(344)),
+      width(`percent(100.)),
       borderRadius(`px(4)),
       backgroundColor(`hex("FFFFFF")),
       boxShadow(
@@ -62,6 +61,7 @@ module Styles = {
       ),
       paddingLeft(`px(12)),
       paddingTop(`px(16)),
+      paddingBottom(`px(16)),
     ]);
 
   let operatorAddressMobile = style([width(`px(330))]);
@@ -92,7 +92,7 @@ let kvRowMobile = (k, v: value_row_t) => {
              <AddressRender address validator=true />
            </div>
          | VText(value) => <Text value nowrap=true />
-         | VDetail(value) => <Text value align=Text.Right />
+         | VDetail(value) => <Text value />
          | VExtLink(value) =>
            <a href=value target="_blank" rel="noopener">
              <div className=Styles.underline> <Text value nowrap=true /> </div>
@@ -651,6 +651,7 @@ module RenderMobile = {
              };
            },
          )}
+        <VSpacing size=Spacing.lg />
       </div>
     </>;
   };
