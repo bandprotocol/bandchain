@@ -212,14 +212,13 @@ func NewBandApp(
 		evidence.NewAppModule(app.EvidenceKeeper),
 		oracle.NewAppModule(app.OracleKeeper),
 	)
-	// During begin block slashing happens after distr.BeginBlocker so that there is nothing left
+	// NOTE: Oracle module must occur before distr as it takes some fee to distribute to active oracle validators.
+	// NOTE: During begin block slashing happens after distr.BeginBlocker so that there is nothing left
 	// over in the validator fee pool, so as to keep the CanWithdrawInvariant invariant.
 	app.mm.SetOrderBeginBlockers(
 		upgrade.ModuleName, mint.ModuleName, oracle.ModuleName, distr.ModuleName, slashing.ModuleName,
 		evidence.ModuleName, staking.ModuleName,
 	)
-	// NOTE: The oracle module must occur before staking so that jailed validators due to report
-	// downtime will not get included in staking module's ValidatorUpdate set.
 	app.mm.SetOrderEndBlockers(
 		crisis.ModuleName, gov.ModuleName, staking.ModuleName, oracle.ModuleName,
 	)

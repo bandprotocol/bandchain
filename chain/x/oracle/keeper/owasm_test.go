@@ -419,3 +419,28 @@ func TestResolveRequestWasmFailure(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyReason, "out-of-gas while executing the wasm script"),
 	)}, ctx.EventManager().Events())
 }
+
+func TestResolveRequestCallReturnDataSeveralTimes(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	ctx = ctx.WithBlockTime(testapp.ParseTime(1581589890))
+	k.SetRequest(ctx, 42, types.NewRequest(
+		// 9th Wasm - set return data several times
+		9, BasicCalldata, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, 1,
+		42, testapp.ParseTime(1581589790), BasicClientID, []types.RawRequest{
+			types.NewRawRequest(1, 1, []byte("beeb")),
+		},
+	))
+	k.ResolveRequest(ctx, 42)
+	reqPacket := types.NewOracleRequestPacketData(BasicClientID, 9, BasicCalldata, 2, 1)
+	resPacket := types.NewOracleResponsePacketData(
+		BasicClientID, 42, 0, testapp.ParseTime(1581589790).Unix(),
+		testapp.ParseTime(1581589890).Unix(), types.ResolveStatus_Failure, []byte{},
+	)
+	require.Equal(t, types.NewResult(reqPacket, resPacket), k.MustGetResult(ctx, 42))
+	require.Equal(t, sdk.Events{sdk.NewEvent(
+		types.EventTypeResolve,
+		sdk.NewAttribute(types.AttributeKeyID, "42"),
+		sdk.NewAttribute(types.AttributeKeyResolveStatus, "2"),
+		sdk.NewAttribute(types.AttributeKeyReason, "set return data is called more than once"),
+	)}, ctx.EventManager().Events())
+}

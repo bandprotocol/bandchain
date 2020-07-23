@@ -18,7 +18,12 @@ module Styles = {
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let topBarInner =
-    style([display(`flex), width(`percent(100.)), justifyContent(`spaceBetween)]);
+    style([
+      display(`flex),
+      width(`percent(100.)),
+      justifyContent(`spaceBetween),
+      padding2(~v=`zero, ~h=`px(15)),
+    ]);
 
   let logoContainer = style([display(`flex), alignItems(`center), width(`percent(100.))]);
 

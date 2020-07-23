@@ -188,7 +188,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 			"block_height":      req.Header.GetHeight() - 1,
 			"voted":             val.GetSignedLastBlock(),
 		})
-		app.emitUpdateValidatorReward(validator.GetOperator())
+		app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
 	}
 
 	for _, event := range res.Events {
