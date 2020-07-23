@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (feat) [\#2294](https://github.com/bandprotocol/bandchain/pull/2294) Implemented top part of `ValidatorIndexPage` for mobile
+
 ### Bridges
 
 ### Runtime
