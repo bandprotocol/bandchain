@@ -72,7 +72,7 @@ let make = () => {
     // </div>
     // <div className=Styles.skip />
     <div className=Styles.section>
-      <Row alignItems=`initial>
+      <Row alignItems=`initial wrap=true>
         <Col> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col>
         <HSpacing size=Spacing.lg />
         <Col size=1.> <LatestTxTable /> </Col>

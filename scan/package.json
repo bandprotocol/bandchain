@@ -12,7 +12,7 @@
     "@ledgerhq/hw-transport-webhid": "^5.19.0",
     "@ledgerhq/hw-transport-webusb": "^5.19.0",
     "@material-ui/core": "^4.11.0",
-    "@sentry/browser": "^5.19.2",
+    "@sentry/browser": "^5.20.0",
     "axios": "^0.19.2",
     "axios-hook": "^0.0.6",
     "axios-hooks": "^1.10.0",
@@ -38,7 +38,7 @@
     "reason-apollo-hooks": "^6.0.0",
     "reason-react": ">=0.7.1",
     "ripemd160": "^2.0.2",
-    "secp256k1": "^4.0.1",
+    "secp256k1": "^4.0.2",
     "semver": "^7.3.2"
   },
   "devDependencies": {
