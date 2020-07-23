@@ -194,65 +194,64 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
 
 [@react.component]
 let make = () => {
-  let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=10, ()), TxSub.count());
   let isMobile = Media.isMobile();
+  let txCount = isMobile ? 5 : 10;
+  let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=txCount, ()), TxSub.count());
   <>
     {isMobile ? renderMobileTitle(allSub) : renderTitle(allSub)}
     <VSpacing size=Spacing.lg />
     {isMobile
        ? React.null
-       : <>
-           <THead>
-             <Row>
-               <Col> <HSpacing size={`px(12)} /> </Col>
-               <Col size=1.2>
-                 <div className=Styles.fullWidth>
-                   <Text
-                     value="TX HASH"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                     spacing={Text.Em(0.05)}
-                   />
-                 </div>
-               </Col>
-               <Col size=0.68>
-                 <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
-                   <Text
-                     value="BLOCK"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                     spacing={Text.Em(0.05)}
-                   />
-                 </div>
-               </Col>
-               <Col size=1.>
-                 <div className=Styles.statusContainer>
-                   <Text
-                     value="STATUS"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                     spacing={Text.Em(0.05)}
-                   />
-                 </div>
-               </Col>
-               <Col size=3.8>
-                 <div className=Styles.fullWidth>
-                   <Text
-                     value="ACTIONS"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                     spacing={Text.Em(0.05)}
-                   />
-                 </div>
-               </Col>
-               <Col> <HSpacing size={`px(12)} /> </Col>
-             </Row>
-           </THead>
-         </>}
+       : <THead>
+           <Row>
+             <Col> <HSpacing size={`px(12)} /> </Col>
+             <Col size=1.2>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="TX HASH"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=0.68>
+               <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
+                 <Text
+                   value="BLOCK"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=1.>
+               <div className=Styles.statusContainer>
+                 <Text
+                   value="STATUS"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=3.8>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="ACTIONS"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col> <HSpacing size={`px(12)} /> </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((txs, _)) =>
        txs
@@ -261,7 +260,7 @@ let make = () => {
          )
        ->React.array
      | _ =>
-       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+       Belt_Array.make(txCount, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
        ->React.array
      }}
