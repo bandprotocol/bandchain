@@ -47,7 +47,7 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(8), Css.rgba(0, 0, 0, 0.08))),
     ]);
 
-  let underline = style([color(Colors.bandBlue)]);
+  let validatorWebsiteLink = style([color(Colors.bandBlue)]);
 
   // Mobile
 
@@ -55,13 +55,11 @@ module Styles = {
     style([
       width(`percent(100.)),
       borderRadius(`px(4)),
-      backgroundColor(`hex("FFFFFF")),
+      backgroundColor(Colors.white),
       boxShadow(
-        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), ~spread=`px(0), rgba(0, 0, 0, 0.08)),
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), ~spread=`zero, rgba(0, 0, 0, 0.08)),
       ),
-      paddingLeft(`px(12)),
-      paddingTop(`px(16)),
-      paddingBottom(`px(16)),
+      padding4(~top=`px(16), ~left=`px(12), ~right=`zero, ~bottom=`px(16)),
     ]);
 
   let operatorAddressMobile = style([width(`px(330))]);
@@ -95,7 +93,7 @@ let kvRowMobile = (k, v: value_row_t) => {
          | VDetail(value) => <Text value />
          | VExtLink(value) =>
            <a href=value target="_blank" rel="noopener">
-             <div className=Styles.underline> <Text value nowrap=true /> </div>
+             <div className=Styles.validatorWebsiteLink> <Text value nowrap=true /> </div>
            </a>
          | VCode(value) => <Text value code=true nowrap=true />
          | VReactElement(element) => element
@@ -123,7 +121,7 @@ let kvRow = (k, description, v: value_row_t) => {
          | VDetail(value) => <Text value align=Text.Right />
          | VExtLink(value) =>
            <a href=value target="_blank" rel="noopener">
-             <div className=Styles.underline> <Text value nowrap=true /> </div>
+             <div className=Styles.validatorWebsiteLink> <Text value nowrap=true /> </div>
            </a>
          | VCode(value) => <Text value code=true nowrap=true />
          | VReactElement(element) => element
@@ -137,35 +135,35 @@ let kvRow = (k, description, v: value_row_t) => {
 module Uptime = {
   [@react.component]
   let make = (~consensusAddress) => {
+    let uptimeHeader = "UPTIME (LAST 250 BLOCKS)";
+    let uptimeDescription = "Percentage of the blocks that the validator is active for out of the last 250";
+
     let uptimeSub = ValidatorSub.getUptime(consensusAddress);
     switch (uptimeSub) {
     | Data(uptimeOpt) =>
       switch (uptimeOpt) {
       | Some(uptime) =>
         kvRow(
-          "UPTIME (LAST 250 BLOCKS)",
+          uptimeHeader,
           {
-            "Percentage of the blocks that the validator is active for out of the last 250"
-            |> React.string;
+            uptimeDescription |> React.string;
           },
           VCode(uptime |> Format.fPercent(~digits=2)),
         )
       | None =>
         kvRow(
-          "UPTIME (LAST 250 BLOCKS)",
+          uptimeHeader,
           {
-            "Percentage of the blocks that the validator is active for out of the last 250"
-            |> React.string;
+            uptimeDescription |> React.string;
           },
           VText("N/A"),
         )
       }
     | _ =>
       kvRow(
-        "UPTIME (LAST 250 BLOCKS)",
+        uptimeHeader,
         {
-          "Percentage of the blocks that the validator is active for out of the last 250"
-          |> React.string;
+          uptimeDescription |> React.string;
         },
         Loading(100, 16),
       )
