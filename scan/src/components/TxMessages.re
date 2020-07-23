@@ -34,13 +34,6 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
 
   let msgCount = isMobile ? 1 : 2;
 
-  let x: list(TxSub.Msg.t) = [
-    TxSub.Msg.WithdrawCommissionMsg({
-      validatorAddress: "band1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrp4dtgru" |> Address.fromBech32,
-      amount: [100. |> Coin.newUBANDFromAmount],
-    }),
-  ];
-
   React.useEffect0(_ => {
     let msgLength = Belt.List.length(messages);
     msgLength > msgCount ? setOverflowed(_ => true) : ();
