@@ -1,7 +1,25 @@
 module Styles = {
   open Css;
   let rowWithWidth = (w: int) =>
-    style([width(`px(w)), display(`flex), flexDirection(`row), alignItems(`center)]);
+    style([
+      width(`px(w)),
+      display(`flex),
+      flexDirection(`row),
+      alignItems(`center),
+      Media.mobile([
+        width(`auto),
+        flexWrap(`wrap),
+        selector("> div:nth-child(1)", [width(`px(90)), marginBottom(`px(10))]),
+        selector(
+          "> .labelContainer",
+          [
+            display(`flex),
+            flexBasis(`calc((`sub, `percent(100.), `px(100)))),
+            marginBottom(`px(10)),
+          ],
+        ),
+      ]),
+    ]);
   let withWidth = (w: int) => style([width(`px(w))]);
   let withBg = (color: Types.Color.t, mw: int) =>
     style([
@@ -17,8 +35,10 @@ module Styles = {
 };
 
 let makeBadge = (name, length, color1, color2) =>
-  <div className={Styles.withBg(color1, length)}>
-    <Text value=name size=Text.Xs spacing={Text.Em(0.07)} weight=Text.Medium color=color2 />
+  <div className="labelContainer">
+    <div className={Styles.withBg(color1, length)}>
+      <Text value=name size=Text.Xs spacing={Text.Em(0.07)} weight=Text.Medium color=color2 />
+    </div>
   </div>;
 
 [@react.component]
@@ -27,14 +47,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | SendMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=fromAddress /> </div>
-      <div className={Styles.withBg(Colors.blue1, 40)}>
-        <Text
-          value="SEND"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 40)}>
+          <Text
+            value="SEND"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <AmountRender coins=amount />
       <HSpacing size=Spacing.sm />
@@ -45,14 +67,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ReceiveMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=toAddress /> </div>
-      <div className={Styles.withBg(Colors.blue1, 50)}>
-        <Text
-          value="RECEIVE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 50)}>
+          <Text
+            value="RECEIVE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <AmountRender coins=amount />
       <HSpacing size=Spacing.sm />
@@ -63,14 +87,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.yellow1, 110)}>
-        <Text
-          value="CREATE DATASOURCE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.yellow6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.yellow1, 110)}>
+          <Text
+            value="CREATE DATASOURCE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.yellow6
+          />
+        </div>
       </div>
       <TypeID.DataSource id />
       <HSpacing size=Spacing.sm />
@@ -86,14 +112,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | EditDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.yellow1, 100)}>
-        <Text
-          value="EDIT DATASOURCE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.yellow6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.yellow1, 100)}>
+          <Text
+            value="EDIT DATASOURCE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.yellow6
+          />
+        </div>
       </div>
       <TypeID.DataSource id />
       {name == Config.doNotModify
@@ -113,14 +141,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | CreateOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.pink1, 120)}>
-        <Text
-          value="CREATE ORACLE SCRIPT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.pink6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.pink1, 120)}>
+          <Text
+            value="CREATE ORACLE SCRIPT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.pink6
+          />
+        </div>
       </div>
       <div className={Styles.rowWithWidth(200)}>
         <TypeID.OracleScript id />
@@ -138,14 +168,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | EditOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.pink1, 110)}>
-        <Text
-          value="EDIT ORACLE SCRIPT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.pink6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.pink1, 110)}>
+          <Text
+            value="EDIT ORACLE SCRIPT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.pink6
+          />
+        </div>
       </div>
       <div className={Styles.rowWithWidth(210)}>
         <TypeID.OracleScript id />
@@ -167,14 +199,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.orange1, 60)}>
-        <Text
-          value="REQUEST"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.orange6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.orange1, 60)}>
+          <Text
+            value="REQUEST"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.orange6
+          />
+        </div>
       </div>
       <TypeID.Request id />
       <HSpacing size=Spacing.sm />
@@ -194,14 +228,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ReportMsg({requestID, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(140)}> <AddressRender address=reporter /> </div>
-      <div className={Styles.withBg(Colors.orange1, 50)}>
-        <Text
-          value="REPORT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.orange6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.orange1, 50)}>
+          <Text
+            value="REPORT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.orange6
+          />
+        </div>
       </div>
       <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
@@ -210,14 +246,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | AddReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
-      <div className={Styles.withBg(Colors.purple1, 80)}>
-        <Text
-          value="ADD REPORTER"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 80)}>
+          <Text
+            value="ADD REPORTER"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
@@ -225,14 +263,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | RemoveReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
-      <div className={Styles.withBg(Colors.purple1, 100)}>
-        <Text
-          value="REMOVE REPORTER"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 100)}>
+          <Text
+            value="REMOVE REPORTER"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
@@ -240,14 +280,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | CreateValidatorMsg({delegatorAddress, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 97)}>
-        <Text
-          value="CREATE VALIDATOR"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 97)}>
+          <Text
+            value="CREATE VALIDATOR"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(width / 2 - 5)}>
@@ -265,14 +307,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | EditValidatorMsg({sender, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.purple1, 85)}>
-        <Text
-          value="EDIT VALIDATOR"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 85)}>
+          <Text
+            value="EDIT VALIDATOR"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(width / 2 - 5)}>
@@ -292,14 +336,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | CreateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
-        <Text
-          value="CREATE CLIENT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 85)}>
+          <Text
+            value="CREATE CLIENT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -325,14 +371,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | UpdateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
-        <Text
-          value="UPDATE CLIENT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 85)}>
+          <Text
+            value="UPDATE CLIENT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -358,14 +406,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | SubmitClientMisbehaviourMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
-        <Text
-          value="SUBMIT CLIENT MISBEHAVIOUR"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 85)}>
+          <Text
+            value="SUBMIT CLIENT MISBEHAVIOUR"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -391,14 +441,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ConnectionOpenInitMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 140)}>
-        <Text
-          value="CONNECTION OPEN INIT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 140)}>
+          <Text
+            value="CONNECTION OPEN INIT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -424,14 +476,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ConnectionOpenTryMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 120)}>
-        <Text
-          value="CONNECTION OPEN TRY"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 120)}>
+          <Text
+            value="CONNECTION OPEN TRY"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -457,14 +511,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ConnectionOpenAckMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 130)}>
-        <Text
-          value="CONNECTION OPEN ACK"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 130)}>
+          <Text
+            value="CONNECTION OPEN ACK"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -490,14 +546,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ConnectionOpenConfirmMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 140)}>
-        <Text
-          value="CONNECTION OPEN CONFIRM"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 140)}>
+          <Text
+            value="CONNECTION OPEN CONFIRM"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -523,14 +581,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelOpenInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 100)}>
-        <Text
-          value="CHANNEL OPEN INIT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 100)}>
+          <Text
+            value="CHANNEL OPEN INIT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -556,14 +616,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelOpenTryMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 100)}>
-        <Text
-          value="CHANNEL OPEN TRY"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 100)}>
+          <Text
+            value="CHANNEL OPEN TRY"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -589,14 +651,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelOpenAckMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 100)}>
-        <Text
-          value="CHANNEL OPEN ACK"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 100)}>
+          <Text
+            value="CHANNEL OPEN ACK"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -622,14 +686,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelOpenConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 130)}>
-        <Text
-          value="CHANNEL OPEN CONFIRM"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 130)}>
+          <Text
+            value="CHANNEL OPEN CONFIRM"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -655,14 +721,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelCloseInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
-        <Text
-          value="CHANNEL CLOSE INIT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 85)}>
+          <Text
+            value="CHANNEL CLOSE INIT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -688,14 +756,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ChannelCloseConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 100)}>
-        <Text
-          value="CHANNEL CLOSE CONFIRM"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 100)}>
+          <Text
+            value="CHANNEL CLOSE CONFIRM"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -721,14 +791,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | PacketMsg({sender, data, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.blue1, 50)}>
-        <Text
-          value="PACKET"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 50)}>
+          <Text
+            value="PACKET"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -758,14 +830,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | TimeoutMsg({sender, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
-      <div className={Styles.withBg(Colors.blue1, 85)}>
-        <Text
-          value="TIMEOUT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 85)}>
+          <Text
+            value="TIMEOUT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <HSpacing size=Spacing.sm />
       <Text
@@ -791,70 +865,80 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | DelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 60)}>
-        <Text
-          value="DELEGATE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 60)}>
+          <Text
+            value="DELEGATE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <AmountRender coins=[amount] />
     </div>
   | UndelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 73)}>
-        <Text
-          value="UNDELEGATE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 73)}>
+          <Text
+            value="UNDELEGATE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <AmountRender coins=[amount] />
     </div>
   | RedelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 73)}>
-        <Text
-          value="REDELEGATE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 73)}>
+          <Text
+            value="REDELEGATE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <AmountRender coins=[amount] />
     </div>
   | WithdrawRewardMsg({delegatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 100)}>
-        <Text
-          value="WITHDRAW REWARD"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 100)}>
+          <Text
+            value="WITHDRAW REWARD"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <AmountRender coins=amount />
     </div>
   | UnjailMsg({address}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
-      <div className={Styles.withBg(Colors.blue1, 50)}>
-        <Text
-          value="UNJAIL"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 50)}>
+          <Text
+            value="UNJAIL"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <div className={Styles.withWidth(width / 2)}>
         <AddressRender address validator=true />
@@ -863,14 +947,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 130)}>
-        <Text
-          value="SET WITHDRAW ADDRESS"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 130)}>
+          <Text
+            value="SET WITHDRAW ADDRESS"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <div className={Styles.withWidth(width / 3)}>
         <AddressRender address=withdrawAddress />
@@ -879,14 +965,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | SubmitProposalMsg({proposer, title}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=proposer /> </div>
-      <div className={Styles.withBg(Colors.blue1, 100)}>
-        <Text
-          value="SUBMIT PROPOSAL"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 100)}>
+          <Text
+            value="SUBMIT PROPOSAL"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <div className={Styles.rowWithWidth(200)}>
         <Text value=title weight=Text.Regular code=true nowrap=true block=true />
@@ -895,14 +983,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | DepositMsg({depositor, amount, proposalID}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
-      <div className={Styles.withBg(Colors.blue1, 50)}>
-        <Text
-          value="DEPOSIT"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 50)}>
+          <Text
+            value="DEPOSIT"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <AmountRender coins=amount />
       <HSpacing size=Spacing.sm />
@@ -921,14 +1011,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | VoteMsg({voterAddress, proposalID, option}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
-      <div className={Styles.withBg(Colors.blue1, 40)}>
-        <Text
-          value="VOTE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 40)}>
+          <Text
+            value="VOTE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <Text value=option weight=Text.Regular code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
@@ -947,14 +1039,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | WithdrawCommissionMsg({validatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
-      <div className={Styles.withBg(Colors.purple1, 130)}>
-        <Text
-          value="WITHDRAW COMMISSION"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.purple6
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.purple1, 130)}>
+          <Text
+            value="WITHDRAW COMMISSION"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.purple6
+          />
+        </div>
       </div>
       <AmountRender coins=amount />
     </div>
@@ -963,14 +1057,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     let firstSender = firstInput.address;
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=firstSender /> </div>
-      <div className={Styles.withBg(Colors.blue1, 70)}>
-        <Text
-          value="MULTI SEND"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 70)}>
+          <Text
+            value="MULTI SEND"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
       <div className={Styles.rowWithWidth(300)}>
         <Text value={inputs |> Belt_List.length |> string_of_int} weight=Text.Semibold />
@@ -987,14 +1083,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | ActivateMsg({validatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
-      <div className={Styles.withBg(Colors.blue1, 65)}>
-        <Text
-          value="ACTIVATE"
-          size=Text.Xs
-          spacing={Text.Em(0.07)}
-          weight=Text.Medium
-          color=Colors.blue7
-        />
+      <div className="labelContainer">
+        <div className={Styles.withBg(Colors.blue1, 65)}>
+          <Text
+            value="ACTIVATE"
+            size=Text.Xs
+            spacing={Text.Em(0.07)}
+            weight=Text.Medium
+            color=Colors.blue7
+          />
+        </div>
       </div>
     </div>
   | UnknownMsg => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
