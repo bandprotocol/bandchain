@@ -2,7 +2,9 @@ type t =
   | Height(ID.Block.t)
   | Count(int)
   | Timestamp(MomentRe.Moment.t)
+  | TxHash(Hash.t, int)
   | Validator(Address.t, string, string)
+  | Messages(Hash.t, list(TxSub.Msg.t), bool, string)
   | Loading(int);
 
 module Styles = {
@@ -32,6 +34,9 @@ let make = (~info) => {
       identity
       width={`percent(100.)}
     />
+  | TxHash(txHash, width) => <TxLink txHash width size=Text.Lg />
+  | Messages(txHash, messages, success, errMsg) =>
+    <TxMessages txHash messages success errMsg width=360 />
   | Loading(width) => <LoadingCensorBar width height=21 />
   };
 };
