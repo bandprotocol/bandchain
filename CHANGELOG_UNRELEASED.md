@@ -36,3 +36,5 @@
 ### Helpers
 
 ### MISC
+
+- (chore) [\#2279](https://github.com/bandprotocol/bandchain/pull/2279) Update `yoda` README.
