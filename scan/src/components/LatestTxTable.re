@@ -182,9 +182,9 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", Loading(70)),
-        ("BLOCK", Loading(70)),
-        ("ACTIONS", Loading(70)),
+        ("TX HASH", Loading(200)),
+        ("BLOCK", Loading(18)),
+        ("ACTIONS", Loading(230)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -261,7 +261,9 @@ let make = () => {
        ->React.array
      | _ =>
        Belt_Array.make(txCount, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
        ->React.array
      }}
   </>;
