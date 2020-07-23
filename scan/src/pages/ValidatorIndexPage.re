@@ -62,9 +62,20 @@ module Styles = {
       padding4(~top=`px(16), ~left=`px(12), ~right=`zero, ~bottom=`px(16)),
     ]);
 
+  let monikerContainer =
+    style([display(`flex), flexDirection(`row), alignItems(`center), minHeight(`px(60))]);
   let operatorAddressMobile = style([width(`px(330))]);
-  let votingPowerMobile = style([display(`flex), flexDirection(`column)]);
+  let votingPowerMobile = style([display(`flex), flexDirection(`column), paddingTop(`px(3))]);
   let headerMobile = style([paddingTop(`px(10))]);
+
+  let validatorDetailsTopPart =
+    style([
+      selector(
+        "> div + div",
+        [borderLeft(`px(1), `solid, Colors.gray5), paddingLeft(`px(12))],
+      ),
+      selector("> div", [padding2(~h=`px(3), ~v=`px(3))]),
+    ]);
 };
 
 type value_row_t =
@@ -79,8 +90,7 @@ type value_row_t =
 
 let kvRowMobile = (k, v: value_row_t) => {
   <Col>
-    <Row> <Text value=k size=Text.Xs color=Colors.gray6 /> </Row>
-    <VSpacing size=Spacing.sm />
+    <Row> <Text value=k size=Text.Xs color=Colors.gray5 /> </Row>
     <Row>
       <div className={Styles.fullWidth(`row)}>
         {switch (v) {
@@ -193,7 +203,7 @@ module UptimeMobile = {
       kvRowMobile(
         "UPTIME",
         VReactElement(
-          <div className=Styles.headerMobile> <LoadingCensorBar width=100 height=16 /> </div>,
+          <div className=Styles.headerMobile> <LoadingCensorBar width=70 height=16 /> </div>,
         ),
       )
     };
@@ -334,7 +344,7 @@ module RenderDesktop = {
                  ++ (validator.votingPower /. 1e6 |> Format.fPretty)
                  ++ " BAND)",
                )
-             | _ => Loading(200, 16)
+             | _ => Loading(100, 16)
              };
            },
          )}
@@ -347,7 +357,7 @@ module RenderDesktop = {
            {
              switch (allSub) {
              | Data((validator, _)) => VCode(validator.commission |> Format.fPercent(~digits=2))
-             | _ => Loading(100, 16)
+             | _ => Loading(50, 16)
              };
            },
          )}
@@ -484,7 +494,7 @@ module RenderMobile = {
       <VSpacing size=Spacing.md />
       <VSpacing size=Spacing.sm />
       <div className=Styles.validatorBoxMobile>
-        <div className=Styles.vFlex>
+        <div className=Styles.monikerContainer>
           {switch (allSub) {
            | Data(({moniker, identity, _}, _)) =>
              <>
@@ -499,7 +509,7 @@ module RenderMobile = {
         </div>
         <VSpacing size=Spacing.md />
         <VSpacing size=Spacing.sm />
-        <Row alignItems=Css.flexStart>
+        <Row alignItems=Css.stretch style=Styles.validatorDetailsTopPart>
           <Col size=1.>
             {kvRowMobile(
                "VOTING POWER",
@@ -523,7 +533,7 @@ module RenderMobile = {
                                   ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
                               )
                               ->Format.fPretty(_, ~digits=2)
-                           ++ "% )"
+                           ++ "%)"
                          }
                          size=Text.Md
                          weight=Text.Thin
@@ -534,16 +544,16 @@ module RenderMobile = {
                    )
                  | _ =>
                    VReactElement(
-                     <div>
-                       <LoadingCensorBar width=100 height=16 />
-                       <LoadingCensorBar width=100 height=16 />
+                     <div className=Styles.votingPowerMobile>
+                       <LoadingCensorBar width=70 height=16 />
+                       <VSpacing size=Spacing.xs />
+                       <LoadingCensorBar width=60 height=16 />
                      </div>,
                    )
                  };
                },
              )}
           </Col>
-          <div className=Styles.longLine />
           <Col size=1.>
             {kvRowMobile(
                "COMMISSION",
@@ -562,14 +572,13 @@ module RenderMobile = {
                  | _ =>
                    VReactElement(
                      <div className=Styles.headerMobile>
-                       <LoadingCensorBar width=100 height=16 />
+                       <LoadingCensorBar width=60 height=16 />
                      </div>,
                    )
                  };
                },
              )}
           </Col>
-          <div className=Styles.longLine />
           <Col size=1.>
             {switch (allSub) {
              | Data((validator, _)) =>
@@ -579,7 +588,7 @@ module RenderMobile = {
                  "UPTIME",
                  VReactElement(
                    <div className=Styles.headerMobile>
-                     <LoadingCensorBar width=100 height=16 />
+                     <LoadingCensorBar width=70 height=16 />
                    </div>,
                  ),
                )
