@@ -1,6 +1,8 @@
 type t =
+  | Address(Address.t, int)
   | Height(ID.Block.t)
   | Count(int)
+  | Float(float)
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, int)
   | Validator(Address.t, string, string)
@@ -10,11 +12,18 @@ type t =
 module Styles = {
   open Css;
   let vFlex = style([display(`flex), alignItems(`center)]);
+  let addressContainer = w => {
+    style([width(`px(w))]);
+  };
 };
 
 [@react.component]
 let make = (~info) => {
   switch (info) {
+  | Address(address, width) =>
+    <div className={Styles.addressContainer(width)}>
+      <AddressRender address position=AddressRender.Text clickable=true />
+    </div>
   | Height(height) =>
     <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
   | Count(value) =>
@@ -25,6 +34,8 @@ let make = (~info) => {
       spacing={Text.Em(0.02)}
       code=true
     />
+  | Float(value) =>
+    <Text value={value |> Format.fPretty} size=Text.Md spacing={Text.Em(0.02)} code=true />
   | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular code=true />
   | Validator(address, moniker, identity) =>
     <ValidatorMonikerLink

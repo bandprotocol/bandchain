@@ -473,7 +473,7 @@ module RenderDesktop = {
              <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
            | _ => <ProposedBlocksTable.LoadingWithHeader />
            }
-         | Delegators => <DelegatorsTable address />
+         | Delegators => <DelegatorsTable address isMobile=false />
          | Reports => <ReportsTable address />
          }}
       </Tab>
@@ -660,6 +660,28 @@ module RenderMobile = {
          )}
         <VSpacing size=Spacing.lg />
       </div>
+      <VSpacing size=Spacing.md />
+      <Tab
+        tabs=[|
+          {
+            name: "PROPOSED BLOCKS",
+            route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+          },
+          {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+          {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+        |]
+        currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+        {switch (hashtag) {
+         | ProposedBlocks =>
+           switch (validatorSub) {
+           | Data(validator) =>
+             <ProposedBlocksTableMobile consensusAddress={validator.consensusAddress} />
+           | _ => <ProposedBlocksTableMobile.Loading />
+           }
+         | Delegators => <DelegatorsTable address isMobile=true />
+         | Reports => <ReportsTable address />
+         }}
+      </Tab>
     </>;
   };
 };

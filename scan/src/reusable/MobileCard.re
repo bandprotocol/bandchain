@@ -31,13 +31,19 @@ let make = (~values, ~idx, ~status=?) => {
      ->Belt_List.mapWithIndex((index, (heading, value)) => {
          <div className=Styles.cardItem key={idx ++ (index |> string_of_int)}>
            <div className=Styles.cardItemHeading>
-             <Text
-               value=heading
-               size=Text.Xs
-               weight=Text.Semibold
-               color=Colors.gray6
-               spacing={Text.Em(0.1)}
-             />
+             {heading
+              ->Js.String2.split("\n")
+              ->Belt.Array.map(each =>
+                  <Text
+                    key=each
+                    value=each
+                    size=Text.Xs
+                    weight=Text.Semibold
+                    color=Colors.gray6
+                    spacing={Text.Em(0.1)}
+                  />
+                )
+              ->React.array}
            </div>
            <div> <InfoMobileCard info=value /> </div>
          </div>
