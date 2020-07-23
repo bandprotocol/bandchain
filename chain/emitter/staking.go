@@ -34,7 +34,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"delegator_shares":       val.DelegatorShares.String(),
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
-		"accumulated_commission": accCommission,
+		"accumulated_commission": accCommission.String(),
 	})
 }
 
