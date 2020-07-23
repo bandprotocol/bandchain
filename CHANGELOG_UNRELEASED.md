@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (bugs) [\#2290](https://github.com/bandprotocol/bandchain/pull/2290) Fix average block time calculation on `ValidatorHomePage` when using new cacher
+
 ### Bridges
 
 ### Runtime
