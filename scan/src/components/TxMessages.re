@@ -5,13 +5,14 @@ module Styles = {
       position(`relative),
       height(overflowed ? `px(60) : `auto),
       overflow(overflowed ? `hidden : `visible),
+      Media.mobile([height(overflowed ? `px(50) : `auto)]),
     ]);
   let showButton =
     style([
       display(`flex),
       backgroundColor(Colors.gray3),
       borderRadius(`px(30)),
-      width(`px(60)),
+      width(`px(65)),
       alignItems(`center),
       justifyContent(`center),
       fontSize(`px(10)),
@@ -29,15 +30,13 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
 
   let msgEl = React.useRef(Js.Nullable.null);
 
+  let isMobile = Media.isMobile();
+
+  let msgCount = isMobile ? 1 : 2;
+
   React.useEffect0(_ => {
-    msgEl
-    ->React.Ref.current
-    ->Js.Nullable.toOption
-    ->Belt_Option.map(msgRef => {
-        let divHeight = ReactDOMRe.domElementToObj(msgRef)##clientHeight;
-        divHeight > 60 ? setOverflowed(_ => true) : ();
-      })
-    ->ignore;
+    let msgLength = Belt.List.length(messages);
+    msgLength > msgCount ? setOverflowed(_ => true) : ();
     None;
   });
   <>
@@ -64,7 +63,11 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
              }}>
              {expanded
                 ? <div className=Styles.showButton> {"show less" |> React.string} </div>
-                : <div className=Styles.showButton> {"..." |> React.string} </div>}
+                : isMobile
+                    ? <Link className=Styles.showButton route={Route.TxIndexPage(txHash)}>
+                        {"show more" |> React.string}
+                      </Link>
+                    : <div className=Styles.showButton> {"show more" |> React.string} </div>}
            </div>
          </div>
        : React.null}
