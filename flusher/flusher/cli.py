@@ -5,4 +5,3 @@ import click
 def cli():
     """BandChain's flusher utility program."""
     pass
-
