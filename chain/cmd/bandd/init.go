@@ -133,7 +133,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 			genDoc.AppState = appState
 			genDoc.ConsensusParams = types.DefaultConsensusParams()
 			genDoc.ConsensusParams.Block.MaxBytes = 1000000 // 1M bytes
-			genDoc.ConsensusParams.Block.MaxGas = 5000000   // 5M gas
+			genDoc.ConsensusParams.Block.MaxGas = -1        // 5M gas
 			genDoc.ConsensusParams.Block.TimeIotaMs = 1000  // 1 second
 			genDoc.ConsensusParams.Validator.PubKeyTypes = []string{types.ABCIPubKeyTypeSecp256k1}
 			if err = genutil.ExportGenesisFile(genDoc, genFile); err != nil {

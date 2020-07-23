@@ -42,5 +42,27 @@ After we have `BandChain` and `Yoda` running, now we can request data on BandCha
 Example of requesting data on BandChain
 
 ```
-bandcli tx oracle request 1 -c 0000000342544300000000000003e8 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
+bandcli tx oracle request 1 -c 0000000342544300000000000003e8 1 1  --from requester --chain-id bandchain --keyring-backend test  --from requester --gas 3000000000000000
 ```
+```
+bandcli tx oracle request 14 -c 00000003425443 1 1  --from requester --chain-id bandchain --gas 3000000 --keyring-backend test  --from requester
+```
+
+0.01
+0.005
+
+0.09
+0.04
+
+
+bandcli tx oracle create-oracle-script \
+    --name "reader-os" \
+    --description "reader-os" \
+    --script /Users/beeb/yoyo/writer-os/len100.wasm \
+    --owner band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs \
+    --schema "{symbol:string}/{px:u64}" \
+    --url https://ipfs.io/ipfs/yo \
+    --from requester \
+    --gas 1000000 \
+    --keyring-backend test
+

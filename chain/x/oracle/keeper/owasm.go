@@ -61,22 +61,22 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 		ctx.BlockHeight(), ctx.BlockTime(), r.GetClientID(), nil,
 	)
 	// Create an execution environment and call Owasm prepare function.
-	env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
-	script, err := k.GetOracleScript(ctx, req.OracleScriptID)
-	if err != nil {
-		return err
-	}
-	code := k.GetFile(script.Filename)
-	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
-	if err != nil {
-		return sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
-	}
-	// Preparation complete! It's time to collect raw request ids.
-	req.RawRequests = env.GetRawRequests()
-	if len(req.RawRequests) == 0 {
-		return types.ErrEmptyRawRequests
-	}
-	// We now have everything we need to the request, so let's add it to the store.
+	// env := types.NewPrepareEnv(req, int64(k.GetParam(ctx, types.KeyMaxRawRequestCount)))
+	// script, err := k.GetOracleScript(ctx, req.OracleScriptID)
+	// if err != nil {
+	// 	return err
+	// }
+	// code := k.GetFile(script.Filename)
+	// err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
+	// if err != nil {
+	// 	return sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
+	// }
+	// // Preparation complete! It's time to collect raw request ids.
+	// req.RawRequests = env.GetRawRequests()
+	// if len(req.RawRequests) == 0 {
+	// 	return types.ErrEmptyRawRequests
+	// }
+	// // We now have everything we need to the request, so let's add it to the store.
 	id := k.AddRequest(ctx, req)
 	// Emit an event describing a data request and asked validators.
 	event := sdk.NewEvent(types.EventTypeRequest)
@@ -92,20 +92,21 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
 	}
 	ctx.EventManager().EmitEvent(event)
+
 	// Emit an event for each of the raw data requests.
-	for _, rawReq := range env.GetRawRequests() {
-		ds, err := k.GetDataSource(ctx, rawReq.DataSourceID)
-		if err != nil {
-			return err
-		}
-		ctx.EventManager().EmitEvent(sdk.NewEvent(
-			types.EventTypeRawRequest,
-			sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", rawReq.DataSourceID)),
-			sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds.Filename),
-			sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", rawReq.ExternalID)),
-			sdk.NewAttribute(types.AttributeKeyCalldata, string(rawReq.Calldata)),
-		))
-	}
+	// for _, rawReq := range env.GetRawRequests() {
+	// 	ds, err := k.GetDataSource(ctx, rawReq.DataSourceID)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	ctx.EventManager().EmitEvent(sdk.NewEvent(
+	// 		types.EventTypeRawRequest,
+	// 		sdk.NewAttribute(types.AttributeKeyDataSourceID, fmt.Sprintf("%d", rawReq.DataSourceID)),
+	// 		sdk.NewAttribute(types.AttributeKeyDataSourceHash, ds.Filename),
+	// 		sdk.NewAttribute(types.AttributeKeyExternalID, fmt.Sprintf("%d", rawReq.ExternalID)),
+	// 		sdk.NewAttribute(types.AttributeKeyCalldata, string(rawReq.Calldata)),
+	// 	))
+	// }
 	return nil
 }
 
