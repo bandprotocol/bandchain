@@ -26,6 +26,7 @@ pub enum Error {
   BadValidatorIndexError = 131,       // Bad validator index parameter.
   BadExternalIDError = 132,           // Bad external ID parameter.
   UnavailableExternalDataError = 133, // External data is not available.
+  RepeatSetReturnDataError = 134,     // Set return data is called more than once.
   // Unexpected error
   UnknownError = 255,
 }
