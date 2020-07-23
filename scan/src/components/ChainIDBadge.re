@@ -14,7 +14,7 @@ module Styles = {
       marginTop(`px(1)),
       position(`relative),
       cursor(`pointer),
-      Media.mobile([minWidth(`px(160))]),
+      Media.mobile([minWidth(`px(160)), zIndex(4)]),
     ]);
 
   let versionLoading =
@@ -33,7 +33,12 @@ module Styles = {
     ]);
 
   let downIcon = show =>
-    style([width(`px(6)), marginTop(`px(1)), transform(`rotate(`deg(show ? 180. : 0.)))]);
+    style([
+      width(`px(6)),
+      marginTop(`px(1)),
+      transform(`rotate(`deg(show ? 180. : 0.))),
+      Media.mobile([width(`px(8)), height(`px(6))]),
+    ]);
 
   let dropdown = show =>
     style([
