@@ -89,13 +89,43 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
   </TBody>;
 };
 
+let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
+  switch (blockSub) {
+  | Data({height, timestamp, validator, txn}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("BLOCK", Height(height)),
+        ("TIMESTAMP", Timestamp(timestamp)),
+        (
+          "PROPOSER",
+          Validator(validator.operatorAddress, validator.moniker, validator.identity),
+        ),
+        ("TXN", Count(txn)),
+      ]
+      key={height |> ID.Block.toString}
+      idx={height |> ID.Block.toString}
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("BLOCK", Loading(70)),
+        ("TIMESTAMP", Loading(166)),
+        ("PROPOSER", Loading(136)),
+        ("TXN", Loading(20)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
+};
+
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
   let allSub = Sub.all2(BlockSub.getList(~pageSize, ~page, ()), BlockSub.count());
-
+  let isMobile = Media.isMobile();
   <>
     <Row>
       <div className=Styles.header>
@@ -128,47 +158,63 @@ let make = () => {
       </div>
     </Row>
     <VSpacing size=Spacing.xl />
-    <THead>
-      <Row>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-        {[
-           ("BLOCK", 1.11, false),
-           ("BLOCK HASH", 3.80, false),
-           ("TIMESTAMP", 2.1, false),
-           ("PROPOSER", 1.55, false),
-           ("TXN", 1.05, true),
-         ]
-         ->Belt.List.map(((title, size, alignRight)) => {
-             <Col size key=title justifyContent=Col.Start>
-               <div className={Styles.vFlex(`flexEnd)}>
-                 {alignRight ? <div className=Styles.fillLeft /> : React.null}
-                 <Text
-                   value=title
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.1)}
-                 />
-               </div>
-             </Col>
-           })
-         ->Array.of_list
-         ->React.array}
-        <Col> <HSpacing size=Spacing.md /> </Col>
-      </Row>
-    </THead>
+    {isMobile
+       ? React.null
+       : <THead>
+           <Row>
+             <Col> <HSpacing size=Spacing.md /> </Col>
+             {[
+                ("BLOCK", 1.11, false),
+                ("BLOCK HASH", 3.80, false),
+                ("TIMESTAMP", 2.1, false),
+                ("PROPOSER", 1.55, false),
+                ("TXN", 1.05, true),
+              ]
+              ->Belt.List.map(((title, size, alignRight)) => {
+                  <Col size key=title justifyContent=Col.Start>
+                    <div className={Styles.vFlex(`flexEnd)}>
+                      {alignRight ? <div className=Styles.fillLeft /> : React.null}
+                      <Text
+                        value=title
+                        size=Text.Sm
+                        weight=Text.Semibold
+                        color=Colors.gray6
+                        spacing={Text.Em(0.1)}
+                      />
+                    </div>
+                  </Col>
+                })
+              ->Array.of_list
+              ->React.array}
+             <Col> <HSpacing size=Spacing.md /> </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((blocks, blocksCount)) =>
        let pageCount = Page.getPageCount(blocksCount, pageSize);
        <>
-         {blocks->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array}
-         <VSpacing size=Spacing.lg />
-         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-         <VSpacing size=Spacing.lg />
+         {blocks
+          ->Belt_Array.mapWithIndex((i, e) =>
+              isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+            )
+          ->React.array}
+         {isMobile
+            ? React.null
+            : <>
+                <VSpacing size=Spacing.lg />
+                <Pagination
+                  currentPage=page
+                  pageCount
+                  onPageChange={newPage => setPage(_ => newPage)}
+                />
+                <VSpacing size=Spacing.lg />
+              </>}
        </>;
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
        ->React.array
      }}
   </>;
