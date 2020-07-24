@@ -40,6 +40,8 @@
 
 ### Helpers
 
+- (feat) [\#2301](https://github.com/bandprotocol/bandchain/pull/2301) Add `pyband` initial implementation.
+
 ### MISC
 
 - (chore) [\#2279](https://github.com/bandprotocol/bandchain/pull/2279) Update `yoda` README.
