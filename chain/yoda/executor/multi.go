@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"sync/atomic"
-	"time"
 )
 
 // MutliExec is a higher-order executor that utlizes the underlying executors to perform Exec.
@@ -66,10 +65,10 @@ func (e *MultiExec) nextExecOrder() []Executor {
 }
 
 // Exec implements Executor interface for MultiExec.
-func (e *MultiExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
+func (e *MultiExec) Exec(code []byte, arg string) (ExecResult, error) {
 	errs := []error{}
 	for _, each := range e.nextExecOrder() {
-		res, err := each.Exec(timeout, code, arg)
+		res, err := each.Exec(code, arg)
 		if err == nil || err == ErrExecutionimeout {
 			return res, err
 		} else {
