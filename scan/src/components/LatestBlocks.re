@@ -112,7 +112,7 @@ let renderMiniBlockLoading = (imaginaryIndex: int, imaginaryBlockHeight: ID.Bloc
     <LoadingCensorBar width=45 height=16 />
   </div>;
 
-let renderMobile = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
+let renderMobile = (~blocksSub) => {
   <div className=Styles.mobileContainer>
     <Row>
       <Col size=0.9>
@@ -126,7 +126,7 @@ let renderMobile = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
           />
         </div>
         {switch (blocksSub) {
-         | Data(blocks) =>
+         | ApolloHooks.Subscription.Data(blocks) =>
            let {BlockSub.height: ID.Block.ID(blocksCount)} = blocks->Belt_Array.getExn(0);
            <Text
              value={blocksCount |> Format.iPretty}
@@ -228,6 +228,6 @@ let renderDesktop = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
 };
 
 [@react.component]
-let make = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
+let make = (~blocksSub) => {
   Media.isMobile() ? renderMobile(~blocksSub) : renderDesktop(~blocksSub);
 };
