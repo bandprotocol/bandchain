@@ -5,4 +5,4 @@ dropdb my_db
 createdb my_db
 
 # start bandchain
-bandd start --rpc.laddr tcp://0.0.0.0:26657 --pruning=nothing
+bandd start --rpc.laddr tcp://0.0.0.0:26657

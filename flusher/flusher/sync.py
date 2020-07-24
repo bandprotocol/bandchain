@@ -1,6 +1,8 @@
 import json
 import click
 import sys
+import time
+
 from kafka import KafkaConsumer, TopicPartition
 from loguru import logger
 from sqlalchemy import create_engine
@@ -39,7 +41,15 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
     partitions = consumer.partitions_for_topic(topic)
     if len(partitions) != 1:
         raise Exception("Only exact 1 partition is supported.")
-    consumer.seek(TopicPartition(topic, partitions.pop()), tracking_info.kafka_offset + 1)
+    tp = TopicPartition(topic, partitions.pop())
+    while True:
+        consumer.seek_to_end(tp)
+        last_offset = consumer.position(tp)
+        if tracking_info.kafka_offset < last_offset:
+            break
+        logger.info("Waiting emitter sync current emitter offset is {}", last_offset)
+        time.sleep(5)
+    consumer.seek(tp, tracking_info.kafka_offset + 1)
     consumer_iter = iter(consumer)
     # Main loop
     while True:
