@@ -10,12 +10,16 @@ module Styles = {
       padding2(~v=Spacing.lg, ~h=`zero),
       backgroundColor(Colors.white),
       border(`px(2), `solid, Colors.blueGray1),
-      Media.mobile([padding2(~v=Spacing.md, ~h=Spacing.md)]),
+      top(`zero),
+      zIndex(3),
+      Media.mobile([padding(Spacing.md), justifyContent(`spaceBetween), position(`fixed)]),
     ]);
 
   let pageWidth = style([maxWidth(`px(Config.pageWidth))]);
 
   let rFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+
+  let cFlex = style([display(`flex), flexDirection(`column)]);
 
   let topBarInner =
     style([
@@ -114,41 +118,38 @@ module MobileRender = {
   [@react.component]
   let make = () => {
     <div className=Styles.topBarContainer>
-      <div className={Css.merge([Styles.topBarInner])}>
-        <div className=Styles.logoContainer>
-          <Row>
-            <Col>
-              <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
-            </Col>
-            <Col>
-              <LinkToHome>
-                <Text
-                  value="BandChain"
-                  size=Text.Lg
-                  weight=Text.Bold
-                  nowrap=true
-                  color=Colors.gray8
-                  spacing={Text.Em(0.05)}
-                />
-              </LinkToHome>
-              <div className=Styles.rFlex>
-                <LinkToHome>
-                  <Text
-                    value="CosmoScan"
-                    nowrap=true
-                    size=Text.Sm
-                    weight=Text.Semibold
-                    color=Colors.gray6
-                    spacing={Text.Em(0.03)}
-                  />
-                  <HSpacing size=Spacing.xs />
-                </LinkToHome>
-              </div>
-            </Col>
-          </Row>
-          <Row> <Col> <ChainIDBadge /> </Col> </Row>
-        </div>
-      </div>
+      <Row>
+        <Col>
+          <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
+        </Col>
+        <Col>
+          <LinkToHome>
+            <div className=Styles.cFlex>
+              <Text
+                value="BandChain"
+                size=Text.Lg
+                weight=Text.Bold
+                nowrap=true
+                color=Colors.gray8
+                spacing={Text.Em(0.05)}
+              />
+              <VSpacing size=Spacing.xs />
+              <Text
+                value="CosmoScan"
+                nowrap=true
+                size=Text.Sm
+                color=Colors.gray6
+                spacing={Text.Em(0.03)}
+              />
+            </div>
+          </LinkToHome>
+        </Col>
+      </Row>
+      <Row>
+        <Col> <ChainIDBadge /> </Col>
+        <Col> <HSpacing size=Spacing.xs /> </Col>
+        <Col> <NavBar /> </Col>
+      </Row>
     </div>;
   };
 };
