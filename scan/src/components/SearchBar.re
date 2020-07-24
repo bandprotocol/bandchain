@@ -9,7 +9,12 @@ module Styles = {
       position(`relative),
       marginLeft(Spacing.lg),
       marginTop(Spacing.xs),
-      Media.mobile([maxWidth(`px(344))]),
+      Media.mobile([
+        margin(`zero),
+        display(`flex),
+        padding2(~v=`zero, ~h=`px(10)),
+        maxWidth(`percent(100.)),
+      ]),
     ]);
   let searchIcon =
     style([
@@ -50,6 +55,7 @@ module Styles = {
       color(rgba(51, 51, 51, 0.54)),
       cursor(`pointer),
       border(`zero, `solid, white),
+      Media.mobile([right(`px(10))]),
     ]);
 };
 

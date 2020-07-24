@@ -24,7 +24,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~justify=?, ~alignItems=?, ~minHeight=`auto, ~wrap=false, ~children) => {
+let make = (~justify=?, ~alignItems=?, ~minHeight=`auto, ~wrap=false, ~style="", ~children) => {
   <div
     className={Css.merge([
       Styles.row,
@@ -33,6 +33,7 @@ let make = (~justify=?, ~alignItems=?, ~minHeight=`auto, ~wrap=false, ~children)
       wrap ? Styles.wrap : "",
       // Perhaps the above props should just be a direct map like below...
       Css.style([Css.alignItems(alignItems->Belt.Option.getWithDefault(`center))]),
+      style,
     ])}>
     children
   </div>;

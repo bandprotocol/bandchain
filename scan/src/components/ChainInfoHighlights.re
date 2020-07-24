@@ -59,7 +59,9 @@ module Styles = {
   let bottom = style([marginTop(`zero), Media.mobile([marginTop(`px(10))])]);
 
   let bg =
-    style([Media.mobile([backgroundColor(`hex("EBF1FF")), margin2(~v=`zero, ~h=`px(-15))])]);
+    style([
+      Media.mobile([backgroundColor(Colors.highlightBg), margin2(~v=`zero, ~h=`px(-15))]),
+    ]);
 };
 
 module HighlightCard = {
@@ -97,9 +99,6 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let allSub = Sub.all3(latestBlockSub, infoSub, validatorInfoSub);
 
   <div className=Styles.bg>
-    {Media.isMobile()
-       ? <> <VSpacing size={`px(16)} /> <SearchBar /> <VSpacing size={`px(16)} /> </>
-       : React.null}
     <Row justify=Row.Between wrap=true>
       <>
         <HighlightCard

@@ -3,7 +3,8 @@ module Styles = {
 
   let highlightsContainer = style([width(`percent(100.)), paddingBottom(Spacing.xl)]);
 
-  let section = style([paddingTop(`px(45)), width(`percent(100.))]);
+  let section =
+    style([paddingTop(`px(45)), width(`percent(100.)), Media.mobile([paddingTop(`zero)])]);
 
   let topicBar =
     style([
@@ -56,7 +57,8 @@ module Styles = {
 let make = () => {
   // Subscribe for latest 11 blocks here so both "LatestBlocks" and "ChainInfoHighLights"
   // share the same infomation.
-  let lastest11BlocksSub = BlockSub.getList(~pageSize=11, ~page=1, ());
+  let pageSize = Media.isMobile() ? 7 : 11;
+  let lastest11BlocksSub = BlockSub.getList(~pageSize, ~page=1, ());
   let latestBlockSub = lastest11BlocksSub->Sub.map(blocks => blocks->Belt_Array.getExn(0));
 
   <div className=Styles.highlightsContainer>
@@ -73,8 +75,9 @@ let make = () => {
     // <div className=Styles.skip />
     <div className=Styles.section>
       <Row alignItems=`initial wrap=true>
-        <Col> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col>
-        <HSpacing size=Spacing.lg />
+        <Col size={Media.isMobile() ? 1. : 0.}>
+          <LatestBlocks blocksSub=lastest11BlocksSub />
+        </Col>
         <Col size=1.> <LatestTxTable /> </Col>
       </Row>
     </div>

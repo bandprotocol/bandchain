@@ -8,11 +8,12 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       selector("+ div", [marginTop(`px(10))]),
     ]);
-  let cardItem = style([display(`flex), alignItems(`baseline), padding(`px(5))]);
+  let cardItem = alignItems_ =>
+    style([display(`flex), alignItems(alignItems_), padding(`px(5))]);
   let cardItemHeading =
     style([
       display(`flex),
-      alignItems(`center),
+      flexDirection(`column),
       flexGrow(0.),
       flexShrink(0.),
       flexBasis(`percent(25.)),
@@ -29,18 +30,29 @@ let make = (~values, ~idx, ~status=?) => {
      }}
     {values
      ->Belt_List.mapWithIndex((index, (heading, value)) => {
-         <div className=Styles.cardItem key={idx ++ (index |> string_of_int)}>
+         let alignItem =
+           switch (value) {
+           | InfoMobileCard.Messages(_) => `baseline
+           | _ => `center
+           };
+         <div className={Styles.cardItem(alignItem)} key={idx ++ (index |> string_of_int)}>
            <div className=Styles.cardItemHeading>
-             <Text
-               value=heading
-               size=Text.Xs
-               weight=Text.Semibold
-               color=Colors.gray6
-               spacing={Text.Em(0.1)}
-             />
+             {heading
+              ->Js.String2.split("\n")
+              ->Belt.Array.map(each =>
+                  <Text
+                    key=each
+                    value=each
+                    size=Text.Xs
+                    weight=Text.Semibold
+                    color=Colors.gray6
+                    spacing={Text.Em(0.1)}
+                  />
+                )
+              ->React.array}
            </div>
            <div> <InfoMobileCard info=value /> </div>
-         </div>
+         </div>;
        })
      ->Belt.List.toArray
      ->React.array}

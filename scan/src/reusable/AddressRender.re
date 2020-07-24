@@ -17,7 +17,13 @@ module Styles = {
   let font =
     fun
     | Title => style([fontSize(`px(18)), lineHeight(`px(24))])
-    | Subtitle => style([fontSize(`px(14)), lineHeight(`px(20)), letterSpacing(`em(0.02))])
+    | Subtitle =>
+      style([
+        fontSize(`px(14)),
+        lineHeight(`px(20)),
+        letterSpacing(`em(0.02)),
+        Media.mobile([fontSize(`px(12))]),
+      ])
     | Text => style([fontSize(`px(12)), lineHeight(`px(16))])
     | Nav => style([fontSize(`px(10)), lineHeight(`px(14))]);
 
