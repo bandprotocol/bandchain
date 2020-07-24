@@ -145,7 +145,7 @@ module MobileRender = {
           </LinkToHome>
         </Col>
       </Row>
-      <Row>
+      <Row justify=Row.Right>
         <Col> <ChainIDBadge /> </Col>
         <Col> <HSpacing size=Spacing.xs /> </Col>
         <Col> <NavBar /> </Col>
