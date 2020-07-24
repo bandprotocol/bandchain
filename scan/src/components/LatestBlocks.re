@@ -6,6 +6,8 @@ type block = {
 module Styles = {
   open Css;
 
+  let desktopContainer = style([marginRight(`px(18))]);
+
   let block = (i, ID.Block.ID(bh)) =>
     style([
       position(`absolute),
@@ -87,7 +89,7 @@ let renderMiniBlock =
        <ValidatorMonikerLink
          size=Text.Sm
          validatorAddress={validator.operatorAddress}
-         width={`px(120)}
+         width={`px(100)}
          moniker={validator.moniker}
          identity={validator.identity}
        />
@@ -174,7 +176,7 @@ let renderMobile = (~blocksSub) => {
 };
 
 let renderDesktop = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
-  <>
+  <div className=Styles.desktopContainer>
     <div className=Styles.topicBar>
       <Text value="Latest Blocks" size=Text.Xxl weight=Text.Bold block=true color=Colors.gray8 />
     </div>
@@ -224,7 +226,7 @@ let renderDesktop = (~blocksSub: ApolloHooks.Subscription.variant(_)) => {
          }}
       </div>
     </Row>
-  </>;
+  </div>;
 };
 
 [@react.component]
