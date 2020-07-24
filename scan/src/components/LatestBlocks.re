@@ -30,10 +30,10 @@ module Styles = {
       Media.mobile([
         opacity(i == 0 || i == 7 ? 0. : 1.),
         height(`px(88)),
-        width(`px(168)),
+        width(`calc((`sub, `percent(50.), `px(5)))),
         transform(
           `translate((
-            `px(bh mod 2 == 1 ? 180 : 0),
+            bh mod 2 == 1 ? `calc((`add, `percent(100.), `px(10))) : `zero,
             `px(i mod 2 == 1 ? i / 2 * 100 : (i + 1) / 2 * 100 - 90),
           )),
         ),
@@ -142,7 +142,7 @@ let renderMobile = (~blocksSub) => {
          }}
       </Col>
       <Col size=0.3 justifyContent=Col.End>
-        <div className=Styles.allBlocks>
+        <Link className=Styles.allBlocks route=Route.BlockHomePage>
           <img src=Images.rightArrow className=Styles.rightArrow />
           <VSpacing size=Spacing.md />
           <Text
@@ -152,7 +152,7 @@ let renderMobile = (~blocksSub) => {
             spacing={Text.Em(0.05)}
             weight=Text.Medium
           />
-        </div>
+        </Link>
       </Col>
     </Row>
     <VSpacing size=Spacing.md />
