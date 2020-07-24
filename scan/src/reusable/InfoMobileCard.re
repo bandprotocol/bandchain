@@ -1,6 +1,7 @@
 type t =
   | Address(Address.t, int)
   | Height(ID.Block.t)
+  | Coin(list(Coin.t))
   | Count(int)
   | Float(float)
   | Timestamp(MomentRe.Moment.t)
@@ -36,6 +37,14 @@ let make = (~info) => {
     />
   | Float(value) =>
     <Text value={value |> Format.fPretty} size=Text.Md spacing={Text.Em(0.02)} code=true />
+  | Coin(value) =>
+    <Text
+      block=true
+      code=true
+      spacing={Text.Em(0.02)}
+      value={value->Coin.getBandAmountFromCoins->Format.fPretty}
+      weight=Text.Medium
+    />
   | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular code=true />
   | Validator(address, moniker, identity) =>
     <ValidatorMonikerLink
