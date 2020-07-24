@@ -98,84 +98,121 @@ let renderBody =
   </TBody>;
 };
 
+let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+  switch (txSub) {
+  | Data({txHash, blockHeight, gasFee, success, messages, errMsg}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", TxHash(txHash, 200)),
+        ("BLOCK", Height(blockHeight)),
+        ("GAS FEE\n(BAND)", Coin(gasFee)),
+        ("ACTIONS", Messages(txHash, messages, success, errMsg)),
+      ]
+      key={blockHeight |> ID.Block.toString}
+      idx={blockHeight |> ID.Block.toString}
+      status=success
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", Loading(200)),
+        ("BLOCK", Loading(100)),
+        ("GAS FEE\n(BAND)", Loading(60)),
+        ("ACTIONS", Loading(230)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
+};
+
 [@react.component]
 let make =
     (
       ~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t)),
       ~msgTransform: TxSub.Msg.t => TxSub.Msg.t=x => x,
     ) => {
+  let isMobile = Media.isMobile();
   <>
-    <THead>
-      <Row>
-        <HSpacing size={`px(20)} />
-        <Col size=1.6>
-          <div className=Styles.fullWidth>
-            <Text
-              value="TX HASH"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=0.88>
-          <div className=Styles.fullWidth>
-            <Text
-              value="BLOCK"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=1.>
-          <div className=Styles.fullWidth>
-            <Text
-              value="STATUS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=1.25>
-          <div className=Styles.fullWidth>
-            <AutoSpacing dir="left" />
-            <Text
-              value="GAS FEE (BAND)"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-            <HSpacing size={`px(20)} />
-          </div>
-        </Col>
-        <Col size=5.>
-          <div className=Styles.fullWidth>
-            <Text
-              value="ACTIONS"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <HSpacing size={`px(20)} />
-      </Row>
-    </THead>
+    {isMobile
+       ? React.null
+       : <THead>
+           <Row>
+             <HSpacing size={`px(20)} />
+             <Col size=1.6>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="TX HASH"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=0.88>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="BLOCK"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=1.>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="STATUS"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <Col size=1.25>
+               <div className=Styles.fullWidth>
+                 <AutoSpacing dir="left" />
+                 <Text
+                   value="GAS FEE (BAND)"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+                 <HSpacing size={`px(20)} />
+               </div>
+             </Col>
+             <Col size=5.>
+               <div className=Styles.fullWidth>
+                 <Text
+                   value="ACTIONS"
+                   size=Text.Sm
+                   weight=Text.Semibold
+                   color=Colors.gray6
+                   spacing={Text.Em(0.05)}
+                 />
+               </div>
+             </Col>
+             <HSpacing size={`px(20)} />
+           </Row>
+         </THead>}
     {switch (txsSub) {
      | Data(txs) =>
        txs
-       ->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e), msgTransform))
+       ->Belt_Array.mapWithIndex((i, e) =>
+           isMobile
+             ? renderBodyMobile(i, Sub.resolve(e))
+             : renderBody(i, Sub.resolve(e), msgTransform)
+         )
        ->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData, msgTransform))
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData, msgTransform)
+         )
        ->React.array
      }}
   </>;

@@ -115,7 +115,7 @@ let kvRowMobile = (k, v: value_row_t) => {
 };
 
 let kvRow = (k, description, v: value_row_t) => {
-  <Row alignItems=`flexStart>
+  <Row alignItems=`flexStart wrap=true>
     <Col size=1.>
       <div className={Styles.fullWidth(`row)}>
         <Text value=k weight=Text.Thin tooltipItem=description tooltipPlacement=Text.AlignRight />
