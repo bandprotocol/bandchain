@@ -70,3 +70,5 @@
 [@bs.module] external closeButton: string = "./closeButton.svg";
 [@bs.module] external whiteCheck: string = "./white-check.svg";
 [@bs.module] external whiteClose: string = "./white-close.svg";
+[@bs.module] external close: string = "./close.svg";
+[@bs.module] external menu: string = "./menu.svg";
