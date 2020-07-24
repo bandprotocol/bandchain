@@ -5,6 +5,7 @@ module Styles = {
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
+      Media.mobile([margin2(~h=`px(-16), ~v=`zero)]),
     ]);
   let header =
     style([
@@ -12,6 +13,7 @@ module Styles = {
       padding2(~v=`zero, ~h=`px(20)),
       borderBottom(`px(1), `solid, Colors.gray4),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
+      Media.mobile([overflow(`auto)]),
     ]);
 
   let buttonContainer = active =>
@@ -24,9 +26,14 @@ module Styles = {
       padding2(~v=Spacing.md, ~h=`px(20)),
       borderBottom(`pxFloat(1.5), `solid, active ? Colors.bandBlue : Colors.white),
       textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.bandBlue)),
+      Media.mobile([whiteSpace(`nowrap)]),
     ]);
 
-  let childrenContainer = style([backgroundColor(Colors.blueGray1)]);
+  let childrenContainer =
+    style([
+      backgroundColor(Colors.blueGray1),
+      Media.mobile([padding2(~h=`px(16), ~v=`zero)]),
+    ]);
 };
 
 let button = (~name, ~route, ~active) => {
