@@ -75,7 +75,9 @@ let make = () => {
     // <div className=Styles.skip />
     <div className=Styles.section>
       <Row alignItems=`initial wrap=true>
-        <Col size=1.> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col>
+        <Col size={Media.isMobile() ? 1. : 0.}>
+          <LatestBlocks blocksSub=lastest11BlocksSub />
+        </Col>
         <HSpacing size=Spacing.lg />
         <Col size=1.> <LatestTxTable /> </Col>
       </Row>

@@ -79,7 +79,7 @@ let renderMiniBlock =
     (index: int, blockHeight: ID.Block.t, validatorOpt: option(ValidatorSub.Mini.t)) => {
   <div key={blockHeight |> ID.Block.toString} className={Styles.block(index, blockHeight)}>
     <TypeID.Block id=blockHeight />
-    <VSpacing size=Spacing.md />
+    <VSpacing size=Spacing.sm />
     <Text value="PROPOSED BY" block=true size=Text.Xs color=Colors.gray7 spacing={Text.Em(0.1)} />
     <VSpacing size={`px(5)} />
     {switch (validatorOpt) {
