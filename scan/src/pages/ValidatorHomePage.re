@@ -500,6 +500,7 @@ module ValidatorList = {
 
 let getPrevDay = _ => {
   MomentRe.momentNow()
+  |> MomentRe.Moment.defaultUtc
   |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
   |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
@@ -520,7 +521,6 @@ let make = () => {
     let timeOutID = Js.Global.setInterval(() => {setPrevDayTime(getPrevDay)}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
-
   let (isActive, setIsActive) = React.useState(_ => true);
 
   let validatorsSub = ValidatorSub.getList(~isActive, ());
