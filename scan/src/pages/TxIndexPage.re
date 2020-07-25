@@ -22,6 +22,7 @@ module Styles = {
       alignItems(`center),
       marginTop(`px(25)),
       marginBottom(`px(44)),
+      Media.mobile([marginBottom(`px(25))]),
     ]);
 
   let correctLogo = style([width(`px(20)), marginLeft(`px(10))]);
@@ -43,6 +44,25 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
     ]);
   let notfoundLogo = style([width(`px(180)), marginRight(`px(10))]);
+  let infoContainerFullwidth =
+    style([
+      Media.mobile([
+        selector("> div", [flexBasis(`percent(100.))]),
+        selector("> div + div", [marginTop(`px(15))]),
+        selector("> div > div > div", [display(`block)]),
+      ]),
+    ]);
+  let infoContainerHalfwidth =
+    style([
+      Media.mobile([
+        selector(
+          "> div",
+          [flexGrow(0.), flexShrink(0.), flexBasis(`calc((`sub, `percent(50.), `px(20))))],
+        ),
+        selector("> div + div + div", [marginTop(`px(15))]),
+        selector("> div *", [alignItems(`flexStart)]),
+      ]),
+    ]);
 };
 
 module TxNotFound = {
@@ -71,8 +91,8 @@ module TxNotFound = {
 
 [@react.component]
 let make = (~txHash) => {
+  let isMobile = Media.isMobile();
   let txSub = TxSub.get(txHash);
-
   switch (txSub) {
   | Loading
   | Data(_) =>
@@ -115,21 +135,33 @@ let make = (~txHash) => {
         {switch (txSub) {
          | Data(_) =>
            <>
-             <Text
-               value={txHash |> Hash.toHex(~upper=true)}
-               size=Text.Xxl
-               weight=Text.Bold
-               nowrap=true
-               code=true
-               color=Colors.gray7
-             />
-             <HSpacing size=Spacing.sm />
-             <CopyRender width=15 message={txHash |> Hash.toHex(~upper=true)} />
+             {isMobile
+                ? <Text
+                    value={txHash |> Hash.toHex(~upper=true)}
+                    size=Text.Lg
+                    weight=Text.Bold
+                    nowrap=false
+                    breakAll=true
+                    code=true
+                    color=Colors.gray7
+                  />
+                : <>
+                    <Text
+                      value={txHash |> Hash.toHex(~upper=true)}
+                      size=Text.Xxl
+                      weight=Text.Bold
+                      nowrap=true
+                      code=true
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.sm />
+                    <CopyRender width=15 message={txHash |> Hash.toHex(~upper=true)} />
+                  </>}
            </>
          | _ => <LoadingCensorBar width=700 height=20 />
          }}
       </div>
-      <Row>
+      <Row wrap=true style=Styles.infoContainerFullwidth>
         <Col size=0.9>
           {switch (txSub) {
            | Data({blockHeight}) => <InfoHL info={InfoHL.Height(blockHeight)} header="BLOCK" />
@@ -151,7 +183,7 @@ let make = (~txHash) => {
         </Col>
       </Row>
       <VSpacing size=Spacing.xl />
-      <Row>
+      <Row wrap=true style=Styles.infoContainerHalfwidth>
         <Col size=1.35>
           {switch (txSub) {
            | Data({gasUsed}) => <InfoHL info={InfoHL.Count(gasUsed)} header="GAS USED" />
@@ -207,7 +239,7 @@ let make = (~txHash) => {
              <Text value="Messages" size=Text.Lg spacing={Text.Em(0.06)} />
            </div>
            <VSpacing size=Spacing.md />
-           <TxIndexPageTable messages />
+           {isMobile ? <TxMobileIndexPageTable messages /> : <TxIndexPageTable messages />}
          </>
        | _ =>
          <>
@@ -217,7 +249,7 @@ let make = (~txHash) => {
              <LoadingCensorBar width=100 height=20 />
            </div>
            <VSpacing size=Spacing.md />
-           <TxIndexPageTable.Loading />
+           {isMobile ? <TxMobileIndexPageTable.Loading /> : <TxIndexPageTable.Loading />}
          </>
        }}
     </>
