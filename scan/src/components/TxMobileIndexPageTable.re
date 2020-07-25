@@ -1,58 +1,60 @@
+let addressWidth = 160;
 let renderMuitisendList = (tx: TxSub.Msg.MultiSend.t) =>
-  InfoMobileCard.[("INPUTS", Text(""))]
+  InfoMobileCard.[("INPUTS", Nothing(""))]
   ->Belt.List.concat(
       {
         let%IterList {address, coins} = tx.inputs;
         [
-          ("FROM", InfoMobileCard.Address(address, 149, false)),
+          ("FROM", InfoMobileCard.Address(address, addressWidth, false)),
           ("AMOUNT", Coin({value: coins, hasDenom: false})),
         ];
       },
     )
-  ->Belt.List.concat([("OUTPUT", Text(""))])
+  ->Belt.List.concat([("OUTPUT", Nothing(""))])
   ->Belt.List.concat(
       {
         let%IterList {address, coins} = tx.outputs;
         [
-          ("TO", InfoMobileCard.Address(address, 149, false)),
+          ("TO", InfoMobileCard.Address(address, addressWidth, false)),
           ("AMOUNT", Coin({value: coins, hasDenom: false})),
         ];
       },
     );
 
 let renderDetailMobile =
+  //TODO: implement Guan Yu's message later
   fun
   | TxSub.Msg.SendMsg({fromAddress, toAddress, amount}) =>
     InfoMobileCard.[
-      ("FROM", Address(fromAddress, 149, false)),
-      ("TO", Address(toAddress, 149, false)),
+      ("FROM", Address(fromAddress, addressWidth, false)),
+      ("TO", Address(toAddress, addressWidth, false)),
       ("AMOUNT", Coin({value: amount, hasDenom: true})),
     ]
   | DelegateMsg({validatorAddress, delegatorAddress, amount}) => [
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("VALIDATOR ADDRESS", Address(validatorAddress, 149, true)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, true)),
       ("AMOUNT", Coin({value: [amount], hasDenom: true})),
     ]
   | UndelegateMsg({validatorAddress, delegatorAddress, amount}) => [
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("VALIDATOR ADDRESS", Address(validatorAddress, 149, true)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, true)),
       ("AMOUNT", Coin({value: [amount], hasDenom: true})),
     ]
   | MultiSendMsg(tx) => renderMuitisendList(tx)
   | WithdrawRewardMsg({validatorAddress, delegatorAddress, amount}) => [
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("VALIDATOR ADDRESS", Address(validatorAddress, 149, true)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, true)),
       ("AMOUNT", Coin({value: amount, hasDenom: true})),
     ]
   | RedelegateMsg({validatorSourceAddress, validatorDestinationAddress, delegatorAddress, amount}) => [
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("SOURCE ADDRESS", Address(validatorSourceAddress, 149, true)),
-      ("DESTINATION ADDRESS", Address(validatorDestinationAddress, 149, true)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("SOURCE ADDRESS", Address(validatorSourceAddress, addressWidth, true)),
+      ("DESTINATION ADDRESS", Address(validatorDestinationAddress, addressWidth, true)),
       ("AMOUNT", Coin({value: [amount], hasDenom: true})),
     ]
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) => [
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("WITHDRAW ADDRESS", Address(withdrawAddress, 149, false)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("WITHDRAW ADDRESS", Address(withdrawAddress, addressWidth, false)),
     ]
   | CreateValidatorMsg({
       moniker,
@@ -75,8 +77,8 @@ let renderDetailMobile =
       ("COMMISSION RATE", Percentage(commissionRate, Some(4))),
       ("COMMISSION MAX RATE", Percentage(commissionMaxRate, Some(4))),
       ("COMMISSION MAX CHANGE", Percentage(commissionMaxChange, Some(4))),
-      ("DELEGATOR ADDRESS", Address(delegatorAddress, 149, false)),
-      ("VALIDATOR ADDRESS", Address(validatorAddress, 149, true)),
+      ("DELEGATOR ADDRESS", Address(delegatorAddress, addressWidth, false)),
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, true)),
       ("PUBLIC KEY", PubKey(publicKey)),
       ("MIN SELF DELEGATION", Coin({value: [minSelfDelegation], hasDenom: true})),
       ("SELF DELEGATION", Coin({value: [selfDelegation], hasDenom: true})),
@@ -90,10 +92,10 @@ let renderDetailMobile =
       sender,
       minSelfDelegation,
     }) => [
-      ("MONIKER", Text(moniker)),
-      ("IDENTITY", Text(identity)),
-      ("WEBSITE", Text(website)),
-      ("DETAIL", Text(details)),
+      ("MONIKER", moniker == Config.doNotModify ? Text("Unchanged") : Text(moniker)),
+      ("IDENTITY", identity == Config.doNotModify ? Text("Unchanged") : Text(identity)),
+      ("WEBSITE", website == Config.doNotModify ? Text("Unchanged") : Text(website)),
+      ("DETAIL", details == Config.doNotModify ? Text("Unchanged") : Text(details)),
       (
         "COMMISSION RATE",
         switch (commissionRate) {
@@ -101,7 +103,7 @@ let renderDetailMobile =
         | None => Text("Unchanged")
         },
       ),
-      ("VALIDATOR ADDRESS", Address(sender, 149, true)),
+      ("VALIDATOR ADDRESS", Address(sender, addressWidth, true)),
       (
         "MIN SELF DELEGATION",
         switch (minSelfDelegation) {
@@ -111,10 +113,10 @@ let renderDetailMobile =
       ),
     ]
   | WithdrawCommissionMsg({validatorAddress, amount}) => [
-      ("VALIDATOR ADDRESS", Address(validatorAddress, 149, true)),
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, true)),
       ("AMOUNT", Coin({value: amount, hasDenom: true})),
     ]
-  | UnjailMsg({address}) => [("VALIDATOR ADDRESS", Address(address, 149, true))]
+  | UnjailMsg({address}) => [("VALIDATOR ADDRESS", Address(address, addressWidth, true))]
   | _ => [];
 
 [@react.component]
@@ -130,7 +132,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
            values={
              InfoMobileCard.[
                ("MESSAGE\nTYPE", Badge(theme)),
-               ("CREATOR", Address(creator, 149, false)),
+               ("CREATOR", Address(creator, addressWidth, false)),
              ]
              ->Belt.List.concat(renderList)
            }

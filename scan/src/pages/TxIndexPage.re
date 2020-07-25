@@ -172,7 +172,17 @@ let make = (~txHash) => {
           {switch (txSub) {
            | Data({timestamp}) =>
              <InfoHL info={InfoHL.Timestamp(timestamp)} header="TIMESTAMP" />
-           | _ => <InfoHL info={InfoHL.Loading(400)} header="TIMESTAMP" />
+           | _ =>
+             <InfoHL
+               info={
+                 InfoHL.Loading(
+                   {
+                     isMobile ? 240 : 400;
+                   },
+                 )
+               }
+               header="TIMESTAMP"
+             />
            }}
         </Col>
         <Col size=1.4>

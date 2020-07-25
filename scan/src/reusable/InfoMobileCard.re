@@ -17,7 +17,8 @@ type t =
   | PubKey(PubKey.t)
   | Badge(TxSub.Msg.badge_theme_t)
   | Loading(int)
-  | Text(string);
+  | Text(string)
+  | Nothing(string);
 
 module Styles = {
   open Css;
@@ -95,5 +96,6 @@ let make = (~info) => {
       <Text value=text size=Text.Xs spacing={Text.Em(0.07)} color=textColor />
     </div>
   | Loading(width) => <LoadingCensorBar width height=21 />
+  | Nothing(_) => React.null
   };
 };

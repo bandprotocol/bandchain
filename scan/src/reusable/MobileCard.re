@@ -38,7 +38,7 @@ let make = (~values, ~idx, ~status=?) => {
            };
          let isEmptyString =
            switch (value) {
-           | InfoMobileCard.Text(text) => text == "" ? true : false
+           | InfoMobileCard.Nothing(_) => true
            | _ => false
            };
 
