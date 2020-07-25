@@ -36,36 +36,34 @@ let make = (~values, ~idx, ~status=?) => {
            | InfoMobileCard.Messages(_) => `baseline
            | _ => `center
            };
-         let isEmptyString =
-           switch (value) {
-           | InfoMobileCard.Nothing(_) => true
-           | _ => false
-           };
 
          <div className={Styles.cardItem(alignItem)} key={idx ++ (index |> string_of_int)}>
            <div className=Styles.cardItemHeading>
              {heading
               ->Js.String2.split("\n")
               ->Belt.Array.map(each => {
-                  isEmptyString
-                    ? <div className=Styles.cardItemHeadingLg>
-                        <Text
-                          key=each
-                          value=each
-                          size=Text.Sm
-                          weight=Text.Bold
-                          color=Colors.gray6
-                          spacing={Text.Em(0.1)}
-                        />
-                      </div>
-                    : <Text
+                  switch (value) {
+                  | InfoMobileCard.Nothing =>
+                    <div className=Styles.cardItemHeadingLg>
+                      <Text
                         key=each
                         value=each
-                        size=Text.Xs
-                        weight=Text.Semibold
+                        size=Text.Sm
+                        weight=Text.Bold
                         color=Colors.gray6
                         spacing={Text.Em(0.1)}
                       />
+                    </div>
+                  | _ =>
+                    <Text
+                      key=each
+                      value=each
+                      size=Text.Xs
+                      weight=Text.Semibold
+                      color=Colors.gray6
+                      spacing={Text.Em(0.1)}
+                    />
+                  }
                 })
               ->React.array}
            </div>

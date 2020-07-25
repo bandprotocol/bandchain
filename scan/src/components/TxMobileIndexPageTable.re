@@ -1,6 +1,6 @@
 let addressWidth = 160;
 let renderMuitisendList = (tx: TxSub.Msg.MultiSend.t) =>
-  InfoMobileCard.[("INPUTS", Nothing(""))]
+  InfoMobileCard.[("INPUTS", Nothing)]
   ->Belt.List.concat(
       {
         let%IterList {address, coins} = tx.inputs;
@@ -10,7 +10,7 @@ let renderMuitisendList = (tx: TxSub.Msg.MultiSend.t) =>
         ];
       },
     )
-  ->Belt.List.concat([("OUTPUT", Nothing(""))])
+  ->Belt.List.concat([("OUTPUT", Nothing)])
   ->Belt.List.concat(
       {
         let%IterList {address, coins} = tx.outputs;
