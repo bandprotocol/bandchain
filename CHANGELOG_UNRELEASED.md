@@ -23,7 +23,7 @@
 - (bugs) [\#2295](https://github.com/bandprotocol/bandchain/pull/2295) Truncate `accumulated_commission` precision.
 
 ### Scan
-
+- (impv) [\#2310](https://github.com/bandprotocol/bandchain/pull/2310) Implemented the TxIndexpage layout for mobile view
 - (impv) [\#2305](https://github.com/bandprotocol/bandchain/pull/2305) Implement the TxHomepage layout for mobile view and adjusted the pagination on mobile view.
 - (feat) [\#2294](https://github.com/bandprotocol/bandchain/pull/2294) Implemented top part of `ValidatorIndexPage` for mobile
 - (impv) [\#2299](https://github.com/bandprotocol/bandchain/pull/2299) Update the latest transactions table for mobile version.

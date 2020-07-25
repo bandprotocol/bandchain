@@ -953,7 +953,7 @@ let renderUnknownMessage = () => {
   </Col>;
 };
 
-let renderBody = (msg: TxSub.Msg.t) => {
+let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
   | SendMsg(send) => renderSend(send)
   | CreateDataSourceMsg(dataSource) => renderCreateDataSource(dataSource)
@@ -997,7 +997,6 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | FailMsg(_) => renderFailMessage()
   | UnknownMsg => renderUnknownMessage()
   };
-};
 
 module THead = {
   [@react.component]
@@ -1052,6 +1051,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
+         //TODO: Change index to be uniqe something
          <TBody key={index |> string_of_int}>
            <Row>
              <Col> <HSpacing size=Spacing.md /> </Col>
