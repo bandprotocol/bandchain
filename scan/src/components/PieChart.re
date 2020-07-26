@@ -51,15 +51,21 @@ let renderSegment = (offset, angle, color) =>
   </>;
 
 [@react.component]
-let make = (~size, ~availableBalance, ~balanceAtStake, ~reward, ~unbonding) => {
-  let totalBalance = availableBalance +. balanceAtStake +. unbonding +. reward;
+let make = (~size, ~availableBalance, ~balanceAtStake, ~reward, ~unbonding, ~commission) => {
+  let totalBalance = availableBalance +. balanceAtStake +. unbonding +. reward +. commission;
   let balanceAtStakeAngle = totalBalance == 0. ? 0. : 360. *. balanceAtStake /. totalBalance;
   let unbondingAngle = totalBalance == 0. ? 0. : 360. *. unbonding /. totalBalance;
   let rewardAngle = totalBalance == 0. ? 0. : 360. *. reward /. totalBalance;
+  let commissionAngle = totalBalance == 0. ? 0. : 360. *. commission /. totalBalance;
 
   <div className={Styles.pie(size, Colors.bandBlue)}>
     {renderSegment(0., balanceAtStakeAngle, Colors.chartBalanceAtStake)}
-    {renderSegment(balanceAtStakeAngle, rewardAngle, Colors.chartReward)}
-    {renderSegment(balanceAtStakeAngle +. rewardAngle, unbondingAngle, Colors.blue4)}
+    {renderSegment(balanceAtStakeAngle, unbondingAngle, Colors.blue4)}
+    {renderSegment(balanceAtStakeAngle +. unbondingAngle, rewardAngle, Colors.chartReward)}
+    {renderSegment(
+       balanceAtStakeAngle +. unbondingAngle +. rewardAngle,
+       commissionAngle,
+       Colors.gray6,
+     )}
   </div>;
 };
