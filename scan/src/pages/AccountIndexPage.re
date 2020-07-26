@@ -161,10 +161,17 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
-    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
+    let commissionAmount = account.commission->Coin.getBandAmountFromCoins;
 
-    let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
+    let totalBalance =
+      availableBalance
+      +. balanceAtStakeAmount
+      +. rewardAmount
+      +. unbondingAmount
+      +. commissionAmount;
+
     let send = () => {
       switch (accountOpt) {
       | Some({address: sender}) =>
@@ -223,6 +230,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
             balanceAtStake=balanceAtStakeAmount
             reward=rewardAmount
             unbonding=unbondingAmount
+            commission=commissionAmount
           />
         </Col>
         <Col size=1.>
@@ -266,6 +274,22 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
              ~isCountup=true,
              (),
            )}
+          {commissionAmount == 0.
+             ? React.null
+             : <>
+                 <VSpacing size=Spacing.lg />
+                 <VSpacing size=Spacing.md />
+                 {balanceDetail(
+                    ~title="COMMISSION",
+                    ~description="Reward commission from delegator's reward",
+                    ~amount=commissionAmount,
+                    ~usdPrice,
+                    ~color=Colors.gray6,
+                    ~isCountup=true,
+                    (),
+                  )}
+                 <VSpacing size=Spacing.lg />
+               </>}
         </Col>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>
