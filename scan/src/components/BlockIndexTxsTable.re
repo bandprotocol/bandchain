@@ -135,7 +135,9 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
            </div>
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
        ->React.array
      }}
   </>;

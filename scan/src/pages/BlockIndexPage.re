@@ -99,7 +99,7 @@ let make = (~height) => {
       <Col size=4.6>
         {switch (blockSub) {
          | Data({timestamp}) => <InfoHL info={InfoHL.Timestamp(timestamp)} header="TIMESTAMP" />
-         | _ => <InfoHL info={InfoHL.Loading(370)} header="TIMESTAMP" />
+         | _ => <InfoHL info={InfoHL.Loading(isMobile ? 240 : 370)} header="TIMESTAMP" />
          }}
       </Col>
       <Col size=3.2>
