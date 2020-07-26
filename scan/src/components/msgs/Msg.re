@@ -321,7 +321,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <div className={Styles.withWidth(width / 2 - 5)}>
         {moniker == Config.doNotModify
-           ? <AddressRender address=sender validator=true />
+           ? <AddressRender address=sender accountType=`validator />
            : <Text
                value=moniker
                color=Colors.gray7
@@ -941,7 +941,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         </div>
       </div>
       <div className={Styles.withWidth(width / 2)}>
-        <AddressRender address validator=true />
+        <AddressRender address accountType=`validator />
       </div>
     </div>
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
