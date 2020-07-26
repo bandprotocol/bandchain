@@ -10,6 +10,15 @@ module Styles = {
 
   let blockLogo = style([minWidth(`px(50)), marginRight(`px(10))]);
 
+  let infoContainerFullwidth =
+    style([
+      Media.mobile([
+        selector("> div", [flexBasis(`percent(100.))]),
+        selector("> div + div", [marginTop(`px(15))]),
+        selector("> div > div > div", [display(`block)]),
+      ]),
+    ]);
+
   let seperatedLine =
     style([
       width(`px(13)),
@@ -24,6 +33,7 @@ module Styles = {
 
 [@react.component]
 let make = (~height) => {
+  let isMobile = Media.isMobile();
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
@@ -57,19 +67,29 @@ let make = (~height) => {
     <div className=Styles.blockHash>
       {switch (blockSub) {
        | Data({hash}) =>
-         <Text
-           value={hash |> Hash.toHex(~upper=true)}
-           size=Text.Xxl
-           nowrap=true
-           ellipsis=true
-           code=true
-           weight=Text.Bold
-         />
+         isMobile
+           ? <Text
+               value={hash |> Hash.toHex(~upper=true)}
+               size=Text.Lg
+               weight=Text.Bold
+               nowrap=false
+               breakAll=true
+               code=true
+               color=Colors.gray7
+             />
+           : <Text
+               value={hash |> Hash.toHex(~upper=true)}
+               size=Text.Xxl
+               nowrap=true
+               ellipsis=true
+               code=true
+               weight=Text.Bold
+             />
        | _ => <LoadingCensorBar width=700 height=15 />
        }}
     </div>
     <VSpacing size=Spacing.lg />
-    <Row minHeight={`px(40)}>
+    <Row wrap=true style=Styles.infoContainerFullwidth>
       <Col size=1.8>
         {switch (blockSub) {
          | Data({txn}) => <InfoHL info={InfoHL.Count(txn)} header="TRANSACTIONS" />

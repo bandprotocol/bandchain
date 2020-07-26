@@ -72,7 +72,7 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
     <MobileCard
       values=InfoMobileCard.[
         ("TX HASH", TxHash(txHash, 200)),
-        ("GAS FEE\n(BAND)", Coin(gasFee)),
+        ("GAS FEE\n(BAND)", Coin({value: gasFee, hasDenom: false})),
         ("ACTIONS", Messages(txHash, messages, success, errMsg)),
       ]
       key={txHash |> Hash.toHex}
