@@ -1,15 +1,33 @@
 module Styles = {
   open Css;
 
+  type align_t =
+    | Start
+    | Center
+    | End;
+
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let addressContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
-  let cFlex = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
+  let cFlex = align_items =>
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(
+        switch (align_items) {
+        | Start => `flexStart
+        | Center => `center
+        | End => `flexEnd
+        },
+      ),
+    ]);
 
   let rFlex = style([display(`flex), flexDirection(`row)]);
+
+  let innerCenter = style([display(`flex), justifyContent(`center)]);
 
   let separatorLine =
     style([
@@ -18,6 +36,7 @@ module Styles = {
       backgroundColor(Colors.gray7),
       marginLeft(`px(20)),
       opacity(0.3),
+      Media.mobile([marginLeft(`px(0)), width(`percent(100.)), height(`px(1))]),
     ]);
 
   let ovalIcon = color =>
@@ -38,9 +57,29 @@ module Styles = {
       alignItems(`flexEnd),
       height(`px(200)),
       padding2(~v=`px(12), ~h=`zero),
+      Media.mobile([height(`px(100))]),
     ]);
 
-  let totalBalance = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
+  let infoContainerFullwidth =
+    style([
+      Media.mobile([
+        selector("> div", [flexBasis(`percent(100.))]),
+        selector("> div + div", [marginTop(`px(15))]),
+      ]),
+    ]);
+
+  let totalBalance =
+    style([
+      display(`flex),
+      flexDirection(`column),
+      alignItems(`flexEnd),
+      Media.mobile([
+        flexDirection(`row),
+        justifyContent(`spaceBetween),
+        alignItems(`center),
+        width(`percent(100.)),
+      ]),
+    ]);
 
   let button =
     style([
@@ -69,7 +108,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
       />
     </Col>
     <Col size=0.6>
-      <div className=Styles.cFlex>
+      <div className={Styles.cFlex(Styles.End)}>
         <div className=Styles.rFlex>
           {isCountup
              ? <NumberCountup
@@ -128,14 +167,37 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
   </Row>;
 };
 
-let totalBalanceRender = (title, amount, symbol) => {
+let totalBalanceRender = (isMobile, titles, amount, symbol) => {
   <div className=Styles.totalBalance>
-    <Text value=title size=Text.Md spacing={Text.Em(0.03)} height={Text.Px(18)} />
+    <div className={Styles.cFlex(Styles.Start)}>
+      {titles
+       ->Belt_Array.mapWithIndex((i, title) =>
+           <Text
+             key={i->string_of_int}
+             value=title
+             size={isMobile ? Text.Sm : Text.Md}
+             spacing={Text.Em(0.03)}
+             height={Text.Px(18)}
+           />
+         )
+       ->React.array}
+    </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.rFlex>
-      <NumberCountup value=amount size=Text.Xxl weight=Text.Semibold spacing={Text.Em(0.02)} />
+      <NumberCountup
+        value=amount
+        size={isMobile ? Text.Lg : Text.Xxl}
+        weight=Text.Semibold
+        spacing={Text.Em(0.02)}
+      />
       <HSpacing size=Spacing.sm />
-      <Text value=symbol size=Text.Xxl weight=Text.Thin spacing={Text.Em(0.02)} code=true />
+      <Text
+        value=symbol
+        size={isMobile ? Text.Lg : Text.Xxl}
+        weight=Text.Thin
+        spacing={Text.Em(0.02)}
+        code=true
+      />
     </div>
   </div>;
 };
@@ -143,10 +205,13 @@ let totalBalanceRender = (title, amount, symbol) => {
 [@react.component]
 let make = (~address, ~hashtag: Route.account_tab_t) =>
   {
+    let currentTime =
+      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+    let isMobile = Media.isMobile();
     let accountSub = AccountSub.get(address);
     let trackingSub = TrackingSub.use();
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
-    let unbondingSub = UnbondingSub.getUnbondingBalance(address);
+    let unbondingSub = UnbondingSub.getUnbondingBalance(address, currentTime);
     let infoSub = React.useContext(GlobalContext.context);
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let (accountOpt, _) = React.useContext(AccountContext.context);
@@ -209,29 +274,35 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size=Spacing.sm />
       <div className=Styles.addressContainer>
         <AddressRender address position=AddressRender.Title copy=true clickable=false />
-        <HSpacing size=Spacing.md />
-        <div className=Styles.button onClick={_ => {send()}}>
-          <Text
-            value="Send BAND"
-            size=Text.Lg
-            block=true
-            color=Colors.blue7
-            nowrap=true
-            weight=Text.Medium
-          />
-        </div>
+        {isMobile
+           ? React.null
+           : <>
+               <HSpacing size=Spacing.md />
+               <div className=Styles.button onClick={_ => {send()}}>
+                 <Text
+                   value="Send BAND"
+                   size=Text.Lg
+                   block=true
+                   color=Colors.blue7
+                   nowrap=true
+                   weight=Text.Medium
+                 />
+               </div>
+             </>}
       </div>
-      <VSpacing size=Spacing.xxl />
-      <Row justify=Row.Between alignItems=`flexStart>
+      <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
+      <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
         <Col size=0.75>
-          <PieChart
-            size=187
-            availableBalance
-            balanceAtStake=balanceAtStakeAmount
-            reward=rewardAmount
-            unbonding=unbondingAmount
-            commission=commissionAmount
-          />
+          <div className={isMobile ? Styles.innerCenter : Css.style([])}>
+            <PieChart
+              size={isMobile ? 160 : 187}
+              availableBalance
+              balanceAtStake=balanceAtStakeAmount
+              reward=rewardAmount
+              unbonding=unbondingAmount
+              commission=commissionAmount
+            />
+          </div>
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
@@ -294,9 +365,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>
           <div className=Styles.totalContainer>
-            {totalBalanceRender("TOTAL BAND BALANCE", totalBalance, "BAND")}
+            {totalBalanceRender(isMobile, [|"TOTAL BAND BALANCE"|], totalBalance, "BAND")}
             {totalBalanceRender(
-               "TOTAL BAND IN USD ($" ++ (usdPrice |> Format.fPretty) ++ " / BAND)",
+               isMobile,
+               [|"TOTAL BAND IN USD", "($" ++ (usdPrice |> Format.fPretty) ++ " / BAND)"|],
                totalBalance *. usdPrice,
                "USD",
              )}
