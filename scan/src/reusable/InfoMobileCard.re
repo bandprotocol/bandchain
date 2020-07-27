@@ -131,12 +131,7 @@ let make = (~info) => {
         <HSpacing size=Spacing.lg />
         <UptimeBar percent=uptime />
       </div>
-    | None =>
-      <div className=Styles.vFlex>
-        <LoadingCensorBar width=30 height=21 />
-        <HSpacing size=Spacing.lg />
-        <LoadingCensorBar width=80 height=21 />
-      </div>
+    | None => <LoadingCensorBar width=200 height=21 />
     }
   | Loading(width) => <LoadingCensorBar width height=21 />
   | Nothing => React.null

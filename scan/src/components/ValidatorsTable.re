@@ -205,7 +205,7 @@ let renderBodyMobile =
         ("VALIDATOR", Loading(166)),
         ("VOTING\nPOWER", Loading(166)),
         ("COMMISSION", Loading(136)),
-        ("UPTIME (%)", Loading(40)),
+        ("UPTIME (%)", Loading(200)),
       ]
       key={rank |> string_of_int}
       idx={rank |> string_of_int}
