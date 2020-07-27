@@ -20,10 +20,12 @@ module Styles = {
   let bgSearch = isHomePage =>
     style([
       Media.mobile([
-        backgroundColor(isHomePage ? Colors.highlightBg : Colors.white),
+        backgroundColor(isHomePage ? Colors.highlightBg : Colors.bg),
         margin2(~v=`zero, ~h=`px(-15)),
         position(`relative),
         zIndex(2),
+        paddingTop(`px(16)),
+        paddingBottom(`px(24)),
       ]),
     ]);
 };
@@ -43,11 +45,7 @@ let make = () => {
     <TopBar />
     <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
       {Media.isMobile()
-         ? <div className={Styles.bgSearch(currentRoute == HomePage)}>
-             <VSpacing size={`px(16)} />
-             <SearchBar />
-             <VSpacing size={`px(16)} />
-           </div>
+         ? <div className={Styles.bgSearch(currentRoute == HomePage)}> <SearchBar /> </div>
          : <NavBar />}
       <div className=Styles.routeContainer>
         {switch (currentRoute) {

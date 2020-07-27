@@ -20,6 +20,7 @@ module Styles = {
     ]);
   let logo = style([width(`px(20)), position(`absolute), top(`px(5)), right(`px(12))]);
   let cardItemHeadingLg = style([padding2(~v=`px(10), ~h=`zero)]);
+  let infoContainer = style([width(`percent(100.))]);
 };
 
 [@react.component]
@@ -67,7 +68,7 @@ let make = (~values, ~idx, ~status=?) => {
                 })
               ->React.array}
            </div>
-           <div> <InfoMobileCard info=value /> </div>
+           <div className=Styles.infoContainer> <InfoMobileCard info=value /> </div>
          </div>;
        })
      ->Belt.List.toArray

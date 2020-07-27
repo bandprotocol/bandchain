@@ -108,8 +108,8 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
         ("GAS FEE\n(BAND)", Coin({value: gasFee, hasDenom: false})),
         ("ACTIONS", Messages(txHash, messages, success, errMsg)),
       ]
-      key={blockHeight |> ID.Block.toString}
-      idx={blockHeight |> ID.Block.toString}
+      key={txHash |> Hash.toHex}
+      idx={txHash |> Hash.toHex}
       status=success
     />
   | _ =>
