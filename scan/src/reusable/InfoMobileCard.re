@@ -4,7 +4,7 @@ type coin_amount_t = {
 };
 
 type t =
-  | Address(Address.t, int, bool)
+  | Address(Address.t, int, [ | `account | `validator])
   | Height(ID.Block.t)
   | Coin(coin_amount_t)
   | Count(int)
@@ -38,9 +38,9 @@ module Styles = {
 [@react.component]
 let make = (~info) => {
   switch (info) {
-  | Address(address, width, isValidator) =>
+  | Address(address, width, accountType) =>
     <div className={Styles.addressContainer(width)}>
-      <AddressRender address position=AddressRender.Text clickable=true validator=isValidator />
+      <AddressRender address position=AddressRender.Text clickable=true accountType />
     </div>
   | Height(height) =>
     <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
