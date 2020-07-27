@@ -61819,6 +61819,22 @@
             "description": null
           },
           {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "accumulated_commission",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
             "args": [
               {
                 "name": "distinct_on",
@@ -64114,6 +64130,16 @@
             "description": null
           },
           {
+            "name": "accumulated_commission",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "blocks",
             "defaultValue": null,
             "type": {
@@ -64481,6 +64507,16 @@
             "description": null
           },
           {
+            "name": "accumulated_commission",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "blocks",
             "defaultValue": null,
             "type": {
@@ -64784,6 +64820,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "accumulated_commission",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "commission_max_change",
             "type": {
               "kind": "SCALAR",
@@ -64978,6 +65026,16 @@
         "inputFields": [
           {
             "name": "account_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "accumulated_commission",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65180,6 +65238,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "accumulated_commission",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "commission_max_change",
             "type": {
               "kind": "SCALAR",
@@ -65374,6 +65444,16 @@
         "inputFields": [
           {
             "name": "account_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "accumulated_commission",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65717,6 +65797,16 @@
             "description": null
           },
           {
+            "name": "accumulated_commission",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "blocks_aggregate",
             "defaultValue": null,
             "type": {
@@ -66011,6 +66101,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "accumulated_commission",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "commission_max_change",
             "description": "column name"
           },
@@ -66134,6 +66230,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "accumulated_commission",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -66964,6 +67070,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "account_id",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "accumulated_commission",
             "description": "column name"
           },
           {
