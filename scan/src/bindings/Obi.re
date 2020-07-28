@@ -222,10 +222,9 @@ import "./Obi.sol";
 |j};
   let paramsCodeOpt = generateDecodeLibSolidity(schema, Params);
   let resultCodeOpt = generateDecodeLibSolidity(schema, Result);
-  switch (paramsCodeOpt, resultCodeOpt) {
-  | (Some(paramsCode), Some(resultCode)) => Some(template ++ paramsCode ++ resultCode)
-  | _ => None
-  };
+  let%Opt paramsCode = paramsCodeOpt;
+  let%Opt resultCode = resultCodeOpt;
+  Some(template ++ paramsCode ++ resultCode);
 };
 
 let declareGo = ({name, varType}) => {
