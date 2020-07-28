@@ -138,12 +138,13 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
     <VSpacing size=Spacing.md />
     <KVTable
       tableWidth=480
-      headers=["EXTERNAL ID", "VALUE"]
+      headers=["EXTERNAL ID", "EXIT CODE", "VALUE"]
       rows={
         report.rawReports
         |> Belt_List.map(_, rawReport =>
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
+               KVTable.Value(rawReport.exitCode |> string_of_int),
                KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
              ]
            )
@@ -253,7 +254,7 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
   </Col>;
 };
 
-let renderAddOracleAddress = (address: TxSub.Msg.AddOracleAddress.t) => {
+let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -268,7 +269,7 @@ let renderAddOracleAddress = (address: TxSub.Msg.AddOracleAddress.t) => {
   </Col>;
 };
 
-let renderRemoveOracleAddress = (address: TxSub.Msg.RemoveOracleAddress.t) => {
+let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
@@ -339,7 +340,7 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.validatorAddress} validator=true />
+      <AddressRender address={validator.validatorAddress} accountType=`validator />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
@@ -413,7 +414,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.sender} validator=true />
+      <AddressRender address={validator.sender} accountType=`validator />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
@@ -660,7 +661,7 @@ let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} validator=true />
+        <AddressRender address={delegation.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -684,7 +685,7 @@ let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} validator=true />
+        <AddressRender address={delegation.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -708,14 +709,14 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="SOURCE ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorSourceAddress} validator=true />
+        <AddressRender address={delegation.validatorSourceAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="DESTINATION ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorDestinationAddress} validator=true />
+        <AddressRender address={delegation.validatorDestinationAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -739,7 +740,7 @@ let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} validator=true />
+        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -756,7 +757,7 @@ let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={unjail.address} validator=true />
+        <AddressRender address={unjail.address} accountType=`validator />
       </div>
     </div>
   </Col>;
@@ -832,7 +833,7 @@ let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} validator=true />
+        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -919,6 +920,19 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
      ->React.array}
   </Col>;
 };
+
+let renderActivate = (activate: TxSub.Msg.Activate.t) => {
+  <Col size=Styles.thirdCol alignSelf=Col.Start>
+    <VSpacing size=Spacing.sm />
+    <div className=Styles.topicContainer>
+      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+      <div className={Styles.addressContainer(300)}>
+        <AddressRender address={activate.validatorAddress} accountType=`validator />
+      </div>
+    </div>
+  </Col>;
+};
+
 let renderFailMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <VSpacing size=Spacing.sm />
@@ -939,7 +953,7 @@ let renderUnknownMessage = () => {
   </Col>;
 };
 
-let renderBody = (msg: TxSub.Msg.t) => {
+let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
   | SendMsg(send) => renderSend(send)
   | CreateDataSourceMsg(dataSource) => renderCreateDataSource(dataSource)
@@ -948,8 +962,8 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | EditOracleScriptMsg(oracleScript) => renderEditOracleScript(oracleScript)
   | RequestMsg(request) => renderRequest(request)
   | ReportMsg(report) => renderReport(report)
-  | AddOracleAddressMsg(address) => renderAddOracleAddress(address)
-  | RemoveOracleAddressMsg(address) => renderRemoveOracleAddress(address)
+  | AddReporterMsg(address) => renderAddReporter(address)
+  | RemoveReporterMsg(address) => renderRemoveReporter(address)
   | CreateValidatorMsg(validator) => renderCreateValidator(validator)
   | EditValidatorMsg(validator) => renderEditValidator(validator)
   | CreateClientMsg(info) => renderCreateClient(info)
@@ -979,14 +993,14 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | DepositMsg(deposit) => renderDeposit(deposit)
   | VoteMsg(vote) => renderVote(vote)
   | MultiSendMsg(tx) => renderMultiSend(tx)
+  | ActivateMsg(activate) => renderActivate(activate)
   | FailMsg(_) => renderFailMessage()
   | UnknownMsg => renderUnknownMessage()
   };
-};
 
-[@react.component]
-let make = (~messages: list(TxSub.Msg.t)) => {
-  <>
+module THead = {
+  [@react.component]
+  let make = () => {
     <THead>
       <Row>
         <Col> <HSpacing size=Spacing.md /> </Col>
@@ -1026,10 +1040,18 @@ let make = (~messages: list(TxSub.Msg.t)) => {
         </Col>
         <Col> <HSpacing size=Spacing.md /> </Col>
       </Row>
-    </THead>
+    </THead>;
+  };
+};
+
+[@react.component]
+let make = (~messages: list(TxSub.Msg.t)) => {
+  <>
+    <THead />
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
+         //TODO: Change index to be uniqe something
          <TBody key={index |> string_of_int}>
            <Row>
              <Col> <HSpacing size=Spacing.md /> </Col>
@@ -1083,4 +1105,43 @@ let make = (~messages: list(TxSub.Msg.t)) => {
      ->Array.of_list
      ->React.array}
   </>;
+};
+
+module Loading = {
+  [@react.component]
+  let make = () => {
+    <>
+      <THead />
+      <TBody>
+        <Row>
+          <Col> <HSpacing size=Spacing.md /> </Col>
+          <Col size=Styles.firstCol alignSelf=Col.Start>
+            <LoadingCensorBar width=95 height=25 />
+          </Col>
+          <Col size=Styles.secondCol alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
+            <LoadingCensorBar width=160 height=15 />
+          </Col>
+          <Col size=Styles.thirdCol alignSelf=Col.Start>
+            <VSpacing size=Spacing.sm />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=60 height=15 />
+              <LoadingCensorBar width=310 height=15 />
+            </div>
+            <VSpacing size=Spacing.lg />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=75 height=15 />
+              <LoadingCensorBar width=240 height=15 />
+            </div>
+            <VSpacing size=Spacing.lg />
+            <div className=Styles.topicContainer>
+              <LoadingCensorBar width=95 height=15 />
+              <LoadingCensorBar width=280 height=15 />
+            </div>
+          </Col>
+          <Col> <HSpacing size=Spacing.md /> </Col>
+        </Row>
+      </TBody>
+    </>;
+  };
 };

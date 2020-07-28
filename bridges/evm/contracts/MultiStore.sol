@@ -1,44 +1,45 @@
-pragma solidity 0.5.14;
-import {Utils} from "./Utils.sol";
+// SPDX-License-Identifier: Apache-2.0
 
+pragma solidity 0.6.11;
+import {Utils} from "./Utils.sol";
 
 // Computes Tendermint's application state hash at this given block. AppHash is actually a
 // Merkle hash on muliple stores.
 //                         ________________[AppHash]_______________
 //                        /                                        \
-//             _______[I11]______                         ________[I12]________
+//             _______[I9]______                          ________[I10]________
 //            /                  \                       /                     \
-//       __[I7]__             __[I8]__              __[I9]__               __[I10]__
-//      /         \          /         \           /         \            /           \
-//    [I1]       [I2]     [I3]        [I4]       [I5]        [I6]       [C]          [D]
-//   /   \      /   \    /    \      /    \     /    \       /   \
-// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7] [8]    [9]   [A]   [B]
-// [0] - acc     [1] - bank      [2] - capability [3] - distribution  [4] - evidence
-// [5] - gov     [6] - ibc       [7] - mem_cap    [8] - mint          [9] - oracle
-// [A] - params  [B] - slashing  [C] - staking    [D] - upgrade
+//       __[I5]__             __[I6]__              __[I7]__               __[I8]__
+//      /         \          /         \           /         \            /         \
+//    [I1]       [I2]     [I3]        [I4]       [8]        [9]          [A]        [B]
+//   /   \      /   \    /    \      /    \
+// [0]   [1]  [2]   [3] [4]   [5]  [6]    [7]
+// [0] - acc      [1] - distr   [2] - evidence  [3] - gov
+// [4] - main     [5] - mint    [6] - oracle    [7] - params
+// [8] - slashing [9] - staking [A] - supply    [D] - upgrade
 // Notice that NOT all leaves of the Merkle tree are needed in order to compute the Merkle
-// root hash, since we only want to validate the correctness of [9] In fact, only
-// [I11], [8], [9], [I6], and [I10] are needed in order to compute [AppHash].
+// root hash, since we only want to validate the correctness of [6] In fact, only
+// [7], [I3], [I5], and [I10] are needed in order to compute [AppHash].
 
 library MultiStore {
     struct Data {
-        bytes32 accToMemCapStoresMerkleHash; // [I11]
-        bytes32 mintStoresMerkleHash; // [8]
-        bytes32 oracleIAVLStateHash; // [9]
-        bytes32 paramsAndSlashingStoresMerkleHash; // [I6]
-        bytes32 stakingAndUpgradeStoresMerkleHash; // [I10]
+        bytes32 accToGovStoresMerkleHash; // [I5]
+        bytes32 mainAndMintStoresMerkleHash; // [I3]
+        bytes32 oracleIAVLStateHash; // [6]
+        bytes32 paramsStoresMerkleHash; // [7]
+        bytes32 slashingToUpgradeStoresMerkleHash; // [I10]
     }
 
     function getAppHash(Data memory _self) internal pure returns (bytes32) {
         return
             Utils.merkleInnerHash( // [AppHash]
-                _self.accToMemCapStoresMerkleHash, // [I11]
-                Utils.merkleInnerHash( // [I12]
-                    Utils.merkleInnerHash( // [I9]
-                        Utils.merkleInnerHash( // [I5]
-                            _self.mintStoresMerkleHash, // [8]
-                            Utils.merkleLeafHash( // [9]
-                                abi.encodePacked(
+                Utils.merkleInnerHash( // [I9]
+                    _self.accToGovStoresMerkleHash, // [I5]
+                    Utils.merkleInnerHash( // [I6]
+                        _self.mainAndMintStoresMerkleHash, // [I3]
+                        Utils.merkleInnerHash(
+                            Utils.merkleLeafHash( // [I4]
+                                abi.encodePacked( // [6]
                                     hex"066f7261636c6520", // oracle prefix (uint8(6) + "oracle" + uint8(32))
                                     sha256(
                                         abi.encodePacked(
@@ -50,12 +51,12 @@ library MultiStore {
                                         )
                                     )
                                 )
-                            )
-                        ),
-                        _self.paramsAndSlashingStoresMerkleHash // [I6]
-                    ),
-                    _self.stakingAndUpgradeStoresMerkleHash // [I10]
-                )
+                            ),
+                            _self.paramsStoresMerkleHash // [7]
+                        )
+                    )
+                ),
+                _self.slashingToUpgradeStoresMerkleHash // [I10]
             );
     }
 }

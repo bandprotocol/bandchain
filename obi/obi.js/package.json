@@ -1,43 +1,19 @@
 {
-  "name": "obi.js",
-  "version": "1.0.2",
-  "main": "lib/index.js",
+  "name": "@bandprotocol/obi.js",
+  "version": "1.0.5",
+  "main": "src/index.js",
   "repository": "https://github.com/bandprotocol/bandchain/tree/master/obi/obi.js",
   "author": "Band Protocol",
   "license": "MIT",
   "scripts": {
-    "build": "babel src --out-dir lib",
-    "test": "yarn build && node test.js"
+    "test": "node test.js"
   },
   "prettier": {
     "trailingComma": "all",
     "semi": false,
     "singleQuote": true
   },
-  "babel": {
-    "presets": [
-      "@babel/preset-env",
-      "@babel/preset-react"
-    ],
-    "plugins": [
-      "@babel/plugin-proposal-class-properties",
-      [
-        "@babel/plugin-transform-runtime",
-        {
-          "regenerator": true
-        }
-      ]
-    ]
-  },
   "devDependencies": {
-    "@babel/cli": "^7.10.1",
-    "@babel/core": "^7.10.2",
-    "@babel/plugin-proposal-class-properties": "^7.10.1",
-    "@babel/plugin-syntax-class-properties": "^7.10.1",
-    "@babel/plugin-transform-runtime": "^7.10.1",
-    "@babel/preset-env": "^7.10.1",
-    "@babel/preset-react": "^7.10.1",
-    "@babel/runtime": "^7.10.2",
-    "lodash": "^4.17.15"
+    "lodash": "^4.17.19"
   }
 }

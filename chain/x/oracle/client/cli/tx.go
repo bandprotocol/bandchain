@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"io/ioutil"
-	"sort"
 	"strconv"
 	"strings"
 
@@ -46,8 +45,8 @@ func GetTxCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetCmdCreateOracleScript(cdc),
 		GetCmdEditOracleScript(cdc),
 		GetCmdRequest(cdc),
-		GetCmdReport(cdc),
-		GetCmdAddReporter(cdc),
+		GetCmdActivate(cdc),
+		GetCmdAddReporters(cdc),
 		GetCmdRemoveReporter(cdc),
 	)...)
 
@@ -122,67 +121,6 @@ $ %s tx oracle request 1 4 3 --calldata 1234abcdef --client-id cliend-id --from 
 	cmd.Flags().StringP(flagClientID, "m", "", "Requester can match up the request with response by clientID")
 
 	return cmd
-}
-
-// GetCmdReport implements the report command handler.
-func GetCmdReport(cdc *codec.Codec) *cobra.Command {
-	return &cobra.Command{
-		Use:   "report [request-id] ([data]...)",
-		Short: "Report raw data for the given request ID",
-		Args:  cobra.MinimumNArgs(2),
-		Long: strings.TrimSpace(
-			fmt.Sprintf(`Report raw data for an unresolved request. All raw data requests must be reported at once.
-Example:
-$ %s tx oracle report 1 1:172.5 2:HELLOWORLD --from mykey
-`,
-				version.ClientName,
-			),
-		),
-		RunE: func(cmd *cobra.Command, args []string) error {
-			inBuf := bufio.NewReader(cmd.InOrStdin())
-			cliCtx := context.NewCLIContext().WithCodec(cdc)
-			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
-
-			int64RequestID, err := strconv.ParseInt(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
-			requestID := types.RequestID(int64RequestID)
-
-			if err != nil {
-				return err
-			}
-
-			var dataset []types.RawReport
-			for _, arg := range args[1:] {
-				reportRaw := strings.SplitN(arg, ":", 2)
-				if len(reportRaw) != 2 {
-					return fmt.Errorf("Invalid report format: %s", reportRaw[0])
-				}
-				int64ExternalID, err := strconv.ParseInt(reportRaw[0], 10, 64)
-				if err != nil {
-					return err
-				}
-				externalID := types.ExternalID(int64ExternalID)
-
-				// TODO: Do not hardcode exit code
-				dataset = append(dataset, types.NewRawReport(externalID, 0, []byte(reportRaw[1])))
-			}
-
-			// Sort data reports by external ID
-			sort.Slice(dataset, func(i, j int) bool {
-				return dataset[i].ExternalID < dataset[j].ExternalID
-			})
-
-			msg := types.NewMsgReportData(requestID, dataset, sdk.ValAddress(cliCtx.GetFromAddress()), cliCtx.GetFromAddress())
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
-		},
-	}
 }
 
 // GetCmdCreateDataSource implements the create data source command handler.
@@ -514,16 +452,47 @@ $ %s tx oracle edit-oracle-script 1 --name eth-price --description "Oracle scrip
 	return cmd
 }
 
-// GetCmdAddReporter implements the add reporter command handler.
-func GetCmdAddReporter(cdc *codec.Codec) *cobra.Command {
+// GetCmdActivate implements the activate command handler.
+func GetCmdActivate(cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "add-reporter [reporter]",
-		Short: "Add an agent authorized to submit report transactions.",
-		Args:  cobra.ExactArgs(1),
+		Use:   "activate",
+		Short: "Activate myself to become an oracle validator.",
+		Args:  cobra.NoArgs,
 		Long: strings.TrimSpace(
-			fmt.Sprintf(`Add an agent authorized to submit report transactions.
+			fmt.Sprintf(`Activate myself to become an oracle validator.
 Example:
-$ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from mykey
+$ %s tx oracle activate --from mykey
+`,
+				version.ClientName,
+			),
+		),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			inBuf := bufio.NewReader(cmd.InOrStdin())
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
+			validator := sdk.ValAddress(cliCtx.GetFromAddress())
+			msg := types.NewMsgActivate(validator)
+			err := msg.ValidateBasic()
+			if err != nil {
+				return err
+			}
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+		},
+	}
+
+	return cmd
+}
+
+// GetCmdAddReporters implements the add reporters command handler.
+func GetCmdAddReporters(cdc *codec.Codec) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "add-reporters [reporter1] [reporter2] ...",
+		Short: "Add agents authorized to submit report transactions.",
+		Args:  cobra.MinimumNArgs(1),
+		Long: strings.TrimSpace(
+			fmt.Sprintf(`Add agents authorized to submit report transactions.
+Example:
+$ %s tx oracle add-reporters band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs --from mykey
 `,
 				version.ClientName,
 			),
@@ -534,19 +503,22 @@ $ %s tx oracle add-reporter band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun --from m
 			txBldr := auth.NewTxBuilderFromCLI(inBuf).WithTxEncoder(utils.GetTxEncoder(cdc))
 
 			validator := sdk.ValAddress(cliCtx.GetFromAddress())
-			reporter, err := sdk.AccAddressFromBech32(args[0])
-			if err != nil {
-				return err
+			msgs := make([]sdk.Msg, len(args))
+			for i, raw := range args {
+				reporter, err := sdk.AccAddressFromBech32(raw)
+				if err != nil {
+					return err
+				}
+				msgs[i] = types.NewMsgAddReporter(
+					validator,
+					reporter,
+				)
+				err = msgs[i].ValidateBasic()
+				if err != nil {
+					return err
+				}
 			}
-			msg := types.NewMsgAddReporter(
-				validator,
-				reporter,
-			)
-			err = msg.ValidateBasic()
-			if err != nil {
-				return err
-			}
-			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, []sdk.Msg{msg})
+			return utils.GenerateOrBroadcastMsgs(cliCtx, txBldr, msgs)
 		},
 	}
 

@@ -93,10 +93,10 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
               name: "REQUESTS",
               route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
             },
-            {
-              name: "REVISIONS",
-              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
-            },
+            // {
+            //   name: "REVISIONS",
+            //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
+            // },
           |]
           currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
           {switch (hashtag) {

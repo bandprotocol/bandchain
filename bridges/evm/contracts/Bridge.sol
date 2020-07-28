@@ -1,9 +1,11 @@
-pragma solidity 0.5.14;
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 import {BlockHeaderMerkleParts} from "./BlockHeaderMerkleParts.sol";
 import {MultiStore} from "./MultiStore.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
-import {Ownable} from "openzeppelin-solidity/contracts/ownership/Ownable.sol";
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
@@ -65,13 +67,11 @@ contract Bridge is IBridge, Ownable {
     /// @param _blockHeight The height of block to relay to this bridge contract.
     /// @param _multiStore Extra multi store to compute app hash. See MultiStore lib.
     /// @param _merkleParts Extra merkle parts to compute block hash. See BlockHeaderMerkleParts lib.
-    /// @param _signedDataPrefix Prefix data prepended prior to signing block hash.
     /// @param _signatures The signatures signed on this block, sorted alphabetically by address.
     function relayOracleState(
         uint256 _blockHeight,
         MultiStore.Data memory _multiStore,
         BlockHeaderMerkleParts.Data memory _merkleParts,
-        bytes memory _signedDataPrefix,
         TMSignature.Data[] memory _signatures
     ) public {
         bytes32 appHash = _multiStore.getAppHash();
@@ -84,10 +84,7 @@ contract Bridge is IBridge, Ownable {
         address lastSigner = address(0);
         uint256 sumVotingPower = 0;
         for (uint256 idx = 0; idx < _signatures.length; ++idx) {
-            address signer = _signatures[idx].recoverSigner(
-                blockHeader,
-                _signedDataPrefix
-            );
+            address signer = _signatures[idx].recoverSigner(blockHeader);
             require(signer > lastSigner, "INVALID_SIGNATURE_SIGNER_ORDER");
             sumVotingPower = sumVotingPower.add(validatorPowers[signer]);
             lastSigner = signer;
@@ -162,6 +159,7 @@ contract Bridge is IBridge, Ownable {
     /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
+        override
         returns (RequestPacket memory, ResponsePacket memory)
     {
         (bytes memory relayData, bytes memory verifyData) = abi.decode(

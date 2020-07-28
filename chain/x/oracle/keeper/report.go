@@ -9,12 +9,12 @@ import (
 
 // HasReport checks if the report of this ID triple exists in the storage.
 func (k Keeper) HasReport(ctx sdk.Context, rid types.RequestID, val sdk.ValAddress) bool {
-	return ctx.KVStore(k.storeKey).Has(types.ReportStoreKeyPerValidator(rid, val))
+	return ctx.KVStore(k.storeKey).Has(types.ReportsOfValidatorPrefixKey(rid, val))
 }
 
 // SetDataReport saves the report to the storage without performing validation.
 func (k Keeper) SetReport(ctx sdk.Context, rid types.RequestID, rep types.Report) {
-	key := types.ReportStoreKeyPerValidator(rid, rep.Validator)
+	key := types.ReportsOfValidatorPrefixKey(rid, rep.Validator)
 	ctx.KVStore(k.storeKey).Set(key, k.cdc.MustMarshalBinaryBare(rep))
 }
 
@@ -33,13 +33,13 @@ func (k Keeper) AddReport(ctx sdk.Context, rid types.RequestID, rep types.Report
 		return sdkerrors.Wrapf(
 			types.ErrValidatorAlreadyReported, "reqID: %d, val: %s", rid, rep.Validator.String())
 	}
-	if len(rep.RawReports) != len(req.RawRequestIDs) {
-		return types.ErrInvalidDataSourceCount
+	if len(rep.RawReports) != len(req.RawRequests) {
+		return types.ErrInvalidReportSize
 	}
 	for _, rep := range rep.RawReports {
 		// Here we can safely assume that external IDs are unique, as this has already been
 		// checked by ValidateBasic performed in baseapp's runTx function.
-		if !ContainsEID(req.RawRequestIDs, rep.ExternalID) {
+		if !ContainsEID(req.RawRequests, rep.ExternalID) {
 			return sdkerrors.Wrapf(
 				types.ErrRawRequestNotFound, "reqID: %d, extID: %d", rid, rep.ExternalID)
 		}
@@ -85,20 +85,5 @@ func (k Keeper) DeleteReports(ctx sdk.Context, rid types.RequestID) {
 	}
 	for _, key := range keys {
 		ctx.KVStore(k.storeKey).Delete(key)
-	}
-}
-
-// UpdateReportInfos updates validator report info for jail validator
-// that miss report more than threshold.
-func (k Keeper) UpdateReportInfos(ctx sdk.Context, rid types.RequestID) {
-	reportedMap := make(map[string]bool)
-	reports := k.GetReports(ctx, rid)
-	for _, report := range reports {
-		reportedMap[report.Validator.String()] = true
-	}
-	request := k.MustGetRequest(ctx, rid)
-	for _, val := range request.RequestedValidators {
-		_, voted := reportedMap[val.String()]
-		k.HandleValidatorReport(ctx, val, voted)
 	}
 }

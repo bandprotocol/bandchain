@@ -1,4 +1,6 @@
-pragma solidity 0.5.14;
+// SPDX-License-Identifier: Apache-2.0
+
+pragma solidity 0.6.11;
 
 /// @dev Library for performing signer recovery for ECDSA secp256k1 signature. Note that the
 /// library is written specifically for signature signed on Tendermint's precommit data, which
@@ -10,22 +12,22 @@ library TMSignature {
         bytes32 r;
         bytes32 s;
         uint8 v;
+        bytes signedDataPrefix;
         bytes signedDataSuffix;
     }
 
     /// @dev Returns the address that signed on the given block hash.
     /// @param _blockHash The block hash that the validator signed data on.
-    /// @param _signedDataPrefix The prefix prepended to block hash before signing.
-    function recoverSigner(
-        Data memory _self,
-        bytes32 _blockHash,
-        bytes memory _signedDataPrefix
-    ) internal pure returns (address) {
+    function recoverSigner(Data memory _self, bytes32 _blockHash)
+        internal
+        pure
+        returns (address)
+    {
         return
             ecrecover(
                 sha256(
                     abi.encodePacked(
-                        _signedDataPrefix,
+                        _self.signedDataPrefix,
                         _blockHash,
                         _self.signedDataSuffix
                     )

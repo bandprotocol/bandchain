@@ -51,8 +51,6 @@ func main() {
 		return initConfig(rootCmd)
 	}
 
-	lcdCmd := lcd.ServeCommand(cdc, registerRoutes)
-	lcdCmd.Flags().String(bandclient.FlagHomeDaemon, app.DefaultNodeHome, "Daemon's home directory")
 	// Construct Root Command
 	rootCmd.AddCommand(
 		rpc.StatusCommand(),
@@ -60,7 +58,7 @@ func main() {
 		queryCmd(cdc),
 		txCmd(cdc),
 		flags.LineBreak,
-		lcdCmd,
+		lcd.ServeCommand(cdc, registerRoutes),
 		flags.LineBreak,
 		keys.Commands(),
 		flags.LineBreak,
@@ -109,6 +107,7 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 
 	txCmd.AddCommand(
 		bankcmd.SendTxCmd(cdc),
+		MultiSendTxCmd(cdc),
 		flags.LineBreak,
 		authcmd.GetSignCommand(cdc),
 		authcmd.GetMultiSignCommand(cdc),
@@ -116,8 +115,6 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 		authcmd.GetBroadcastCommand(cdc),
 		authcmd.GetEncodeCommand(cdc),
 		authcmd.GetDecodeCommand(cdc),
-		flags.LineBreak,
-		multiDelegateCommand(cdc),
 		flags.LineBreak,
 	)
 
@@ -142,7 +139,6 @@ func txCmd(cdc *amino.Codec) *cobra.Command {
 // NOTE: details on the routes added for each module are in the module documentation
 // NOTE: If making updates here you also need to update the test helper in client/lcd/test_helper.go
 func registerRoutes(rs *lcd.RestServer) {
-	// TODO: Bring back full bandclient from client folder
 	bandclient.RegisterRoutes(rs.CliCtx, rs.Mux)
 	client.RegisterRoutes(rs.CliCtx, rs.Mux)
 	authrest.RegisterTxRoutes(rs.CliCtx, rs.Mux)

@@ -35,8 +35,6 @@ func TestIsGzip(t *testing.T) {
 	zw.Write(file1)
 	zw.Close()
 	gzipFile := buf.Bytes()
-
 	require.True(t, gzip.IsGzipped(gzipFile))
 	require.False(t, gzip.IsGzipped(file1))
-
 }

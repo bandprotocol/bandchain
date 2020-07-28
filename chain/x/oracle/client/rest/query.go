@@ -18,13 +18,12 @@ func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 		if !ok {
 			return
 		}
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryParams), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryParams))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -34,13 +33,12 @@ func getCountsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc 
 		if !ok {
 			return
 		}
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryCounts))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -51,7 +49,7 @@ func getDataByHashHandler(cliCtx context.CLIContext, route string) http.HandlerF
 			return
 		}
 		vars := mux.Vars(r)
-		res, _, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryData, vars[dataHashTag]), nil)
+		res, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryData, vars[dataHashTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -69,13 +67,12 @@ func getDataSourceByIDHandler(cliCtx context.CLIContext, route string) http.Hand
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryDataSources, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -86,13 +83,12 @@ func getOracleScriptByIDHandler(cliCtx context.CLIContext, route string) http.Ha
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryOracleScripts, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -103,13 +99,12 @@ func getRequestByIDHandler(cliCtx context.CLIContext, route string) http.Handler
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, vars[idTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -119,7 +114,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 		if !ok {
 			return
 		}
-		res, height, err := clientcmn.QuerySearchLatestRequest(
+		bz, height, err := clientcmn.QuerySearchLatestRequest(
 			route, cliCtx,
 			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"),
 		)
@@ -127,8 +122,23 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getValidatorStatusHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		vars := mux.Vars(r)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryValidatorStatus, vars[validatorAddressTag]))
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
@@ -139,29 +149,26 @@ func getReportersHandler(cliCtx context.CLIContext, route string) http.HandlerFu
 			return
 		}
 		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReporters, vars[validatorAddressTag]))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
-func getReportInfoHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+func getActiveValidatorsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
-		vars := mux.Vars(r)
-		res, height, err := cliCtx.QueryWithData(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryReportInfo, vars[validatorAddressTag]), nil)
+		bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s", route, types.QueryActiveValidators))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		cliCtx = cliCtx.WithHeight(height)
-		rest.PostProcessResponse(w, cliCtx, res)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }

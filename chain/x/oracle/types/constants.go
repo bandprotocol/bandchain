@@ -10,15 +10,13 @@ const (
 	MaxSchemaLength      = 512
 	MaxURLLength         = 128
 
-	MaxExecutableSize     = 8 * 1024   // 8kB
-	MaxWasmCodeSize       = 512 * 1024 // 512kB
-	MaxCalldataSize       = 1 * 1024   // 1kB
-	MaxRawRequestDataSize = 1 * 1024   // 1kB
-	MaxRawReportDataSize  = 1 * 1024   // 1kB
-	MaxResultSize         = 1 * 1024   // 1kB
+	MaxExecutableSize       = 8 * 1024        // 8kB
+	MaxWasmCodeSize         = 512 * 1024      // 512kB
+	MaxCompiledWasmCodeSize = 1 * 1024 * 1024 // 1MB
+	MaxDataSize             = 256             // 256B
 
-	WasmPrepareGas = 100000
-	WasmExecuteGas = 500000
+	WasmPrepareGas = 1000000
+	WasmExecuteGas = 5000000
 )
 
 // nolint

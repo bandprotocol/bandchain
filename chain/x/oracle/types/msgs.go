@@ -21,8 +21,8 @@ func (msg MsgRequestData) ValidateBasic() error {
 	if err := sdk.VerifyAddressFormat(msg.Sender); err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "sender: %s", msg.Sender)
 	}
-	if len(msg.Calldata) > MaxCalldataSize {
-		return WrapMaxError(ErrTooLargeCalldata, len(msg.Calldata), MaxCalldataSize)
+	if len(msg.Calldata) > MaxDataSize {
+		return WrapMaxError(ErrTooLargeCalldata, len(msg.Calldata), MaxDataSize)
 	}
 	if msg.MinCount <= 0 {
 		return sdkerrors.Wrapf(ErrInvalidMinCount, "got: %d", msg.MinCount)
@@ -69,8 +69,8 @@ func (msg MsgReportData) ValidateBasic() error {
 			return sdkerrors.Wrapf(ErrDuplicateExternalID, "external id: %d", r.ExternalID)
 		}
 		uniqueMap[r.ExternalID] = true
-		if len(r.Data) > MaxRawReportDataSize {
-			return WrapMaxError(ErrTooLargeRawReportData, len(r.Data), MaxCalldataSize)
+		if len(r.Data) > MaxDataSize {
+			return WrapMaxError(ErrTooLargeRawReportData, len(r.Data), MaxDataSize)
 		}
 	}
 	return nil
@@ -257,6 +257,30 @@ func (msg MsgEditOracleScript) GetSigners() []sdk.AccAddress {
 
 // GetSignBytes implements the sdk.Msg interface for MsgEditOracleScript.
 func (msg MsgEditOracleScript) GetSignBytes() []byte {
+	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
+}
+
+// Route implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) Route() string { return RouterKey }
+
+// Type implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) Type() string { return "activate" }
+
+// ValidateBasic implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) ValidateBasic() error {
+	if err := sdk.VerifyAddressFormat(msg.Validator); err != nil {
+		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "validator: %s", msg.Validator)
+	}
+	return nil
+}
+
+// GetSigners implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) GetSigners() []sdk.AccAddress {
+	return []sdk.AccAddress{sdk.AccAddress(msg.Validator)}
+}
+
+// GetSignBytes implements the sdk.Msg interface for MsgActivate.
+func (msg MsgActivate) GetSignBytes() []byte {
 	return sdk.MustSortJSON(ModuleCdc.MustMarshalJSON(msg))
 }
 

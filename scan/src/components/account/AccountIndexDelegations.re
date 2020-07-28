@@ -25,7 +25,7 @@ let make = (~address) =>
       <VSpacing size=Spacing.md />
       <div className=Styles.hFlex>
         <HSpacing size=Spacing.lg />
-        <Text value={delegations |> Belt_Array.length |> string_of_int} weight=Text.Semibold />
+        <Text value={delegationsCount |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.xs />
         <Text value="Validators Delegated" />
       </div>
@@ -37,7 +37,7 @@ let make = (~address) =>
             <Col size=0.9>
               <Text
                 block=true
-                value="VALIDATOR MONIKER"
+                value="VALIDATOR"
                 size=Text.Sm
                 weight=Text.Bold
                 spacing={Text.Em(0.05)}
@@ -73,14 +73,15 @@ let make = (~address) =>
         </THead>
         {delegations
          ->Belt.Array.map(delegation => {
-             <TBody key={delegation.validatorAddress |> Address.toBech32} minHeight=50>
+             <TBody key={delegation.operatorAddress |> Address.toBech32} minHeight=50>
                <Row>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                  <Col size=0.9>
                    <div className=Styles.hFlex>
                      <ValidatorMonikerLink
-                       validatorAddress={delegation.validatorAddress}
+                       validatorAddress={delegation.operatorAddress}
                        moniker={delegation.moniker}
+                       identity={delegation.identity}
                        width={`px(300)}
                      />
                    </div>

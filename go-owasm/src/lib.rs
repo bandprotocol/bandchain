@@ -22,7 +22,7 @@ static MAX_STACK_HEIGHT: u32 = 16 * 1024; // 16Kib of stack.
 
 static REQUIRED_EXPORTS: &[&str] = &["prepare", "execute"];
 static SUPPORTED_IMPORTS: &[&str] = &[
-    "env.get_calldata_size",
+    "env.get_span_size",
     "env.read_calldata",
     "env.set_return_data",
     "env.get_ask_count",
@@ -30,7 +30,6 @@ static SUPPORTED_IMPORTS: &[&str] = &[
     "env.get_ans_count",
     "env.ask_external_data",
     "env.get_external_data_status",
-    "env.get_external_data_size",
     "env.read_external_data",
 ];
 
@@ -46,8 +45,8 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, gas_limit: u32, is_prepare: bool, env: Env) -> Error {
-    match run(code.read(), gas_limit, is_prepare, env) {
+pub extern "C" fn do_run(code: Span, gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Error {
+    match run(code.read(), gas_limit, span_size, is_prepare, env) {
         Ok(_) => Error::NoError,
         Err(e) => e,
     }
@@ -57,7 +56,7 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     let mut m = module;
     let section = match m.memory_section() {
         Some(section) => section,
-        None => return Err(Error::NoMemoryWasmError),
+        None => return Err(Error::BadMemorySectionError),
     };
 
     // The valid wasm has only the section length of memory.
@@ -66,11 +65,11 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
     let limits = memory.limits();
 
     if limits.initial() > MEMORY_LIMIT {
-        return Err(Error::MinimumMemoryExceedError);
+        return Err(Error::BadMemorySectionError);
     }
 
     if limits.maximum() != None {
-        return Err(Error::SetMaximumMemoryError);
+        return Err(Error::BadMemorySectionError);
     }
 
     // set max memory page = MEMORY_LIMIT
@@ -85,8 +84,7 @@ fn inject_memory(module: Module) -> Result<Module, Error> {
 }
 
 fn inject_stack_height(module: Module) -> Result<Module, Error> {
-    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT)
-        .map_err(|_| Error::StackHeightInstrumentationError)
+    pwasm_utils::stack_height::inject_limiter(module, MAX_STACK_HEIGHT).map_err(|_| Error::StackHeightInjectionError)
 }
 
 fn inject_gas(module: Module) -> Result<Module, Error> {
@@ -97,16 +95,12 @@ fn inject_gas(module: Module) -> Result<Module, Error> {
 
 fn check_wasm_exports(module: &Module) -> Result<(), Error> {
     let available_exports: Vec<&str> = module.export_section().map_or(vec![], |export_section| {
-        export_section
-            .entries()
-            .iter()
-            .map(|entry| entry.field())
-            .collect()
+        export_section.entries().iter().map(|entry| entry.field()).collect()
     });
 
     for required_export in REQUIRED_EXPORTS {
         if !available_exports.contains(required_export) {
-            return Err(Error::CheckWasmExportsError);
+            return Err(Error::InvalidExportsError);
         }
     }
 
@@ -121,12 +115,12 @@ fn check_wasm_imports(module: &Module) -> Result<(), Error> {
     for required_import in required_imports {
         let full_name = format!("{}.{}", required_import.module(), required_import.field());
         if !SUPPORTED_IMPORTS.contains(&full_name.as_str()) {
-            return Err(Error::CheckWasmImportsError);
+            return Err(Error::InvalidImportsError);
         }
 
         match required_import.external() {
             External::Function(_) => {} // ok
-            _ => return Err(Error::CheckWasmImportsError),
+            _ => return Err(Error::InvalidImportsError),
         };
     }
     Ok(())
@@ -134,8 +128,8 @@ fn check_wasm_imports(module: &Module) -> Result<(), Error> {
 
 fn compile(code: &[u8]) -> Result<Vec<u8>, Error> {
     // Check that the given Wasm code is indeed a valid Wasm.
-    wasmparser::validate(code, None).map_err(|_| Error::ValidateError)?;
-    // Start the compiling chains. TODO: Add more safeguards.
+    wasmparser::validate(code, None).map_err(|_| Error::ValidationError)?;
+    // Start the compiling chains.
     let module = elements::deserialize_buffer(code).map_err(|_| Error::DeserializationError)?;
     check_wasm_exports(&module)?;
     check_wasm_imports(&module)?;
@@ -150,8 +144,15 @@ struct ImportReference(*mut c_void);
 unsafe impl Send for ImportReference {}
 unsafe impl Sync for ImportReference {}
 
-fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Error> {
-    let vm = &mut vm::VMLogic::new(env, gas_limit);
+fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error> {
+    if max_range < require_range {
+        return Err(Error::MemoryOutOfBoundError);
+    }
+    return Ok(());
+}
+
+fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<(), Error> {
+    let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
     let import_object = imports! {
@@ -161,29 +162,31 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.consume_gas(gas)
             }),
-            // TODO: Change specification of OEI
-            "get_calldata_size" => func!(|ctx: &mut Ctx| -> Result<i64, Error> {
+            "get_span_size" =>  func!(|ctx: &mut Ctx| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
-                vm.get_calldata(&mut calldata)?;
-                Ok(calldata.len as i64)
+                vm.get_span_size()
             }),
-            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| -> Result<(), Error>{
+            "read_calldata" => func!(|ctx: &mut Ctx, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size);
+                let span_size = vm.get_span_size();
+                vm.consume_gas(span_size as u32)?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + span_size) as usize)?;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size as usize);
+                let mut calldata = Span::create_writable(mem.as_mut_ptr(), span_size as usize);
                 vm.get_calldata(&mut calldata)?;
-                for (byte, cell) in calldata.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
-                Ok(())
+                for (idx, byte) in calldata.read().iter().enumerate() {
+                    ctx.memory(0).view()[ptr as usize + idx].set(*byte)
+                }
+                Ok(calldata.len as i64)
             }),
             "set_return_data" => func!(|ctx: &mut Ctx, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                if len as usize > vm.get_span_size() {
-                    return Err(Error::SpanExceededCapacityError);
+                let span_size = vm.get_span_size();
+                if len > span_size {
+                    return Err(Error::SpanTooSmallError);
                 }
+                vm.consume_gas(span_size as u32)?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + len) as usize)?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.set_return_data(&data)
             }),
@@ -201,9 +204,12 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
             }),
             "ask_external_data" => func!(|ctx: &mut Ctx, eid: i64, did: i64, ptr: i64, len: i64| {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                if len as usize > vm.get_span_size() {
-                    return Err(Error::SpanExceededCapacityError);
+                let span_size = vm.get_span_size();
+                if len > span_size {
+                    return Err(Error::SpanTooSmallError);
                 }
+                vm.consume_gas(span_size  as u32)?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + len) as usize)?;
                 let data: Vec<u8> = ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter().map(|cell| cell.get()).collect();
                 vm.ask_external_data(eid, did, &data)
             }),
@@ -211,32 +217,24 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
                 vm.get_external_data_status(eid, vid)
             }),
-            // TODO: Change specification of OEI
-            "get_external_data_size" => func!(|ctx: &mut Ctx, eid: i64, vid: i64| -> Result<i64, Error>{
+            "read_external_data" => func!(|ctx: &mut Ctx, eid: i64, vid: i64, ptr: i64| -> Result<i64, Error> {
                 let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
+                let span_size = vm.get_span_size();
+                vm.consume_gas(span_size as u32)?;
+                require_mem_range(ctx.memory(0).size().bytes().0, (ptr + span_size) as usize)?;
+                let mut mem: Vec<u8> = Vec::with_capacity(span_size as usize);
+                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size as usize);
                 vm.get_external_data(eid, vid, &mut data)?;
+                for (idx, byte) in data.read().iter().enumerate() {
+                    ctx.memory(0).view()[ptr as usize + idx].set(*byte)
+                }
                 Ok(data.len as i64)
-            }),
-            "read_external_data" => func!(|ctx: &mut Ctx, eid: i64, vid: i64, ptr: i64, len: i64| -> Result<(),Error> {
-                let vm: &mut vm::VMLogic = unsafe { &mut *(ctx.data as *mut vm::VMLogic) };
-                let span_size = vm.get_span_size() as usize;
-                let mut mem: Vec<u8> = Vec::with_capacity(span_size);
-                let mut data = Span::create_writable(mem.as_mut_ptr(), span_size);
-                vm.get_external_data(eid, vid, &mut data)?;
-                for (byte, cell) in data.read().iter().zip(ctx.memory(0).view()[ptr as usize..(ptr + len) as usize].iter()) { cell.set(*byte); }
-                Ok(())
             }),
         },
     };
-    let instance = instantiate(code, &import_object).map_err(|_| Error::CompliationError)?;
+    let instance = instantiate(code, &import_object).map_err(|_| Error::InstantiationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
-    let function: Func<(), ()> = instance
-        .exports
-        .get(entry)
-        .map_err(|_| Error::InvalidSignatureFunctionError)?;
+    let function: Func<(), ()> = instance.exports.get(entry).map_err(|_| Error::BadEntrySignatureError)?;
     function.call().map_err(|err| match err {
         RuntimeError::User(uerr) => {
             if let Some(err) = uerr.downcast_ref::<Error>() {
@@ -245,9 +243,10 @@ fn run(code: &[u8], gas_limit: u32, is_prepare: bool, env: Env) -> Result<(), Er
                 Error::UnknownError
             }
         }
-        _ => Error::RunError,
+        _ => Error::RuntimeError,
     })
 }
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -285,7 +284,6 @@ mod test {
     fn test_inject_memory_ok() {
         let wasm = wat2wasm(r#"(module (memory 1))"#);
         let module = get_module_from_wasm(&wasm);
-
         assert_matches!(inject_memory(module), Ok(_));
     }
 
@@ -314,7 +312,6 @@ mod test {
           "#,
         );
         let code = compile(&wasm).unwrap();
-
         let expected = wat2wasm(
             r#"(module
                 (type (;0;) (func (param i64 i64 i32 i64) (result i64)))
@@ -363,8 +360,7 @@ mod test {
                 (global (;0;) (mut i32) (i32.const 0))
                 (export "prepare" (func 0))
                 (export "execute" (func 4))
-                (data (;0;) (i32.const 1048576) "beeb"))
-          "#,
+                (data (;0;) (i32.const 1048576) "beeb"))"#,
         );
         assert_eq!(code, expected);
     }
@@ -373,8 +369,7 @@ mod test {
     fn test_inject_memory_no_memory() {
         let wasm = wat2wasm("(module)");
         let module = get_module_from_wasm(&wasm);
-
-        assert_eq!(inject_memory(module), Err(Error::NoMemoryWasmError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
     #[test]
     fn test_inject_memory_two_memories() {
@@ -391,7 +386,7 @@ mod test {
         ))
         .unwrap();
         let r = compile(&wasm);
-        assert_eq!(r, Err(Error::ValidateError));
+        assert_eq!(r, Err(Error::ValidationError));
     }
 
     #[test]
@@ -399,18 +394,16 @@ mod test {
         let wasm_ok = wat2wasm("(module (memory 512))");
         let module = get_module_from_wasm(&wasm_ok);
         assert_matches!(inject_memory(module), Ok(_));
-
         let wasm_too_big = wat2wasm("(module (memory 513))");
         let module = get_module_from_wasm(&wasm_too_big);
-        assert_eq!(inject_memory(module), Err(Error::MinimumMemoryExceedError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
 
     #[test]
     fn test_inject_memory_maximum_size() {
         let wasm = wat2wasm("(module (memory 1 5))");
         let module = get_module_from_wasm(&wasm);
-
-        assert_eq!(inject_memory(module), Err(Error::SetMaximumMemoryError));
+        assert_eq!(inject_memory(module), Err(Error::BadMemorySectionError));
     }
 
     #[test]
@@ -435,10 +428,8 @@ mod test {
             (export "execute" (func 1)))
           "#,
         );
-
         let module = inject_stack_height(get_module_from_wasm(&wasm)).unwrap();
         let wasm = elements::serialize(module).unwrap();
-
         let expected = wat2wasm(
             r#"(module
                 (type (;0;) (func))
@@ -479,8 +470,7 @@ mod test {
                 (global (;0;) (mut i32) (i32.const 0))
                 (export "prepare" (func 2))
                 (export "execute" (func 1))
-                (data (;0;) (i32.const 1048576) "beeb"))
-          "#,
+                (data (;0;) (i32.const 1048576) "beeb"))"#,
         );
         assert_eq!(wasm, expected);
     }
@@ -493,19 +483,13 @@ mod test {
                 (import "env" "beeb" (func (type 0))))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
-        assert_eq!(
-            check_wasm_imports(&module),
-            Err(Error::CheckWasmImportsError)
-        );
-
+        assert_eq!(check_wasm_imports(&module), Err(Error::InvalidImportsError));
         let wasm = wat2wasm(
             r#"(module
                 (type (func (param i64 i64 i32 i64) (result i64)))
                 (import "env" "ask_external_data" (func  (type 0))))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_imports(&module), Ok(()));
     }
 
@@ -516,12 +500,7 @@ mod test {
             (func $execute (export "execute")))"#,
         );
         let module = get_module_from_wasm(&wasm);
-
-        assert_eq!(
-            check_wasm_exports(&module),
-            Err(Error::CheckWasmExportsError)
-        );
-
+        assert_eq!(check_wasm_exports(&module), Err(Error::InvalidExportsError));
         let wasm = wat2wasm(
             r#"(module
                 (func $execute (export "execute"))
@@ -529,7 +508,6 @@ mod test {
               )"#,
         );
         let module = get_module_from_wasm(&wasm);
-
         assert_eq!(check_wasm_exports(&module), Ok(()));
     }
 }

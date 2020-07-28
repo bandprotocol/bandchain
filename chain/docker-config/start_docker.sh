@@ -5,24 +5,15 @@ DIR=`dirname "$0"`
 # remove old genesis
 rm -rf ~/.band*
 
-mkdir -p pkg/owasm/res
-
-# Build genesis oracle scripts
-cd ../owasm/chaintests
-
-for f in *; do
-    if [ -d "$f" ]; then
-        RUSTFLAGS='-C link-arg=-s' cargo build --target wasm32-unknown-unknown --release --package $f
-        cp ../target/wasm32-unknown-unknown/release/$f.wasm ../../chain/pkg/owasm/res
-    fi
-done
-
-cd ../../chain
-
 make install
 
 # initial new node
-bandd init node-validator --chain-id bandchain --oracle band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs
+bandd init node-validator --chain-id bandchain
+
+# add data sources to genesis
+
+chmod +x $DIR/add_os_ds.sh
+$DIR/add_os_ds.sh
 
 # create acccounts
 echo "lock nasty suffer dirt dream fine fall deal curtain plate husband sound tower mom crew crawl guard rack snake before fragile course bacon range" \
@@ -45,7 +36,7 @@ bandd add-genesis-account validator1 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator2 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator3 10000000000000uband --keyring-backend test
 bandd add-genesis-account validator4 10000000000000uband --keyring-backend test
-bandd add-genesis-account requester 10000000000000uband --keyring-backend test
+bandd add-genesis-account requester 100000000000000uband --keyring-backend test
 
 # genesis configurations
 bandcli config chain-id bandchain
@@ -55,6 +46,7 @@ bandcli config trust-node true
 
 # create copy of config.toml
 cp ~/.bandd/config/config.toml ~/.bandd/config/config.toml.temp
+cp -r ~/.bandd/files docker-config/
 
 # modify moniker
 sed 's/node-validator/🙎‍♀️Alice \& Co./g' ~/.bandd/config/config.toml.temp > ~/.bandd/config/config.toml
@@ -118,46 +110,67 @@ bandd collect-gentxs
 # copy genesis to the proper location!
 cp ~/.bandd/config/genesis.json $DIR/genesis.json
 
-# Recreate files volume
-docker volume rm query-files
-docker volume create --driver local \
-    --opt type=none \
-    --opt device=$HOME/.bandd/files \
-    --opt o=bind query-files
-
 cd ..
 
 docker-compose up -d --build
 
-sleep 30
+sleep 10
 
 for v in {1..4}
 do
-    rm -rf ~/.oracled
-    bandoracled2 config chain-id bandchain
-    bandoracled2 config node tcp://172.18.0.1$v:26657
-    bandoracled2 config chain-rest-server http://172.18.0.20:1317
-    bandoracled2 config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+    rm -rf ~/.yoda
+    yoda config chain-id bandchain
+    yoda config node tcp://172.18.0.1$v:26657
+    yoda config chain-rest-server http://172.18.0.20:1317
+    yoda config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
+    yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution"
+
+    # activate validator
+    echo "y" | bandcli tx oracle activate --from validator$v --keyring-backend test
+
+    # wait for activation transaction success
+    sleep 2
 
     for i in $(eval echo {1..5})
     do
-    # add reporter key
-    bandoracled2 keys add reporter$i
+        # add reporter key
+        yoda keys add reporter$i
+    done
 
-    # send band tokens to reporter
-    echo "y" | bandcli tx send validator$v $(bandoracled2 keys show reporter$i) 1000000uband --keyring-backend test
+    # send band tokens to reporters
+    echo "y" | bandcli tx multi-send 1000000uband $(yoda keys list -a) --from validator$v --keyring-backend test
 
     # wait for sending band tokens transaction success
     sleep 2
 
     # add reporter to bandchain
-    echo "y" | bandcli tx oracle add-reporter $(bandoracled2 keys show reporter$i) --from validator$v --keyring-backend test
+    echo "y" | bandcli tx oracle add-reporters $(yoda keys list -a) --from validator$v --keyring-backend test
 
     # wait for addding reporter transaction success
     sleep 2
-    done
 
-    docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest bandoracled2 r
-    docker cp ~/.oracled bandchain_oracle${v}:/root/.oracled
+    docker create --network bandchain_bandchain --name bandchain_oracle${v} band-validator:latest yoda r
+    docker cp ~/.yoda bandchain_oracle${v}:/root/.yoda
     docker start bandchain_oracle${v}
 done
+
+# Create faucet container
+rm -rf ~/.faucet
+faucet config chain-id bandchain
+faucet config node tcp://172.18.0.15:26657
+faucet config port 5005
+for i in $(eval echo {1..5})
+do
+    # add worker key
+    faucet keys add worker$i
+
+    # send band tokens to worker
+    echo "y" | bandcli tx send requester $(faucet keys show worker$i) 1000000000000uband --keyring-backend test
+
+    # wait for addding reporter transaction success
+    sleep 2
+done
+
+docker create --network bandchain_bandchain --name bandchain_faucet --ip 172.18.0.17 band-validator:latest faucet r
+docker cp ~/.faucet bandchain_faucet:/root/.faucet
+docker start bandchain_faucet

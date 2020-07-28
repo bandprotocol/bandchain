@@ -3,9 +3,9 @@ package keeper
 import (
 	"strconv"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -27,10 +27,12 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryOracleScriptByID(ctx, path[1:], keeper)
 		case types.QueryRequests:
 			return queryRequestByID(ctx, path[1:], keeper)
+		case types.QueryValidatorStatus:
+			return queryValidatorStatus(ctx, path[1:], keeper)
 		case types.QueryReporters:
 			return queryReporters(ctx, path[1:], keeper)
-		case types.QueryReportInfo:
-			return queryReportInfo(ctx, path[1:], keeper)
+		case types.QueryActiveValidators:
+			return queryActiveValidators(ctx, keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -38,11 +40,11 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 }
 
 func queryParameters(ctx sdk.Context, k Keeper) ([]byte, error) {
-	return codec.MarshalJSONIndent(types.ModuleCdc, k.GetParams(ctx))
+	return types.QueryOK(k.GetParams(ctx))
 }
 
 func queryCounts(ctx sdk.Context, k Keeper) ([]byte, error) {
-	return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryCountsResult{
+	return types.QueryOK(types.QueryCountsResult{
 		DataSourceCount:   k.GetDataSourceCount(ctx),
 		OracleScriptCount: k.GetOracleScriptCount(ctx),
 		RequestCount:      k.GetRequestCount(ctx),
@@ -62,13 +64,13 @@ func queryDataSourceByID(ctx sdk.Context, path []string, k Keeper) ([]byte, erro
 	}
 	id, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, err.Error())
+		return types.QueryBadRequest(err.Error())
 	}
 	dataSource, err := k.GetDataSource(ctx, types.DataSourceID(id))
 	if err != nil {
-		return nil, err
+		return types.QueryNotFound(err.Error())
 	}
-	return codec.MarshalJSONIndent(types.ModuleCdc, dataSource)
+	return types.QueryOK(dataSource)
 }
 
 func queryOracleScriptByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
@@ -77,13 +79,13 @@ func queryOracleScriptByID(ctx sdk.Context, path []string, k Keeper) ([]byte, er
 	}
 	id, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, err.Error())
+		return types.QueryBadRequest(err.Error())
 	}
 	oracleScript, err := k.GetOracleScript(ctx, types.OracleScriptID(id))
 	if err != nil {
-		return nil, err
+		return types.QueryNotFound(err.Error())
 	}
-	return codec.MarshalJSONIndent(types.ModuleCdc, oracleScript)
+	return types.QueryOK(oracleScript)
 }
 
 func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
@@ -92,28 +94,37 @@ func queryRequestByID(ctx sdk.Context, path []string, k Keeper) ([]byte, error) 
 	}
 	id, err := strconv.ParseInt(path[0], 10, 64)
 	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, err.Error())
+		return types.QueryBadRequest(err.Error())
 	}
 	request, err := k.GetRequest(ctx, types.RequestID(id))
 	if err != nil {
-		return nil, err
+		return types.QueryNotFound(err.Error())
 	}
 	reports := k.GetReports(ctx, types.RequestID(id))
-
 	if !k.HasResult(ctx, types.RequestID(id)) {
-		return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryRequestResult{
+		return types.QueryOK(types.QueryRequestResult{
 			Request: request,
 			Reports: reports,
 			Result:  nil,
 		})
 	}
-
 	result := k.MustGetResult(ctx, types.RequestID(id))
-	return codec.MarshalJSONIndent(types.ModuleCdc, types.QueryRequestResult{
+	return types.QueryOK(types.QueryRequestResult{
 		Request: request,
 		Reports: reports,
 		Result:  &result,
 	})
+}
+
+func queryValidatorStatus(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	if len(path) != 1 {
+		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "validator address not specified")
+	}
+	validatorAddress, err := sdk.ValAddressFromBech32(path[0])
+	if err != nil {
+		return types.QueryBadRequest(err.Error())
+	}
+	return types.QueryOK(k.GetValidatorStatus(ctx, validatorAddress))
 }
 
 func queryReporters(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
@@ -122,18 +133,22 @@ func queryReporters(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	}
 	validatorAddress, err := sdk.ValAddressFromBech32(path[0])
 	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, err.Error())
+		return types.QueryBadRequest(err.Error())
 	}
-	return codec.MarshalJSONIndent(types.ModuleCdc, k.GetReporters(ctx, validatorAddress))
+	return types.QueryOK(k.GetReporters(ctx, validatorAddress))
 }
 
-func queryReportInfo(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
-	if len(path) != 1 {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "validator address not specified")
-	}
-	validatorAddress, err := sdk.ValAddressFromBech32(path[0])
-	if err != nil {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, err.Error())
-	}
-	return codec.MarshalJSONIndent(types.ModuleCdc, k.GetValidatorReportInfoWithDefault(ctx, validatorAddress))
+func queryActiveValidators(ctx sdk.Context, k Keeper) ([]byte, error) {
+	vals := []types.QueryActiveValidatorResult{}
+	k.stakingKeeper.IterateBondedValidatorsByPower(ctx,
+		func(idx int64, val exported.ValidatorI) (stop bool) {
+			if k.GetValidatorStatus(ctx, val.GetOperator()).IsActive {
+				vals = append(vals, types.QueryActiveValidatorResult{
+					Address: val.GetOperator(),
+					Power:   val.GetTokens().Uint64(),
+				})
+			}
+			return false
+		})
+	return types.QueryOK(vals)
 }

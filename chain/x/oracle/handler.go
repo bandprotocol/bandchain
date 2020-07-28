@@ -26,6 +26,8 @@ func NewHandler(k Keeper) sdk.Handler {
 			return handleMsgRequestData(ctx, k, msg)
 		case MsgReportData:
 			return handleMsgReportData(ctx, k, msg)
+		case MsgActivate:
+			return handleMsgActivate(ctx, k, msg)
 		case MsgAddReporter:
 			return handleMsgAddReporter(ctx, k, msg)
 		case MsgRemoveReporter:
@@ -37,15 +39,15 @@ func NewHandler(k Keeper) sdk.Handler {
 }
 
 func handleMsgCreateDataSource(ctx sdk.Context, k Keeper, m MsgCreateDataSource) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Executable) {
+		var err error
 		m.Executable, err = gzip.Uncompress(m.Executable, types.MaxExecutableSize)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
 	id := k.AddDataSource(ctx, types.NewDataSource(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Executable),
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateDataSource,
@@ -70,7 +72,7 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 	}
 	// Can safely use MustEdit here, as we already checked that the data source exists above.
 	k.MustEditDataSource(ctx, m.DataSourceID, types.NewDataSource(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Executable),
+		m.Owner, m.Name, m.Description, k.AddExecutableFile(m.Executable),
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditDataSource,
@@ -80,15 +82,19 @@ func handleMsgEditDataSource(ctx sdk.Context, k Keeper, m MsgEditDataSource) (*s
 }
 
 func handleMsgCreateOracleScript(ctx sdk.Context, k Keeper, m MsgCreateOracleScript) (*sdk.Result, error) {
-	var err error
 	if gzip.IsGzipped(m.Code) {
+		var err error
 		m.Code, err = gzip.Uncompress(m.Code, types.MaxWasmCodeSize)
 		if err != nil {
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
+	filename, err := k.AddOracleScriptFile(m.Code)
+	if err != nil {
+		return nil, err
+	}
 	id := k.AddOracleScript(ctx, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeCreateOracleScript,
@@ -111,8 +117,12 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 			return nil, sdkerrors.Wrapf(types.ErrUncompressionFailed, err.Error())
 		}
 	}
+	filename, err := k.AddOracleScriptFile(m.Code)
+	if err != nil {
+		return nil, err
+	}
 	k.MustEditOracleScript(ctx, m.OracleScriptID, types.NewOracleScript(
-		m.Owner, m.Name, m.Description, k.AddFile(m.Code), m.Schema, m.SourceCodeURL,
+		m.Owner, m.Name, m.Description, filename, m.Schema, m.SourceCodeURL,
 	))
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeEditOracleScript,
@@ -122,7 +132,7 @@ func handleMsgEditOracleScript(ctx sdk.Context, k Keeper, m MsgEditOracleScript)
 }
 
 func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Result, error) {
-	err := k.PrepareRequest(ctx, &m, nil)
+	err := k.PrepareRequest(ctx, &m)
 	if err != nil {
 		return nil, err
 	}
@@ -132,6 +142,9 @@ func handleMsgRequestData(ctx sdk.Context, k Keeper, m MsgRequestData) (*sdk.Res
 func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Result, error) {
 	if !k.IsReporter(ctx, m.Validator, m.Reporter) {
 		return nil, types.ErrReporterNotAuthorized
+	}
+	if m.RequestID <= k.GetRequestLastExpired(ctx) {
+		return nil, types.ErrRequestAlreadyExpired
 	}
 	err := k.AddReport(ctx, m.RequestID, types.NewReport(m.Validator, !k.HasResult(ctx, m.RequestID), m.RawReports))
 	if err != nil {
@@ -145,7 +158,19 @@ func handleMsgReportData(ctx sdk.Context, k Keeper, m MsgReportData) (*sdk.Resul
 	}
 	ctx.EventManager().EmitEvent(sdk.NewEvent(
 		types.EventTypeReport,
-		sdk.NewAttribute(types.AttributeKeyRequestID, fmt.Sprintf("%d", m.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyID, fmt.Sprintf("%d", m.RequestID)),
+		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
+	))
+	return &sdk.Result{Events: ctx.EventManager().Events()}, nil
+}
+
+func handleMsgActivate(ctx sdk.Context, k Keeper, m MsgActivate) (*sdk.Result, error) {
+	err := k.Activate(ctx, m.Validator)
+	if err != nil {
+		return nil, err
+	}
+	ctx.EventManager().EmitEvent(sdk.NewEvent(
+		types.EventTypeActivate,
 		sdk.NewAttribute(types.AttributeKeyValidator, m.Validator.String()),
 	))
 	return &sdk.Result{Events: ctx.EventManager().Events()}, nil

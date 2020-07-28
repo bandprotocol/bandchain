@@ -2,6 +2,7 @@
 package types
 
 import github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
+import "time"
 
 func NewMsgRequestData(
 	OracleScriptID OracleScriptID,
@@ -111,6 +112,14 @@ func NewMsgEditOracleScript(
 	}
 }
 
+func NewMsgActivate(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+) MsgActivate {
+	return MsgActivate{
+		Validator: Validator,
+	}
+}
+
 func NewMsgAddReporter(
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
 	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress,
@@ -187,6 +196,40 @@ func NewRawReport(
 	}
 }
 
+func NewRequest(
+	OracleScriptID OracleScriptID,
+	Calldata []byte,
+	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
+	MinCount uint64,
+	RequestHeight int64,
+	RequestTime time.Time,
+	ClientID string,
+	RawRequests []RawRequest,
+) Request {
+	return Request{
+		OracleScriptID:      OracleScriptID,
+		Calldata:            Calldata,
+		RequestedValidators: RequestedValidators,
+		MinCount:            MinCount,
+		RequestHeight:       RequestHeight,
+		RequestTime:         RequestTime,
+		ClientID:            ClientID,
+		RawRequests:         RawRequests,
+	}
+}
+
+func NewReport(
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
+	InBeforeResolve bool,
+	RawReports []RawReport,
+) Report {
+	return Report{
+		Validator:       Validator,
+		InBeforeResolve: InBeforeResolve,
+		RawReports:      RawReports,
+	}
+}
+
 func NewOracleRequestPacketData(
 	ClientID string,
 	OracleScriptID OracleScriptID,
@@ -223,59 +266,13 @@ func NewOracleResponsePacketData(
 	}
 }
 
-func NewRequest(
-	OracleScriptID OracleScriptID,
-	Calldata []byte,
-	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress,
-	MinCount uint64,
-	RequestHeight int64,
-	RequestTime int64,
-	ClientID string,
-	IBCInfo *IBCInfo,
-	RawRequestIDs []ExternalID,
-) Request {
-	return Request{
-		OracleScriptID:      OracleScriptID,
-		Calldata:            Calldata,
-		RequestedValidators: RequestedValidators,
-		MinCount:            MinCount,
-		RequestHeight:       RequestHeight,
-		RequestTime:         RequestTime,
-		ClientID:            ClientID,
-		IBCInfo:             IBCInfo,
-		RawRequestIDs:       RawRequestIDs,
-	}
-}
-
-func NewIBCInfo(
-	SourcePort string,
-	SourceChannel string,
-) IBCInfo {
-	return IBCInfo{
-		SourcePort:    SourcePort,
-		SourceChannel: SourceChannel,
-	}
-}
-
-func NewReport(
-	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
-	InBeforeResolve bool,
-	RawReports []RawReport,
-) Report {
-	return Report{
-		Validator:       Validator,
-		InBeforeResolve: InBeforeResolve,
-		RawReports:      RawReports,
-	}
-}
-
-func NewValidatorReportInfo(
-	Validator github_com_cosmos_cosmos_sdk_types.ValAddress,
-	ConsecutiveMissed uint64,
-) ValidatorReportInfo {
-	return ValidatorReportInfo{
-		Validator:         Validator,
-		ConsecutiveMissed: ConsecutiveMissed,
+func NewValidatorStatus(
+	IsActive bool,
+	Since time.Time,
+) ValidatorStatus {
+	return ValidatorStatus{
+		IsActive: IsActive,
+		Since:    Since,
 	}
 }
 
@@ -283,16 +280,20 @@ func NewParams(
 	MaxRawRequestCount uint64,
 	MaxAskCount uint64,
 	ExpirationBlockCount uint64,
-	MaxConsecutiveMisses uint64,
 	BaseRequestGas uint64,
 	PerValidatorRequestGas uint64,
+	SamplingTryCount uint64,
+	OracleRewardPercentage uint64,
+	InactivePenaltyDuration uint64,
 ) Params {
 	return Params{
-		MaxRawRequestCount:     MaxRawRequestCount,
-		MaxAskCount:            MaxAskCount,
-		ExpirationBlockCount:   ExpirationBlockCount,
-		MaxConsecutiveMisses:   MaxConsecutiveMisses,
-		BaseRequestGas:         BaseRequestGas,
-		PerValidatorRequestGas: PerValidatorRequestGas,
+		MaxRawRequestCount:      MaxRawRequestCount,
+		MaxAskCount:             MaxAskCount,
+		ExpirationBlockCount:    ExpirationBlockCount,
+		BaseRequestGas:          BaseRequestGas,
+		PerValidatorRequestGas:  PerValidatorRequestGas,
+		SamplingTryCount:        SamplingTryCount,
+		OracleRewardPercentage:  OracleRewardPercentage,
+		InactivePenaltyDuration: InactivePenaltyDuration,
 	}
 }

@@ -9,15 +9,19 @@ import (
 	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
+	github_com_gogo_protobuf_types "github.com/gogo/protobuf/types"
+	_ "github.com/golang/protobuf/ptypes/timestamp"
 	io "io"
 	math "math"
 	math_bits "math/bits"
+	time "time"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
 var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
+var _ = time.Kitchen
 
 // This is a compile-time assertion to ensure that this generated file
 // is compatible with the proto package it is being compiled against.
@@ -25,12 +29,17 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// ResolveStatus encodes the status of an oracle request.
 type ResolveStatus int32
 
 const (
-	ResolveStatus_Open    ResolveStatus = 0
+	// Open - the request is not yet resolved.
+	ResolveStatus_Open ResolveStatus = 0
+	// Success - the request has been resolved successfully with no errors.
 	ResolveStatus_Success ResolveStatus = 1
+	// Failure - an error occured during the request's resolve call.
 	ResolveStatus_Failure ResolveStatus = 2
+	// Expired - the request does not get enough reports from validator within the timeframe.
 	ResolveStatus_Expired ResolveStatus = 3
 )
 
@@ -56,14 +65,20 @@ func (ResolveStatus) EnumDescriptor() ([]byte, []int) {
 	return fileDescriptor_53e65fd95a58412c, []int{0}
 }
 
-// MsgRequestData is a message for sending a new data request.
+// MsgRequestData is a message for sending a data oracle request.
 type MsgRequestData struct {
-	OracleScriptID OracleScriptID                                `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	Calldata       []byte                                        `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
-	AskCount       uint64                                        `protobuf:"varint,3,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
-	MinCount       uint64                                        `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
-	ClientID       string                                        `protobuf:"bytes,5,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	Sender         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// OracleScriptID is the identifier of the oracle script to call.
+	OracleScriptID OracleScriptID `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
+	// Calldata is the OBI encoded call parameters to the oracle script.
+	Calldata []byte `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
+	// AskCount is the number of validators to perform the oracle task.
+	AskCount uint64 `protobuf:"varint,3,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
+	// MinCount is the minimum number of validators sufficient to resolve the tasks.
+	MinCount uint64 `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
+	// ClientID is the client-provided unique identifier to tracking the request.
+	ClientID string `protobuf:"bytes,5,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	// Sender is the sender of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgRequestData) Reset()         { *m = MsgRequestData{} }
@@ -141,13 +156,16 @@ func (m *MsgRequestData) GetSender() github_com_cosmos_cosmos_sdk_types.AccAddre
 	return nil
 }
 
-// MsgReportData is a message sent by each of the block validators to respond to
-// a data request.
+// MsgReportData is a message for reporting to a data request by a validator.
 type MsgReportData struct {
-	RequestID  RequestID                                     `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3,casttype=RequestID" json:"request_id,omitempty"`
-	RawReports []RawReport                                   `protobuf:"bytes,2,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
-	Validator  github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter   github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+	// RequestID is the identifier of the request to report to.
+	RequestID RequestID `protobuf:"varint,1,opt,name=request_id,json=requestId,proto3,casttype=RequestID" json:"request_id,omitempty"`
+	// RawReports is the list of report information for each of the request's external ID.
+	RawReports []RawReport `protobuf:"bytes,2,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
+	// Validator is the address of the validator that owns this report.
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
+	// Reporter is the message signer who submits this report transaction for the validator.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,4,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgReportData) Reset()         { *m = MsgReportData{} }
@@ -213,11 +231,16 @@ func (m *MsgReportData) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAddr
 
 // MsgCreateDataSource is a message for creating a new data source.
 type MsgCreateDataSource struct {
-	Owner       github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name        string                                        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description string                                        `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Executable  []byte                                        `protobuf:"bytes,4,opt,name=executable,proto3" json:"executable,omitempty"`
-	Sender      github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// Owner is the address who is allowed to make further changes to the data source.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this data source (optional).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this data source (optional).
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Executable is the executable script or binary to be run by validators upon execution.
+	Executable []byte `protobuf:"bytes,4,opt,name=executable,proto3" json:"executable,omitempty"`
+	// Sender is the signer of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,5,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgCreateDataSource) Reset()         { *m = MsgCreateDataSource{} }
@@ -290,12 +313,18 @@ func (m *MsgCreateDataSource) GetSender() github_com_cosmos_cosmos_sdk_types.Acc
 
 // MsgEditDataSource is a message for editing an existing data source.
 type MsgEditDataSource struct {
-	DataSourceID DataSourceID                                  `protobuf:"varint,1,opt,name=data_source_id,json=dataSourceId,proto3,casttype=DataSourceID" json:"data_source_id,omitempty"`
-	Owner        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name         string                                        `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description  string                                        `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Executable   []byte                                        `protobuf:"bytes,5,opt,name=executable,proto3" json:"executable,omitempty"`
-	Sender       github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// DataSourceID is the unique identifier of the data source to be edited.
+	DataSourceID DataSourceID `protobuf:"varint,1,opt,name=data_source_id,json=dataSourceId,proto3,casttype=DataSourceID" json:"data_source_id,omitempty"`
+	// Owner is the new address who is allowed to make further changes to the data source.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this data source (optional).
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this data source (optional).
+	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// Executable is the executable script or binary to be run by validators upon execution.
+	Executable []byte `protobuf:"bytes,5,opt,name=executable,proto3" json:"executable,omitempty"`
+	// Sender is the signer of this message. Must be the current data source's owner.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,6,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgEditDataSource) Reset()         { *m = MsgEditDataSource{} }
@@ -375,13 +404,20 @@ func (m *MsgEditDataSource) GetSender() github_com_cosmos_cosmos_sdk_types.AccAd
 
 // MsgCreateOracleScript is a message for creating an oracle script.
 type MsgCreateOracleScript struct {
-	Owner         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name          string                                        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Description   string                                        `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
-	Code          []byte                                        `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
-	Schema        string                                        `protobuf:"bytes,5,opt,name=schema,proto3" json:"schema,omitempty"`
-	SourceCodeURL string                                        `protobuf:"bytes,6,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
-	Sender        github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,7,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// Owner is the address who is allowed to make further changes to the oracle script.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this oracle script (optional).
+	Name string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this oracle script (optional).
+	Description string `protobuf:"bytes,3,opt,name=description,proto3" json:"description,omitempty"`
+	// Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
+	Code []byte `protobuf:"bytes,4,opt,name=code,proto3" json:"code,omitempty"`
+	// Schema is the OBI schema of this oracle script (optional).
+	Schema string `protobuf:"bytes,5,opt,name=schema,proto3" json:"schema,omitempty"`
+	// SourceCodeURL is the absolute URI to the script's source code (optional).
+	SourceCodeURL string `protobuf:"bytes,6,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
+	// Sender is the signer of this message.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,7,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgCreateOracleScript) Reset()         { *m = MsgCreateOracleScript{} }
@@ -468,14 +504,22 @@ func (m *MsgCreateOracleScript) GetSender() github_com_cosmos_cosmos_sdk_types.A
 
 // MsgEditOracleScript is a message for editing an existing oracle script.
 type MsgEditOracleScript struct {
-	OracleScriptID OracleScriptID                                `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	Owner          github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
-	Name           string                                        `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
-	Description    string                                        `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
-	Code           []byte                                        `protobuf:"bytes,5,opt,name=code,proto3" json:"code,omitempty"`
-	Schema         string                                        `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
-	SourceCodeURL  string                                        `protobuf:"bytes,7,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
-	Sender         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,8,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
+	// OracleScriptID is the unique identifier of the oracle script to be edited.
+	OracleScriptID OracleScriptID `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
+	// Owner is new the address who is allowed to make further changes to the oracle script.
+	Owner github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
+	// Name is the name of this oracle script (optional).
+	Name string `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	// Description is the description of this oracle script (optional).
+	Description string `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	// Code is the oracle WebAssembly binary code. Can be raw of gzip compressed.
+	Code []byte `protobuf:"bytes,5,opt,name=code,proto3" json:"code,omitempty"`
+	// Schema is the OBI schema of this oracle script (optional).
+	Schema string `protobuf:"bytes,6,opt,name=schema,proto3" json:"schema,omitempty"`
+	// SourceCodeURL is the absolute URI to the script's source code (optional).
+	SourceCodeURL string `protobuf:"bytes,7,opt,name=source_code_url,json=sourceCodeUrl,proto3" json:"source_code_url,omitempty"`
+	// Sender is the signer of this message. Must be the current oracle script's owner.
+	Sender github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,8,opt,name=sender,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"sender,omitempty"`
 }
 
 func (m *MsgEditOracleScript) Reset()         { *m = MsgEditOracleScript{} }
@@ -567,18 +611,65 @@ func (m *MsgEditOracleScript) GetSender() github_com_cosmos_cosmos_sdk_types.Acc
 	return nil
 }
 
-// MsgAddReporter is a message for adding an agent authorized to submit
-// report transactions.
-type MsgAddReporter struct {
+// MsgEditOracleScript is a message for activating a validator to become an oracle provider.
+type MsgActivate struct {
+	// Validator is the signer of this message and the validator to be activated.
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+}
+
+func (m *MsgActivate) Reset()         { *m = MsgActivate{} }
+func (m *MsgActivate) String() string { return proto.CompactTextString(m) }
+func (*MsgActivate) ProtoMessage()    {}
+func (*MsgActivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_53e65fd95a58412c, []int{6}
+}
+func (m *MsgActivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgActivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgActivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgActivate.Merge(m, src)
+}
+func (m *MsgActivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgActivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgActivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgActivate proto.InternalMessageInfo
+
+func (m *MsgActivate) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
+	if m != nil {
+		return m.Validator
+	}
+	return nil
+}
+
+// MsgAddReporter is a message for adding a new reporter for a validator.
+type MsgAddReporter struct {
+	// Validator is the validator that wishes to add a new reporter. This is the signer.
+	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
+	// Reporter is the address to be added as a reporter to the validator.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgAddReporter) Reset()         { *m = MsgAddReporter{} }
 func (m *MsgAddReporter) String() string { return proto.CompactTextString(m) }
 func (*MsgAddReporter) ProtoMessage()    {}
 func (*MsgAddReporter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{6}
+	return fileDescriptor_53e65fd95a58412c, []int{7}
 }
 func (m *MsgAddReporter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -621,18 +712,19 @@ func (m *MsgAddReporter) GetReporter() github_com_cosmos_cosmos_sdk_types.AccAdd
 	return nil
 }
 
-// MsgRemoveReporter is a message for removing an agent from the list of
-// authorized reporters.
+// MsgAddReporter is a message for removing an existing reporter from a validator.
 type MsgRemoveReporter struct {
+	// Validator is the validator that wishes to remove an existing reporter. This is the signer.
 	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	Reporter  github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
+	// Reporter is the address to be removed from being the validators' reporter.
+	Reporter github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,2,opt,name=reporter,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"reporter,omitempty"`
 }
 
 func (m *MsgRemoveReporter) Reset()         { *m = MsgRemoveReporter{} }
 func (m *MsgRemoveReporter) String() string { return proto.CompactTextString(m) }
 func (*MsgRemoveReporter) ProtoMessage()    {}
 func (*MsgRemoveReporter) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{7}
+	return fileDescriptor_53e65fd95a58412c, []int{8}
 }
 func (m *MsgRemoveReporter) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -687,7 +779,7 @@ func (m *DataSource) Reset()         { *m = DataSource{} }
 func (m *DataSource) String() string { return proto.CompactTextString(m) }
 func (*DataSource) ProtoMessage()    {}
 func (*DataSource) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{8}
+	return fileDescriptor_53e65fd95a58412c, []int{9}
 }
 func (m *DataSource) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -744,7 +836,7 @@ func (m *DataSource) GetFilename() string {
 	return ""
 }
 
-// OracleScript is a type to store detail of oracle script.
+// OracleScript is the data structure for storing oracle scripts in the storage.
 type OracleScript struct {
 	Owner         github_com_cosmos_cosmos_sdk_types.AccAddress `protobuf:"bytes,1,opt,name=owner,proto3,casttype=github.com/cosmos/cosmos-sdk/types.AccAddress" json:"owner,omitempty"`
 	Name          string                                        `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
@@ -758,7 +850,7 @@ func (m *OracleScript) Reset()         { *m = OracleScript{} }
 func (m *OracleScript) String() string { return proto.CompactTextString(m) }
 func (*OracleScript) ProtoMessage()    {}
 func (*OracleScript) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{9}
+	return fileDescriptor_53e65fd95a58412c, []int{10}
 }
 func (m *OracleScript) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -829,7 +921,7 @@ func (m *OracleScript) GetSourceCodeURL() string {
 	return ""
 }
 
-// RawRequest is a raw data request that contain external id.
+// RawRequest is the data structure for storing raw requests in the storage.
 type RawRequest struct {
 	ExternalID   ExternalID   `protobuf:"varint,1,opt,name=external_id,json=externalId,proto3,casttype=ExternalID" json:"external_id,omitempty"`
 	DataSourceID DataSourceID `protobuf:"varint,2,opt,name=data_source_id,json=dataSourceId,proto3,casttype=DataSourceID" json:"data_source_id,omitempty"`
@@ -840,7 +932,7 @@ func (m *RawRequest) Reset()         { *m = RawRequest{} }
 func (m *RawRequest) String() string { return proto.CompactTextString(m) }
 func (*RawRequest) ProtoMessage()    {}
 func (*RawRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{10}
+	return fileDescriptor_53e65fd95a58412c, []int{11}
 }
 func (m *RawRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -890,8 +982,7 @@ func (m *RawRequest) GetCalldata() []byte {
 	return nil
 }
 
-// RawReport encapsulates a raw data report for an external data source from a
-// block validator.
+// RawRequest is the data structure for storing raw reporter in the storage.
 type RawReport struct {
 	ExternalID ExternalID `protobuf:"varint,1,opt,name=external_id,json=externalId,proto3,casttype=ExternalID" json:"external_id,omitempty"`
 	ExitCode   uint32     `protobuf:"varint,2,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
@@ -902,7 +993,7 @@ func (m *RawReport) Reset()         { *m = RawReport{} }
 func (m *RawReport) String() string { return proto.CompactTextString(m) }
 func (*RawReport) ProtoMessage()    {}
 func (*RawReport) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{11}
+	return fileDescriptor_53e65fd95a58412c, []int{12}
 }
 func (m *RawReport) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -952,25 +1043,182 @@ func (m *RawReport) GetData() []byte {
 	return nil
 }
 
-// OracleRequestPacketData encodes an oracle request sent from other blockchains
-// to BandChain.
+// Request is the data structure for storing requests in the storage.
+type Request struct {
+	OracleScriptID      OracleScriptID                                  `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
+	Calldata            []byte                                          `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
+	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,rep,name=requested_validators,json=requestedValidators,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"requested_validators,omitempty"`
+	MinCount            uint64                                          `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
+	RequestHeight       int64                                           `protobuf:"varint,5,opt,name=request_height,json=requestHeight,proto3" json:"request_height,omitempty"`
+	RequestTime         time.Time                                       `protobuf:"bytes,6,opt,name=request_time,json=requestTime,proto3,stdtime" json:"request_time"`
+	ClientID            string                                          `protobuf:"bytes,7,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	RawRequests         []RawRequest                                    `protobuf:"bytes,8,rep,name=raw_requests,json=rawRequests,proto3" json:"raw_requests"`
+}
+
+func (m *Request) Reset()         { *m = Request{} }
+func (m *Request) String() string { return proto.CompactTextString(m) }
+func (*Request) ProtoMessage()    {}
+func (*Request) Descriptor() ([]byte, []int) {
+	return fileDescriptor_53e65fd95a58412c, []int{13}
+}
+func (m *Request) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Request) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Request.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Request) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Request.Merge(m, src)
+}
+func (m *Request) XXX_Size() int {
+	return m.Size()
+}
+func (m *Request) XXX_DiscardUnknown() {
+	xxx_messageInfo_Request.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Request proto.InternalMessageInfo
+
+func (m *Request) GetOracleScriptID() OracleScriptID {
+	if m != nil {
+		return m.OracleScriptID
+	}
+	return 0
+}
+
+func (m *Request) GetCalldata() []byte {
+	if m != nil {
+		return m.Calldata
+	}
+	return nil
+}
+
+func (m *Request) GetRequestedValidators() []github_com_cosmos_cosmos_sdk_types.ValAddress {
+	if m != nil {
+		return m.RequestedValidators
+	}
+	return nil
+}
+
+func (m *Request) GetMinCount() uint64 {
+	if m != nil {
+		return m.MinCount
+	}
+	return 0
+}
+
+func (m *Request) GetRequestHeight() int64 {
+	if m != nil {
+		return m.RequestHeight
+	}
+	return 0
+}
+
+func (m *Request) GetRequestTime() time.Time {
+	if m != nil {
+		return m.RequestTime
+	}
+	return time.Time{}
+}
+
+func (m *Request) GetClientID() string {
+	if m != nil {
+		return m.ClientID
+	}
+	return ""
+}
+
+func (m *Request) GetRawRequests() []RawRequest {
+	if m != nil {
+		return m.RawRequests
+	}
+	return nil
+}
+
+// Report is the data structure for storing reports in the storage.
+type Report struct {
+	Validator       github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
+	InBeforeResolve bool                                          `protobuf:"varint,2,opt,name=in_before_resolve,json=inBeforeResolve,proto3" json:"in_before_resolve,omitempty"`
+	RawReports      []RawReport                                   `protobuf:"bytes,3,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
+}
+
+func (m *Report) Reset()         { *m = Report{} }
+func (m *Report) String() string { return proto.CompactTextString(m) }
+func (*Report) ProtoMessage()    {}
+func (*Report) Descriptor() ([]byte, []int) {
+	return fileDescriptor_53e65fd95a58412c, []int{14}
+}
+func (m *Report) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *Report) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_Report.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *Report) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_Report.Merge(m, src)
+}
+func (m *Report) XXX_Size() int {
+	return m.Size()
+}
+func (m *Report) XXX_DiscardUnknown() {
+	xxx_messageInfo_Report.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_Report proto.InternalMessageInfo
+
+func (m *Report) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
+	if m != nil {
+		return m.Validator
+	}
+	return nil
+}
+
+func (m *Report) GetInBeforeResolve() bool {
+	if m != nil {
+		return m.InBeforeResolve
+	}
+	return false
+}
+
+func (m *Report) GetRawReports() []RawReport {
+	if m != nil {
+		return m.RawReports
+	}
+	return nil
+}
+
+// OracleRequestPacketData encodes an oracle request sent from other blockchains to BandChain.
 type OracleRequestPacketData struct {
-	// ClientID is the unique identifier of this oracle request, as specified by
-	// the client. This same unique ID will be sent back to the requester with the
-	// oracle response.
+	// ClientID is the unique identifier of this oracle request, as specified by the client.
+	// This same unique ID will be sent back to the requester with the oracle response.
 	ClientID string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	// OracleScriptID is the unique identifier of the oracle script to be
-	// executed.
+	// OracleScriptID is the unique identifier of the oracle script to be executed.
 	OracleScriptID OracleScriptID `protobuf:"varint,2,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	// Calldata is the calldata bytes available for oracle
-	// execution during both preparation and execution phases.
+	// Calldata is the calldata bytes available for oracle executor to read.
 	Calldata []byte `protobuf:"bytes,3,opt,name=calldata,proto3" json:"calldata,omitempty"`
-	// AskCount is the number of validators that are requested to respond to this
-	// oracle request. Higher value means more security, at a higher gas cost.
+	// AskCount is the number of validators that are requested to respond to this oracle request.
+	// Higher value means more security, at a higher gas cost.
 	AskCount uint64 `protobuf:"varint,4,opt,name=ask_count,json=askCount,proto3" json:"ask_count,omitempty"`
-	// MinCount is the minimum number of validators necessary for the request to
-	// proceed to the execution phase. Higher value means more security, at the
-	// cost of liveness.
+	// MinCount is the minimum number of validators necessary for the request to proceed to the
+	// execution phase. Higher value means more security, at the cost of liveness.
 	MinCount uint64 `protobuf:"varint,5,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
 }
 
@@ -978,7 +1226,7 @@ func (m *OracleRequestPacketData) Reset()         { *m = OracleRequestPacketData
 func (m *OracleRequestPacketData) String() string { return proto.CompactTextString(m) }
 func (*OracleRequestPacketData) ProtoMessage()    {}
 func (*OracleRequestPacketData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{12}
+	return fileDescriptor_53e65fd95a58412c, []int{15}
 }
 func (m *OracleRequestPacketData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1042,28 +1290,20 @@ func (m *OracleRequestPacketData) GetMinCount() uint64 {
 	return 0
 }
 
-// OracleResponsePacketData encodes an oracle response from BandChain to the
-// requester.
+// OracleResponsePacketData encodes an oracle response from BandChain to the requester.
 type OracleResponsePacketData struct {
-	// ClientID is the unique identifier matched with that of the oracle request
-	// packet.
+	// ClientID is the unique identifier matched with that of the oracle request packet.
 	ClientID string `protobuf:"bytes,1,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
 	// RequestID is BandChain's unique identifier for this oracle request.
-	// TODO: This is not actually needed, but is here to simplify DB. Should
-	// remove.
 	RequestID RequestID `protobuf:"varint,2,opt,name=request_id,json=requestId,proto3,casttype=RequestID" json:"request_id,omitempty"`
-	// AnsCount is the number of validators among to the asked validators that
-	// actually responded to this oracle request prior to this oracle request
-	// being resolved.
+	// AnsCount is the number of validators among to the asked validators that actually responded
+	// to this oracle request prior to this oracle request being resolved.
 	AnsCount uint64 `protobuf:"varint,3,opt,name=ans_count,json=ansCount,proto3" json:"ans_count,omitempty"`
-	// RequestTime is the UNIX epoch time at which the request was sent to
-	// BandChain.
+	// RequestTime is the UNIX epoch time at which the request was sent to BandChain.
 	RequestTime int64 `protobuf:"varint,4,opt,name=request_time,json=requestTime,proto3" json:"request_time,omitempty"`
-	// ResolveTime is the UNIX epoch time at which the request was resolved to the
-	// final result.
+	// ResolveTime is the UNIX epoch time at which the request was resolved to the final result.
 	ResolveTime int64 `protobuf:"varint,5,opt,name=resolve_time,json=resolveTime,proto3" json:"resolve_time,omitempty"`
-	// ResolveStatus is the status of this oracle request, which can be OK, ERROR,
-	// or EXPIRED.
+	// ResolveStatus is the status of this oracle request, which can be OK, FAILURE, or EXPIRED.
 	ResolveStatus ResolveStatus `protobuf:"varint,6,opt,name=resolve_status,json=resolveStatus,proto3,enum=bandchain.chain.x.oracle.v1.ResolveStatus" json:"resolve_status,omitempty"`
 	// Result is the final aggregated value only available if status if OK.
 	Result []byte `protobuf:"bytes,7,opt,name=result,proto3" json:"result,omitempty"`
@@ -1073,7 +1313,7 @@ func (m *OracleResponsePacketData) Reset()         { *m = OracleResponsePacketDa
 func (m *OracleResponsePacketData) String() string { return proto.CompactTextString(m) }
 func (*OracleResponsePacketData) ProtoMessage()    {}
 func (*OracleResponsePacketData) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{13}
+	return fileDescriptor_53e65fd95a58412c, []int{16}
 }
 func (m *OracleResponsePacketData) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1151,32 +1391,24 @@ func (m *OracleResponsePacketData) GetResult() []byte {
 	return nil
 }
 
-// Request is a data structure that stores the detail of a request to an oracle
-// script.
-type Request struct {
-	OracleScriptID      OracleScriptID                                  `protobuf:"varint,1,opt,name=oracle_script_id,json=oracleScriptId,proto3,casttype=OracleScriptID" json:"oracle_script_id,omitempty"`
-	Calldata            []byte                                          `protobuf:"bytes,2,opt,name=calldata,proto3" json:"calldata,omitempty"`
-	RequestedValidators []github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,3,rep,name=requested_validators,json=requestedValidators,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"requested_validators,omitempty"`
-	MinCount            uint64                                          `protobuf:"varint,4,opt,name=min_count,json=minCount,proto3" json:"min_count,omitempty"`
-	RequestHeight       int64                                           `protobuf:"varint,5,opt,name=request_height,json=requestHeight,proto3" json:"request_height,omitempty"`
-	RequestTime         int64                                           `protobuf:"varint,6,opt,name=request_time,json=requestTime,proto3" json:"request_time,omitempty"`
-	ClientID            string                                          `protobuf:"bytes,7,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
-	IBCInfo             *IBCInfo                                        `protobuf:"bytes,8,opt,name=ibc_info,json=ibcInfo,proto3" json:"ibc_info,omitempty"`
-	RawRequestIDs       []ExternalID                                    `protobuf:"varint,9,rep,packed,name=raw_request_ids,json=rawRequestIds,proto3,casttype=ExternalID" json:"raw_request_ids,omitempty"`
+// ValidatorStatus maintains whether a validator is an active oracle provider.
+type ValidatorStatus struct {
+	IsActive bool      `protobuf:"varint,1,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	Since    time.Time `protobuf:"bytes,2,opt,name=since,proto3,stdtime" json:"since"`
 }
 
-func (m *Request) Reset()         { *m = Request{} }
-func (m *Request) String() string { return proto.CompactTextString(m) }
-func (*Request) ProtoMessage()    {}
-func (*Request) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{14}
+func (m *ValidatorStatus) Reset()         { *m = ValidatorStatus{} }
+func (m *ValidatorStatus) String() string { return proto.CompactTextString(m) }
+func (*ValidatorStatus) ProtoMessage()    {}
+func (*ValidatorStatus) Descriptor() ([]byte, []int) {
+	return fileDescriptor_53e65fd95a58412c, []int{17}
 }
-func (m *Request) XXX_Unmarshal(b []byte) error {
+func (m *ValidatorStatus) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *Request) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *ValidatorStatus) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_Request.Marshal(b, m, deterministic)
+		return xxx_messageInfo_ValidatorStatus.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1186,256 +1418,42 @@ func (m *Request) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 		return b[:n], nil
 	}
 }
-func (m *Request) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Request.Merge(m, src)
+func (m *ValidatorStatus) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ValidatorStatus.Merge(m, src)
 }
-func (m *Request) XXX_Size() int {
+func (m *ValidatorStatus) XXX_Size() int {
 	return m.Size()
 }
-func (m *Request) XXX_DiscardUnknown() {
-	xxx_messageInfo_Request.DiscardUnknown(m)
+func (m *ValidatorStatus) XXX_DiscardUnknown() {
+	xxx_messageInfo_ValidatorStatus.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_Request proto.InternalMessageInfo
+var xxx_messageInfo_ValidatorStatus proto.InternalMessageInfo
 
-func (m *Request) GetOracleScriptID() OracleScriptID {
+func (m *ValidatorStatus) GetIsActive() bool {
 	if m != nil {
-		return m.OracleScriptID
-	}
-	return 0
-}
-
-func (m *Request) GetCalldata() []byte {
-	if m != nil {
-		return m.Calldata
-	}
-	return nil
-}
-
-func (m *Request) GetRequestedValidators() []github_com_cosmos_cosmos_sdk_types.ValAddress {
-	if m != nil {
-		return m.RequestedValidators
-	}
-	return nil
-}
-
-func (m *Request) GetMinCount() uint64 {
-	if m != nil {
-		return m.MinCount
-	}
-	return 0
-}
-
-func (m *Request) GetRequestHeight() int64 {
-	if m != nil {
-		return m.RequestHeight
-	}
-	return 0
-}
-
-func (m *Request) GetRequestTime() int64 {
-	if m != nil {
-		return m.RequestTime
-	}
-	return 0
-}
-
-func (m *Request) GetClientID() string {
-	if m != nil {
-		return m.ClientID
-	}
-	return ""
-}
-
-func (m *Request) GetIBCInfo() *IBCInfo {
-	if m != nil {
-		return m.IBCInfo
-	}
-	return nil
-}
-
-func (m *Request) GetRawRequestIDs() []ExternalID {
-	if m != nil {
-		return m.RawRequestIDs
-	}
-	return nil
-}
-
-type IBCInfo struct {
-	SourcePort    string `protobuf:"bytes,1,opt,name=source_port,json=sourcePort,proto3" json:"source_port,omitempty"`
-	SourceChannel string `protobuf:"bytes,2,opt,name=source_channel,json=sourceChannel,proto3" json:"source_channel,omitempty"`
-}
-
-func (m *IBCInfo) Reset()         { *m = IBCInfo{} }
-func (m *IBCInfo) String() string { return proto.CompactTextString(m) }
-func (*IBCInfo) ProtoMessage()    {}
-func (*IBCInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{15}
-}
-func (m *IBCInfo) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *IBCInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_IBCInfo.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *IBCInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_IBCInfo.Merge(m, src)
-}
-func (m *IBCInfo) XXX_Size() int {
-	return m.Size()
-}
-func (m *IBCInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_IBCInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_IBCInfo proto.InternalMessageInfo
-
-func (m *IBCInfo) GetSourcePort() string {
-	if m != nil {
-		return m.SourcePort
-	}
-	return ""
-}
-
-func (m *IBCInfo) GetSourceChannel() string {
-	if m != nil {
-		return m.SourceChannel
-	}
-	return ""
-}
-
-// Report is a report that contains operator address in struct
-type Report struct {
-	Validator       github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	InBeforeResolve bool                                          `protobuf:"varint,2,opt,name=in_before_resolve,json=inBeforeResolve,proto3" json:"in_before_resolve,omitempty"`
-	RawReports      []RawReport                                   `protobuf:"bytes,3,rep,name=raw_reports,json=rawReports,proto3" json:"raw_reports"`
-}
-
-func (m *Report) Reset()         { *m = Report{} }
-func (m *Report) String() string { return proto.CompactTextString(m) }
-func (*Report) ProtoMessage()    {}
-func (*Report) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{16}
-}
-func (m *Report) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *Report) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_Report.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *Report) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_Report.Merge(m, src)
-}
-func (m *Report) XXX_Size() int {
-	return m.Size()
-}
-func (m *Report) XXX_DiscardUnknown() {
-	xxx_messageInfo_Report.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_Report proto.InternalMessageInfo
-
-func (m *Report) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
-	if m != nil {
-		return m.Validator
-	}
-	return nil
-}
-
-func (m *Report) GetInBeforeResolve() bool {
-	if m != nil {
-		return m.InBeforeResolve
+		return m.IsActive
 	}
 	return false
 }
 
-func (m *Report) GetRawReports() []RawReport {
+func (m *ValidatorStatus) GetSince() time.Time {
 	if m != nil {
-		return m.RawReports
+		return m.Since
 	}
-	return nil
+	return time.Time{}
 }
 
-// ValidatorReportInfo defines the report info for a validator
-type ValidatorReportInfo struct {
-	Validator github_com_cosmos_cosmos_sdk_types.ValAddress `protobuf:"bytes,1,opt,name=validator,proto3,casttype=github.com/cosmos/cosmos-sdk/types.ValAddress" json:"validator,omitempty"`
-	// field to count consecutive missed report
-	ConsecutiveMissed uint64 `protobuf:"varint,2,opt,name=consecutive_missed,json=consecutiveMissed,proto3" json:"consecutive_missed,omitempty"`
-}
-
-func (m *ValidatorReportInfo) Reset()         { *m = ValidatorReportInfo{} }
-func (m *ValidatorReportInfo) String() string { return proto.CompactTextString(m) }
-func (*ValidatorReportInfo) ProtoMessage()    {}
-func (*ValidatorReportInfo) Descriptor() ([]byte, []int) {
-	return fileDescriptor_53e65fd95a58412c, []int{17}
-}
-func (m *ValidatorReportInfo) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *ValidatorReportInfo) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_ValidatorReportInfo.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *ValidatorReportInfo) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_ValidatorReportInfo.Merge(m, src)
-}
-func (m *ValidatorReportInfo) XXX_Size() int {
-	return m.Size()
-}
-func (m *ValidatorReportInfo) XXX_DiscardUnknown() {
-	xxx_messageInfo_ValidatorReportInfo.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_ValidatorReportInfo proto.InternalMessageInfo
-
-func (m *ValidatorReportInfo) GetValidator() github_com_cosmos_cosmos_sdk_types.ValAddress {
-	if m != nil {
-		return m.Validator
-	}
-	return nil
-}
-
-func (m *ValidatorReportInfo) GetConsecutiveMissed() uint64 {
-	if m != nil {
-		return m.ConsecutiveMissed
-	}
-	return 0
-}
-
-// Params - used for initializing default parameter for oracle at genesis.
+// Params is the data structure that keeps the parameters of the oracle module.
 type Params struct {
-	MaxRawRequestCount     uint64 `protobuf:"varint,1,opt,name=max_raw_request_count,json=maxRawRequestCount,proto3" json:"max_raw_request_count,omitempty"`
-	MaxAskCount            uint64 `protobuf:"varint,2,opt,name=max_ask_count,json=maxAskCount,proto3" json:"max_ask_count,omitempty"`
-	ExpirationBlockCount   uint64 `protobuf:"varint,3,opt,name=expiration_block_count,json=expirationBlockCount,proto3" json:"expiration_block_count,omitempty"`
-	MaxConsecutiveMisses   uint64 `protobuf:"varint,4,opt,name=max_consecutive_misses,json=maxConsecutiveMisses,proto3" json:"max_consecutive_misses,omitempty"`
-	BaseRequestGas         uint64 `protobuf:"varint,5,opt,name=base_request_gas,json=baseRequestGas,proto3" json:"base_request_gas,omitempty"`
-	PerValidatorRequestGas uint64 `protobuf:"varint,6,opt,name=per_validator_request_gas,json=perValidatorRequestGas,proto3" json:"per_validator_request_gas,omitempty"`
+	MaxRawRequestCount      uint64 `protobuf:"varint,1,opt,name=max_raw_request_count,json=maxRawRequestCount,proto3" json:"max_raw_request_count,omitempty"`
+	MaxAskCount             uint64 `protobuf:"varint,2,opt,name=max_ask_count,json=maxAskCount,proto3" json:"max_ask_count,omitempty"`
+	ExpirationBlockCount    uint64 `protobuf:"varint,3,opt,name=expiration_block_count,json=expirationBlockCount,proto3" json:"expiration_block_count,omitempty"`
+	BaseRequestGas          uint64 `protobuf:"varint,4,opt,name=base_request_gas,json=baseRequestGas,proto3" json:"base_request_gas,omitempty"`
+	PerValidatorRequestGas  uint64 `protobuf:"varint,5,opt,name=per_validator_request_gas,json=perValidatorRequestGas,proto3" json:"per_validator_request_gas,omitempty"`
+	SamplingTryCount        uint64 `protobuf:"varint,6,opt,name=sampling_try_count,json=samplingTryCount,proto3" json:"sampling_try_count,omitempty"`
+	OracleRewardPercentage  uint64 `protobuf:"varint,7,opt,name=oracle_reward_percentage,json=oracleRewardPercentage,proto3" json:"oracle_reward_percentage,omitempty"`
+	InactivePenaltyDuration uint64 `protobuf:"varint,8,opt,name=inactive_penalty_duration,json=inactivePenaltyDuration,proto3" json:"inactive_penalty_duration,omitempty"`
 }
 
 func (m *Params) Reset()      { *m = Params{} }
@@ -1491,13 +1509,6 @@ func (m *Params) GetExpirationBlockCount() uint64 {
 	return 0
 }
 
-func (m *Params) GetMaxConsecutiveMisses() uint64 {
-	if m != nil {
-		return m.MaxConsecutiveMisses
-	}
-	return 0
-}
-
 func (m *Params) GetBaseRequestGas() uint64 {
 	if m != nil {
 		return m.BaseRequestGas
@@ -1512,6 +1523,27 @@ func (m *Params) GetPerValidatorRequestGas() uint64 {
 	return 0
 }
 
+func (m *Params) GetSamplingTryCount() uint64 {
+	if m != nil {
+		return m.SamplingTryCount
+	}
+	return 0
+}
+
+func (m *Params) GetOracleRewardPercentage() uint64 {
+	if m != nil {
+		return m.OracleRewardPercentage
+	}
+	return 0
+}
+
+func (m *Params) GetInactivePenaltyDuration() uint64 {
+	if m != nil {
+		return m.InactivePenaltyDuration
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterEnum("bandchain.chain.x.oracle.v1.ResolveStatus", ResolveStatus_name, ResolveStatus_value)
 	proto.RegisterType((*MsgRequestData)(nil), "bandchain.chain.x.oracle.v1.MsgRequestData")
@@ -1520,116 +1552,119 @@ func init() {
 	proto.RegisterType((*MsgEditDataSource)(nil), "bandchain.chain.x.oracle.v1.MsgEditDataSource")
 	proto.RegisterType((*MsgCreateOracleScript)(nil), "bandchain.chain.x.oracle.v1.MsgCreateOracleScript")
 	proto.RegisterType((*MsgEditOracleScript)(nil), "bandchain.chain.x.oracle.v1.MsgEditOracleScript")
+	proto.RegisterType((*MsgActivate)(nil), "bandchain.chain.x.oracle.v1.MsgActivate")
 	proto.RegisterType((*MsgAddReporter)(nil), "bandchain.chain.x.oracle.v1.MsgAddReporter")
 	proto.RegisterType((*MsgRemoveReporter)(nil), "bandchain.chain.x.oracle.v1.MsgRemoveReporter")
 	proto.RegisterType((*DataSource)(nil), "bandchain.chain.x.oracle.v1.DataSource")
 	proto.RegisterType((*OracleScript)(nil), "bandchain.chain.x.oracle.v1.OracleScript")
 	proto.RegisterType((*RawRequest)(nil), "bandchain.chain.x.oracle.v1.RawRequest")
 	proto.RegisterType((*RawReport)(nil), "bandchain.chain.x.oracle.v1.RawReport")
+	proto.RegisterType((*Request)(nil), "bandchain.chain.x.oracle.v1.Request")
+	proto.RegisterType((*Report)(nil), "bandchain.chain.x.oracle.v1.Report")
 	proto.RegisterType((*OracleRequestPacketData)(nil), "bandchain.chain.x.oracle.v1.OracleRequestPacketData")
 	proto.RegisterType((*OracleResponsePacketData)(nil), "bandchain.chain.x.oracle.v1.OracleResponsePacketData")
-	proto.RegisterType((*Request)(nil), "bandchain.chain.x.oracle.v1.Request")
-	proto.RegisterType((*IBCInfo)(nil), "bandchain.chain.x.oracle.v1.IBCInfo")
-	proto.RegisterType((*Report)(nil), "bandchain.chain.x.oracle.v1.Report")
-	proto.RegisterType((*ValidatorReportInfo)(nil), "bandchain.chain.x.oracle.v1.ValidatorReportInfo")
+	proto.RegisterType((*ValidatorStatus)(nil), "bandchain.chain.x.oracle.v1.ValidatorStatus")
 	proto.RegisterType((*Params)(nil), "bandchain.chain.x.oracle.v1.Params")
 }
 
 func init() { proto.RegisterFile("x/oracle/types/types.proto", fileDescriptor_53e65fd95a58412c) }
 
 var fileDescriptor_53e65fd95a58412c = []byte{
-	// 1449 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0xcb, 0x8f, 0x1b, 0x45,
-	0x13, 0xdf, 0x99, 0xf1, 0xb3, 0xbc, 0x76, 0x76, 0x27, 0x8f, 0xcf, 0xdf, 0x06, 0x79, 0x4c, 0x94,
-	0x44, 0x26, 0x52, 0x6c, 0x25, 0x20, 0xa4, 0x44, 0x42, 0x62, 0xbd, 0x9b, 0x04, 0x4b, 0x59, 0xb2,
-	0xcc, 0x42, 0x90, 0xb8, 0x8c, 0xda, 0x33, 0xbd, 0xf6, 0x68, 0xe7, 0x61, 0xba, 0xc7, 0x1b, 0xe7,
-	0x08, 0x12, 0x17, 0x4e, 0x1c, 0x91, 0xe0, 0x90, 0x7f, 0x80, 0x0b, 0x12, 0x48, 0x70, 0xe1, 0x1a,
-	0x09, 0x09, 0xe5, 0xc0, 0x01, 0x71, 0xb0, 0x90, 0x73, 0xe1, 0xc8, 0x39, 0x27, 0xd4, 0x8f, 0xf1,
-	0x8c, 0x77, 0x83, 0x43, 0x36, 0x86, 0x84, 0x8b, 0x3d, 0x55, 0xd5, 0xdd, 0x53, 0xf5, 0xab, 0xea,
-	0x5f, 0x77, 0x0d, 0xac, 0x8d, 0x5a, 0x21, 0x41, 0xb6, 0x87, 0x5b, 0xd1, 0xdd, 0x01, 0xa6, 0xe2,
-	0xb7, 0x39, 0x20, 0x61, 0x14, 0xea, 0xa7, 0xbb, 0x28, 0x70, 0xec, 0x3e, 0x72, 0x83, 0xa6, 0xf8,
-	0x1d, 0x35, 0xc5, 0xd8, 0xe6, 0xfe, 0xa5, 0xb5, 0xf3, 0x51, 0xdf, 0x25, 0x8e, 0x35, 0x40, 0x24,
-	0xba, 0xdb, 0xe2, 0xe3, 0x5b, 0xbd, 0xb0, 0x17, 0x26, 0x4f, 0x62, 0x91, 0x33, 0x5f, 0xab, 0x50,
-	0xd9, 0xa2, 0x3d, 0x13, 0x7f, 0x38, 0xc4, 0x34, 0xda, 0x44, 0x11, 0xd2, 0xdf, 0x86, 0x15, 0xb1,
-	0x8e, 0x45, 0x6d, 0xe2, 0x0e, 0x22, 0xcb, 0x75, 0xaa, 0x4a, 0x5d, 0x69, 0x68, 0xed, 0xb3, 0x93,
-	0xb1, 0x51, 0xb9, 0xc5, 0x6d, 0x3b, 0xdc, 0xd4, 0xd9, 0x7c, 0x74, 0x48, 0x63, 0x56, 0xc2, 0xb4,
-	0xec, 0xe8, 0x6b, 0x50, 0xb0, 0x91, 0xe7, 0x39, 0x28, 0x42, 0x55, 0xb5, 0xae, 0x34, 0x96, 0xcd,
-	0xa9, 0xac, 0x9f, 0x86, 0x22, 0xa2, 0x7b, 0x96, 0x1d, 0x0e, 0x83, 0xa8, 0xaa, 0xd5, 0x95, 0x46,
-	0xc6, 0x2c, 0x20, 0xba, 0xb7, 0xc1, 0x64, 0x66, 0xf4, 0xdd, 0x40, 0x1a, 0x33, 0xc2, 0xe8, 0xbb,
-	0x81, 0x30, 0xbe, 0x02, 0x45, 0xdb, 0x73, 0x71, 0xc0, 0xdd, 0xcb, 0xd6, 0x95, 0x46, 0xb1, 0xbd,
-	0x3c, 0x19, 0x1b, 0x85, 0x0d, 0xae, 0xec, 0x6c, 0x9a, 0x05, 0x61, 0xee, 0x38, 0x7a, 0x07, 0x72,
-	0x14, 0x07, 0x0e, 0x26, 0xd5, 0x1c, 0x7b, 0x7d, 0xfb, 0xd2, 0xa3, 0xb1, 0x71, 0xb1, 0xe7, 0x46,
-	0xfd, 0x61, 0xb7, 0x69, 0x87, 0x7e, 0xcb, 0x0e, 0xa9, 0x1f, 0x52, 0xf9, 0x77, 0x91, 0x3a, 0x7b,
-	0x12, 0xe6, 0x75, 0xdb, 0x5e, 0x77, 0x1c, 0x82, 0x29, 0x35, 0xe5, 0x02, 0x57, 0x33, 0xbf, 0xdf,
-	0x33, 0x94, 0x33, 0x3f, 0xa8, 0x50, 0xe6, 0xa0, 0x0d, 0x42, 0x22, 0x30, 0xbb, 0x02, 0x40, 0x04,
-	0x84, 0x09, 0x5a, 0x6b, 0x93, 0xb1, 0x51, 0x94, 0xc0, 0x72, 0xa0, 0x12, 0xc1, 0x2c, 0xca, 0xd1,
-	0x1d, 0x47, 0xdf, 0x82, 0x12, 0x41, 0x77, 0x2c, 0xc2, 0x17, 0xa3, 0x55, 0xb5, 0xae, 0x35, 0x4a,
-	0x97, 0xcf, 0x37, 0xe7, 0x24, 0xb7, 0x69, 0xa2, 0x3b, 0xe2, 0xdd, 0xed, 0xcc, 0xfd, 0xb1, 0xb1,
-	0x64, 0x02, 0x89, 0x15, 0x54, 0xbf, 0x05, 0xc5, 0x7d, 0xe4, 0xb9, 0x0e, 0x8a, 0x42, 0xc2, 0x11,
-	0xfd, 0xfb, 0xf1, 0xde, 0x46, 0x5e, 0x1c, 0x6f, 0xb2, 0x86, 0xbe, 0x05, 0x05, 0xe1, 0x1b, 0x26,
-	0x3c, 0x09, 0x47, 0xc2, 0x6f, 0xba, 0x84, 0x44, 0xf0, 0x13, 0x15, 0x8e, 0x6f, 0xd1, 0xde, 0x06,
-	0xc1, 0x28, 0xc2, 0x0c, 0xc1, 0x9d, 0x70, 0x48, 0x6c, 0xac, 0xdf, 0x80, 0x6c, 0x78, 0x27, 0xc0,
-	0x84, 0x43, 0x78, 0xa4, 0x37, 0x89, 0xf9, 0xba, 0x0e, 0x99, 0x00, 0xf9, 0x98, 0x17, 0x5c, 0xd1,
-	0xe4, 0xcf, 0x7a, 0x1d, 0x4a, 0x0e, 0x16, 0x35, 0xed, 0x86, 0x01, 0x07, 0xa7, 0x68, 0xa6, 0x55,
-	0x7a, 0x0d, 0x00, 0x8f, 0xb0, 0x3d, 0x8c, 0x50, 0xd7, 0xc3, 0x22, 0x5a, 0x33, 0xa5, 0x49, 0x55,
-	0x52, 0x76, 0x31, 0x95, 0xf4, 0xa3, 0x0a, 0xab, 0x5b, 0xb4, 0x77, 0xcd, 0x71, 0xa3, 0x14, 0x0a,
-	0xd7, 0xa1, 0xc2, 0x76, 0x87, 0x45, 0xb9, 0x98, 0x54, 0x54, 0x7d, 0x32, 0x36, 0x96, 0x93, 0x71,
-	0xbc, 0xa8, 0x66, 0x64, 0x73, 0xd9, 0x49, 0x24, 0x27, 0x41, 0x53, 0x5d, 0x10, 0x9a, 0xda, 0x5f,
-	0xa3, 0x99, 0x79, 0x12, 0x9a, 0xd9, 0x39, 0x68, 0x2e, 0x68, 0x5f, 0xfe, 0xa4, 0xc2, 0xc9, 0x69,
-	0x55, 0xa5, 0x59, 0xe9, 0x79, 0xd7, 0x95, 0x0e, 0x19, 0x3b, 0x74, 0xe2, 0x8a, 0xe2, 0xcf, 0xfa,
-	0x29, 0xc8, 0x51, 0xbb, 0x8f, 0x7d, 0x24, 0xd8, 0xcb, 0x94, 0x92, 0x7e, 0x05, 0x8e, 0xc9, 0xbc,
-	0xb3, 0x61, 0xd6, 0x90, 0x78, 0x1c, 0x9e, 0x62, 0x7b, 0x75, 0x32, 0x36, 0xca, 0x22, 0xb7, 0x1b,
-	0xa1, 0x83, 0xdf, 0x33, 0x6f, 0x9a, 0x65, 0x9a, 0x88, 0xc4, 0x4b, 0x01, 0x9a, 0x5f, 0x0c, 0xa0,
-	0x5f, 0x6a, 0x7c, 0x9b, 0xb2, 0xf2, 0x9c, 0x81, 0x73, 0xd1, 0x47, 0xc4, 0x73, 0x2e, 0xd4, 0x38,
-	0x3d, 0xd9, 0xc7, 0xa6, 0x27, 0xf7, 0xa4, 0xf4, 0xe4, 0x9f, 0x3a, 0x3d, 0x85, 0xc5, 0xa4, 0xe7,
-	0x5b, 0x85, 0x1f, 0xde, 0xeb, 0x8e, 0x63, 0x4a, 0x7a, 0x9d, 0xa5, 0x7f, 0x65, 0xc1, 0xf4, 0xaf,
-	0x2e, 0x8a, 0xfe, 0xbf, 0x53, 0x38, 0xed, 0x99, 0xd8, 0x0f, 0xf7, 0xf1, 0x7f, 0xcc, 0xf7, 0xaf,
-	0x14, 0x80, 0x17, 0xe7, 0xc4, 0x5a, 0x83, 0xc2, 0xae, 0xeb, 0x61, 0x3e, 0x53, 0x54, 0xf6, 0x54,
-	0x96, 0xfe, 0x7e, 0xac, 0xc2, 0xf2, 0x8b, 0xc4, 0x85, 0x73, 0x3c, 0xfe, 0x07, 0x38, 0x51, 0x82,
-	0xf0, 0x8d, 0x02, 0xc0, 0x6f, 0x4d, 0xfc, 0xd6, 0xa5, 0xbf, 0x01, 0x25, 0x3c, 0x8a, 0x30, 0x09,
-	0x90, 0x97, 0x50, 0xd7, 0x4b, 0x93, 0xb1, 0x01, 0xd7, 0xa4, 0x9a, 0xd3, 0x56, 0x4a, 0x62, 0x07,
-	0x97, 0x7c, 0x76, 0x1e, 0x73, 0x3e, 0xab, 0x47, 0x3a, 0x9f, 0xd3, 0x37, 0x63, 0x6d, 0xf6, 0x66,
-	0x2c, 0xfd, 0xfe, 0x48, 0x81, 0xe2, 0xf4, 0xb6, 0xf7, 0xac, 0x6e, 0x9f, 0x86, 0x22, 0x1e, 0xb9,
-	0x11, 0xc7, 0x90, 0x7b, 0x5c, 0x36, 0x0b, 0x4c, 0xc1, 0xa0, 0x62, 0xc9, 0x4c, 0xf9, 0x91, 0x49,
-	0xf9, 0xf0, 0x87, 0x02, 0xff, 0x13, 0x05, 0x24, 0xe1, 0xdb, 0x46, 0xf6, 0x1e, 0x16, 0xf7, 0xde,
-	0x99, 0x5b, 0xb8, 0x32, 0xf7, 0x16, 0xfe, 0xb8, 0x33, 0x43, 0x5d, 0x50, 0x5b, 0xa1, 0xcd, 0x6b,
-	0x2b, 0x32, 0xf3, 0xda, 0x8a, 0xec, 0x6c, 0x5b, 0x21, 0x43, 0xfe, 0x59, 0x85, 0x6a, 0x1c, 0x32,
-	0x1d, 0x84, 0x01, 0xc5, 0x47, 0x8b, 0x79, 0xb6, 0x2d, 0x50, 0x9f, 0xa6, 0x2d, 0x60, 0x21, 0x04,
-	0xf4, 0x40, 0x67, 0x14, 0x50, 0x11, 0xc2, 0xcb, 0xb0, 0x1c, 0xaf, 0x1b, 0xb9, 0x72, 0x1f, 0x69,
-	0x66, 0x49, 0xea, 0xde, 0x75, 0x7d, 0x2c, 0x86, 0xd0, 0xd0, 0xdb, 0xc7, 0x62, 0x48, 0x36, 0x1e,
-	0xc2, 0x75, 0x7c, 0xc8, 0x3b, 0x50, 0x89, 0x87, 0xd0, 0x08, 0x45, 0x43, 0xca, 0x37, 0x55, 0xe5,
-	0xf2, 0x85, 0xf9, 0xcd, 0x87, 0x98, 0xb2, 0xc3, 0x67, 0x98, 0x65, 0x92, 0x16, 0xd9, 0x06, 0x26,
-	0x98, 0x0e, 0xbd, 0x48, 0xdc, 0x40, 0x4c, 0x29, 0x49, 0x58, 0x3f, 0xcd, 0x40, 0x3e, 0xde, 0x82,
-	0xff, 0x66, 0x97, 0xe9, 0xc0, 0x09, 0x09, 0x0d, 0x76, 0xac, 0xe9, 0xf1, 0x40, 0xab, 0x5a, 0x5d,
-	0x3b, 0xda, 0x19, 0x73, 0x7c, 0xba, 0xdc, 0xed, 0xe9, 0x6a, 0xf3, 0xdb, 0xd5, 0x73, 0x0c, 0x6b,
-	0x91, 0xb1, 0x3e, 0x76, 0x7b, 0xfd, 0x48, 0x26, 0xa4, 0x2c, 0xb5, 0x6f, 0x71, 0xe5, 0xa1, 0xc4,
-	0xe6, 0x0e, 0x27, 0x76, 0xa6, 0xfc, 0xf2, 0x73, 0xcb, 0xef, 0x26, 0x14, 0xdc, 0xae, 0x6d, 0xb9,
-	0xc1, 0x6e, 0xc8, 0xaf, 0x1c, 0xa5, 0xcb, 0x67, 0xe7, 0xa6, 0xb6, 0xd3, 0xde, 0xe8, 0x04, 0xbb,
-	0x61, 0xbb, 0x34, 0x19, 0x1b, 0x79, 0x29, 0x98, 0x79, 0xb7, 0x6b, 0xb3, 0x07, 0xfd, 0x06, 0x1c,
-	0x13, 0x8d, 0x6a, 0x5c, 0xd0, 0xb4, 0x5a, 0xac, 0x6b, 0x0d, 0xad, 0x6d, 0x30, 0x12, 0x4e, 0xd8,
-	0xb5, 0xb3, 0x49, 0x0f, 0x90, 0x50, 0x99, 0x24, 0x46, 0x87, 0xca, 0x62, 0x78, 0x1f, 0xe2, 0x57,
-	0xe8, 0x06, 0x94, 0x24, 0x95, 0x32, 0x9a, 0x13, 0x7b, 0xca, 0x04, 0xa1, 0xda, 0x66, 0xc4, 0x77,
-	0x0e, 0x2a, 0x31, 0xff, 0xf7, 0x51, 0x10, 0x60, 0x4f, 0x9e, 0x39, 0x31, 0xd7, 0x0b, 0xa5, 0x5c,
-	0xf8, 0x57, 0x05, 0x72, 0x92, 0x30, 0x17, 0x7e, 0xa3, 0xb8, 0x00, 0xab, 0x6e, 0x60, 0x75, 0xf1,
-	0x6e, 0x48, 0xb0, 0x25, 0x4b, 0x9f, 0xfb, 0x52, 0x30, 0x8f, 0xb9, 0x41, 0x9b, 0xeb, 0xe5, 0x06,
-	0x39, 0xd8, 0xd8, 0x6b, 0xcf, 0xd6, 0xd8, 0xcb, 0xe0, 0xbe, 0x50, 0xe0, 0xf8, 0xb4, 0xe6, 0x84,
-	0x89, 0x43, 0xb8, 0xf0, 0x48, 0x2f, 0x82, 0x6e, 0x33, 0xe2, 0xb3, 0x87, 0x91, 0xbb, 0x8f, 0x2d,
-	0xdf, 0xa5, 0x14, 0x0b, 0x0a, 0xcb, 0x98, 0xab, 0x29, 0xcb, 0x16, 0x37, 0x48, 0xef, 0xbe, 0x57,
-	0x21, 0xb7, 0x8d, 0x08, 0xf2, 0xa9, 0x7e, 0x09, 0x4e, 0xfa, 0x68, 0x64, 0xa5, 0x2b, 0x46, 0xec,
-	0x0c, 0x85, 0x2f, 0xa1, 0xfb, 0x68, 0x94, 0x94, 0x8c, 0xd8, 0x23, 0x67, 0xa0, 0xcc, 0xa6, 0x24,
-	0xcc, 0x2d, 0xde, 0x56, 0xf2, 0xd1, 0x68, 0x3d, 0x26, 0xef, 0xd7, 0xe0, 0x14, 0x1e, 0x0d, 0x5c,
-	0x82, 0xd8, 0x5d, 0xc2, 0xea, 0x7a, 0xa1, 0x3d, 0xfb, 0xf5, 0xe8, 0x44, 0x62, 0x6d, 0x33, 0xe3,
-	0x74, 0x16, 0x5b, 0xf9, 0x50, 0x40, 0x54, 0xee, 0xd3, 0x13, 0x3e, 0x1a, 0x6d, 0x1c, 0x88, 0x89,
-	0xea, 0x0d, 0x58, 0xe9, 0x22, 0x8a, 0xa7, 0xfe, 0xf7, 0x10, 0x95, 0xe7, 0x45, 0x85, 0xe9, 0xa5,
-	0xef, 0x37, 0x10, 0xd5, 0xaf, 0xc0, 0xff, 0x07, 0x98, 0x24, 0xd4, 0x32, 0x33, 0x25, 0xc7, 0xa7,
-	0x9c, 0x1a, 0x60, 0x92, 0x4a, 0x5c, 0x3c, 0xf5, 0x6a, 0xe1, 0xf3, 0x7b, 0xc6, 0x12, 0x03, 0xef,
-	0xc2, 0x9b, 0x50, 0x9e, 0xe1, 0x56, 0xbd, 0x00, 0x99, 0x5b, 0x03, 0x1c, 0xac, 0x2c, 0xe9, 0x25,
-	0xc8, 0xef, 0x0c, 0x6d, 0x1b, 0x53, 0xba, 0xa2, 0x30, 0xe1, 0x3a, 0x72, 0xbd, 0x21, 0xc1, 0x2b,
-	0x2a, 0x13, 0xae, 0xb1, 0x88, 0xb1, 0xb3, 0xa2, 0xb5, 0xb7, 0xef, 0x4f, 0x6a, 0xca, 0x83, 0x49,
-	0x4d, 0xf9, 0x6d, 0x52, 0x53, 0x3e, 0x7b, 0x58, 0x5b, 0x7a, 0xf0, 0xb0, 0xb6, 0xf4, 0xcb, 0xc3,
-	0xda, 0xd2, 0x07, 0xaf, 0xa7, 0xea, 0x80, 0x15, 0x20, 0xff, 0xf8, 0x67, 0x87, 0x5e, 0x6b, 0x5a,
-	0x8d, 0x2d, 0xf1, 0x3b, 0xfb, 0xbd, 0xb1, 0x9b, 0xe3, 0x03, 0x5f, 0xfd, 0x33, 0x00, 0x00, 0xff,
-	0xff, 0xb0, 0xed, 0xdd, 0xe6, 0x88, 0x14, 0x00, 0x00,
+	// 1500 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xd4, 0x58, 0x3b, 0x6c, 0x1c, 0x55,
+	0x17, 0xf6, 0xcc, 0xec, 0xae, 0x67, 0xcf, 0xda, 0x8e, 0x33, 0x49, 0x9c, 0x8d, 0xfd, 0xcb, 0xbb,
+	0x7f, 0xf4, 0xff, 0xc1, 0x44, 0x64, 0x57, 0x09, 0x08, 0x11, 0x4b, 0x48, 0x78, 0xed, 0x24, 0x58,
+	0xc2, 0xc4, 0x8c, 0x43, 0x0a, 0x9a, 0xd1, 0xdd, 0x99, 0x9b, 0xf5, 0xc8, 0xf3, 0xe2, 0xde, 0x59,
+	0x7b, 0x5d, 0x82, 0x44, 0x9f, 0x92, 0x82, 0x22, 0x25, 0x0d, 0x0d, 0x12, 0x48, 0x54, 0xb4, 0x91,
+	0x90, 0x50, 0x0a, 0x0a, 0x44, 0xb1, 0xa0, 0x4d, 0x83, 0x44, 0x43, 0x9d, 0x0a, 0xdd, 0xc7, 0xbc,
+	0x42, 0xd8, 0x24, 0xce, 0x42, 0x42, 0x63, 0xcf, 0x79, 0xdc, 0x99, 0x73, 0xbf, 0xf3, 0x9d, 0x73,
+	0xef, 0x59, 0x58, 0x1c, 0xb4, 0x43, 0x82, 0x6c, 0x0f, 0xb7, 0xe3, 0xc3, 0x08, 0x53, 0xf1, 0xb7,
+	0x15, 0x91, 0x30, 0x0e, 0x8d, 0xa5, 0x2e, 0x0a, 0x1c, 0x7b, 0x17, 0xb9, 0x41, 0x4b, 0xfc, 0x1d,
+	0xb4, 0x84, 0x6f, 0x6b, 0xff, 0xe2, 0xe2, 0xb9, 0x78, 0xd7, 0x25, 0x8e, 0x15, 0x21, 0x12, 0x1f,
+	0xb6, 0xb9, 0x7f, 0xbb, 0x17, 0xf6, 0xc2, 0xec, 0x49, 0xbc, 0x64, 0xb1, 0xd1, 0x0b, 0xc3, 0x9e,
+	0x87, 0x85, 0x4b, 0xb7, 0x7f, 0xab, 0x1d, 0xbb, 0x3e, 0xa6, 0x31, 0xf2, 0x23, 0xe1, 0x70, 0xf6,
+	0x4b, 0x15, 0xe6, 0xb6, 0x68, 0xcf, 0xc4, 0x1f, 0xf6, 0x31, 0x8d, 0x37, 0x50, 0x8c, 0x8c, 0x77,
+	0x61, 0x5e, 0x7c, 0xc8, 0xa2, 0x36, 0x71, 0xa3, 0xd8, 0x72, 0x9d, 0xba, 0xd2, 0x54, 0x56, 0xb4,
+	0xce, 0xff, 0x46, 0xc3, 0xc6, 0xdc, 0x75, 0x6e, 0xdb, 0xe1, 0xa6, 0xcd, 0x8d, 0x07, 0x7f, 0xd2,
+	0x98, 0x73, 0x61, 0x5e, 0x76, 0x8c, 0x45, 0xd0, 0x6d, 0xe4, 0x79, 0x0e, 0x8a, 0x51, 0x5d, 0x6d,
+	0x2a, 0x2b, 0x33, 0x66, 0x2a, 0x1b, 0x4b, 0x50, 0x45, 0x74, 0xcf, 0xb2, 0xc3, 0x7e, 0x10, 0xd7,
+	0xb5, 0xa6, 0xb2, 0x52, 0x32, 0x75, 0x44, 0xf7, 0xd6, 0x99, 0xcc, 0x8c, 0xbe, 0x1b, 0x48, 0x63,
+	0x49, 0x18, 0x7d, 0x37, 0x10, 0xc6, 0x97, 0xa1, 0x6a, 0x7b, 0x2e, 0x0e, 0x78, 0x78, 0xe5, 0xa6,
+	0xb2, 0x52, 0xed, 0xcc, 0x8c, 0x86, 0x0d, 0x7d, 0x9d, 0x2b, 0x37, 0x37, 0x4c, 0x5d, 0x98, 0x37,
+	0x1d, 0x63, 0x13, 0x2a, 0x14, 0x07, 0x0e, 0x26, 0xf5, 0x0a, 0xfb, 0x7c, 0xe7, 0xe2, 0x83, 0x61,
+	0xe3, 0x42, 0xcf, 0x8d, 0x77, 0xfb, 0xdd, 0x96, 0x1d, 0xfa, 0x6d, 0x3b, 0xa4, 0x7e, 0x48, 0xe5,
+	0xbf, 0x0b, 0xd4, 0xd9, 0x93, 0x79, 0x58, 0xb3, 0xed, 0x35, 0xc7, 0x21, 0x98, 0x52, 0x53, 0xbe,
+	0x60, 0xb5, 0xf4, 0xeb, 0x9d, 0x86, 0x72, 0xf6, 0x5b, 0x15, 0x66, 0x39, 0x68, 0x51, 0x48, 0x04,
+	0x66, 0x97, 0x01, 0x88, 0x80, 0x30, 0x43, 0x6b, 0x71, 0x34, 0x6c, 0x54, 0x25, 0xb0, 0x1c, 0xa8,
+	0x4c, 0x30, 0xab, 0xd2, 0x7b, 0xd3, 0x31, 0xb6, 0xa0, 0x46, 0xd0, 0x81, 0x45, 0xf8, 0xcb, 0x68,
+	0x5d, 0x6d, 0x6a, 0x2b, 0xb5, 0x4b, 0xe7, 0x5a, 0x63, 0xb2, 0xdf, 0x32, 0xd1, 0x81, 0xf8, 0x76,
+	0xa7, 0x74, 0x77, 0xd8, 0x98, 0x32, 0x81, 0x24, 0x0a, 0x6a, 0x5c, 0x87, 0xea, 0x3e, 0xf2, 0x5c,
+	0x07, 0xc5, 0x21, 0xe1, 0x88, 0x3e, 0xf9, 0x7e, 0x6f, 0x22, 0x2f, 0xd9, 0x6f, 0xf6, 0x0e, 0x63,
+	0x0b, 0x74, 0x11, 0x1b, 0x26, 0x3c, 0x09, 0x47, 0xc2, 0x2f, 0x7d, 0x85, 0x44, 0xf0, 0x13, 0x15,
+	0x4e, 0x6c, 0xd1, 0xde, 0x3a, 0xc1, 0x28, 0xc6, 0x0c, 0xc1, 0x9d, 0xb0, 0x4f, 0x6c, 0x6c, 0x5c,
+	0x83, 0x72, 0x78, 0x10, 0x60, 0xc2, 0x21, 0x3c, 0xd2, 0x97, 0xc4, 0x7a, 0xc3, 0x80, 0x52, 0x80,
+	0x7c, 0xcc, 0x09, 0x57, 0x35, 0xf9, 0xb3, 0xd1, 0x84, 0x9a, 0x83, 0x05, 0xa7, 0xdd, 0x30, 0xe0,
+	0xe0, 0x54, 0xcd, 0xbc, 0xca, 0x58, 0x06, 0xc0, 0x03, 0x6c, 0xf7, 0x63, 0xd4, 0xf5, 0xb0, 0xd8,
+	0xad, 0x99, 0xd3, 0xe4, 0x98, 0x54, 0x9e, 0x0c, 0x93, 0xbe, 0x53, 0xe1, 0xf8, 0x16, 0xed, 0x5d,
+	0x71, 0xdc, 0x38, 0x87, 0xc2, 0x55, 0x98, 0x63, 0xd5, 0x61, 0x51, 0x2e, 0x66, 0x8c, 0x6a, 0x8e,
+	0x86, 0x8d, 0x99, 0xcc, 0x8f, 0x93, 0xaa, 0x20, 0x9b, 0x33, 0x4e, 0x26, 0x39, 0x19, 0x9a, 0xea,
+	0x84, 0xd0, 0xd4, 0xfe, 0x1a, 0xcd, 0xd2, 0xe3, 0xd0, 0x2c, 0x8f, 0x41, 0x73, 0x42, 0x75, 0xf9,
+	0xbd, 0x0a, 0xa7, 0x52, 0x56, 0xe5, 0xbb, 0xd2, 0xf3, 0xe6, 0x95, 0x01, 0x25, 0x3b, 0x74, 0x12,
+	0x46, 0xf1, 0x67, 0x63, 0x01, 0x2a, 0xd4, 0xde, 0xc5, 0x3e, 0x12, 0xdd, 0xcb, 0x94, 0x92, 0x71,
+	0x19, 0x8e, 0xc9, 0xbc, 0x33, 0x37, 0xab, 0x4f, 0x3c, 0x0e, 0x4f, 0xb5, 0x73, 0x7c, 0x34, 0x6c,
+	0xcc, 0x8a, 0xdc, 0xae, 0x87, 0x0e, 0x7e, 0xdf, 0x7c, 0xc7, 0x9c, 0xa5, 0x99, 0x48, 0xbc, 0x1c,
+	0xa0, 0xd3, 0x93, 0x01, 0xf4, 0x33, 0x8d, 0x97, 0x29, 0xa3, 0x67, 0x01, 0xce, 0x49, 0x1f, 0x11,
+	0xcf, 0x99, 0xa8, 0x49, 0x7a, 0xca, 0x8f, 0x4c, 0x4f, 0xe5, 0x71, 0xe9, 0x99, 0x7e, 0xea, 0xf4,
+	0xe8, 0x93, 0x49, 0x8f, 0x03, 0xb5, 0x2d, 0xda, 0x5b, 0xb3, 0x63, 0x77, 0x1f, 0xc5, 0xb8, 0xd8,
+	0xfa, 0x95, 0x67, 0x6f, 0xfd, 0xf2, 0x2b, 0x5f, 0x2b, 0xfc, 0x8a, 0xb0, 0xe6, 0x38, 0xa6, 0x6c,
+	0xe2, 0x13, 0xff, 0x52, 0xe1, 0x90, 0x51, 0x27, 0x75, 0xc8, 0x7c, 0xa3, 0xf0, 0xe6, 0x6a, 0x62,
+	0x3f, 0xdc, 0xc7, 0xff, 0xb2, 0xd8, 0xbf, 0x50, 0x00, 0x5e, 0x9c, 0x73, 0x71, 0x11, 0xf4, 0x5b,
+	0xae, 0x87, 0xf9, 0x4a, 0x51, 0x3f, 0xa9, 0x2c, 0xe3, 0xfd, 0x58, 0x85, 0x99, 0x17, 0xa9, 0xe3,
+	0x8e, 0x89, 0xf8, 0x6f, 0xe8, 0xbc, 0x12, 0x84, 0xaf, 0x14, 0x00, 0x7e, 0x37, 0xe3, 0x77, 0x3b,
+	0xe3, 0x4d, 0xa8, 0xe1, 0x41, 0x8c, 0x49, 0x80, 0xbc, 0xac, 0x41, 0xfe, 0x67, 0x34, 0x6c, 0xc0,
+	0x15, 0xa9, 0xe6, 0xcd, 0x31, 0x27, 0xb1, 0xe3, 0x51, 0x3e, 0x3b, 0x8f, 0xb8, 0x05, 0xa8, 0x47,
+	0xba, 0x05, 0xe4, 0xef, 0xdf, 0x5a, 0xf1, 0xfe, 0x2d, 0xe3, 0xfe, 0x48, 0x81, 0x6a, 0x7a, 0xa7,
+	0x7c, 0xd6, 0xb0, 0x97, 0xa0, 0x8a, 0x07, 0x6e, 0xcc, 0x31, 0xe4, 0x11, 0xcf, 0x9a, 0x3a, 0x53,
+	0x30, 0xa8, 0x58, 0x32, 0x73, 0x71, 0x94, 0x72, 0x31, 0xfc, 0xa6, 0xc1, 0x74, 0x02, 0xdc, 0x3f,
+	0x39, 0x81, 0x38, 0x70, 0x52, 0xde, 0xc5, 0xb1, 0x63, 0xa5, 0x45, 0x4d, 0xeb, 0x5a, 0x53, 0x3b,
+	0x5a, 0x67, 0x38, 0x91, 0xbe, 0xee, 0x66, 0xfa, 0xb6, 0xf1, 0xa3, 0xcc, 0xff, 0x61, 0x2e, 0x19,
+	0x1e, 0x76, 0xb1, 0xdb, 0xdb, 0x8d, 0x39, 0x2f, 0x35, 0x73, 0x56, 0x6a, 0xdf, 0xe6, 0x4a, 0xe3,
+	0x1a, 0xcc, 0x24, 0x6e, 0x6c, 0x8a, 0xe3, 0xdc, 0xac, 0x5d, 0x5a, 0x6c, 0x89, 0x11, 0xaf, 0x95,
+	0x8c, 0x78, 0xad, 0x1b, 0xc9, 0x88, 0xd7, 0xd1, 0xd9, 0x74, 0x70, 0xfb, 0xe7, 0x86, 0x62, 0xd6,
+	0xe4, 0x4a, 0x66, 0x2b, 0x8e, 0x4e, 0xd3, 0x63, 0x47, 0xa7, 0x6d, 0x98, 0x11, 0xc3, 0x09, 0x5f,
+	0x4d, 0xeb, 0x3a, 0x9f, 0x4e, 0x5e, 0x7a, 0xfc, 0x74, 0xc2, 0xfd, 0xe5, 0x78, 0x52, 0x23, 0xa9,
+	0x86, 0xca, 0x6c, 0xff, 0xa4, 0x40, 0x45, 0xd2, 0x6d, 0xe2, 0xfd, 0xf8, 0x3c, 0x1c, 0x77, 0x03,
+	0xab, 0x8b, 0x6f, 0x85, 0x04, 0x5b, 0x04, 0xd3, 0xd0, 0xdb, 0x17, 0x44, 0xd4, 0xcd, 0x63, 0x6e,
+	0xd0, 0xe1, 0x7a, 0x53, 0xa8, 0x1f, 0x1e, 0xbe, 0xb4, 0x67, 0x1b, 0xbe, 0xe4, 0xe6, 0x7e, 0x57,
+	0xe0, 0xb4, 0x60, 0xa4, 0xdc, 0xf5, 0x36, 0xb2, 0xf7, 0xb0, 0x18, 0x14, 0x0b, 0xd8, 0x2b, 0x63,
+	0xb1, 0x7f, 0x54, 0x15, 0xa8, 0x13, 0xaa, 0x02, 0x6d, 0xdc, 0x1c, 0x5e, 0x1a, 0x37, 0x87, 0x97,
+	0x8b, 0xe4, 0x95, 0x5b, 0xfe, 0x41, 0x85, 0x7a, 0xb2, 0x65, 0x1a, 0x85, 0x01, 0xc5, 0x47, 0xdb,
+	0x73, 0x71, 0x8e, 0x56, 0x9f, 0x66, 0x8e, 0x66, 0x5b, 0x08, 0xe8, 0x43, 0x3f, 0x25, 0x04, 0x54,
+	0x6c, 0xe1, 0xbf, 0x0f, 0xd5, 0x4e, 0x89, 0x17, 0x58, 0xa1, 0x2a, 0xb8, 0x0b, 0x67, 0x85, 0x70,
+	0x29, 0x27, 0x2e, 0x5c, 0xc7, 0x5d, 0xde, 0x63, 0x85, 0x2a, 0x5c, 0x68, 0x8c, 0xe2, 0x3e, 0xe5,
+	0x35, 0x38, 0x77, 0xe9, 0xfc, 0x78, 0xc2, 0x88, 0x25, 0x3b, 0x7c, 0x05, 0x2b, 0xea, 0x9c, 0xc8,
+	0xce, 0x22, 0x82, 0x69, 0xdf, 0x8b, 0xc5, 0x95, 0xdd, 0x94, 0x92, 0x84, 0x35, 0x82, 0x63, 0x69,
+	0x13, 0x91, 0x0b, 0x96, 0xa0, 0xea, 0x52, 0x0b, 0xb1, 0x3b, 0x1f, 0xe6, 0x60, 0xea, 0xa6, 0xee,
+	0x52, 0x7e, 0x07, 0xc4, 0xc6, 0x2a, 0x94, 0xa9, 0x1b, 0xd8, 0x82, 0xee, 0x4f, 0xda, 0x1b, 0xc4,
+	0x12, 0xf9, 0xc5, 0xcf, 0x35, 0xa8, 0x6c, 0x23, 0x82, 0x7c, 0x6a, 0x5c, 0x84, 0x53, 0x3e, 0x1a,
+	0x58, 0xb9, 0xfa, 0x97, 0xe0, 0x2a, 0x1c, 0x5c, 0xc3, 0x47, 0x83, 0xac, 0xd4, 0x05, 0xcc, 0x67,
+	0x61, 0x96, 0x2d, 0xc9, 0xa8, 0xa4, 0x72, 0xd7, 0x9a, 0x8f, 0x06, 0x6b, 0x09, 0x9b, 0x5e, 0x83,
+	0x05, 0x3c, 0x88, 0x5c, 0x82, 0xd8, 0x39, 0x6d, 0x75, 0xbd, 0xd0, 0x2e, 0xfe, 0xfe, 0x73, 0x32,
+	0xb3, 0x76, 0x98, 0x51, 0xac, 0x5a, 0x81, 0xf9, 0x2e, 0xa2, 0x38, 0x8d, 0xa4, 0x87, 0xa8, 0xe4,
+	0xe9, 0x1c, 0xd3, 0xcb, 0x28, 0xae, 0x21, 0x6a, 0x5c, 0x86, 0x33, 0x11, 0x26, 0x59, 0x2b, 0x2f,
+	0x2c, 0x11, 0xec, 0x5d, 0x88, 0x30, 0x49, 0x71, 0xcd, 0x2d, 0x7d, 0x05, 0x0c, 0x8a, 0xfc, 0xc8,
+	0x73, 0x83, 0x9e, 0x15, 0x93, 0x43, 0x19, 0x56, 0x85, 0xaf, 0x99, 0x4f, 0x2c, 0x37, 0xc8, 0xa1,
+	0x08, 0xe9, 0x0d, 0xa8, 0xcb, 0xfa, 0x24, 0xf8, 0x00, 0x11, 0xc7, 0x8a, 0x30, 0xb1, 0x71, 0x10,
+	0xa3, 0x1e, 0xe6, 0xc9, 0x2c, 0x99, 0x0b, 0xa1, 0x2c, 0x09, 0x66, 0xde, 0x4e, 0xad, 0xc6, 0x2a,
+	0x9c, 0x71, 0x03, 0x91, 0x42, 0x2b, 0xc2, 0x01, 0xf2, 0xe2, 0x43, 0xcb, 0xe9, 0x8b, 0x3d, 0xf3,
+	0xd9, 0xa0, 0x64, 0x9e, 0x4e, 0x1c, 0xb6, 0x85, 0x7d, 0x43, 0x9a, 0x57, 0xf5, 0x4f, 0xef, 0x34,
+	0xa6, 0x58, 0xaa, 0xce, 0xbf, 0x05, 0xb3, 0x05, 0x6a, 0x19, 0x3a, 0x94, 0xae, 0x47, 0x38, 0x98,
+	0x9f, 0x32, 0x6a, 0x30, 0xbd, 0xd3, 0xb7, 0x6d, 0x4c, 0xe9, 0xbc, 0xc2, 0x84, 0xab, 0xc8, 0xf5,
+	0xfa, 0x04, 0xcf, 0xab, 0x4c, 0xb8, 0xc2, 0xf0, 0xc5, 0xce, 0xbc, 0xd6, 0xd9, 0xbe, 0x3b, 0x5a,
+	0x56, 0xee, 0x8d, 0x96, 0x95, 0x5f, 0x46, 0xcb, 0xca, 0xed, 0xfb, 0xcb, 0x53, 0xf7, 0xee, 0x2f,
+	0x4f, 0xfd, 0x78, 0x7f, 0x79, 0xea, 0x83, 0xd7, 0x73, 0xdd, 0x97, 0x71, 0x9b, 0x13, 0xc8, 0x0e,
+	0xbd, 0x76, 0x4a, 0xf4, 0xb6, 0xf8, 0x5b, 0xfc, 0x01, 0xb3, 0x5b, 0xe1, 0x8e, 0xaf, 0xfe, 0x11,
+	0x00, 0x00, 0xff, 0xff, 0x9a, 0x36, 0xe7, 0x80, 0xd9, 0x14, 0x00, 0x00,
 }
 
 func (this *MsgRequestData) Equal(that interface{}) bool {
@@ -1871,6 +1906,30 @@ func (this *MsgEditOracleScript) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *MsgActivate) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*MsgActivate)
+	if !ok {
+		that2, ok := that.(MsgActivate)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Validator, that1.Validator) {
+		return false
+	}
+	return true
+}
 func (this *MsgAddReporter) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -2057,6 +2116,96 @@ func (this *RawReport) Equal(that interface{}) bool {
 	}
 	return true
 }
+func (this *Request) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Request)
+	if !ok {
+		that2, ok := that.(Request)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.OracleScriptID != that1.OracleScriptID {
+		return false
+	}
+	if !bytes.Equal(this.Calldata, that1.Calldata) {
+		return false
+	}
+	if len(this.RequestedValidators) != len(that1.RequestedValidators) {
+		return false
+	}
+	for i := range this.RequestedValidators {
+		if !bytes.Equal(this.RequestedValidators[i], that1.RequestedValidators[i]) {
+			return false
+		}
+	}
+	if this.MinCount != that1.MinCount {
+		return false
+	}
+	if this.RequestHeight != that1.RequestHeight {
+		return false
+	}
+	if !this.RequestTime.Equal(that1.RequestTime) {
+		return false
+	}
+	if this.ClientID != that1.ClientID {
+		return false
+	}
+	if len(this.RawRequests) != len(that1.RawRequests) {
+		return false
+	}
+	for i := range this.RawRequests {
+		if !this.RawRequests[i].Equal(&that1.RawRequests[i]) {
+			return false
+		}
+	}
+	return true
+}
+func (this *Report) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Report)
+	if !ok {
+		that2, ok := that.(Report)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if !bytes.Equal(this.Validator, that1.Validator) {
+		return false
+	}
+	if this.InBeforeResolve != that1.InBeforeResolve {
+		return false
+	}
+	if len(this.RawReports) != len(that1.RawReports) {
+		return false
+	}
+	for i := range this.RawReports {
+		if !this.RawReports[i].Equal(&that1.RawReports[i]) {
+			return false
+		}
+	}
+	return true
+}
 func (this *OracleRequestPacketData) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
@@ -2135,14 +2284,14 @@ func (this *OracleResponsePacketData) Equal(that interface{}) bool {
 	}
 	return true
 }
-func (this *Request) Equal(that interface{}) bool {
+func (this *ValidatorStatus) Equal(that interface{}) bool {
 	if that == nil {
 		return this == nil
 	}
 
-	that1, ok := that.(*Request)
+	that1, ok := that.(*ValidatorStatus)
 	if !ok {
-		that2, ok := that.(Request)
+		that2, ok := that.(ValidatorStatus)
 		if ok {
 			that1 = &that2
 		} else {
@@ -2154,130 +2303,10 @@ func (this *Request) Equal(that interface{}) bool {
 	} else if this == nil {
 		return false
 	}
-	if this.OracleScriptID != that1.OracleScriptID {
+	if this.IsActive != that1.IsActive {
 		return false
 	}
-	if !bytes.Equal(this.Calldata, that1.Calldata) {
-		return false
-	}
-	if len(this.RequestedValidators) != len(that1.RequestedValidators) {
-		return false
-	}
-	for i := range this.RequestedValidators {
-		if !bytes.Equal(this.RequestedValidators[i], that1.RequestedValidators[i]) {
-			return false
-		}
-	}
-	if this.MinCount != that1.MinCount {
-		return false
-	}
-	if this.RequestHeight != that1.RequestHeight {
-		return false
-	}
-	if this.RequestTime != that1.RequestTime {
-		return false
-	}
-	if this.ClientID != that1.ClientID {
-		return false
-	}
-	if !this.IBCInfo.Equal(that1.IBCInfo) {
-		return false
-	}
-	if len(this.RawRequestIDs) != len(that1.RawRequestIDs) {
-		return false
-	}
-	for i := range this.RawRequestIDs {
-		if this.RawRequestIDs[i] != that1.RawRequestIDs[i] {
-			return false
-		}
-	}
-	return true
-}
-func (this *IBCInfo) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*IBCInfo)
-	if !ok {
-		that2, ok := that.(IBCInfo)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if this.SourcePort != that1.SourcePort {
-		return false
-	}
-	if this.SourceChannel != that1.SourceChannel {
-		return false
-	}
-	return true
-}
-func (this *Report) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*Report)
-	if !ok {
-		that2, ok := that.(Report)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !bytes.Equal(this.Validator, that1.Validator) {
-		return false
-	}
-	if this.InBeforeResolve != that1.InBeforeResolve {
-		return false
-	}
-	if len(this.RawReports) != len(that1.RawReports) {
-		return false
-	}
-	for i := range this.RawReports {
-		if !this.RawReports[i].Equal(&that1.RawReports[i]) {
-			return false
-		}
-	}
-	return true
-}
-func (this *ValidatorReportInfo) Equal(that interface{}) bool {
-	if that == nil {
-		return this == nil
-	}
-
-	that1, ok := that.(*ValidatorReportInfo)
-	if !ok {
-		that2, ok := that.(ValidatorReportInfo)
-		if ok {
-			that1 = &that2
-		} else {
-			return false
-		}
-	}
-	if that1 == nil {
-		return this == nil
-	} else if this == nil {
-		return false
-	}
-	if !bytes.Equal(this.Validator, that1.Validator) {
-		return false
-	}
-	if this.ConsecutiveMissed != that1.ConsecutiveMissed {
+	if !this.Since.Equal(that1.Since) {
 		return false
 	}
 	return true
@@ -2310,13 +2339,19 @@ func (this *Params) Equal(that interface{}) bool {
 	if this.ExpirationBlockCount != that1.ExpirationBlockCount {
 		return false
 	}
-	if this.MaxConsecutiveMisses != that1.MaxConsecutiveMisses {
-		return false
-	}
 	if this.BaseRequestGas != that1.BaseRequestGas {
 		return false
 	}
 	if this.PerValidatorRequestGas != that1.PerValidatorRequestGas {
+		return false
+	}
+	if this.SamplingTryCount != that1.SamplingTryCount {
+		return false
+	}
+	if this.OracleRewardPercentage != that1.OracleRewardPercentage {
+		return false
+	}
+	if this.InactivePenaltyDuration != that1.InactivePenaltyDuration {
 		return false
 	}
 	return true
@@ -2706,6 +2741,36 @@ func (m *MsgEditOracleScript) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *MsgActivate) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgActivate) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgActivate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *MsgAddReporter) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2976,6 +3041,143 @@ func (m *RawReport) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *Request) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Request) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Request) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RawRequests) > 0 {
+		for iNdEx := len(m.RawRequests) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.RawRequests[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x42
+		}
+	}
+	if len(m.ClientID) > 0 {
+		i -= len(m.ClientID)
+		copy(dAtA[i:], m.ClientID)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.ClientID)))
+		i--
+		dAtA[i] = 0x3a
+	}
+	n1, err1 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.RequestTime, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.RequestTime):])
+	if err1 != nil {
+		return 0, err1
+	}
+	i -= n1
+	i = encodeVarintTypes(dAtA, i, uint64(n1))
+	i--
+	dAtA[i] = 0x32
+	if m.RequestHeight != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.RequestHeight))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.MinCount != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.MinCount))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.RequestedValidators) > 0 {
+		for iNdEx := len(m.RequestedValidators) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.RequestedValidators[iNdEx])
+			copy(dAtA[i:], m.RequestedValidators[iNdEx])
+			i = encodeVarintTypes(dAtA, i, uint64(len(m.RequestedValidators[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.Calldata) > 0 {
+		i -= len(m.Calldata)
+		copy(dAtA[i:], m.Calldata)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Calldata)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.OracleScriptID != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.OracleScriptID))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *Report) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *Report) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *Report) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.RawReports) > 0 {
+		for iNdEx := len(m.RawReports) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.RawReports[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintTypes(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if m.InBeforeResolve {
+		i--
+		if m.InBeforeResolve {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Validator) > 0 {
+		i -= len(m.Validator)
+		copy(dAtA[i:], m.Validator)
+		i = encodeVarintTypes(dAtA, i, uint64(len(m.Validator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *OracleRequestPacketData) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3090,7 +3292,7 @@ func (m *OracleResponsePacketData) MarshalToSizedBuffer(dAtA []byte) (int, error
 	return len(dAtA) - i, nil
 }
 
-func (m *Request) Marshal() (dAtA []byte, err error) {
+func (m *ValidatorStatus) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -3100,215 +3302,33 @@ func (m *Request) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *Request) MarshalTo(dAtA []byte) (int, error) {
+func (m *ValidatorStatus) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *Request) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *ValidatorStatus) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.RawRequestIDs) > 0 {
-		dAtA2 := make([]byte, len(m.RawRequestIDs)*10)
-		var j1 int
-		for _, num1 := range m.RawRequestIDs {
-			num := uint64(num1)
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
-		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintTypes(dAtA, i, uint64(j1))
+	n2, err2 := github_com_gogo_protobuf_types.StdTimeMarshalTo(m.Since, dAtA[i-github_com_gogo_protobuf_types.SizeOfStdTime(m.Since):])
+	if err2 != nil {
+		return 0, err2
+	}
+	i -= n2
+	i = encodeVarintTypes(dAtA, i, uint64(n2))
+	i--
+	dAtA[i] = 0x12
+	if m.IsActive {
 		i--
-		dAtA[i] = 0x4a
-	}
-	if m.IBCInfo != nil {
-		{
-			size, err := m.IBCInfo.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintTypes(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0x42
-	}
-	if len(m.ClientID) > 0 {
-		i -= len(m.ClientID)
-		copy(dAtA[i:], m.ClientID)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.ClientID)))
-		i--
-		dAtA[i] = 0x3a
-	}
-	if m.RequestTime != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.RequestTime))
-		i--
-		dAtA[i] = 0x30
-	}
-	if m.RequestHeight != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.RequestHeight))
-		i--
-		dAtA[i] = 0x28
-	}
-	if m.MinCount != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.MinCount))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.RequestedValidators) > 0 {
-		for iNdEx := len(m.RequestedValidators) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.RequestedValidators[iNdEx])
-			copy(dAtA[i:], m.RequestedValidators[iNdEx])
-			i = encodeVarintTypes(dAtA, i, uint64(len(m.RequestedValidators[iNdEx])))
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.Calldata) > 0 {
-		i -= len(m.Calldata)
-		copy(dAtA[i:], m.Calldata)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Calldata)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if m.OracleScriptID != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.OracleScriptID))
-		i--
-		dAtA[i] = 0x8
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *IBCInfo) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *IBCInfo) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *IBCInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.SourceChannel) > 0 {
-		i -= len(m.SourceChannel)
-		copy(dAtA[i:], m.SourceChannel)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.SourceChannel)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.SourcePort) > 0 {
-		i -= len(m.SourcePort)
-		copy(dAtA[i:], m.SourcePort)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.SourcePort)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *Report) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *Report) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *Report) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.RawReports) > 0 {
-		for iNdEx := len(m.RawReports) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.RawReports[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintTypes(dAtA, i, uint64(size))
-			}
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if m.InBeforeResolve {
-		i--
-		if m.InBeforeResolve {
+		if m.IsActive {
 			dAtA[i] = 1
 		} else {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *ValidatorReportInfo) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *ValidatorReportInfo) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *ValidatorReportInfo) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.ConsecutiveMissed != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.ConsecutiveMissed))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintTypes(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -3333,18 +3353,28 @@ func (m *Params) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.PerValidatorRequestGas != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.PerValidatorRequestGas))
+	if m.InactivePenaltyDuration != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.InactivePenaltyDuration))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.OracleRewardPercentage != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.OracleRewardPercentage))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.SamplingTryCount != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.SamplingTryCount))
 		i--
 		dAtA[i] = 0x30
 	}
-	if m.BaseRequestGas != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.BaseRequestGas))
+	if m.PerValidatorRequestGas != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.PerValidatorRequestGas))
 		i--
 		dAtA[i] = 0x28
 	}
-	if m.MaxConsecutiveMisses != 0 {
-		i = encodeVarintTypes(dAtA, i, uint64(m.MaxConsecutiveMisses))
+	if m.BaseRequestGas != 0 {
+		i = encodeVarintTypes(dAtA, i, uint64(m.BaseRequestGas))
 		i--
 		dAtA[i] = 0x20
 	}
@@ -3571,6 +3601,19 @@ func (m *MsgEditOracleScript) Size() (n int) {
 	return n
 }
 
+func (m *MsgActivate) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	return n
+}
+
 func (m *MsgAddReporter) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3701,6 +3744,68 @@ func (m *RawReport) Size() (n int) {
 	return n
 }
 
+func (m *Request) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.OracleScriptID != 0 {
+		n += 1 + sovTypes(uint64(m.OracleScriptID))
+	}
+	l = len(m.Calldata)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if len(m.RequestedValidators) > 0 {
+		for _, b := range m.RequestedValidators {
+			l = len(b)
+			n += 1 + l + sovTypes(uint64(l))
+		}
+	}
+	if m.MinCount != 0 {
+		n += 1 + sovTypes(uint64(m.MinCount))
+	}
+	if m.RequestHeight != 0 {
+		n += 1 + sovTypes(uint64(m.RequestHeight))
+	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.RequestTime)
+	n += 1 + l + sovTypes(uint64(l))
+	l = len(m.ClientID)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if len(m.RawRequests) > 0 {
+		for _, e := range m.RawRequests {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *Report) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Validator)
+	if l > 0 {
+		n += 1 + l + sovTypes(uint64(l))
+	}
+	if m.InBeforeResolve {
+		n += 2
+	}
+	if len(m.RawReports) > 0 {
+		for _, e := range m.RawReports {
+			l = e.Size()
+			n += 1 + l + sovTypes(uint64(l))
+		}
+	}
+	return n
+}
+
 func (m *OracleRequestPacketData) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3759,104 +3864,17 @@ func (m *OracleResponsePacketData) Size() (n int) {
 	return n
 }
 
-func (m *Request) Size() (n int) {
+func (m *ValidatorStatus) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
-	if m.OracleScriptID != 0 {
-		n += 1 + sovTypes(uint64(m.OracleScriptID))
-	}
-	l = len(m.Calldata)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if len(m.RequestedValidators) > 0 {
-		for _, b := range m.RequestedValidators {
-			l = len(b)
-			n += 1 + l + sovTypes(uint64(l))
-		}
-	}
-	if m.MinCount != 0 {
-		n += 1 + sovTypes(uint64(m.MinCount))
-	}
-	if m.RequestHeight != 0 {
-		n += 1 + sovTypes(uint64(m.RequestHeight))
-	}
-	if m.RequestTime != 0 {
-		n += 1 + sovTypes(uint64(m.RequestTime))
-	}
-	l = len(m.ClientID)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if m.IBCInfo != nil {
-		l = m.IBCInfo.Size()
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if len(m.RawRequestIDs) > 0 {
-		l = 0
-		for _, e := range m.RawRequestIDs {
-			l += sovTypes(uint64(e))
-		}
-		n += 1 + sovTypes(uint64(l)) + l
-	}
-	return n
-}
-
-func (m *IBCInfo) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.SourcePort)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	l = len(m.SourceChannel)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	return n
-}
-
-func (m *Report) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if m.InBeforeResolve {
+	if m.IsActive {
 		n += 2
 	}
-	if len(m.RawReports) > 0 {
-		for _, e := range m.RawReports {
-			l = e.Size()
-			n += 1 + l + sovTypes(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *ValidatorReportInfo) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovTypes(uint64(l))
-	}
-	if m.ConsecutiveMissed != 0 {
-		n += 1 + sovTypes(uint64(m.ConsecutiveMissed))
-	}
+	l = github_com_gogo_protobuf_types.SizeOfStdTime(m.Since)
+	n += 1 + l + sovTypes(uint64(l))
 	return n
 }
 
@@ -3875,14 +3893,20 @@ func (m *Params) Size() (n int) {
 	if m.ExpirationBlockCount != 0 {
 		n += 1 + sovTypes(uint64(m.ExpirationBlockCount))
 	}
-	if m.MaxConsecutiveMisses != 0 {
-		n += 1 + sovTypes(uint64(m.MaxConsecutiveMisses))
-	}
 	if m.BaseRequestGas != 0 {
 		n += 1 + sovTypes(uint64(m.BaseRequestGas))
 	}
 	if m.PerValidatorRequestGas != 0 {
 		n += 1 + sovTypes(uint64(m.PerValidatorRequestGas))
+	}
+	if m.SamplingTryCount != 0 {
+		n += 1 + sovTypes(uint64(m.SamplingTryCount))
+	}
+	if m.OracleRewardPercentage != 0 {
+		n += 1 + sovTypes(uint64(m.OracleRewardPercentage))
+	}
+	if m.InactivePenaltyDuration != 0 {
+		n += 1 + sovTypes(uint64(m.InactivePenaltyDuration))
 	}
 	return n
 }
@@ -5319,6 +5343,93 @@ func (m *MsgEditOracleScript) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *MsgActivate) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgActivate: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgActivate: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = append(m.Validator[:0], dAtA[iNdEx:postIndex]...)
+			if m.Validator == nil {
+				m.Validator = []byte{}
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *MsgAddReporter) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -6241,6 +6352,422 @@ func (m *RawReport) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *Request) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Request: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Request: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OracleScriptID", wireType)
+			}
+			m.OracleScriptID = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OracleScriptID |= OracleScriptID(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Calldata", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Calldata = append(m.Calldata[:0], dAtA[iNdEx:postIndex]...)
+			if m.Calldata == nil {
+				m.Calldata = []byte{}
+			}
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequestedValidators", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RequestedValidators = append(m.RequestedValidators, make([]byte, postIndex-iNdEx))
+			copy(m.RequestedValidators[len(m.RequestedValidators)-1], dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MinCount", wireType)
+			}
+			m.MinCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MinCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequestHeight", wireType)
+			}
+			m.RequestHeight = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RequestHeight |= int64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RequestTime", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.RequestTime, dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ClientID", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ClientID = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RawRequests", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RawRequests = append(m.RawRequests, RawRequest{})
+			if err := m.RawRequests[len(m.RawRequests)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *Report) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTypes
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: Report: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: Report: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
+			}
+			var byteLen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				byteLen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if byteLen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + byteLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Validator = append(m.Validator[:0], dAtA[iNdEx:postIndex]...)
+			if m.Validator == nil {
+				m.Validator = []byte{}
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InBeforeResolve", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.InBeforeResolve = bool(v != 0)
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RawReports", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTypes
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.RawReports = append(m.RawReports, RawReport{})
+			if err := m.RawReports[len(m.RawReports)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTypes(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if skippy < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) < 0 {
+				return ErrInvalidLengthTypes
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *OracleRequestPacketData) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -6631,7 +7158,7 @@ func (m *OracleResponsePacketData) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *Request) Unmarshal(dAtA []byte) error {
+func (m *ValidatorStatus) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -6654,505 +7181,15 @@ func (m *Request) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: Request: wiretype end group for non-group")
+			return fmt.Errorf("proto: ValidatorStatus: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Request: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: ValidatorStatus: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field OracleScriptID", wireType)
-			}
-			m.OracleScriptID = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.OracleScriptID |= OracleScriptID(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Calldata", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Calldata = append(m.Calldata[:0], dAtA[iNdEx:postIndex]...)
-			if m.Calldata == nil {
-				m.Calldata = []byte{}
-			}
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RequestedValidators", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RequestedValidators = append(m.RequestedValidators, make([]byte, postIndex-iNdEx))
-			copy(m.RequestedValidators[len(m.RequestedValidators)-1], dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MinCount", wireType)
-			}
-			m.MinCount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MinCount |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RequestHeight", wireType)
-			}
-			m.RequestHeight = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.RequestHeight |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RequestTime", wireType)
-			}
-			m.RequestTime = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.RequestTime |= int64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ClientID", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ClientID = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 8:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field IBCInfo", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.IBCInfo == nil {
-				m.IBCInfo = &IBCInfo{}
-			}
-			if err := m.IBCInfo.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 9:
-			if wireType == 0 {
-				var v ExternalID
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowTypes
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= ExternalID(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.RawRequestIDs = append(m.RawRequestIDs, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowTypes
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthTypes
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthTypes
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.RawRequestIDs) == 0 {
-					m.RawRequestIDs = make([]ExternalID, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v ExternalID
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowTypes
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= ExternalID(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.RawRequestIDs = append(m.RawRequestIDs, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field RawRequestIDs", wireType)
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *IBCInfo) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: IBCInfo: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: IBCInfo: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourcePort", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SourcePort = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SourceChannel", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SourceChannel = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *Report) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: Report: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: Report: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = append(m.Validator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Validator == nil {
-				m.Validator = []byte{}
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InBeforeResolve", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field IsActive", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -7169,10 +7206,10 @@ func (m *Report) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-			m.InBeforeResolve = bool(v != 0)
-		case 3:
+			m.IsActive = bool(v != 0)
+		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RawReports", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Since", wireType)
 			}
 			var msglen int
 			for shift := uint(0); ; shift += 7 {
@@ -7199,117 +7236,10 @@ func (m *Report) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.RawReports = append(m.RawReports, RawReport{})
-			if err := m.RawReports[len(m.RawReports)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+			if err := github_com_gogo_protobuf_types.StdTimeUnmarshal(&m.Since, dAtA[iNdEx:postIndex]); err != nil {
 				return err
 			}
 			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTypes(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if skippy < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *ValidatorReportInfo) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTypes
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: ValidatorReportInfo: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: ValidatorReportInfo: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var byteLen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				byteLen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if byteLen < 0 {
-				return ErrInvalidLengthTypes
-			}
-			postIndex := iNdEx + byteLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTypes
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = append(m.Validator[:0], dAtA[iNdEx:postIndex]...)
-			if m.Validator == nil {
-				m.Validator = []byte{}
-			}
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ConsecutiveMissed", wireType)
-			}
-			m.ConsecutiveMissed = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ConsecutiveMissed |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTypes(dAtA[iNdEx:])
@@ -7422,25 +7352,6 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 			}
 		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxConsecutiveMisses", wireType)
-			}
-			m.MaxConsecutiveMisses = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTypes
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxConsecutiveMisses |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BaseRequestGas", wireType)
 			}
 			m.BaseRequestGas = 0
@@ -7458,7 +7369,7 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PerValidatorRequestGas", wireType)
 			}
@@ -7473,6 +7384,63 @@ func (m *Params) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.PerValidatorRequestGas |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SamplingTryCount", wireType)
+			}
+			m.SamplingTryCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SamplingTryCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OracleRewardPercentage", wireType)
+			}
+			m.OracleRewardPercentage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OracleRewardPercentage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InactivePenaltyDuration", wireType)
+			}
+			m.InactivePenaltyDuration = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTypes
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.InactivePenaltyDuration |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

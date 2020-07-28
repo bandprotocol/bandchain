@@ -13,7 +13,9 @@ type oracle_script_tab_t =
 
 type account_tab_t =
   | AccountTransactions
-  | AccountDelegations;
+  | AccountDelegations
+  | AccountUnbonding
+  | AccountRedelegate;
 
 type validator_tab_t =
   | ProposedBlocks
@@ -71,6 +73,10 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
   | (["account", address], "delegations") =>
     AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
+  | (["account", address], "unbonding") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountUnbonding)
+  | (["account", address], "redelegate") =>
+    AccountIndexPage(address |> Address.fromBech32, AccountRedelegate)
   | (["account", address], _) =>
     AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
   | (["validator", address], "delegators") =>
@@ -112,6 +118,14 @@ let toString =
       let addressBech32 = address |> Address.toBech32;
       {j|/account/$addressBech32#delegations|j};
     }
+  | AccountIndexPage(address, AccountUnbonding) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#unbonding|j};
+    }
+  | AccountIndexPage(address, AccountRedelegate) => {
+      let addressBech32 = address |> Address.toBech32;
+      {j|/account/$addressBech32#redelegate|j};
+    }
   | ValidatorIndexPage(validatorAddress, Delegators) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#delegators|j};
@@ -142,6 +156,8 @@ let search = (str: string) => {
         Some(ValidatorIndexPage(str |> Address.fromBech32, ProposedBlocks));
       } else if (str |> Js.String.startsWith("band")) {
         Some(AccountIndexPage(str |> Address.fromBech32, AccountTransactions));
+      } else if (len == 64 || str |> Js.String.startsWith("0x") && len == 66) {
+        Some(TxIndexPage(str |> Hash.fromHex));
       } else if (capStr |> Js.String.startsWith("B")) {
         let%Opt blockID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
         Some(BlockIndexPage(blockID));
@@ -154,8 +170,6 @@ let search = (str: string) => {
       } else if (capStr |> Js.String.startsWith("O")) {
         let%Opt oracleScriptID = str |> String.sub(_, 1, len - 1) |> int_of_string_opt;
         Some(OracleScriptIndexPage(oracleScriptID, OracleScriptExecute));
-      } else if (len == 64 || str |> Js.String.startsWith("0x") && len == 66) {
-        Some(TxIndexPage(str |> Hash.fromHex));
       } else {
         None;
       }

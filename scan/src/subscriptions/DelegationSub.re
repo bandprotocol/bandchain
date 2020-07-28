@@ -6,11 +6,12 @@ type t = {
 
 type stake_t = {
   amount: Coin.t,
+  delegatorAddress: Address.t,
+  moniker: string,
+  operatorAddress: Address.t,
   reward: Coin.t,
   sharePercentage: float,
-  delegatorAddress: Address.t,
-  validatorAddress: Address.t,
-  moniker: string,
+  identity: string,
 };
 
 type stake_aggregate_t = {
@@ -26,8 +27,9 @@ module StakeConfig = [%graphql
       reward @bsDecoder(fn: "GraphQLParser.coinExn")
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
-      validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+      operatorAddress: operator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       moniker @bsDecoder(fn: "GraphQLParser.stringExn")
+      identity @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}
@@ -50,8 +52,8 @@ module TotalStakeByDelegatorConfig = [%graphql
 
 module StakeByValidatorConfig = [%graphql
   {|
-  subscription StakeByValidator($delegator_address: String!, $validator_address: String!) {
-    delegations_view(where: {_and: {delegator_address: {_eq: $delegator_address}, validator_address: {_eq: $validator_address}}}) @bsRecord {
+  subscription StakeByValidator($delegator_address: String!, $operator_address: String!) {
+    delegations_view(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}) @bsRecord {
           amount @bsDecoder(fn: "GraphQLParser.coinExn")
           reward @bsDecoder(fn: "GraphQLParser.coinExn")
     }
@@ -73,14 +75,15 @@ module StakeCountByDelegatorConfig = [%graphql
 
 module DelegatorsByValidatorConfig = [%graphql
   {|
-  subscription Stake($limit: Int!, $offset: Int!, $validator_address: String!)  {
-    delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {validator_address: {_eq: $validator_address}}) @bsRecord  {
+  subscription Stake($limit: Int!, $offset: Int!, $operator_address: String!)  {
+    delegations_view(offset: $offset, limit: $limit, order_by: {amount: desc}, where: {operator_address: {_eq: $operator_address}}) @bsRecord  {
       amount @bsDecoder(fn: "GraphQLParser.coinExn")
       reward @bsDecoder(fn: "GraphQLParser.coinExn")
       sharePercentage: share_percentage @bsDecoder(fn: "GraphQLParser.floatWithDefault")
       delegatorAddress: delegator_address @bsDecoder(fn: "GraphQLParser.addressExn")
-      validatorAddress: validator_address @bsDecoder(fn: "GraphQLParser.addressExn")
+      operatorAddress: operator_address @bsDecoder(fn: "GraphQLParser.addressExn")
       moniker @bsDecoder(fn: "GraphQLParser.stringExn")
+      identity @bsDecoder(fn: "GraphQLParser.stringExn")
     }
   }
   |}
@@ -88,8 +91,8 @@ module DelegatorsByValidatorConfig = [%graphql
 
 module DelegatorCountConfig = [%graphql
   {|
-    subscription DelegatorCount($validator_address: String!) {
-      delegations_view_aggregate(where: {validator_address: {_eq: $validator_address}}) {
+    subscription DelegatorCount($operator_address: String!) {
+      delegations_view_aggregate(where: {operator_address: {_eq: $operator_address}}) {
         aggregate {
           count @bsDecoder(fn: "Belt_Option.getExn")
         }
@@ -135,13 +138,13 @@ let getTotalStakeByDelegator = delegatorAddress => {
   {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
-let getStakeByValiator = (delegatorAddress, validatorAddress) => {
+let getStakeByValiator = (delegatorAddress, operatorAddress) => {
   let (result, _) = {
     ApolloHooks.useSubscription(
       StakeByValidatorConfig.definition,
       ~variables=
         StakeByValidatorConfig.makeVariables(
-          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~operator_address=operatorAddress |> Address.toOperatorBech32,
           ~delegator_address=delegatorAddress |> Address.toBech32,
           (),
         ),
@@ -172,7 +175,7 @@ let getStakeCountByDelegator = delegatorAddress => {
   |> Sub.map(_, x =>
        x##delegations_view_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
      );
-} /* }*/;
+};
 
 let getDelegatorsByValidator = (validatorAddress, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
@@ -181,7 +184,7 @@ let getDelegatorsByValidator = (validatorAddress, ~page, ~pageSize, ()) => {
       DelegatorsByValidatorConfig.definition,
       ~variables=
         DelegatorsByValidatorConfig.makeVariables(
-          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~operator_address=validatorAddress |> Address.toOperatorBech32,
           ~limit=pageSize,
           ~offset,
           (),
@@ -196,7 +199,7 @@ let getDelegatorCountByValidator = validatorAddress => {
       DelegatorCountConfig.definition,
       ~variables=
         DelegatorCountConfig.makeVariables(
-          ~validator_address=validatorAddress |> Address.toOperatorBech32,
+          ~operator_address=validatorAddress |> Address.toOperatorBech32,
           (),
         ),
     );

@@ -64,6 +64,9 @@ module Styles = {
       borderRadius(`px(4)),
       border(`px(1), `solid, Colors.blueGray3),
     ]);
+
+  let oracleStatus = style([display(`flex), justifyContent(`center)]);
+  let logo = style([width(`px(20))]);
 };
 
 module ToggleButton = {
@@ -152,7 +155,7 @@ let renderBody =
            | _ => <LoadingCensorBar width=150 height=15 />
            }}
         </Col>
-        <Col size=0.7>
+        <Col size=0.5>
           {switch (validatorSub) {
            | Data({tokens, votingPower}) =>
              <div>
@@ -190,7 +193,7 @@ let renderBody =
              </>
            }}
         </Col>
-        <Col size=0.8>
+        <Col size=0.6>
           {switch (validatorSub) {
            | Data({commission}) =>
              <Text
@@ -206,8 +209,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=70 height=15 isRight=true />
            }}
         </Col>
-        <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
-        <Col size=1.1>
+        <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
+        <Col size=0.6>
           {switch (validatorSub) {
            | Data({uptime}) =>
              switch (uptime) {
@@ -238,11 +241,21 @@ let renderBody =
              }
            | _ =>
              <>
-               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=50 height=15 />
                <VSpacing size=Spacing.sm />
-               <LoadingCensorBar width=220 height=15 />
+               <LoadingCensorBar width=130 height=15 />
              </>
            }}
+        </Col>
+        <Col size=0.1> <HSpacing size=Spacing.sm /> </Col>
+        <Col size=0.5>
+          <div className=Styles.oracleStatus>
+            {switch (validatorSub) {
+             | Data({oracleStatus}) =>
+               <img src={oracleStatus ? Images.success : Images.fail} className=Styles.logo />
+             | _ => <LoadingCensorBar width=20 height=20 radius=50 />
+             }}
+          </div>
         </Col>
       </Row>
     </div>
@@ -403,7 +416,7 @@ module ValidatorList = {
                 isRight=false
               />
             </Col>
-            <Col size=0.7>
+            <Col size=0.5>
               <SortableTHead
                 title="VOTING POWER"
                 asc=VotingPowerAsc
@@ -413,7 +426,7 @@ module ValidatorList = {
                 tooltipItem="Sum of self-bonded and delegated tokens"
               />
             </Col>
-            <Col size=0.8>
+            <Col size=0.6>
               <SortableTHead
                 title="COMMISSION"
                 asc=CommissionAsc
@@ -423,16 +436,28 @@ module ValidatorList = {
                 tooltipItem="Validator service fees charged to delegators"
               />
             </Col>
-            <Col size=0.3> <HSpacing size=Spacing.sm /> </Col>
-            <Col size=1.1>
+            <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
+            <Col size=0.6>
               <SortableTHead
-                title="UPTIME (LAST 250 BLOCKS)"
+                title="UPTIME"
                 asc=UptimeAsc
                 desc=UptimeDesc
                 toggle
                 sortedBy
                 isRight=false
                 tooltipItem="Percentage of the blocks that the validator is active for out of the last 250"
+              />
+            </Col>
+            <Col size=0.1> <HSpacing size=Spacing.sm /> </Col>
+            <Col size=0.5>
+              <Text
+                block=true
+                value="ORACLE STATUS"
+                size=Text.Sm
+                weight=Text.Semibold
+                color=Colors.gray6
+                spacing={Text.Em(0.1)}
+                tooltipItem={"Oracle status" |> React.string}
               />
             </Col>
           </Row>
@@ -474,37 +499,28 @@ module ValidatorList = {
 };
 
 let getPrevDay = _ => {
-  (
-    MomentRe.momentNow()
-    |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
-    |> MomentRe.Moment.toUnix
-    |> float_of_int
-  )
-  *. 1000.;
+  MomentRe.momentNow()
+  |> MomentRe.Moment.defaultUtc
+  |> MomentRe.Moment.subtract(~duration=MomentRe.duration(1., `days))
+  |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 let getCurrentDay = _ => {
-  (MomentRe.momentNow() |> MomentRe.Moment.toUnix |> float_of_int) *. 1000.;
+  MomentRe.momentNow() |> MomentRe.Moment.format(Config.timestampUseFormat);
 };
 
 [@react.component]
 let make = () => {
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+
   let (prevDayTime, setPrevDayTime) = React.useState(getPrevDay);
-  let (currentTime, setCurrentTime) = React.useState(getCurrentDay);
   let (searchTerm, setSearchTerm) = React.useState(_ => "");
 
   React.useEffect0(() => {
-    let timeOutID =
-      Js.Global.setInterval(
-        () => {
-          setPrevDayTime(getPrevDay);
-          setCurrentTime(getCurrentDay);
-        },
-        60_000,
-      );
+    let timeOutID = Js.Global.setInterval(() => {setPrevDayTime(getPrevDay)}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
-
   let (isActive, setIsActive) = React.useState(_ => true);
 
   let validatorsSub = ValidatorSub.getList(~isActive, ());
@@ -512,7 +528,7 @@ let make = () => {
   let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
   let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
-  let metadataSub = MetadataSub.use();
+  let latestBlock = BlockSub.getLatest();
   let votesBlockSub = ValidatorSub.getListVotesBlock();
 
   let topPartAllSub =
@@ -521,7 +537,7 @@ let make = () => {
       isActiveValidatorCountSub,
       bondedTokenCountSub,
       avgBlockTimeSub,
-      metadataSub,
+      latestBlock,
     );
 
   let allSub = Sub.all3(topPartAllSub, validatorsSub, votesBlockSub);
@@ -582,9 +598,9 @@ let make = () => {
         </Col>
         <Col size=0.9>
           {switch (topPartAllSub) {
-           | Data((_, _, _, _, metadata)) =>
+           | Data((_, _, _, _, {inflation})) =>
              <InfoHL
-               info={InfoHL.FloatWithSuffix(metadata.inflationRate *. 100., "  %", 2)}
+               info={InfoHL.FloatWithSuffix(inflation *. 100., "  %", 2)}
                header="INFLATION RATE"
              />
            | _ =>

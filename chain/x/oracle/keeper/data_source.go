@@ -1,6 +1,8 @@
 package keeper
 
 import (
+	"bytes"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -66,4 +68,13 @@ func (k Keeper) GetAllDataSources(ctx sdk.Context) (dataSources []types.DataSour
 		dataSources = append(dataSources, dataSource)
 	}
 	return dataSources
+}
+
+// AddExecutableFile saves the given executable file to a file to filecahe storage and returns
+// its sha256sum reference name. Returns do-not-modify symbol if the input is do-not-modify.
+func (k Keeper) AddExecutableFile(file []byte) string {
+	if bytes.Equal(file, types.DoNotModifyBytes) {
+		return types.DoNotModify
+	}
+	return k.fileCache.AddFile(file)
 }

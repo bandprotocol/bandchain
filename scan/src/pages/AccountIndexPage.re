@@ -54,7 +54,7 @@ module Styles = {
     ]);
 };
 
-let balanceDetail = (title, description, amount, usdPrice, color) => {
+let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountup=false, ()) => {
   <Row alignItems=Css.flexStart>
     <Col size=0.25> <div className={Styles.ovalIcon(color)} /> </Col>
     <Col size=1.2>
@@ -71,14 +71,21 @@ let balanceDetail = (title, description, amount, usdPrice, color) => {
     <Col size=0.6>
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
-          <Text
-            value={amount |> Format.fPretty}
-            size=Text.Lg
-            weight=Text.Semibold
-            spacing={Text.Em(0.02)}
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value=amount
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount |> Format.fPretty}
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="BAND"
@@ -91,14 +98,21 @@ let balanceDetail = (title, description, amount, usdPrice, color) => {
         </div>
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
-          <Text
-            value={amount *. usdPrice |> Format.fPretty}
-            size=Text.Sm
-            spacing={Text.Em(0.02)}
-            weight=Text.Thin
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value={amount *. usdPrice}
+                 size=Text.Sm
+                 weight=Text.Thin
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount *. usdPrice |> Format.fPretty}
+                 size=Text.Sm
+                 spacing={Text.Em(0.02)}
+                 weight=Text.Thin
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="USD"
@@ -119,14 +133,7 @@ let totalBalanceRender = (title, amount, symbol) => {
     <Text value=title size=Text.Md spacing={Text.Em(0.03)} height={Text.Px(18)} />
     <VSpacing size=Spacing.md />
     <div className=Styles.rFlex>
-      <Text
-        value=amount
-        size=Text.Xxl
-        weight=Text.Semibold
-        code=true
-        spacing={Text.Em(0.02)}
-        nowrap=true
-      />
+      <NumberCountup value=amount size=Text.Xxl weight=Text.Semibold spacing={Text.Em(0.02)} />
       <HSpacing size=Spacing.sm />
       <Text value=symbol size=Text.Xxl weight=Text.Thin spacing={Text.Em(0.02)} code=true />
     </div>
@@ -137,7 +144,7 @@ let totalBalanceRender = (title, amount, symbol) => {
 let make = (~address, ~hashtag: Route.account_tab_t) =>
   {
     let accountSub = AccountSub.get(address);
-    let metadataSub = MetadataSub.use();
+    let trackingSub = TrackingSub.use();
     let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
     let unbondingSub = UnbondingSub.getUnbondingBalance(address);
     let infoSub = React.useContext(GlobalContext.context);
@@ -148,16 +155,23 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
     let%Sub account = accountSub;
     let%Sub balanceAtStake = balanceAtStakeSub;
     let%Sub unbonding = unbondingSub;
-    let%Sub metadata = metadataSub;
+    let%Sub tracking = trackingSub;
 
     let usdPrice = info.financial.usdPrice;
 
     let availableBalance = account.balance->Coin.getBandAmountFromCoins;
     let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
-    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
+    let commissionAmount = account.commission->Coin.getBandAmountFromCoins;
 
-    let totalBalance = availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount;
+    let totalBalance =
+      availableBalance
+      +. balanceAtStakeAmount
+      +. rewardAmount
+      +. unbondingAmount
+      +. commissionAmount;
+
     let send = () => {
       switch (accountOpt) {
       | Some({address: sender}) =>
@@ -169,7 +183,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         } else {
           openSendModal();
         };
-      | None => dispatchModal(OpenModal(Connect(metadata.chainID)))
+      | None => dispatchModal(OpenModal(Connect(tracking.chainID)))
       };
     };
 
@@ -216,52 +230,74 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
             balanceAtStake=balanceAtStakeAmount
             reward=rewardAmount
             unbonding=unbondingAmount
+            commission=commissionAmount
           />
         </Col>
         <Col size=1.>
           <VSpacing size=Spacing.md />
           {balanceDetail(
-             "AVAILABLE BALANCE",
-             "Balance available to send, delegate, etc",
-             availableBalance,
-             usdPrice,
-             Colors.bandBlue,
+             ~title="AVAILABLE BALANCE",
+             ~description="Balance available to send, delegate, etc",
+             ~amount=availableBalance,
+             ~usdPrice,
+             ~color=Colors.bandBlue,
+             (),
            )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
-             "BALANCE AT STAKE",
-             "Balance currently delegated to validators",
-             balanceAtStakeAmount,
-             usdPrice,
-             Colors.chartBalanceAtStake,
+             ~title="BALANCE AT STAKE",
+             ~description="Balance currently delegated to validators",
+             ~amount=balanceAtStakeAmount,
+             ~usdPrice,
+             ~color=Colors.chartBalanceAtStake,
+             (),
            )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
-             "UNBONDING AMOUNT",
-             "Amount undelegated from validators awaiting 21 days lockup period",
-             unbondingAmount,
-             usdPrice,
-             Colors.blue4,
+             ~title="UNBONDING AMOUNT",
+             ~description="Amount undelegated from validators awaiting 21 days lockup period",
+             ~amount=unbondingAmount,
+             ~usdPrice,
+             ~color=Colors.blue4,
+             (),
            )}
           <VSpacing size=Spacing.lg />
           <VSpacing size=Spacing.md />
           {balanceDetail(
-             "REWARD",
-             "Reward from staking to validators",
-             rewardAmount,
-             usdPrice,
-             Colors.chartReward,
+             ~title="REWARD",
+             ~description="Reward from staking to validators",
+             ~amount=rewardAmount,
+             ~usdPrice,
+             ~color=Colors.chartReward,
+             ~isCountup=true,
+             (),
            )}
+          {commissionAmount == 0.
+             ? React.null
+             : <>
+                 <VSpacing size=Spacing.lg />
+                 <VSpacing size=Spacing.md />
+                 {balanceDetail(
+                    ~title="COMMISSION",
+                    ~description="Reward commission from delegator's reward",
+                    ~amount=commissionAmount,
+                    ~usdPrice,
+                    ~color=Colors.gray6,
+                    ~isCountup=true,
+                    (),
+                  )}
+                 <VSpacing size=Spacing.lg />
+               </>}
         </Col>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>
           <div className=Styles.totalContainer>
-            {totalBalanceRender("TOTAL BAND BALANCE", totalBalance |> Format.fPretty, "BAND")}
+            {totalBalanceRender("TOTAL BAND BALANCE", totalBalance, "BAND")}
             {totalBalanceRender(
                "TOTAL BAND IN USD ($" ++ (usdPrice |> Format.fPretty) ++ " / BAND)",
-               totalBalance *. usdPrice |> Format.fPretty,
+               totalBalance *. usdPrice,
                "USD",
              )}
           </div>
@@ -278,11 +314,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
             name: "DELEGATIONS",
             route: Route.AccountIndexPage(address, Route.AccountDelegations),
           },
+          {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
+          {name: "REDELEGATE", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
         |]
         currentRoute={Route.AccountIndexPage(address, hashtag)}>
         {switch (hashtag) {
          | AccountTransactions => <AccountIndexTransactions accountAddress=address />
          | AccountDelegations => <AccountIndexDelegations address />
+         | AccountUnbonding => <AccountIndexUnbonding address />
+         | AccountRedelegate => <AccountIndexRedelegate address />
          }}
       </Tab>
     </>

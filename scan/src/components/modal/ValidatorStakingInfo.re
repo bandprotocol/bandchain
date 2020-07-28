@@ -63,7 +63,7 @@ module Styles = {
     ]);
 };
 
-let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
+let stakingBalanceDetail = (~title, ~amount, ~usdPrice, ~tooltipItem, ~isCountup=false, ()) => {
   <Row alignItems=Css.flexStart>
     <Col size=1.2>
       <Text
@@ -79,14 +79,21 @@ let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
     <Col size=0.6>
       <div className=Styles.cFlex>
         <div className=Styles.rFlex>
-          <Text
-            value={amount->Coin.getBandAmountFromCoin |> Format.fPretty}
-            size=Text.Lg
-            weight=Text.Semibold
-            spacing={Text.Em(0.02)}
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value={amount->Coin.getBandAmountFromCoin}
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount->Coin.getBandAmountFromCoin |> Format.fPretty}
+                 size=Text.Lg
+                 weight=Text.Semibold
+                 spacing={Text.Em(0.02)}
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="BAND"
@@ -99,14 +106,21 @@ let stakingBalanceDetail = (title, amount, usdPrice, tooltipItem) => {
         </div>
         <VSpacing size=Spacing.xs />
         <div className={Css.merge([Styles.rFlex, Styles.balance])}>
-          <Text
-            value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty}
-            size=Text.Sm
-            spacing={Text.Em(0.02)}
-            weight=Text.Thin
-            nowrap=true
-            code=true
-          />
+          {isCountup
+             ? <NumberCountup
+                 value={amount->Coin.getBandAmountFromCoin *. usdPrice}
+                 size=Text.Sm
+                 weight=Text.Thin
+                 spacing={Text.Em(0.02)}
+               />
+             : <Text
+                 value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty}
+                 size=Text.Sm
+                 spacing={Text.Em(0.02)}
+                 weight=Text.Thin
+                 nowrap=true
+                 code=true
+               />}
           <HSpacing size=Spacing.sm />
           <Text
             value="USD"
@@ -126,6 +140,9 @@ module StakingInfo = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
+      let currentTime =
+        React.useContext(TimeContext.context)
+        |> MomentRe.Moment.format(Config.timestampUseFormat);
       let (_, dispatchModal) = React.useContext(ModalContext.context);
 
       let infoSub = React.useContext(GlobalContext.context);
@@ -134,7 +151,8 @@ module StakingInfo = {
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
         UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
-      let unbondingListSub = UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress);
+      let unbondingListSub =
+        UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress, currentTime);
 
       let%Sub info = infoSub;
       let%Sub balanceAtStake = balanceAtStakeSub;
@@ -223,17 +241,19 @@ module StakingInfo = {
         </Row>
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "BALANCE AT STAKE",
-           balanceAtStakeAmount,
-           usdPrice,
-           "Balance currently delegated to validators",
+           ~title="BALANCE AT STAKE",
+           ~amount=balanceAtStakeAmount,
+           ~usdPrice,
+           ~tooltipItem="Balance currently delegated to validators",
+           (),
          )}
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "UNBONDING AMOUNT",
-           unbondingAmount,
-           usdPrice,
-           "Amount undelegated from validators awaiting 21 days lockup period",
+           ~title="UNBONDING AMOUNT",
+           ~amount=unbondingAmount,
+           ~usdPrice,
+           ~tooltipItem="Amount undelegated from validators awaiting 21 days lockup period",
+           (),
          )}
         {unbondingList |> Belt_Array.length > 0
            ? <>
@@ -253,12 +273,12 @@ module StakingInfo = {
                  headers=["AMOUNT (BAND)", "UNBONDED AT"]
                  rows={
                    unbondingList
-                   ->Belt_Array.map(({completionTime, balance}) =>
+                   ->Belt_Array.map(({completionTime, amount}) =>
                        [
-                         KVTable.Value(balance |> Coin.getBandAmountFromCoin |> Format.fPretty),
+                         KVTable.Value(amount |> Coin.getBandAmountFromCoin |> Format.fPretty),
                          KVTable.Value(
                            completionTime
-                           |> MomentRe.Moment.format("MMM-DD-YYYY  hh:mm:ss A [+UTC]")
+                           |> MomentRe.Moment.format(Config.timestampDisplayFormat)
                            |> String.uppercase_ascii,
                          ),
                        ]
@@ -270,10 +290,12 @@ module StakingInfo = {
            : React.null}
         <VSpacing size=Spacing.lg />
         {stakingBalanceDetail(
-           "REWARD",
-           rewardAmount,
-           usdPrice,
-           "Reward from staking to validators",
+           ~title="REWARD",
+           ~amount=rewardAmount,
+           ~usdPrice,
+           ~tooltipItem="Reward from staking to validators",
+           ~isCountup=true,
+           (),
          )}
       </div>
       |> Sub.resolve;
@@ -303,7 +325,7 @@ module ConnectBtn = {
 
 [@react.component]
 let make = (~validatorAddress) => {
-  let metadataSub = MetadataSub.use();
+  let trackingSub = TrackingSub.use();
   let (accountOpt, _) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
 
@@ -315,7 +337,7 @@ let make = (~validatorAddress) => {
     {switch (accountOpt) {
      | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
      | None =>
-       switch (metadataSub) {
+       switch (trackingSub) {
        | Data({chainID}) =>
          <div>
            <Row>

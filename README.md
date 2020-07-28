@@ -4,14 +4,16 @@ This repository is a [monorepo] containing the reference implementation of BandC
 
 ## Table of Contents
 
-| Module               | Description                                               |
-| -------------------- | --------------------------------------------------------- |
-| [`chain`](chain)     | 🔗 BandChain blockchain reference implementation          |
-| [`bridges`](bridges) | 📡 Lite client bridges on other smart contract platforms  |
-| [`lambda`](lambda)   | 👷‍♂️ AWS Lambda package for running data source executables |
-| [`owasm`](owasm)     | 🔮 WebAssembly library for writing oracle scripts         |
-| [`scan`](scan)       | 🔍 Web interface to explore D3N network                   |
-| [`spec`](spec)       | 📖 BandChain research and specification knowledge base    |
+| Module                 | Description                                               |
+| ---------------------- | --------------------------------------------------------- |
+| [`chain`](chain)       | 🔗 BandChain blockchain reference implementation          |
+| [`bridges`](bridges)   | 📡 Lite client bridges on other smart contract platforms  |
+| [`lambda`](lambda)     | 👷‍♂️ AWS Lambda package for running data source executables |
+| [`go-owasm`](go-owasm) | 🐀 Go library for executing oracle scripts with Wasmer    |
+| [`helpers`](helpers)   | 🔪 Client-side utility libraries                          |
+| [`obi`](obi)           | 📦 Oracle binary encoding implementations                 |
+| [`owasm`](owasm)       | 🔮 WebAssembly library for writing oracle scripts         |
+| [`scan`](scan)         | 🔍 Web interface to explore D3N network                   |
 
 ## Running with Docker
 

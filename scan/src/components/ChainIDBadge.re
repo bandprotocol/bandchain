@@ -14,6 +14,7 @@ module Styles = {
       marginTop(`px(1)),
       position(`relative),
       cursor(`pointer),
+      Media.mobile([minWidth(`px(160)), zIndex(4)]),
     ]);
 
   let versionLoading =
@@ -28,10 +29,16 @@ module Styles = {
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
+      Media.mobile([height(`px(25)), width(`px(160))]),
     ]);
 
   let downIcon = show =>
-    style([width(`px(6)), marginTop(`px(1)), transform(`rotate(`deg(show ? 180. : 0.)))]);
+    style([
+      width(`px(6)),
+      marginTop(`px(1)),
+      transform(`rotate(`deg(show ? 180. : 0.))),
+      Media.mobile([width(`px(8)), height(`px(6))]),
+    ]);
 
   let dropdown = show =>
     style([
@@ -49,6 +56,7 @@ module Styles = {
       padding4(~top=`pxFloat(4.), ~bottom=`zero, ~left=`px(8), ~right=`px(8)),
       opacity(show ? 1. : 0.),
       pointerEvents(show ? `auto : `none),
+      Media.mobile([top(`px(35))]),
     ]);
 
   let link = style([textDecoration(`none)]);
@@ -58,17 +66,20 @@ type chainID =
   | WenchangTestnet
   | WenchangMainnet
   | GuanYuDevnet
+  | GuanYuTestnet
   | Unknown;
 
 let parseChainID =
   fun
   | "band-wenchang-testnet2" => WenchangTestnet
   | "band-wenchang-mainnet" => WenchangMainnet
-  | "band-guanyu-devnet"
-  | "band-guanyu-devnet-2"
-  | "band-guanyu-devnet-3"
-  | "band-guanyu-devnet-4"
+  | "band-guanyu-devnet5"
+  | "band-guanyu-devnet6"
+  | "band-guanyu-devnet7"
+  | "band-guanyu-devnet8"
   | "bandchain" => GuanYuDevnet
+  | "band-guanyu-testnet1"
+  | "band-guanyu-testnet2" => GuanYuTestnet
   | _ => Unknown;
 
 let getLink =
@@ -76,6 +87,7 @@ let getLink =
   | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
+  | GuanYuTestnet
   | Unknown => "";
 
 let getName =
@@ -83,15 +95,17 @@ let getName =
   | WenchangTestnet => "wenchang-testnet"
   | WenchangMainnet => "wenchang-mainnet"
   | GuanYuDevnet => "guanyu-devnet"
+  | GuanYuTestnet => "guanyu-testnet"
   | Unknown => "unknown";
 
 [@react.component]
 let make = () =>
   {
+    let isMobile = Media.isMobile();
     let (show, setShow) = React.useState(_ => false);
-    let metadataSub = MetadataSub.use();
-    let%Sub metadata = metadataSub;
-    let currentChainID = metadata.chainID->parseChainID;
+    let trackingSub = TrackingSub.use();
+    let%Sub tracking = trackingSub;
+    let currentChainID = tracking.chainID->parseChainID;
 
     <div
       className=Styles.version
@@ -101,7 +115,7 @@ let make = () =>
       }}>
       <Text
         value={currentChainID->getName}
-        size=Text.Sm
+        size={isMobile ? Text.Md : Text.Sm}
         color=Colors.blue6
         nowrap=true
         weight=Text.Semibold
@@ -122,7 +136,7 @@ let make = () =>
                rel="noopener">
                <Text
                  value=name
-                 size=Text.Sm
+                 size={isMobile ? Text.Md : Text.Sm}
                  color=Colors.blue6
                  nowrap=true
                  weight=Text.Semibold
@@ -139,6 +153,18 @@ let make = () =>
   |> Sub.default(
        _,
        <div className=Styles.versionLoading>
-         <LoadingCensorBar width=120 height=16 colorBase=Colors.blue1 colorLighter=Colors.white />
+         {Media.isMobile()
+            ? <LoadingCensorBar
+                width=160
+                height=25
+                colorBase=Colors.blue1
+                colorLighter=Colors.white
+              />
+            : <LoadingCensorBar
+                width=120
+                height=16
+                colorBase=Colors.blue1
+                colorLighter=Colors.white
+              />}
        </div>,
      );

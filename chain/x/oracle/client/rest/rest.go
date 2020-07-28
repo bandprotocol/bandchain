@@ -4,8 +4,9 @@ import (
 	"fmt"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-
 	"github.com/gorilla/mux"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/client/common/proof"
 )
 
 const (
@@ -22,6 +23,8 @@ func RegisterRoutes(cliCtx context.CLIContext, r *mux.Router, storeName string) 
 	r.HandleFunc(fmt.Sprintf("/%s/oracle_scripts/{%s}", storeName, idTag), getOracleScriptByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/requests/{%s}", storeName, idTag), getRequestByIDHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/request_search", storeName), getRequestSearchHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/validators/{%s}", storeName, validatorAddressTag), getValidatorStatusHandler(cliCtx, storeName)).Methods("GET")
 	r.HandleFunc(fmt.Sprintf("/%s/reporters/{%s}", storeName, validatorAddressTag), getReportersHandler(cliCtx, storeName)).Methods("GET")
-	r.HandleFunc(fmt.Sprintf("/%s/report_info/{%s}", storeName, validatorAddressTag), getReportInfoHandler(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/proof/{%s}", storeName, proof.RequestIDTag), proof.GetProofHandlerFn(cliCtx, storeName)).Methods("GET")
+	r.HandleFunc(fmt.Sprintf("/%s/active_validators", storeName), getActiveValidatorsHandler(cliCtx, storeName)).Methods("GET")
 }

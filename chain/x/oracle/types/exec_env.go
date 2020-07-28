@@ -16,7 +16,7 @@ func (env *BaseEnv) GetCalldata() []byte {
 
 // SetReturnData implements Owasm ExecEnv interface.
 func (env *BaseEnv) SetReturnData(data []byte) error {
-	return api.ErrSetReturnDataWrongPeriod
+	return api.ErrWrongPeriodAction
 }
 
 // GetAskCount implements Owasm ExecEnv interface.
@@ -31,22 +31,22 @@ func (env *BaseEnv) GetMinCount() int64 {
 
 // GetAnsCount implements Owasm ExecEnv interface.
 func (env *BaseEnv) GetAnsCount() (int64, error) {
-	return 0, api.ErrAnsCountWrongPeriod
+	return 0, api.ErrWrongPeriodAction
 }
 
 // AskExternalData implements Owasm ExecEnv interface.
 func (env *BaseEnv) AskExternalData(eid int64, did int64, data []byte) error {
-	return api.ErrAskExternalDataWrongPeriod
+	return api.ErrWrongPeriodAction
 }
 
 // GetExternalDataStatus implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
-	return 0, api.ErrGetExternalDataStatusWrongPeriod
+func (env *BaseEnv) GetExternalDataStatus(eid int64, vid int64) (int64, error) {
+	return 0, api.ErrWrongPeriodAction
 }
 
 // GetExternalData implements Owasm ExecEnv interface.
-func (env *PrepareEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
-	return nil, api.ErrGetExternalDataWrongPeriod
+func (env *BaseEnv) GetExternalData(eid int64, vid int64) ([]byte, error) {
+	return nil, api.ErrWrongPeriodAction
 }
 
 // PrepareEnv implements ExecEnv interface only expected function and panic on non-prepare functions.
@@ -68,11 +68,16 @@ func NewPrepareEnv(req Request, maxRawRequests int64) *PrepareEnv {
 
 // AskExternalData implements Owasm ExecEnv interface.
 func (env *PrepareEnv) AskExternalData(eid int64, did int64, data []byte) error {
-	if int64(len(data)) > MaxRawRequestDataSize {
-		return api.ErrSpanExceededCapacity
+	if int64(len(data)) > MaxDataSize {
+		return api.ErrSpanTooSmall
 	}
 	if int64(len(env.rawRequests)) >= env.maxRawRequests {
-		return api.ErrAskExternalDataExceed
+		return api.ErrTooManyExternalData
+	}
+	for _, raw := range env.rawRequests {
+		if raw.ExternalID == ExternalID(eid) {
+			return api.ErrDuplicateExternalID
+		}
 	}
 	env.rawRequests = append(env.rawRequests, NewRawRequest(
 		ExternalID(eid), DataSourceID(did), data,
@@ -93,23 +98,20 @@ type ExecuteEnv struct {
 }
 
 // NewExecuteEnv creates a new environment instance for execution period.
-func NewExecuteEnv(req Request) *ExecuteEnv {
-	return &ExecuteEnv{
-		BaseEnv: BaseEnv{
-			request: req,
-		},
-		reports: make(map[string]map[ExternalID]RawReport),
-	}
-}
-
-// SetReports loads the reports to the environment.
-func (env *ExecuteEnv) SetReports(reports []Report) {
+func NewExecuteEnv(req Request, reports []Report) *ExecuteEnv {
+	envReports := make(map[string]map[ExternalID]RawReport)
 	for _, report := range reports {
 		valReports := make(map[ExternalID]RawReport)
 		for _, each := range report.RawReports {
 			valReports[each.ExternalID] = each
 		}
-		env.reports[report.Validator.String()] = valReports
+		envReports[report.Validator.String()] = valReports
+	}
+	return &ExecuteEnv{
+		BaseEnv: BaseEnv{
+			request: req,
+		},
+		reports: envReports,
 	}
 }
 
@@ -120,13 +122,16 @@ func (env *ExecuteEnv) GetAnsCount() (int64, error) {
 
 // SetReturnData implements Owasm ExecEnv interface.
 func (env *ExecuteEnv) SetReturnData(data []byte) error {
+	if env.Retdata != nil {
+		return api.ErrRepeatSetReturnData
+	}
 	env.Retdata = data
 	return nil
 }
 
 func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int64, error) {
 	if valIdx < 0 || valIdx >= int64(len(env.request.RequestedValidators)) {
-		return nil, 0, api.ErrValidatorOutOfRange
+		return nil, 0, api.ErrBadValidatorIndex
 	}
 	valAddr := env.request.RequestedValidators[valIdx].String()
 	valReports, ok := env.reports[valAddr]
@@ -135,7 +140,7 @@ func (env *ExecuteEnv) getExternalDataFull(eid int64, valIdx int64) ([]byte, int
 	}
 	valReport, ok := valReports[ExternalID(eid)]
 	if !ok {
-		return nil, -1, api.ErrInvalidExternalID
+		return nil, 0, api.ErrBadExternalID
 	}
 	return valReport.Data, int64(valReport.ExitCode), nil
 }
