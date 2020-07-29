@@ -109,7 +109,7 @@ let renderBodyMobile =
   | Data({amount, sharePercentage, delegatorAddress}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("DELEGATOR", Address(delegatorAddress, 149, false)),
+        ("DELEGATOR", Address(delegatorAddress, 149, `account)),
         ("SHARES (%)", Float(sharePercentage, Some(4))),
         ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
       ]

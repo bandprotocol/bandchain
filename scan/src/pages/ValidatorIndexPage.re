@@ -97,7 +97,7 @@ let kvRowMobile = (k, v: value_row_t) => {
          | VAddress(address) => <AddressRender address />
          | VValidatorAddress(address) =>
            <div className=Styles.operatorAddressMobile>
-             <AddressRender address validator=true />
+             <AddressRender address accountType=`validator />
            </div>
          | VText(value) => <Text value nowrap=true />
          | VDetail(value) => <Text value />
@@ -126,7 +126,8 @@ let kvRow = (k, description, v: value_row_t) => {
         <div className=Styles.fillLeft />
         {switch (v) {
          | VAddress(address) => <AddressRender address />
-         | VValidatorAddress(address) => <AddressRender address validator=true clickable=false />
+         | VValidatorAddress(address) =>
+           <AddressRender address accountType=`validator clickable=false />
          | VText(value) => <Text value nowrap=true />
          | VDetail(value) => <Text value align=Text.Right />
          | VExtLink(value) =>
