@@ -242,6 +242,9 @@ let addUptimeOnValidators =
     };
   });
 };
+type sort_direction_t =
+  | ASC
+  | DESC;
 
 type sort_by_t =
   | NameAsc
@@ -258,11 +261,11 @@ let getDirection =
   | NameAsc
   | VotingPowerAsc
   | CommissionAsc
-  | UptimeAsc => "ASC"
+  | UptimeAsc => ASC
   | NameDesc
   | VotingPowerDesc
   | CommissionDesc
-  | UptimeDesc => "DESC";
+  | UptimeDesc => DESC;
 
 let getName =
   fun

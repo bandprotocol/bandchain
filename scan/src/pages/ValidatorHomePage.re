@@ -142,7 +142,10 @@ module Styles = {
       transform(
         scaleY(
           {
-            direction === "ASC" ? 1 |> float_of_int : (-1) |> float_of_int;
+            switch (direction) {
+            | ValidatorsTable.ASC => 1 |> float_of_int
+            | DESC => (-1) |> float_of_int
+            };
           },
         ),
       ),
@@ -188,9 +191,10 @@ module SortableDropdown = {
       </div>
       <div className={Styles.sortDrowdownPanel(show)}>
         {sortList
-         ->Belt.List.map(value => {
+         ->Belt.List.mapWithIndex((i, value) => {
              let isActive = sortedBy == value;
              <div
+               key={i |> string_of_int}
                className={Styles.sortDropdownItem(isActive)}
                onClick={_ => {
                  setSortedBy(_ => value);
