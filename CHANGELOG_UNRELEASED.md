@@ -10,6 +10,8 @@
 
 ### Chain (Consensus)
 
+- (chain) [\#2333](https://github.com/bandprotocol/bandchain/pull/2333) Upgrade to Cosmos-SDK version 0.39.1.
+
 ### Chain (Non-consensus)
 
 - (bugs) [\#2297](https://github.com/bandprotocol/bandchain/pull/2297) Update json key name of request and response packets.
