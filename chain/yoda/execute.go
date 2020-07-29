@@ -2,11 +2,13 @@ package yoda
 
 import (
 	"fmt"
+	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
@@ -14,7 +16,10 @@ import (
 )
 
 var (
-	cdc = app.MakeCodec()
+	cdc              = app.MakeCodec()
+	MaxTry           = 3
+	SleepTime        = 1 * time.Second
+	BroadCastTimeout = 7 * time.Second
 )
 
 func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
@@ -28,8 +33,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
 		return
 	}
-
-	cliCtx := sdkCtx.CLIContext{Client: c.client}
+	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
 	acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 	if err != nil {
 		l.Error(":exploding_head: Failed to retreive account with error: %s", err.Error())
@@ -51,16 +55,31 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 
-	res, err := cliCtx.BroadcastTxCommit(out)
-	if err != nil {
-		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
-		return
+	for try := 1; try <= MaxTry; try++ {
+		res, err := cliCtx.BroadcastTxSync(out)
+		l.Info("Try to broadcast: %d/%d", try, MaxTry)
+		if err != nil {
+			l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
+			time.Sleep(SleepTime)
+			continue
+		}
+		for start := time.Now(); time.Since(start) < BroadCastTimeout; {
+			time.Sleep(SleepTime)
+			txRes, err := utils.QueryTx(cliCtx, res.TxHash)
+			if err != nil {
+				l.Error(":exploding_head: Failed to query tx with error: %s", err.Error())
+				continue
+			}
+			if txRes.Code != 0 {
+				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+				break
+			}
+			l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)
+			return
+		}
+		l.Error(":exploding_head: Failed to broadcast on %d try", try)
 	}
-	if res.Code != 0 {
-		l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", res.Code, res.RawLog, res.TxHash)
-		return
-	}
-	l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)
+	l.Error(":exploding_head: Failed to broadcast tx with max try = %d", MaxTry)
 }
 
 // GetExecutable fetches data source executable using the provided client.
