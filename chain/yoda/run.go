@@ -98,6 +98,10 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			c.fileCache = filecache.New(filepath.Join(viper.GetString(flags.FlagHome), "files"))
+			c.broadcastTimeout, err = time.ParseDuration(cfg.BroadcastTimeout)
+			if err != nil {
+				return err
+			}
 			return runImpl(c, l)
 		},
 	}
@@ -107,11 +111,13 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagExecutor, "", "executor name and url for executing the data source script")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
+	cmd.Flags().String(flagBroadcastTimeout, "", "timeout")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
 	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	viper.BindPFlag(flagLogLevel, cmd.Flags().Lookup(flagLogLevel))
 	viper.BindPFlag(flagExecutor, cmd.Flags().Lookup(flagExecutor))
+	viper.BindPFlag(flagBroadcastTimeout, cmd.Flags().Lookup(flagBroadcastTimeout))
 	return cmd
 }

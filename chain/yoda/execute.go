@@ -16,10 +16,9 @@ import (
 )
 
 var (
-	cdc              = app.MakeCodec()
-	MaxTry           = 3
-	SleepTime        = 1 * time.Second
-	BroadCastTimeout = 7 * time.Second
+	cdc       = app.MakeCodec()
+	MaxTry    = 5
+	SleepTime = 3 * time.Second
 )
 
 func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
@@ -54,32 +53,30 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		l.Error(":exploding_head: Failed to build tx with error: %s", err.Error())
 		return
 	}
-
+	var res sdk.TxResponse
 	for try := 1; try <= MaxTry; try++ {
-		res, err := cliCtx.BroadcastTxSync(out)
 		l.Info("Try to broadcast: %d/%d", try, MaxTry)
+		res, err = cliCtx.BroadcastTxSync(out)
+		if err == nil {
+			break
+		}
+		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
+		time.Sleep(SleepTime)
+	}
+	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
+		time.Sleep(SleepTime)
+		txRes, err := utils.QueryTx(cliCtx, res.TxHash)
 		if err != nil {
-			l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
-			time.Sleep(SleepTime)
+			l.Debug("Failed to query tx with error: %s", err.Error())
 			continue
 		}
-		for start := time.Now(); time.Since(start) < BroadCastTimeout; {
-			time.Sleep(SleepTime)
-			txRes, err := utils.QueryTx(cliCtx, res.TxHash)
-			if err != nil {
-				l.Error(":exploding_head: Failed to query tx with error: %s", err.Error())
-				continue
-			}
-			if txRes.Code != 0 {
-				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
-				break
-			}
-			l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", res.TxHash)
+		if txRes.Code != 0 {
+			l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
 			return
 		}
-		l.Error(":exploding_head: Failed to broadcast on %d try", try)
+		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txRes.TxHash)
+		return
 	}
-	l.Error(":exploding_head: Failed to broadcast tx with max try = %d", MaxTry)
 }
 
 // GetExecutable fetches data source executable using the provided client.
