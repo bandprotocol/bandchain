@@ -24,8 +24,16 @@
 - (bugs) [\#2295](https://github.com/bandprotocol/bandchain/pull/2295) Truncate `accumulated_commission` precision.
 
 ### Scan
-
+- (impv) [\#2315](https://github.com/bandprotocol/bandchain/pull/2315) Improved how to pass account type on the AddressRender component
+- (impv) [\#2312](https://github.com/bandprotocol/bandchain/pull/2312) Implemented the BlockIndexPage layout for mobile view
+- (impv) [\#2316](https://github.com/bandprotocol/bandchain/pull/2316) Implemented the ValidatorHomePage layout for mobile view
+- (impv) [\#2310](https://github.com/bandprotocol/bandchain/pull/2310) Implemented the TxIndexpage layout for mobile view
+- (impv) [\#2305](https://github.com/bandprotocol/bandchain/pull/2305) Implement the TxHomepage layout for mobile view and adjusted the pagination on mobile view.
+- (impv) [\#2313](https://github.com/bandprotocol/bandchain/pull/2313) Added commision amount on Account Index Page
+- (feat) [\#2294](https://github.com/bandprotocol/bandchain/pull/2294) Implemented top part of `ValidatorIndexPage` for mobile
 - (impv) [\#2299](https://github.com/bandprotocol/bandchain/pull/2299) Update the latest transactions table for mobile version.
+- (bugs) [\#2290](https://github.com/bandprotocol/bandchain/pull/2290) Fix average block time calculation on `ValidatorHomePage` when using new cacher
+- (feat) [\#2296](https://github.com/bandprotocol/bandchain/pull/2296) Implemented delegators and proposed blocks table in `ValidatorIndexPage` mobile version
 
 ### Bridges
 
@@ -36,6 +44,8 @@
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
+
+- (feat) [\#2301](https://github.com/bandprotocol/bandchain/pull/2301) Add `pyband` initial implementation.
 
 ### MISC
 

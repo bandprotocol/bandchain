@@ -18,6 +18,8 @@ module Styles = {
 
   let fillLeft = style([marginLeft(`auto)]);
   let pagination = style([height(`px(30))]);
+
+  let mobileCount = style([padding2(~v=`px(25), ~h=`zero), display(`flex)]);
 };
 
 module Header = {
@@ -101,8 +103,79 @@ module Loading = {
   };
 };
 
-[@react.component]
-let make = (~address) => {
+let renderBodyMobile =
+    (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+  switch (delegatorSub) {
+  | Data({amount, sharePercentage, delegatorAddress}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("DELEGATOR", Address(delegatorAddress, 149, `account)),
+        ("SHARES (%)", Float(sharePercentage, Some(4))),
+        ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
+      ]
+      key={delegatorAddress |> Address.toBech32}
+      idx={delegatorAddress |> Address.toBech32}
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("DELEGATOR", Loading(150)),
+        ("SHARES (%)", Loading(60)),
+        ("AMOUNT\n(BAND)", Loading(80)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
+};
+
+module MobileLoading = {
+  [@react.component]
+  let make = () => {
+    Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+    ->Belt_Array.mapWithIndex((i, noData) => renderBodyMobile(i, noData))
+    ->React.array;
+  };
+};
+
+let renderMobile = (~address) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
+  let delegatorsSub = DelegationSub.getDelegatorsByValidator(address, ~pageSize, ~page, ());
+  let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
+
+  let allSub = Sub.all2(delegatorCountSub, delegatorsSub);
+  <>
+    <Row>
+      <div className=Styles.mobileCount>
+        {switch (allSub) {
+         | Data((delegatorCount, _)) =>
+           <>
+             <Text value={delegatorCount |> string_of_int} weight=Text.Bold />
+             <HSpacing size={`px(5)} />
+             <Text value="Delegators" />
+           </>
+         | _ => <LoadingCensorBar width=100 height=20 />
+         }}
+      </div>
+    </Row>
+    {switch (allSub) {
+     | Data((delegatorCount, delegators)) =>
+       let pageCount = Page.getPageCount(delegatorCount, pageSize);
+       <>
+         {delegators
+          ->Belt_Array.mapWithIndex((i, e) => renderBodyMobile(i, Sub.resolve(e)))
+          ->React.array}
+         <VSpacing size=Spacing.md />
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+       </>;
+     | _ => <MobileLoading />
+     }}
+    <VSpacing size=Spacing.lg />
+  </>;
+};
+
+let renderDesktop = (~address) => {
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
@@ -110,7 +183,6 @@ let make = (~address) => {
   let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
 
   let allSub = Sub.all2(delegatorCountSub, delegatorsSub);
-
   <div className=Styles.tableWrapper>
     <Row>
       <HSpacing size={`px(25)} />
@@ -187,4 +259,9 @@ let make = (~address) => {
      | _ => <Loading />
      }}
   </div>;
+};
+
+[@react.component]
+let make = (~address, ~isMobile) => {
+  isMobile ? renderMobile(~address) : renderDesktop(~address);
 };

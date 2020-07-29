@@ -17,7 +17,13 @@ module Styles = {
   let font =
     fun
     | Title => style([fontSize(`px(18)), lineHeight(`px(24))])
-    | Subtitle => style([fontSize(`px(14)), lineHeight(`px(20)), letterSpacing(`em(0.02))])
+    | Subtitle =>
+      style([
+        fontSize(`px(14)),
+        lineHeight(`px(20)),
+        letterSpacing(`em(0.02)),
+        Media.mobile([fontSize(`px(12))]),
+      ])
     | Text => style([fontSize(`px(12)), lineHeight(`px(16))])
     | Nav => style([fontSize(`px(10)), lineHeight(`px(14))]);
 
@@ -36,11 +42,12 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=true) => {
-  let prefix = validator ? "bandvaloper" : "band";
+let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~clickable=true) => {
+  let isValidator = accountType == `validator;
+  let prefix = isValidator ? "bandvaloper" : "band";
 
   let noPrefixAddress =
-    validator
+    isValidator
       ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
       : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
@@ -48,7 +55,7 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
     <Link
       className={Css.merge([Styles.container, Styles.clickable(clickable)])}
       route={
-        validator
+        isValidator
           ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
           : Route.AccountIndexPage(address, Route.AccountTransactions)
       }>
@@ -71,7 +78,7 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
                }
              }
              message={
-               validator ? address |> Address.toOperatorBech32 : address |> Address.toBech32
+               isValidator ? address |> Address.toOperatorBech32 : address |> Address.toBech32
              }
            />
          </>

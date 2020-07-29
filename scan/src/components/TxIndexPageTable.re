@@ -340,7 +340,7 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.validatorAddress} validator=true />
+      <AddressRender address={validator.validatorAddress} accountType=`validator />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
@@ -414,7 +414,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.sender} validator=true />
+      <AddressRender address={validator.sender} accountType=`validator />
     </div>
     <VSpacing size=Spacing.md />
     <div className=Styles.topicContainer>
@@ -661,7 +661,7 @@ let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} validator=true />
+        <AddressRender address={delegation.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -685,7 +685,7 @@ let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} validator=true />
+        <AddressRender address={delegation.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -709,14 +709,14 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
     <div className=Styles.topicContainer>
       <Text value="SOURCE ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorSourceAddress} validator=true />
+        <AddressRender address={delegation.validatorSourceAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="DESTINATION ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorDestinationAddress} validator=true />
+        <AddressRender address={delegation.validatorDestinationAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -740,7 +740,7 @@ let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} validator=true />
+        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -757,7 +757,7 @@ let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={unjail.address} validator=true />
+        <AddressRender address={unjail.address} accountType=`validator />
       </div>
     </div>
   </Col>;
@@ -833,7 +833,7 @@ let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} validator=true />
+        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </div>
     </div>
     <VSpacing size=Spacing.lg />
@@ -927,7 +927,7 @@ let renderActivate = (activate: TxSub.Msg.Activate.t) => {
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
-        <AddressRender address={activate.validatorAddress} validator=true />
+        <AddressRender address={activate.validatorAddress} accountType=`validator />
       </div>
     </div>
   </Col>;
@@ -953,7 +953,7 @@ let renderUnknownMessage = () => {
   </Col>;
 };
 
-let renderBody = (msg: TxSub.Msg.t) => {
+let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
   | SendMsg(send) => renderSend(send)
   | CreateDataSourceMsg(dataSource) => renderCreateDataSource(dataSource)
@@ -997,7 +997,6 @@ let renderBody = (msg: TxSub.Msg.t) => {
   | FailMsg(_) => renderFailMessage()
   | UnknownMsg => renderUnknownMessage()
   };
-};
 
 module THead = {
   [@react.component]
@@ -1052,6 +1051,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
+         //TODO: Change index to be uniqe something
          <TBody key={index |> string_of_int}>
            <Row>
              <Col> <HSpacing size=Spacing.md /> </Col>

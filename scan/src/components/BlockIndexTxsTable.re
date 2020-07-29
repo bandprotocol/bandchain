@@ -66,43 +66,78 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
   </TBody>;
 };
 
+let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+  switch (txSub) {
+  | Data({txHash, gasFee, success, messages, errMsg}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", TxHash(txHash, 200)),
+        ("GAS FEE\n(BAND)", Coin({value: gasFee, hasDenom: false})),
+        ("ACTIONS", Messages(txHash, messages, success, errMsg)),
+      ]
+      key={txHash |> Hash.toHex}
+      idx={txHash |> Hash.toHex}
+      status=success
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("TX HASH", Loading(200)),
+        ("GAS FEE\n(BAND)", Loading(60)),
+        ("ACTIONS", Loading(230)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
+};
+
 [@react.component]
 let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
+  let isMobile = Media.isMobile();
   <>
-    <THead>
-      <Row>
-        <HSpacing size={`px(20)} />
-        <Col size=1.67>
-          <div className=Styles.fullWidth>
-            <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
-          </div>
-        </Col>
-        <Col size=1.05>
-          <div className=Styles.fullWidth>
-            <AutoSpacing dir="left" />
-            <Text value="GAS FEE (BAND)" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
-            <HSpacing size={`px(20)} />
-          </div>
-        </Col>
-        <Col> <div className=Styles.container /> </Col>
-        <Col size=5.>
-          <div className=Styles.fullWidth>
-            <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
-          </div>
-        </Col>
-        <HSpacing size={`px(20)} />
-      </Row>
-    </THead>
+    {isMobile
+       ? React.null
+       : <THead>
+           <Row>
+             <HSpacing size={`px(20)} />
+             <Col size=1.67>
+               <div className=Styles.fullWidth>
+                 <Text value="TX HASH" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+               </div>
+             </Col>
+             <Col size=1.05>
+               <div className=Styles.fullWidth>
+                 <AutoSpacing dir="left" />
+                 <Text value="GAS FEE (BAND)" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                 <HSpacing size={`px(20)} />
+               </div>
+             </Col>
+             <Col> <div className=Styles.container /> </Col>
+             <Col size=5.>
+               <div className=Styles.fullWidth>
+                 <Text value="ACTIONS" size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+               </div>
+             </Col>
+             <HSpacing size={`px(20)} />
+           </Row>
+         </THead>}
     {switch (txsSub) {
      | Data(txs) =>
        txs->Belt.Array.size > 0
-         ? txs->Belt_Array.mapWithIndex((i, e) => renderBody(i, Sub.resolve(e)))->React.array
+         ? txs
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
          : <div className=Styles.emptyContainer>
              <img src=Images.noTransaction className=Styles.noTransactionLogo />
            </div>
      | _ =>
-       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) => renderBody(i, noData))
+       Belt_Array.make(isMobile ? 1 : 10, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
        ->React.array
      }}
   </>;

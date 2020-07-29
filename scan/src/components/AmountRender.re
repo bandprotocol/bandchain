@@ -1,6 +1,7 @@
 type pos =
   | Msg
-  | TxIndex;
+  | TxIndex
+  | Fee;
 
 module Styles = {
   open Css;
@@ -22,6 +23,7 @@ let make = (~coins, ~pos=Msg) => {
     {switch (pos) {
      | Msg => <Text value="BAND" weight=Text.Regular code=true nowrap=true block=true />
      | TxIndex => <Text value="BAND" weight=Text.Thin code=true nowrap=true block=true />
+     | Fee => React.null
      }}
   </div>;
 };
