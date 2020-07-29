@@ -19,6 +19,7 @@ let make = (~route, ~className, ~onClick=() => (), ~children) => {
         onClick();
         event->ReactEvent.Mouse.preventDefault;
         route->Route.redirect;
+        Window.scrollTo(0, 0);
       }
     }>
     children

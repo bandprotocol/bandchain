@@ -36,16 +36,25 @@ module Styles = {
       alignItems(`center),
       Media.mobile([width(`percent(100.)), flexDirection(`columnReverse)]),
     ]);
-
-  let serachContainer =
+  let featureContainer =
     style([
       width(`percent(30.)),
       marginRight(`px(16)),
       Media.mobile([
+        display(`flex),
+        width(`percent(100.)),
+        alignItems(`center),
+        justifyContent(`spaceBetween),
+        marginRight(`zero),
+      ]),
+    ]);
+  let searchContainer =
+    style([
+      Media.mobile([
         marginRight(`zero),
         display(`flex),
+        flexBasis(`percent(60.)),
         alignItems(`center),
-        width(`percent(100.)),
         before([
           backgroundImage(`url(Images.searchGray)),
           contentRule(`text("")),
@@ -69,15 +78,76 @@ module Styles = {
       border(`px(1), `solid, Colors.blueGray3),
       marginRight(`px(6)),
       Media.mobile([
-        paddingLeft(`px(20)),
+        backgroundColor(Colors.transparent),
         borderRadius(`zero),
         border(`zero, `none, Colors.white),
         borderBottom(`px(1), `solid, Colors.gray8),
         placeholder([color(Colors.blueGray3)]),
+        paddingLeft(`px(20)),
+        focus([outlineStyle(`none)]),
       ]),
     ]);
 
   let sortedContainer = style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
+  let sortDrowdownContainer =
+    style([position(`relative), zIndex(2), flexBasis(`percent(40.))]);
+  let sortDrowdownPanel = show => {
+    style([
+      display(
+        {
+          show ? `block : `none;
+        },
+      ),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      backgroundColor(Colors.white),
+      position(`absolute),
+      left(`zero),
+      top(`percent(100.)),
+      width(`percent(100.)),
+    ]);
+  };
+  let sortDropdownItem = isActive => {
+    style([
+      backgroundColor(
+        {
+          isActive ? Colors.blue1 : Colors.white;
+        },
+      ),
+      display(`flex),
+      alignItems(`center),
+      padding2(~v=`px(8), ~h=`px(10)),
+      selector("> img", [marginRight(`px(5))]),
+    ]);
+  };
+  let sortDropdownTextItem = {
+    style([
+      paddingRight(`px(15)),
+      after([
+        contentRule(`text("")),
+        backgroundImage(`url(Images.sortDown)),
+        width(`px(8)),
+        height(`px(8)),
+        backgroundRepeat(`noRepeat),
+        backgroundSize(`contain),
+        display(`block),
+        position(`absolute),
+        top(`percent(50.)),
+        right(`zero),
+        transform(translateY(`percent(-50.))),
+      ]),
+    ]);
+  };
+  let sortImage = direction => {
+    style([
+      transform(
+        scaleY(
+          {
+            direction === "ASC" ? 1 |> float_of_int : (-1) |> float_of_int;
+          },
+        ),
+      ),
+    ]);
+  };
 };
 
 let getPrevDay = _ => {
@@ -89,6 +159,61 @@ let getPrevDay = _ => {
 
 let getCurrentDay = _ => {
   MomentRe.momentNow() |> MomentRe.Moment.format(Config.timestampUseFormat);
+};
+
+module SortableDropdown = {
+  [@react.component]
+  let make = (~sortedBy, ~setSortedBy) => {
+    let (show, setShow) = React.useState(_ => false);
+    let sortList = [
+      ValidatorsTable.NameAsc,
+      NameDesc,
+      VotingPowerAsc,
+      VotingPowerDesc,
+      CommissionAsc,
+      CommissionDesc,
+      UptimeAsc,
+      UptimeDesc,
+    ];
+    <div className=Styles.sortDrowdownContainer>
+      <div className=Styles.sortDropdownTextItem onClick={_ => setShow(prev => !prev)}>
+        <Text
+          block=true
+          value={ValidatorsTable.getName(sortedBy)}
+          size=Text.Md
+          weight=Text.Regular
+          color=Colors.gray6
+          align=Text.Right
+        />
+      </div>
+      <div className={Styles.sortDrowdownPanel(show)}>
+        {sortList
+         ->Belt.List.map(value => {
+             let isActive = sortedBy == value;
+             <div
+               className={Styles.sortDropdownItem(isActive)}
+               onClick={_ => {
+                 setSortedBy(_ => value);
+                 setShow(_ => false);
+               }}>
+               <img
+                 src={isActive ? Images.mobileSortActive : Images.mobileSort}
+                 className={Styles.sortImage(ValidatorsTable.getDirection(value))}
+               />
+               <Text
+                 block=true
+                 value={ValidatorsTable.getName(value)}
+                 size=Text.Md
+                 weight=Text.Regular
+                 color={isActive ? Colors.blue7 : Colors.gray6}
+               />
+             </div>;
+           })
+         ->Array.of_list
+         ->React.array}
+      </div>
+    </div>;
+  };
 };
 
 [@react.component]
@@ -210,16 +335,19 @@ let make = () => {
       </Col>
     </Row>
     <div className=Styles.controlContainer>
-      <div className=Styles.serachContainer>
-        <input
-          type_="text"
-          className=Styles.searchBar
-          placeholder="Search Validator"
-          onChange={event => {
-            let newVal = ReactEvent.Form.target(event)##value;
-            setSearchTerm(_ => newVal);
-          }}
-        />
+      <div className=Styles.featureContainer>
+        <div className=Styles.searchContainer>
+          <input
+            type_="text"
+            className=Styles.searchBar
+            placeholder="Search Validator"
+            onChange={event => {
+              let newVal = ReactEvent.Form.target(event)##value;
+              setSearchTerm(_ => newVal);
+            }}
+          />
+        </div>
+        {Media.isMobile() ? <SortableDropdown sortedBy setSortedBy /> : React.null}
       </div>
       <ToggleButton isActive setIsActive />
     </div>

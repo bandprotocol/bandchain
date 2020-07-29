@@ -253,6 +253,28 @@ type sort_by_t =
   | UptimeAsc
   | UptimeDesc;
 
+let getDirection =
+  fun
+  | NameAsc
+  | VotingPowerAsc
+  | CommissionAsc
+  | UptimeAsc => "ASC"
+  | NameDesc
+  | VotingPowerDesc
+  | CommissionDesc
+  | UptimeDesc => "DESC";
+
+let getName =
+  fun
+  | NameAsc => "Validator name"
+  | VotingPowerAsc => "Voting Power"
+  | CommissionAsc => "Commission"
+  | UptimeAsc => "Uptime"
+  | NameDesc => "Validator name"
+  | VotingPowerDesc => "Voting Power"
+  | CommissionDesc => "Commission"
+  | UptimeDesc => "Uptime";
+
 let compareString = (a, b) => Js.String.localeCompare(a, b) |> int_of_float;
 
 let defaultCompare = (a: ValidatorSub.t, b: ValidatorSub.t) =>
