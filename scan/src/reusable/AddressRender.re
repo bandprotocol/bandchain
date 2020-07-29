@@ -42,11 +42,12 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=true) => {
-  let prefix = validator ? "bandvaloper" : "band";
+let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~clickable=true) => {
+  let isValidator = accountType == `validator;
+  let prefix = isValidator ? "bandvaloper" : "band";
 
   let noPrefixAddress =
-    validator
+    isValidator
       ? address |> Address.toOperatorBech32 |> Js.String.sliceToEnd(~from=11)
       : address |> Address.toBech32 |> Js.String.sliceToEnd(~from=4);
 
@@ -54,7 +55,7 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
     <Link
       className={Css.merge([Styles.container, Styles.clickable(clickable)])}
       route={
-        validator
+        isValidator
           ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
           : Route.AccountIndexPage(address, Route.AccountTransactions)
       }>
@@ -77,7 +78,7 @@ let make = (~address, ~position=Text, ~validator=false, ~copy=false, ~clickable=
                }
              }
              message={
-               validator ? address |> Address.toOperatorBech32 : address |> Address.toBech32
+               isValidator ? address |> Address.toOperatorBech32 : address |> Address.toBech32
              }
            />
          </>
