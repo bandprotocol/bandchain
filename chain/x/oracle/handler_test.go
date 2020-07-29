@@ -270,6 +270,7 @@ func TestRequestDataSuccess(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyCalldata, "62656562"), // "beeb" in hex
 		sdk.NewAttribute(types.AttributeKeyAskCount, "2"),
 		sdk.NewAttribute(types.AttributeKeyMinCount, "2"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "785"),
 		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator3.ValAddress.String()),
 		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
 	), sdk.NewEvent(
@@ -349,7 +350,7 @@ func TestReportSuccess(t *testing.T) {
 	)}, res.Events)
 	// Even if we resolve the request, validator3 should still be able to report.
 	k.SetPendingResolveList(ctx, []types.RequestID{})
-	k.ResolveSuccess(ctx, 42, []byte("RESOLVE_RESULT!"))
+	k.ResolveSuccess(ctx, 42, []byte("RESOLVE_RESULT!"), 1234)
 	res, err = oracle.NewHandler(k)(ctx, types.NewMsgReportData(42, reports, testapp.Validator3.ValAddress, testapp.Validator3.Address))
 	require.NoError(t, err)
 	require.Equal(t, sdk.Events{sdk.NewEvent(

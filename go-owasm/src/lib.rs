@@ -3,7 +3,7 @@ mod error;
 mod span;
 mod vm;
 
-use env::Env;
+use env::{Env, RunOutput};
 use error::Error;
 use parity_wasm::builder;
 use parity_wasm::elements::{self, External, ImportEntry, MemoryType, Module};
@@ -45,9 +45,19 @@ pub extern "C" fn do_compile(input: Span, output: &mut Span) -> Error {
 }
 
 #[no_mangle]
-pub extern "C" fn do_run(code: Span, gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Error {
+pub extern "C" fn do_run(
+    code: Span,
+    gas_limit: u32,
+    span_size: i64,
+    is_prepare: bool,
+    env: Env,
+    output: &mut RunOutput,
+) -> Error {
     match run(code.read(), gas_limit, span_size, is_prepare, env) {
-        Ok(_) => Error::NoError,
+        Ok(o) => {
+            output.gas_used = o.gas_used;
+            Error::NoError
+        }
         Err(e) => e,
     }
 }
@@ -151,7 +161,11 @@ fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error
     return Ok(());
 }
 
-fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<(), Error> {
+pub struct RunOutputImpl {
+    pub gas_used: u32,
+}
+
+fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<RunOutputImpl, Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
@@ -244,7 +258,8 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
             }
         }
         _ => Error::RuntimeError,
-    })
+    })?;
+    Ok(RunOutputImpl { gas_used: vm.gas_used })
 }
 
 #[cfg(test)]
