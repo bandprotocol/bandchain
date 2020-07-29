@@ -1,0 +1,10 @@
+# Ignore everything
+**
+
+# Allow owasm and go-owasm
+!/owasm/**
+!/go-owasm/**
+
+# Ignore target folders
+/owasm/target
+/go-owasm/target

@@ -1,6 +1,6 @@
 FROM centos:centos7
 
-RUN yum  -y update
+RUN yum -y update
 RUN yum -y install clang gcc gcc-c++ make wget
 
 # GET FROM https://github.com/rust-lang/docker-rust-nightly
@@ -21,10 +21,9 @@ RUN url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustu
 
 # PRE-FETCH MANY DEPS
 WORKDIR /scratch
-COPY Cargo.toml /scratch/
-COPY Cargo.lock /scratch/
-COPY src /scratch/src
-RUN cargo fetch
+COPY owasm /scratch/owasm
+COPY go-owasm /scratch/go-owasm
+RUN cd go-owasm && cargo fetch
 # allow non-root user to download more deps later
 RUN chmod -R 777 /usr/local/cargo
 
@@ -34,11 +33,11 @@ RUN chmod -R 777 /usr/local/cargo
 WORKDIR /code
 RUN rm -rf /scratch
 
-COPY build/build_linux.sh /opt
+COPY go-owasm/build/build_linux.sh /opt
 RUN chmod +x /opt/build*
 
 RUN mkdir /.cargo
 RUN chmod +rx /.cargo
-COPY build/cargo-config /.cargo/config
+COPY go-owasm/build/cargo-config /.cargo/config
 
 CMD ["/opt/build_linux.sh"]
