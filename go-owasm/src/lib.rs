@@ -54,8 +54,8 @@ pub extern "C" fn do_run(
     output: &mut RunOutput,
 ) -> Error {
     match run(code.read(), gas_limit, span_size, is_prepare, env) {
-        Ok(o) => {
-            output.gas_used = o.gas_used;
+        Ok(gas_used) => {
+            output.gas_used = gas_used;
             Error::NoError
         }
         Err(e) => e,
@@ -161,11 +161,7 @@ fn require_mem_range(max_range: usize, require_range: usize) -> Result<(), Error
     return Ok(());
 }
 
-pub struct RunOutputImpl {
-    pub gas_used: u32,
-}
-
-fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<RunOutputImpl, Error> {
+fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) -> Result<u32, Error> {
     let vm = &mut vm::VMLogic::new(env, gas_limit, span_size);
     let raw_ptr = vm as *mut _ as *mut c_void;
     let import_reference = ImportReference(raw_ptr);
@@ -259,7 +255,7 @@ fn run(code: &[u8], gas_limit: u32, span_size: i64, is_prepare: bool, env: Env) 
         }
         _ => Error::RuntimeError,
     })?;
-    Ok(RunOutputImpl { gas_used: vm.gas_used })
+    Ok(vm.gas_used)
 }
 
 #[cfg(test)]
