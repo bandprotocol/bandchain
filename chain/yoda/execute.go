@@ -54,14 +54,20 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 	var res sdk.TxResponse
+	found := false
 	for try := 1; try <= MaxTry; try++ {
 		l.Info("Try to broadcast: %d/%d", try, MaxTry)
 		res, err = cliCtx.BroadcastTxSync(out)
 		if err == nil {
+			found = true
 			break
 		}
 		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
 		time.Sleep(SleepTime)
+	}
+	if !found {
+		l.Error(":exploding_head: Can't try to broadcast more than %d try", MaxTry)
+		return
 	}
 	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
 		time.Sleep(SleepTime)
@@ -77,6 +83,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txRes.TxHash)
 		return
 	}
+	l.Info("Can't find tx hash: %s before timeout", res.TxHash)
 }
 
 // GetExecutable fetches data source executable using the provided client.

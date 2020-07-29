@@ -111,7 +111,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagExecutor, "", "executor name and url for executing the data source script")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
-	cmd.Flags().String(flagBroadcastTimeout, "", "The time that Yoda will wait for tx commit")
+	cmd.Flags().String(flagBroadcastTimeout, "10s", "The time that Yoda will wait for tx commit")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
