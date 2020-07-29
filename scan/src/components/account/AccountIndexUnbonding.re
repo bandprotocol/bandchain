@@ -57,22 +57,19 @@ let renderBodyMobile =
     (
       {validator: {operatorAddress, moniker, identity}, amount, completionTime}: UnbondingSub.unbonding_list_t,
     ) => {
+  let key_ =
+    (operatorAddress |> Address.toBech32)
+    ++ (completionTime |> MomentRe.Moment.toISOString)
+    ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString);
+    
   <MobileCard
     values=InfoMobileCard.[
       ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
       ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
       ("UNBONDED AT", Timestamp(completionTime)),
     ]
-    key={
-      (operatorAddress |> Address.toBech32)
-      ++ (completionTime |> MomentRe.Moment.toISOString)
-      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-    }
-    idx={
-      (operatorAddress |> Address.toBech32)
-      ++ (completionTime |> MomentRe.Moment.toISOString)
-      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-    }
+    key=key_
+    idx=key_
   />;
 };
 

@@ -25,7 +25,7 @@ module RedelegationByDelegatorConfig = [%graphql
             moniker
             identity
           }
-          dstValidator: validator @bsRecord{
+          dstValidator: validatorByValidatorDstId @bsRecord{
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
             moniker
             identity

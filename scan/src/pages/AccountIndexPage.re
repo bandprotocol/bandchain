@@ -1,33 +1,18 @@
 module Styles = {
   open Css;
 
-  type align_t =
-    | Start
-    | Center
-    | End;
-
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let addressContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let logo = style([width(`px(50)), marginRight(`px(10))]);
 
-  let cFlex = align_items =>
-    style([
-      display(`flex),
-      flexDirection(`column),
-      alignItems(
-        switch (align_items) {
-        | Start => `flexStart
-        | Center => `center
-        | End => `flexEnd
-        },
-      ),
-    ]);
+  let cFlex = alignItems_ =>
+    style([display(`flex), flexDirection(`column), alignItems(alignItems_)]);
 
   let rFlex = style([display(`flex), flexDirection(`row)]);
 
-  let innerCenter = style([display(`flex), justifyContent(`center)]);
+  let innerCenter = style([Media.mobile([display(`flex), justifyContent(`center)])]);
 
   let separatorLine =
     style([
@@ -36,7 +21,7 @@ module Styles = {
       backgroundColor(Colors.gray7),
       marginLeft(`px(20)),
       opacity(0.3),
-      Media.mobile([marginLeft(`px(0)), width(`percent(100.)), height(`px(1))]),
+      Media.mobile([marginLeft(`zero), width(`percent(100.)), height(`px(1))]),
     ]);
 
   let ovalIcon = color =>
@@ -108,7 +93,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
       />
     </Col>
     <Col size=0.6>
-      <div className={Styles.cFlex(Styles.End)}>
+      <div className={Styles.cFlex(`flexEnd)}>
         <div className=Styles.rFlex>
           {isCountup
              ? <NumberCountup
@@ -167,13 +152,15 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
   </Row>;
 };
 
-let totalBalanceRender = (isMobile, titles, amount, symbol) => {
+let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
+  let titles = isMobile ? rawTitle->Js.String2.split("\n") : [|rawTitle|];
+
   <div className=Styles.totalBalance>
-    <div className={Styles.cFlex(Styles.Start)}>
+    <div className={Styles.cFlex(`flexStart)}>
       {titles
        ->Belt_Array.mapWithIndex((i, title) =>
            <Text
-             key={i->string_of_int}
+             key={i->string_of_int ++ title}
              value=title
              size={isMobile ? Text.Sm : Text.Md}
              spacing={Text.Em(0.03)}
@@ -293,7 +280,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
       <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
         <Col size=0.75>
-          <div className={isMobile ? Styles.innerCenter : Css.style([])}>
+          <div className=Styles.innerCenter>
             <PieChart
               size={isMobile ? 160 : 187}
               availableBalance
@@ -365,10 +352,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
         <div className=Styles.separatorLine />
         <Col size=1. alignSelf=Col.Start>
           <div className=Styles.totalContainer>
-            {totalBalanceRender(isMobile, [|"TOTAL BAND BALANCE"|], totalBalance, "BAND")}
+            {totalBalanceRender(isMobile, "TOTAL BAND BALANCE", totalBalance, "BAND")}
             {totalBalanceRender(
                isMobile,
-               [|"TOTAL BAND IN USD", "($" ++ (usdPrice |> Format.fPretty) ++ " / BAND)"|],
+               "TOTAL BAND IN USD \n($" ++ (usdPrice |> Format.fPretty(~digits=2)) ++ " / BAND)",
                totalBalance *. usdPrice,
                "USD",
              )}
