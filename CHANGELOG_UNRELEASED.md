@@ -46,6 +46,8 @@
 
 ### Owasm
 
+- (chore) [\#2339](https://github.com/bandprotocol/bandchain/pull/2339) Refactor runtime code into owasm package.
+
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
