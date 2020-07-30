@@ -52,7 +52,7 @@ func TestResolveSuccess(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	k.SetRequest(ctx, 42, defaultRequest()) // See report_test.go
 	k.SetReport(ctx, 42, types.NewReport(testapp.Validator1.ValAddress, true, nil))
-	k.ResolveSuccess(ctx, 42, BasicResult)
+	k.ResolveSuccess(ctx, 42, BasicResult, 1234)
 	require.Equal(t, types.ResolveStatus_Success, k.MustGetResult(ctx, 42).ResponsePacketData.ResolveStatus)
 	require.Equal(t, BasicResult, k.MustGetResult(ctx, 42).ResponsePacketData.Result)
 	require.Equal(t, sdk.Events{sdk.NewEvent(
@@ -60,6 +60,7 @@ func TestResolveSuccess(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "42415349435f524553554c54"), // BASIC_RESULT
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "1234"),
 	)}, ctx.EventManager().Events())
 }
 

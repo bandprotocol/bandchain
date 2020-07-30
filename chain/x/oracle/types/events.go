@@ -27,6 +27,7 @@ const (
 	AttributeKeyAskCount       = "ask_count"
 	AttributeKeyMinCount       = "min_count"
 	AttributeKeyResolveStatus  = "resolve_status"
+	AttributeKeyGasUsed        = "gas_used"
 	AttributeKeyResult         = "result"
 	AttributeKeyReason         = "reason"
 )

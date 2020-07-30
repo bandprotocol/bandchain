@@ -25,3 +25,8 @@ pub struct Env {
     pub env: *mut env_t,
     pub dis: EnvDispatcher,
 }
+
+#[repr(C)]
+pub struct RunOutput {
+    pub gas_used: u32,
+}

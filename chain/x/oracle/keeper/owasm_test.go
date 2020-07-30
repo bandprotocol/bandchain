@@ -100,6 +100,7 @@ func TestPrepareRequestSuccessBasic(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(BasicCalldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
 		sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "785"),
 		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
 	), sdk.NewEvent(
 		types.EventTypeRawRequest,
@@ -263,6 +264,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "62656562"), // hex of "beeb"
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "260"),
 	)}, ctx.EventManager().Events())
 }
 
@@ -310,6 +312,7 @@ func TestResolveRequestSuccessComplex(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "000000206265656264317631626565626431763262656562643276316265656264327632"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "8738"),
 	)}, ctx.EventManager().Events())
 }
 
@@ -357,6 +360,7 @@ func TestResolveReadNilExternalData(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "0000001062656562643176326265656264327631"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "7757"),
 	)}, ctx.EventManager().Events())
 }
 
