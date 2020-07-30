@@ -82,7 +82,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <Text value={j| from |j} size=Text.Md code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(width - 285)}> <AddressRender address=fromAddress /> </div>
+      <div className={Styles.withWidth(width - 315)}> <AddressRender address=fromAddress /> </div>
     </div>
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>

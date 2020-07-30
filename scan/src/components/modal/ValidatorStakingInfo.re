@@ -150,7 +150,11 @@ module StakingInfo = {
       let balanceAtStakeSub =
         DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
       let unbondingSub =
-        UnbondingSub.getUnbondingBalanceByValidator(delegatorAddress, validatorAddress);
+        UnbondingSub.getUnbondingBalanceByValidator(
+          delegatorAddress,
+          validatorAddress,
+          currentTime,
+        );
       let unbondingListSub =
         UnbondingSub.getUnbondingList(delegatorAddress, validatorAddress, currentTime);
 

@@ -34220,7 +34220,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "validator",
+            "name": "validatorByValidatorDstId",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -34846,7 +34846,7 @@
             "description": null
           },
           {
-            "name": "validator",
+            "name": "validatorByValidatorDstId",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
@@ -34978,7 +34978,7 @@
             "description": null
           },
           {
-            "name": "validator",
+            "name": "validatorByValidatorDstId",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
@@ -35365,7 +35365,7 @@
             "description": null
           },
           {
-            "name": "validator",
+            "name": "validatorByValidatorDstId",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
