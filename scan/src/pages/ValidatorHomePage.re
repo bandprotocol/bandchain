@@ -121,9 +121,6 @@ module Styles = {
   };
   let sortDropdownTextItem = {
     style([
-      display(`flex),
-      alignItems(`center),
-      justifyContent(`spaceBetween),
       paddingRight(`px(15)),
       after([
         contentRule(`text("")),
@@ -138,7 +135,6 @@ module Styles = {
         right(`zero),
         transform(translateY(`percent(-50.))),
       ]),
-      selector("> img", [marginRight(`px(10))]),
     ]);
   };
 };
@@ -170,17 +166,9 @@ module SortableDropdown = {
     ];
     <div className=Styles.sortDrowdownContainer>
       <div className=Styles.sortDropdownTextItem onClick={_ => setShow(prev => !prev)}>
-        <img
-          src={
-            switch (ValidatorsTable.getDirection(sortedBy)) {
-            | ASC => Images.mobileSortAsc
-            | DESC => Images.mobileSortDesc
-            }
-          }
-        />
         <Text
           block=true
-          value={ValidatorsTable.getName(sortedBy)}
+          value="Sort By"
           size=Text.Md
           weight=Text.Regular
           color=Colors.gray6
@@ -197,7 +185,6 @@ module SortableDropdown = {
                onClick={_ => {
                  setSortedBy(_ => value);
                  setShow(_ => false);
-                 Js.Console.log(value);
                }}>
                <img
                  src={

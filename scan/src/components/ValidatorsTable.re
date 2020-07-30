@@ -269,13 +269,13 @@ let getDirection =
 
 let getName =
   fun
-  | NameAsc => "Validator name"
-  | VotingPowerAsc => "Voting Power"
-  | CommissionAsc => "Commission"
-  | UptimeAsc => "Uptime"
+  | NameAsc
   | NameDesc => "Validator name"
+  | VotingPowerAsc
   | VotingPowerDesc => "Voting Power"
+  | CommissionAsc
   | CommissionDesc => "Commission"
+  | UptimeAsc
   | UptimeDesc => "Uptime";
 
 let compareString = (a, b) => Js.String.localeCompare(a, b) |> int_of_float;
