@@ -56,24 +56,24 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 	var res sdk.TxResponse
 	found := false
 	for try := 1; try <= MaxTry; try++ {
-		l.Info("Try to broadcast: %d/%d", try, MaxTry)
+		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, MaxTry)
 		res, err = cliCtx.BroadcastTxSync(out)
 		if err == nil {
 			found = true
 			break
 		}
-		l.Error(":exploding_head: Failed to broadcast tx with error: %s", err.Error())
+		l.Debug(":warning: Failed to broadcast tx with error: %s", err.Error())
 		time.Sleep(SleepTime)
 	}
 	if !found {
-		l.Error(":exploding_head: Can't try to broadcast more than %d try", MaxTry)
+		l.Error(":exploding_head: Cannot try to broadcast more than %d try", MaxTry)
 		return
 	}
 	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
 		time.Sleep(SleepTime)
 		txRes, err := utils.QueryTx(cliCtx, res.TxHash)
 		if err != nil {
-			l.Debug("Failed to query tx with error: %s", err.Error())
+			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
 			continue
 		}
 		if txRes.Code != 0 {
@@ -83,7 +83,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txRes.TxHash)
 		return
 	}
-	l.Info("Can't find tx hash: %s before timeout", res.TxHash)
+	l.Info(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", res.TxHash)
 }
 
 // GetExecutable fetches data source executable using the provided client.
