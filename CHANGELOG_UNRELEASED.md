@@ -27,7 +27,7 @@
 - (bugs) [\#2295](https://github.com/bandprotocol/bandchain/pull/2295) Truncate `accumulated_commission` precision.
 
 ### Scan
-
+- (bugs) [\#2342](https://github.com/bandprotocol/bandchain/pull/2342) Fixed bugs on mobile screen.
 - (impv) [\#2334](https://github.com/bandprotocol/bandchain/pull/2334) Implemented the sorting function on validator homepage's mobile layout.
 - (impv) [\#2330](https://github.com/bandprotocol/bandchain/pull/2330) Fixed share_percentage decoder in DelegationSub
 - (impv) [\#2317](https://github.com/bandprotocol/bandchain/pull/2317) Implemented account Index Page (Mobile)

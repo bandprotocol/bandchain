@@ -1,3 +1,8 @@
+module Styles = {
+  open Css;
+  let blockWrapper = style([paddingBottom(`px(20))]);
+};
+
 let addressWidth = 160;
 let renderMuitisendList = (tx: TxSub.Msg.MultiSend.t) =>
   InfoMobileCard.[("INPUTS", Nothing)]
@@ -121,28 +126,29 @@ let renderDetailMobile =
 
 [@react.component]
 let make = (~messages: list(TxSub.Msg.t)) => {
-  <>
+  <div className=Styles.blockWrapper>
     //TODO: Change index to be unique something
-    {messages
-     ->Belt.List.mapWithIndex((index, msg) => {
-         let renderList = msg |> renderDetailMobile;
-         let theme = msg |> TxSub.Msg.getBadgeTheme;
-         let creator = msg |> TxSub.Msg.getCreator;
-         <MobileCard
-           values={
-             InfoMobileCard.[
-               ("MESSAGE\nTYPE", Badge(theme)),
-               ("CREATOR", Address(creator, addressWidth, `account)),
-             ]
-             ->Belt.List.concat(renderList)
-           }
-           key={index |> string_of_int}
-           idx={index |> string_of_int}
-         />;
-       })
-     ->Array.of_list
-     ->React.array}
-  </>;
+
+      {messages
+       ->Belt.List.mapWithIndex((index, msg) => {
+           let renderList = msg |> renderDetailMobile;
+           let theme = msg |> TxSub.Msg.getBadgeTheme;
+           let creator = msg |> TxSub.Msg.getCreator;
+           <MobileCard
+             values={
+               InfoMobileCard.[
+                 ("MESSAGE\nTYPE", Badge(theme)),
+                 ("CREATOR", Address(creator, addressWidth, `account)),
+               ]
+               ->Belt.List.concat(renderList)
+             }
+             key={index |> string_of_int}
+             idx={index |> string_of_int}
+           />;
+         })
+       ->Array.of_list
+       ->React.array}
+    </div>;
 };
 
 module Loading = {

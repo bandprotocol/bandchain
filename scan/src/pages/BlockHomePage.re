@@ -16,7 +16,7 @@ module Styles = {
       marginRight(`px(10)),
       backgroundColor(Colors.gray7),
     ]);
-
+  let blockWrapper = style([Media.mobile([paddingBottom(`px(20))])]);
   let fullWidth = style([width(`percent(100.0)), display(`flex)]);
 
   let withWidth = w => style([width(`px(w))]);
@@ -126,7 +126,7 @@ let make = () => {
 
   let allSub = Sub.all2(BlockSub.getList(~pageSize, ~page, ()), BlockSub.count());
   let isMobile = Media.isMobile();
-  <>
+  <div className=Styles.blockWrapper>
     <Row>
       <div className=Styles.header>
         <img src=Images.blockLogo className=Styles.logo />
@@ -217,5 +217,5 @@ let make = () => {
          )
        ->React.array
      }}
-  </>;
+  </div>;
 };
