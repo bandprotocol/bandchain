@@ -242,6 +242,9 @@ let addUptimeOnValidators =
     };
   });
 };
+type sort_direction_t =
+  | ASC
+  | DESC;
 
 type sort_by_t =
   | NameAsc
@@ -252,6 +255,28 @@ type sort_by_t =
   | CommissionDesc
   | UptimeAsc
   | UptimeDesc;
+
+let getDirection =
+  fun
+  | NameAsc
+  | VotingPowerAsc
+  | CommissionAsc
+  | UptimeAsc => ASC
+  | NameDesc
+  | VotingPowerDesc
+  | CommissionDesc
+  | UptimeDesc => DESC;
+
+let getName =
+  fun
+  | NameAsc
+  | NameDesc => "Validator name"
+  | VotingPowerAsc
+  | VotingPowerDesc => "Voting Power"
+  | CommissionAsc
+  | CommissionDesc => "Commission"
+  | UptimeAsc
+  | UptimeDesc => "Uptime";
 
 let compareString = (a, b) => Js.String.localeCompare(a, b) |> int_of_float;
 
@@ -268,8 +293,8 @@ let sorting = (validators: array(ValidatorSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | NameAsc => compareString(a.moniker, b.moniker)
-        | NameDesc => compareString(b.moniker, a.moniker)
+        | NameAsc => compareString(b.moniker, a.moniker)
+        | NameDesc => compareString(a.moniker, b.moniker)
         | VotingPowerAsc => compare(a.tokens, b.tokens)
         | VotingPowerDesc => compare(b.tokens, a.tokens)
         | CommissionAsc => compare(a.commission, b.commission)
