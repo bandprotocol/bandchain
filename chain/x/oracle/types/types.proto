@@ -262,7 +262,7 @@ message Params {
   // PerValidatorRequestGas is the amount of Cosmos-SDK gas charged per requested validator.
   uint64 per_validator_request_gas = 5;
   // SamplingTryCount the number of validator sampling tries to pick the highest voting power
-  // subset of validators to perform an oracle tasks.
+  // subset of validators to perform an oracle task.
   uint64 sampling_try_count = 6;
   // OracleRewardPercentage is the percentage of block rewards allocated to active oracle validators.
   uint64 oracle_reward_percentage = 7;
