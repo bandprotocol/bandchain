@@ -5,7 +5,7 @@ module Styles = {
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
-      Media.mobile([margin2(~h=`px(-16), ~v=`zero)]),
+      Media.mobile([margin2(~h=`px(-15), ~v=`zero)]),
     ]);
   let header =
     style([
@@ -37,7 +37,7 @@ module Styles = {
 };
 
 let button = (~name, ~route, ~active) => {
-  <Link key=name className={Styles.buttonContainer(active)} route>
+  <Link key=name isTab=true className={Styles.buttonContainer(active)} route>
     <Text
       value=name
       weight=Text.Regular

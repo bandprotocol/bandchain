@@ -19,9 +19,9 @@ type unbonding_list_t = {
 
 module SingleConfig = [%graphql
   {|
-    subscription Unbonding($delegator_address: String!) {
+    subscription Unbonding($delegator_address: String!, $current_time: timestamp) {
       accounts_by_pk(address: $delegator_address){
-        unbonding_delegations_aggregate {
+        unbonding_delegations_aggregate(where: {completion_time: {_gte: $current_time}}) {
           aggregate {
             sum {
               amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
@@ -48,9 +48,9 @@ module MultiConfig = [%graphql
 
 module UnbondingByValidatorConfig = [%graphql
   {|
-    subscription Unbonding($delegator_address: String!, $operator_address: String!) {
+    subscription Unbonding($delegator_address: String!, $operator_address: String!, $current_time: timestamp) {
       accounts_by_pk(address: $delegator_address) {
-        unbonding_delegations_aggregate(where: {validator: {operator_address: {_eq: $operator_address}}}) {
+        unbonding_delegations_aggregate(where: {validator: {operator_address: {_eq: $operator_address}}, completion_time: {_gte: $current_time}}) {
           aggregate {
             sum {
               amount @bsDecoder(fn: "GraphQLParser.coinWithDefault")
@@ -94,12 +94,16 @@ module UnbondingCountByDelegatorConfig = [%graphql
   |}
 ];
 
-let getUnbondingBalance = delegatorAddress => {
+let getUnbondingBalance = (delegatorAddress, currentTime) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
       ~variables=
-        SingleConfig.makeVariables(~delegator_address=delegatorAddress |> Address.toBech32, ()),
+        SingleConfig.makeVariables(
+          ~delegator_address=delegatorAddress |> Address.toBech32,
+          ~current_time=currentTime |> Js.Json.string,
+          (),
+        ),
     );
 
   let unbondingInfoSub =
@@ -119,7 +123,7 @@ let getUnbondingBalance = delegatorAddress => {
   unbondingInfo |> Sub.resolve;
 };
 
-let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
+let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress, currentTime) => {
   let (result, _) =
     ApolloHooks.useSubscription(
       UnbondingByValidatorConfig.definition,
@@ -127,6 +131,7 @@ let getUnbondingBalanceByValidator = (delegatorAddress, operatorAddress) => {
         UnbondingByValidatorConfig.makeVariables(
           ~delegator_address=delegatorAddress |> Address.toBech32,
           ~operator_address=operatorAddress |> Address.toOperatorBech32,
+          ~current_time=currentTime |> Js.Json.string,
           (),
         ),
     );

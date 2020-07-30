@@ -73,3 +73,7 @@
 [@bs.module] external whiteClose: string = "./white-close.svg";
 [@bs.module] external close: string = "./close.svg";
 [@bs.module] external menu: string = "./menu.svg";
+[@bs.module] external mobileSortAsc: string = "./mobile-sort-asc-icon.svg";
+[@bs.module] external mobileSortDesc: string = "./mobile-sort-desc-icon.svg";
+[@bs.module] external mobileSortAscActive: string = "./mobile-sort-asc-active-icon.svg";
+[@bs.module] external mobileSortDescActive: string = "./mobile-sort-desc-active-icon.svg";

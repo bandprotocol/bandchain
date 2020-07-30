@@ -16,7 +16,12 @@ module Styles = {
 
   let font =
     fun
-    | Title => style([fontSize(`px(18)), lineHeight(`px(24))])
+    | Title =>
+      style([
+        fontSize(`px(18)),
+        lineHeight(`px(24)),
+        Media.mobile([fontSize(px(14)), lineHeight(`px(18))]),
+      ])
     | Subtitle =>
       style([
         fontSize(`px(14)),
@@ -37,6 +42,11 @@ module Styles = {
       hover([color(Colors.gray7)]),
       active([color(Colors.gray7)]),
     ]);
+
+  let wordBreak =
+    fun
+    | Title => style([Media.mobile([wordBreak(`breakAll), whiteSpace(`unset)])])
+    | _ => "";
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
 };
@@ -59,7 +69,13 @@ let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~click
           ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
           : Route.AccountIndexPage(address, Route.AccountTransactions)
       }>
-      <span className={Css.merge([Styles.font(position), Styles.base, Text.Styles.code])}>
+      <span
+        className={Css.merge([
+          Styles.base,
+          Text.Styles.code,
+          Styles.font(position),
+          Styles.wordBreak(position),
+        ])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}
       </span>
