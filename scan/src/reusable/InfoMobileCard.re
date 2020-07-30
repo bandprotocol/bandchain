@@ -131,7 +131,7 @@ let make = (~info) => {
         <HSpacing size=Spacing.lg />
         <UptimeBar percent=uptime />
       </div>
-    | None => <LoadingCensorBar width=200 height=21 />
+    | None => <Text value="N/A" spacing={Text.Em(0.02)} code=true nowrap=true />
     }
   | Loading(width) => <LoadingCensorBar width height=21 />
   | Nothing => React.null

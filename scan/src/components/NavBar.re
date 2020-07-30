@@ -52,7 +52,7 @@ module RenderMobile = {
         display(`flex),
         flexDirection(`column),
         opacity(show ? 1. : 0.),
-        zIndex(show ? 1 : (-3)),
+        zIndex(2),
         pointerEvents(show ? `auto : `none),
         width(`percent(100.)),
         position(`absolute),
@@ -76,6 +76,18 @@ module RenderMobile = {
         flexDirection(`row),
         justifyContent(`center),
         alignItems(`center),
+      ]);
+    let backdropContainer = show =>
+      style([
+        width(`percent(100.)),
+        height(`percent(100.)),
+        backgroundColor(`rgba((0, 0, 0, 0.5))),
+        position(`fixed),
+        opacity(show ? 1. : 0.),
+        pointerEvents(show ? `auto : `none),
+        left(`zero),
+        top(`px(62)),
+        transition(~duration=400, "all"),
       ]);
   };
 
@@ -111,6 +123,7 @@ module RenderMobile = {
           </div>
         </div>
       </div>
+      <div onClick={_ => setShow(prev => !prev)} className={Styles.backdropContainer(show)} />
     </>;
   };
 };
