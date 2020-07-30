@@ -91,6 +91,9 @@ input {
   border: 0;
   margin: 0;
   padding: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 /* HTML5 display-role reset for older browsers */

@@ -9,7 +9,7 @@ module Styles = {
       width(`percent(100.)),
       padding2(~v=Spacing.lg, ~h=`zero),
       backgroundColor(Colors.white),
-      border(`px(2), `solid, Colors.blueGray1),
+      borderBottom(`px(2), `solid, Colors.blueGray1),
       top(`zero),
       zIndex(3),
       Media.mobile([padding(Spacing.md), justifyContent(`spaceBetween), position(`fixed)]),
