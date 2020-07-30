@@ -153,15 +153,9 @@ a:not(:hover) {
   box-sizing: border-box;
 }
 
-html {
-  overflow: hidden;
-}
-
 html,
 body {
-  height: 100%;
   max-width: 100vw;
-  overflow: hidden;
 }
 
 body {
@@ -170,7 +164,6 @@ body {
   color: #555;
   display: flex;
   flex-direction: column;
-  overflow: auto;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
