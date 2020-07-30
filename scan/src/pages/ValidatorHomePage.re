@@ -121,6 +121,9 @@ module Styles = {
   };
   let sortDropdownTextItem = {
     style([
+      display(`flex),
+      alignItems(`center),
+      justifyContent(`spaceBetween),
       paddingRight(`px(15)),
       after([
         contentRule(`text("")),
@@ -135,20 +138,7 @@ module Styles = {
         right(`zero),
         transform(translateY(`percent(-50.))),
       ]),
-    ]);
-  };
-  let sortImage = direction => {
-    style([
-      transform(
-        scaleY(
-          {
-            switch (direction) {
-            | ValidatorsTable.ASC => 1 |> float_of_int
-            | DESC => (-1) |> float_of_int
-            };
-          },
-        ),
-      ),
+      selector("> img", [marginRight(`px(10))]),
     ]);
   };
 };
@@ -180,6 +170,14 @@ module SortableDropdown = {
     ];
     <div className=Styles.sortDrowdownContainer>
       <div className=Styles.sortDropdownTextItem onClick={_ => setShow(prev => !prev)}>
+        <img
+          src={
+            switch (ValidatorsTable.getDirection(sortedBy)) {
+            | ASC => Images.mobileSortAsc
+            | DESC => Images.mobileSortDesc
+            }
+          }
+        />
         <Text
           block=true
           value={ValidatorsTable.getName(sortedBy)}
@@ -199,10 +197,15 @@ module SortableDropdown = {
                onClick={_ => {
                  setSortedBy(_ => value);
                  setShow(_ => false);
+                 Js.Console.log(value);
                }}>
                <img
-                 src={isActive ? Images.mobileSortActive : Images.mobileSort}
-                 className={Styles.sortImage(ValidatorsTable.getDirection(value))}
+                 src={
+                   switch (ValidatorsTable.getDirection(value)) {
+                   | ASC => isActive ? Images.mobileSortAscActive : Images.mobileSortAsc
+                   | DESC => isActive ? Images.mobileSortDescActive : Images.mobileSortDesc
+                   }
+                 }
                />
                <Text
                  block=true

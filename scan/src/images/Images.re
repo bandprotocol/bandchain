@@ -66,8 +66,6 @@
 [@bs.module] external ledgerStep2Cosmos: string = "./ledger-step2-cosmos.svg";
 [@bs.module] external ledgerStep2BandChain: string = "./ledger-step2-bandchain.svg";
 [@bs.module] external sort: string = "./sort.svg";
-[@bs.module] external mobileSort: string = "./mobile-sort-icon.svg";
-[@bs.module] external mobileSortActive: string = "./mobile-sort-icon-active.svg";
 [@bs.module] external triangleDown: string = "./triangle-down.svg";
 [@bs.module] external sortDown: string = "./down-arrow.svg";
 [@bs.module] external closeButton: string = "./closeButton.svg";
@@ -75,3 +73,7 @@
 [@bs.module] external whiteClose: string = "./white-close.svg";
 [@bs.module] external close: string = "./close.svg";
 [@bs.module] external menu: string = "./menu.svg";
+[@bs.module] external mobileSortAsc: string = "./mobile-sort-asc-icon.svg";
+[@bs.module] external mobileSortDesc: string = "./mobile-sort-desc-icon.svg";
+[@bs.module] external mobileSortAscActive: string = "./mobile-sort-asc-active-icon.svg";
+[@bs.module] external mobileSortDescActive: string = "./mobile-sort-desc-active-icon.svg";

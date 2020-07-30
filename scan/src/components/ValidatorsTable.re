@@ -293,8 +293,8 @@ let sorting = (validators: array(ValidatorSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | NameAsc => compareString(a.moniker, b.moniker)
-        | NameDesc => compareString(b.moniker, a.moniker)
+        | NameAsc => compareString(b.moniker, a.moniker)
+        | NameDesc => compareString(a.moniker, b.moniker)
         | VotingPowerAsc => compare(a.tokens, b.tokens)
         | VotingPowerDesc => compare(b.tokens, a.tokens)
         | CommissionAsc => compare(a.commission, b.commission)
