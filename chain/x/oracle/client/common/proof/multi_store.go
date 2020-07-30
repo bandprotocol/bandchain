@@ -20,8 +20,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// MultiStoreProof stores a compacted version of other store Merkle hash to compute
-// Tendermint's application state hash at this given block (AppHash).
+// MultiStoreProof stores a compact of other Cosmos-SDK modules' storage hash in multistore to
+// compute (in combination with oracle store hash) Tendermint's application state hash at a given block.
 //                         ________________[AppHash]_______________
 //                        /                                        \
 //             _______[I9]______                          ________[I10]________

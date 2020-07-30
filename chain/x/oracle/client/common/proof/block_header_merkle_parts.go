@@ -10,6 +10,7 @@ import (
 
 // BlockHeaderMerkleParts stores a group of hashes using for computing Tendermint's block
 // header hash from app hash, and height.
+//
 // In Tendermint, a block header hash is the Merkle hash of a binary tree with 14 leaf nodes.
 // Each node encodes a data piece of the blockchain. The notable data leaves are: [A] app_hash,
 // [2] height. All data pieces are combined into one 32-byte hash to be signed
@@ -63,7 +64,7 @@ func (bp *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerklePartsEthe
 	}
 }
 
-// GetBlockHeaderMerkleParts compacts Tendermint block header to compacted version for optimized gas used.
+// GetBlockHeaderMerkleParts converts Tendermint block header struct into BlockHeaderMerkleParts for gas-optimized proof verification.
 func GetBlockHeaderMerkleParts(codec *codec.Codec, block *types.Header) BlockHeaderMerkleParts {
 	return BlockHeaderMerkleParts{
 		VersionAndChainIdHash: merkle.SimpleHashFromByteSlices([][]byte{

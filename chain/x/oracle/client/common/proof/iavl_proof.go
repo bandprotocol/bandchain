@@ -8,7 +8,7 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
-// IAVLMerklePath represents a node in iavl tree.
+// IAVLMerklePath represents a Merkle step to a leaf data node in an iAVL tree.
 type IAVLMerklePath struct {
 	IsDataOnRight  bool             `json:"isDataOnRight"`
 	SubtreeHeight  uint8            `json:"subtreeHeight"`
@@ -36,7 +36,7 @@ func (merklePath *IAVLMerklePath) encodeToEthFormat() IAVLMerklePathEthereum {
 	}
 }
 
-// GetIAVLMerklePaths returns a list of IAVLMerklePath from Tendermint iavl proof.
+// GetIAVLMerklePaths returns the list of IAVLMerklePath elements from the given iAVL proof.
 func GetIAVLMerklePaths(proof *iavl.ValueOp) []IAVLMerklePath {
 	paths := make([]IAVLMerklePath, 0)
 	for i := len(proof.Proof.LeftPath) - 1; i >= 0; i-- {
