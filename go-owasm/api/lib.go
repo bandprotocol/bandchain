@@ -33,19 +33,24 @@ func Compile(code []byte, spanSize int) ([]byte, error) {
 	return readSpan(outputSpan), err
 }
 
-func Prepare(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+type RunOutput struct {
+	GasUsed uint32
+}
+
+func Prepare(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) (RunOutput, error) {
 	return run(code, gasLimit, spanSize, true, env)
 }
 
-func Execute(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) error {
+func Execute(code []byte, gasLimit uint32, spanSize int64, env EnvInterface) (RunOutput, error) {
 	return run(code, gasLimit, spanSize, false, env)
 }
 
-func run(code []byte, gasLimit uint32, spanSize int64, isPrepare bool, env EnvInterface) error {
+func run(code []byte, gasLimit uint32, spanSize int64, isPrepare bool, env EnvInterface) (RunOutput, error) {
 	codeSpan := copySpan(code)
 	defer freeSpan(codeSpan)
 	envIntl := createEnvIntl(env)
-	return toGoError(C.do_run(codeSpan, C.uint32_t(gasLimit), C.int64_t(spanSize), C.bool(isPrepare), C.Env{
+	output := C.RunOutput{}
+	err := toGoError(C.do_run(codeSpan, C.uint32_t(gasLimit), C.int64_t(spanSize), C.bool(isPrepare), C.Env{
 		env: (*C.env_t)(unsafe.Pointer(envIntl)),
 		dis: C.EnvDispatcher{
 			get_calldata:             C.get_calldata_fn(C.cGetCalldata_cgo),
@@ -57,5 +62,10 @@ func run(code []byte, gasLimit uint32, spanSize int64, isPrepare bool, env EnvIn
 			get_external_data_status: C.get_external_data_status_fn(C.cGetExternalDataStatus_cgo),
 			get_external_data:        C.get_external_data_fn(C.cGetExternalData_cgo),
 		},
-	}))
+	}, &output))
+	if err != nil {
+		return RunOutput{}, err
+	} else {
+		return RunOutput{GasUsed: uint32(output.gas_used)}, nil
+	}
 }
