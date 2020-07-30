@@ -8,6 +8,7 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 )
 
+// IAVLMerklePath represents a node in iavl tree.
 type IAVLMerklePath struct {
 	IsDataOnRight  bool             `json:"isDataOnRight"`
 	SubtreeHeight  uint8            `json:"subtreeHeight"`
@@ -16,6 +17,7 @@ type IAVLMerklePath struct {
 	SiblingHash    tmbytes.HexBytes `json:"siblingHash"`
 }
 
+// IAVLMerklePathEthereum is an Ethereum version of IAVLMerklePath for solidity ABI-encoding.
 type IAVLMerklePathEthereum struct {
 	IsDataOnRight  bool
 	SubtreeHeight  uint8
@@ -34,6 +36,7 @@ func (merklePath *IAVLMerklePath) encodeToEthFormat() IAVLMerklePathEthereum {
 	}
 }
 
+// GetIAVLMerklePaths returns a list of IAVLMerklePath from Tendermint iavl proof.
 func GetIAVLMerklePaths(proof *iavl.ValueOp) []IAVLMerklePath {
 	paths := make([]IAVLMerklePath, 0)
 	for i := len(proof.Proof.LeftPath) - 1; i >= 0; i-- {

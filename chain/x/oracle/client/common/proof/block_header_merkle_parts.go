@@ -8,6 +8,31 @@ import (
 	"github.com/tendermint/tendermint/types"
 )
 
+// BlockHeaderMerkleParts stores a group of hashes using for computing Tendermint's block
+// header hash from app hash, and height.
+// In Tendermint, a block header hash is the Merkle hash of a binary tree with 14 leaf nodes.
+// Each node encodes a data piece of the blockchain. The notable data leaves are: [A] app_hash,
+// [2] height. All data pieces are combined into one 32-byte hash to be signed
+// by block validators. The structure of the Merkle tree is shown below.
+//
+//                                   [BlockHeader]
+//                                /                \
+//                   [3A]                                    [3B]
+//                 /      \                                /      \
+//         [2A]                [2B]                [2C]                [2D]
+//        /    \              /    \              /    \              /    \
+//    [1A]      [1B]      [1C]      [1D]      [1E]      [1F]        [C]    [D]
+//    /  \      /  \      /  \      /  \      /  \      /  \
+//  [0]  [1]  [2]  [3]  [4]  [5]  [6]  [7]  [8]  [9]  [A]  [B]
+//
+//  [0] - version               [1] - chain_id            [2] - height        [3] - time
+//  [4] - last_block_id         [5] - last_commit_hash    [6] - data_hash     [7] - validators_hash
+//  [8] - next_validators_hash  [9] - consensus_hash      [A] - app_hash      [B] - last_results_hash
+//  [C] - evidence_hash         [D] - proposer_address
+//
+// Notice that NOT all leaves of the Merkle tree are needed in order to compute the Merkle
+// root hash, since we only want to validate the correctness of [A] and [2]. In fact, only
+// [1A], [3], [2B], [1E], [B], and [2D] are needed in order to compute [BlockHeader].
 type BlockHeaderMerkleParts struct {
 	VersionAndChainIdHash             tmbytes.HexBytes `json:"versionAndChainIdHash"`
 	TimeHash                          tmbytes.HexBytes `json:"timeHash"`
@@ -17,6 +42,7 @@ type BlockHeaderMerkleParts struct {
 	EvidenceAndProposerHash           tmbytes.HexBytes `json:"evidenceAndProposerHash"`
 }
 
+// BlockHeaderMerklePartsEthereum is an Ethereum version of BlockHeaderMerkleParts for solidity ABI-encoding.
 type BlockHeaderMerklePartsEthereum struct {
 	VersionAndChainIdHash             common.Hash
 	TimeHash                          common.Hash
@@ -37,6 +63,7 @@ func (bp *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerklePartsEthe
 	}
 }
 
+// GetBlockHeaderMerkleParts compacts Tendermint block header to compacted version for optimized gas used.
 func GetBlockHeaderMerkleParts(codec *codec.Codec, block *types.Header) BlockHeaderMerkleParts {
 	return BlockHeaderMerkleParts{
 		VersionAndChainIdHash: merkle.SimpleHashFromByteSlices([][]byte{
