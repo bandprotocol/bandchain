@@ -103,7 +103,7 @@ module Styles = {
       position(`absolute),
       left(`zero),
       top(`percent(100.)),
-      width(`percent(100.)),
+      width(`px(165)),
     ]);
   };
   let sortDropdownItem = isActive => {
@@ -186,14 +186,6 @@ module SortableDropdown = {
                  setSortedBy(_ => value);
                  setShow(_ => false);
                }}>
-               <img
-                 src={
-                   switch (ValidatorsTable.getDirection(value)) {
-                   | ASC => isActive ? Images.mobileSortAscActive : Images.mobileSortAsc
-                   | DESC => isActive ? Images.mobileSortDescActive : Images.mobileSortDesc
-                   }
-                 }
-               />
                <Text
                  block=true
                  value={ValidatorsTable.getName(value)}
