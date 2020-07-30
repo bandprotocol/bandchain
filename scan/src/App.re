@@ -18,7 +18,7 @@ module Styles = {
     style([
       minHeight(`calc((`sub, `vh(100.), `px(200)))),
       paddingBottom(`px(20)),
-      Media.mobile([paddingBottom(`px(0))]),
+      Media.mobile([paddingBottom(`zero)]),
     ]);
 
   let bgSearch = isHomePage =>
