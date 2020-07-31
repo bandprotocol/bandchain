@@ -18,7 +18,7 @@ yoda config broadcast-timeout "30s"
 yoda config rpc-poll-interval "3s"
 
 # setup max-try to yoda config
-yoda config max-try "5"
+yoda config max-try 5
 
 echo "y" | bandcli tx oracle activate --from $1 --keyring-backend test
 
