@@ -31,9 +31,10 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
-	var res sdk.TxResponse
-	success := false
+	broadcasted := false
+	txHash := ""
 	for try := uint64(1); try <= c.maxTry; try++ {
+		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
 		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 		if err != nil {
 			l.Debug(":warning: Failed to retreive account with error: %s", err.Error())
@@ -54,22 +55,22 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 			l.Debug(":warning: Failed to build tx with error: %s", err.Error())
 			continue
 		}
-		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
-		res, err = cliCtx.BroadcastTxSync(out)
+		res, err := cliCtx.BroadcastTxSync(out)
 		if err == nil {
-			success = true
+			txHash = res.TxHash
+			broadcasted = true
 			break
 		}
 		l.Debug(":warning: Failed to broadcast tx with error: %s", err.Error())
 		time.Sleep(c.rpcPollIntervall)
 	}
-	if !success {
+	if !broadcasted {
 		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
 		return
 	}
 	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
 		time.Sleep(c.rpcPollIntervall)
-		txRes, err := utils.QueryTx(cliCtx, res.TxHash)
+		txRes, err := utils.QueryTx(cliCtx, txHash)
 		if err != nil {
 			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
 			continue
@@ -78,10 +79,10 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 			l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
 			return
 		}
-		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txRes.TxHash)
+		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
 		return
 	}
-	l.Info(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", res.TxHash)
+	l.Info(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
 }
 
 // GetExecutable fetches data source executable using the provided client.
