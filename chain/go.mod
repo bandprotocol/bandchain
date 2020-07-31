@@ -14,8 +14,7 @@ require (
 	github.com/gorilla/mux v1.7.4
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
-	github.com/onsi/ginkgo v1.8.0 // indirect
-	github.com/onsi/gomega v1.5.0 // indirect
+	github.com/oasisprotocol/oasis-core/go v0.0.0-20200730171716-3be2b460b3ac
 	github.com/peterbourgon/diskv v2.0.1+incompatible
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/segmentio/kafka-go v0.3.7
