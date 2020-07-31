@@ -33,7 +33,7 @@ type Config struct {
 	Executor         string `mapstructure:"executor"`          // Executor name and URL (example: "Executor name:URL")
 	BroadcastTimeout string `mapstructure:"broadcast-timeout"` // The time that Yoda will wait for tx commit
 	RPCPollInterval  string `mapstructure:"rpc-poll-interval"` // The duration of rpc poll interval
-	MaxTry           uint64 `mapstructure:"max-try"`           // Maximum times of try to report transaction
+	MaxTry           uint64 `mapstructure:"max-try"`           // The maximum number of tries to submit a report transaction
 }
 
 // Global instances.

@@ -118,7 +118,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
 	cmd.Flags().String(flagBroadcastTimeout, "30s", "The time that Yoda will wait for tx commit")
 	cmd.Flags().String(flagRPCPollInterval, "3s", "The duration of rpc poll interval")
-	cmd.Flags().Uint64(flagMaxTry, 5, "Maximum times of try to report transaction")
+	cmd.Flags().Uint64(flagMaxTry, 5, "The maximum number of tries to submit a report transaction")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))

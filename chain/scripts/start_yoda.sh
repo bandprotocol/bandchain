@@ -9,7 +9,7 @@ yoda config chain-id bandchain
 yoda config validator $(bandcli keys show $1 -a --bech val --keyring-backend test)
 
 # setup execution endpoint
-yoda config executor "docker:bandprotocol/runtime:1.0.1?timeout=10s"
+yoda config executor "docker:bandprotocol/runtime:1.0.2?timeout=10s"
 
 # setup broadcast-timeout to yoda config
 yoda config broadcast-timeout "30s"
