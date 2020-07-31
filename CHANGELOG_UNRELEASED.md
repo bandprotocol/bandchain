@@ -22,6 +22,9 @@
 
 ### Yoda
 
+- (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Fix sync broadcast and poll for transaction status.
+- (impv) [\#2307](https://github.com/bandprotocol/bandchain/pull/2307) Add Yoda configurable timeout duration.
+
 ### Emitter & Flusher
 
 - (impv) [\#2319](https://github.com/bandprotocol/bandchain/pull/2319) Add index on blocks table and swap order of primary key of validator_votes table.
@@ -31,6 +34,8 @@
 
 ### Scan
 
+- (impv) [\#2351](https://github.com/bandprotocol/bandchain/pull/2351) Added cmc link and edit social logo color
+- (bugs) [\#2350](https://github.com/bandprotocol/bandchain/pull/2350) Fixed the overflow scroll issue on mobile
 - (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
 - (impv) [\#2347](https://github.com/bandprotocol/bandchain/pull/2347) Added media query for small mobile
 - (bugs) [\#2346](https://github.com/bandprotocol/bandchain/pull/2346) Fixed the dropdown sort position
@@ -55,6 +60,8 @@
 ### Runtime
 
 ### Owasm
+
+- (chore) [\#2339](https://github.com/bandprotocol/bandchain/pull/2339) Refactor runtime code into owasm package.
 
 ### Oracle Binary Encoding (OBI)
 

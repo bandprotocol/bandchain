@@ -1,5 +1,5 @@
-use crate::error::Error;
 use crate::span::Span;
+use owasm::core::error::Error;
 
 #[repr(C)]
 pub struct env_t {

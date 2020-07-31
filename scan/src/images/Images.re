@@ -77,3 +77,4 @@
 [@bs.module] external mobileSortDesc: string = "./mobile-sort-desc-icon.svg";
 [@bs.module] external mobileSortAscActive: string = "./mobile-sort-asc-active-icon.svg";
 [@bs.module] external mobileSortDescActive: string = "./mobile-sort-desc-active-icon.svg";
+[@bs.module] external cmcLogo: string = "./coinmarketcap.svg";

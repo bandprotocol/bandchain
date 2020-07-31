@@ -8,11 +8,12 @@ import (
 )
 
 type RestExec struct {
-	url string
+	url     string
+	timeout time.Duration
 }
 
-func NewRestExec(url string) *RestExec {
-	return &RestExec{url: url}
+func NewRestExec(url string, timeout time.Duration) *RestExec {
+	return &RestExec{url: url, timeout: timeout}
 }
 
 type externalExecutionResponse struct {
@@ -21,7 +22,7 @@ type externalExecutionResponse struct {
 	Stderr     string `json:"stderr"`
 }
 
-func (e *RestExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
+func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
 	executable := base64.StdEncoding.EncodeToString(code)
 	resp, err := grequests.Post(
 		e.url,
@@ -32,7 +33,7 @@ func (e *RestExec) Exec(timeout time.Duration, code []byte, arg string) (ExecRes
 			JSON: map[string]interface{}{
 				"executable": executable,
 				"calldata":   arg,
-				"timeout":    timeout.Milliseconds(),
+				"timeout":    e.timeout.Milliseconds(),
 			},
 		},
 	)
