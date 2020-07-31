@@ -64,7 +64,7 @@ func parseExecutor(executorStr string) (name string, base string, timeout time.D
 
 	timeout, err = time.ParseDuration(timeoutStr)
 	if err != nil {
-		return "", "", 0, fmt.Errorf("Invalid timeout, cannot parse %s to duration with error: %s", timeoutStr, err.Error())
+		return "", "", 0, fmt.Errorf("Invalid timeout, cannot parse duration with error: %s", err.Error())
 	}
 	return executor[0], u.String(), timeout, nil
 }
