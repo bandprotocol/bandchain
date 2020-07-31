@@ -14,6 +14,7 @@
 
 ### Chain (Non-consensus)
 
+- (docs) [\#2344](https://github.com/bandprotocol/bandchain/pull/2344) Improve code comments in module.go / msg.go / params.go.
 - (impv) [\#2345](https://github.com/bandprotocol/bandchain/pull/2345) Update proof struct comment.
 - (impv) [\#2332](https://github.com/bandprotocol/bandchain/pull/2232) Emit gas used as an attribute event during prepare and execute.
 - (bugs) [\#2297](https://github.com/bandprotocol/bandchain/pull/2297) Update json key name of request and response packets.
