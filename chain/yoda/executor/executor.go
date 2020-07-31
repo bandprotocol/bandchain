@@ -50,7 +50,7 @@ func parseExecutor(executorStr string) (name string, base string, timeout time.D
 	}
 	u, err := url.Parse(executor[1])
 	if err != nil {
-		return "", "", 0, fmt.Errorf("Invalid url, cannot parse url: %s", executor[1])
+		return "", "", 0, fmt.Errorf("Invalid url, cannot parse %s to url with error: %s", executor[1], err.Error())
 	}
 
 	query := u.Query()
@@ -64,7 +64,7 @@ func parseExecutor(executorStr string) (name string, base string, timeout time.D
 
 	timeout, err = time.ParseDuration(timeoutStr)
 	if err != nil {
-		return "", "", 0, fmt.Errorf("Invalid timeout, cannot parse %s to duration with error %s", timeoutStr, err.Error())
+		return "", "", 0, fmt.Errorf("Invalid timeout, cannot parse %s to duration with error: %s", timeoutStr, err.Error())
 	}
 	return executor[0], u.String(), timeout, nil
 }
