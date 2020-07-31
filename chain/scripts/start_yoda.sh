@@ -15,7 +15,7 @@ yoda config executor "docker:bandprotocol/runtime:1.0.2?timeout=10s"
 yoda config broadcast-timeout "30s"
 
 # setup rpc-poll-interval to yoda config
-yoda config rpc-poll-interval "3s"
+yoda config rpc-poll-interval "1s"
 
 # setup max-try to yoda config
 yoda config max-try 5
