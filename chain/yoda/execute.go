@@ -16,9 +16,7 @@ import (
 )
 
 var (
-	cdc       = app.MakeCodec()
-	MaxTry    = 5
-	SleepTime = 3 * time.Second
+	cdc = app.MakeCodec()
 )
 
 func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
@@ -55,22 +53,23 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 	}
 	var res sdk.TxResponse
 	found := false
-	for try := 1; try <= MaxTry; try++ {
-		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, MaxTry)
+
+	for try := 1; try <= c.maxTry; try++ {
+		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
 		res, err = cliCtx.BroadcastTxSync(out)
 		if err == nil {
 			found = true
 			break
 		}
 		l.Debug(":warning: Failed to broadcast tx with error: %s", err.Error())
-		time.Sleep(SleepTime)
+		time.Sleep(c.rpcPollIntervall)
 	}
 	if !found {
-		l.Error(":exploding_head: Cannot try to broadcast more than %d try", MaxTry)
+		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
 		return
 	}
 	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
-		time.Sleep(SleepTime)
+		time.Sleep(c.rpcPollIntervall)
 		txRes, err := utils.QueryTx(cliCtx, res.TxHash)
 		if err != nil {
 			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
