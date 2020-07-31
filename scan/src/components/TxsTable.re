@@ -98,20 +98,26 @@ let renderBody =
   </TBody>;
 };
 
-let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
+let renderBodyMobile =
+    (
+      reserveIndex,
+      txSub: ApolloHooks.Subscription.variant(TxSub.t),
+      msgTransform: TxSub.Msg.t => TxSub.Msg.t,
+    ) => {
   switch (txSub) {
   | Data({txHash, blockHeight, gasFee, success, messages, errMsg}) =>
+    let msgTransform = messages->Belt_List.map(msgTransform);
     <MobileCard
       values=InfoMobileCard.[
         ("TX HASH", TxHash(txHash, 200)),
         ("BLOCK", Height(blockHeight)),
         ("GAS FEE\n(BAND)", Coin({value: gasFee, hasDenom: false})),
-        ("ACTIONS", Messages(txHash, messages, success, errMsg)),
+        ("ACTIONS", Messages(txHash, msgTransform, success, errMsg)),
       ]
       key={txHash |> Hash.toHex}
       idx={txHash |> Hash.toHex}
       status=success
-    />
+    />;
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
@@ -204,14 +210,15 @@ let make =
        txs
        ->Belt_Array.mapWithIndex((i, e) =>
            isMobile
-             ? renderBodyMobile(i, Sub.resolve(e))
+             ? renderBodyMobile(i, Sub.resolve(e), msgTransform)
              : renderBody(i, Sub.resolve(e), msgTransform)
          )
        ->React.array
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
-           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData, msgTransform)
+           isMobile
+             ? renderBodyMobile(i, noData, msgTransform) : renderBody(i, noData, msgTransform)
          )
        ->React.array
      }}
