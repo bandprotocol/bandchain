@@ -29,6 +29,9 @@
 
 ### Scan
 
+- (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
+- (impv) [\#2347](https://github.com/bandprotocol/bandchain/pull/2347) Added media query for small mobile
+- (bugs) [\#2346](https://github.com/bandprotocol/bandchain/pull/2346) Fixed the dropdown sort position
 - (bugs) [\#2343](https://github.com/bandprotocol/bandchain/pull/2343) Fixed burger menu and sorting text issues.
 - (bugs) [\#2342](https://github.com/bandprotocol/bandchain/pull/2342) Fixed bugs on mobile screen.
 - (impv) [\#2334](https://github.com/bandprotocol/bandchain/pull/2334) Implemented the sorting function on validator homepage's mobile layout.

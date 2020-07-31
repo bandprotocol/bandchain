@@ -101,7 +101,7 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       backgroundColor(Colors.white),
       position(`absolute),
-      left(`zero),
+      right(`zero),
       top(`percent(100.)),
       width(`px(165)),
     ]);
