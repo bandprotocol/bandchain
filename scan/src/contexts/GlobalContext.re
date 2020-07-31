@@ -4,12 +4,20 @@ let context = React.createContext(ContextHelper.default);
 
 [@react.component]
 let make = (~children) => {
-  let financialOpt = PriceHook.get();
+  let (financialOpt, reload) = PriceHook.get();
 
   let data = {
     let%Opt financial = financialOpt;
     Some({financial: financial});
   };
+
+  React.useEffect1(
+    () => {
+      let intervalID = Js.Global.setInterval(() => {reload()}, 2000);
+      Some(() => Js.Global.clearInterval(intervalID));
+    },
+    [|financialOpt|],
+  );
 
   React.createElement(
     React.Context.provider(context),

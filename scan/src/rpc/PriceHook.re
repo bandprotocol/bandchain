@@ -21,17 +21,27 @@ module Price = {
     };
 };
 let get = () => {
-  let usdJson =
-    AxiosHooks.use(
+  let (usdJson, usdReload) =
+    AxiosHooks.useWithReload(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true",
     );
-  let btcJson =
-    AxiosHooks.use(
+  let (btcJson, btcReload) =
+    AxiosHooks.useWithReload(
       "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true",
     );
-  let bandJson = AxiosHooks.use("https://api.coingecko.com/api/v3/coins/band-protocol");
-  let%Opt usd = usdJson;
-  let%Opt btc = btcJson;
-  let%Opt band = bandJson;
-  Some(Price.decode(usd, btc, band));
+  let (bandJson, bandReload) =
+    AxiosHooks.useWithReload("https://api.coingecko.com/api/v3/coins/band-protocol");
+  let reload = () => {
+    usdReload((), ());
+    btcReload((), ());
+    bandReload((), ());
+  };
+
+  let data =
+    switch (usdJson, btcJson, bandJson) {
+    | (Some(usd), Some(btc), Some(band)) => Some(Price.decode(usd, btc, band))
+    | _ => None
+    };
+
+  (data, reload);
 };
