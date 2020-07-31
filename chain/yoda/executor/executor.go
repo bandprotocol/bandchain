@@ -8,8 +8,11 @@ import (
 	"time"
 )
 
+const (
+	flagQueryTimeout = "timeout"
+)
+
 var (
-	flagQueryTimeout   = "timeout"
 	ErrExecutionimeout = errors.New("execution timeout")
 	ErrRestNotOk       = errors.New("rest return non 2XX response")
 )

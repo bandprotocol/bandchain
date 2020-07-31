@@ -6,7 +6,7 @@ import (
 
 func TestDockerSuccess(t *testing.T) {
 	// TODO: Enable test when CI has docker installed.
-	// 	e := NewDockerExec("bandprotocol/runtime:1.0.1", 20*time.Second)
+	// 	e := NewDockerExec("bandprotocol/runtime:1.0.2", 10*time.Second)
 	// 	res, err := e.Exec([]byte(`#!/usr/bin/env python3
 	// import json
 	// import urllib.request
@@ -41,9 +41,9 @@ func TestDockerSuccess(t *testing.T) {
 
 func TestDockerLongStdout(t *testing.T) {
 	// TODO: Enable test when CI has docker installed.
-	// 	e := NewDockerExec("bandprotocol/runtime:1.0.1", 10*time.Second)
-	// 	res, err := e.Exec([]byte(`#!/usr/bin/env python3
+	// e := NewDockerExec("bandprotocol/runtime:1.0.2", 10*time.Second)
+	// res, err := e.Exec([]byte(`#!/usr/bin/env python3
 	// print("A"*1000)`), "BTC")
-	// 	fmt.Println(string(res.Output), res.Code, err)
-	// 	require.True(t, false)
+	// fmt.Println(string(res.Output), res.Code, err)
+	// require.True(t, false)
 }
