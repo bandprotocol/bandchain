@@ -28,7 +28,7 @@ func (r *Rng) NextUint64() uint64 {
 	data := make([]byte, 8)
 	_, err := r.rng.Read(data)
 	if err != nil {
-		// Reaching error is not possible in hmbc_drbg codepath.
+		// Reaching error is not practically possible in hmbc_drbg's codepath.
 		panic(err)
 	}
 	return binary.BigEndian.Uint64(data)
