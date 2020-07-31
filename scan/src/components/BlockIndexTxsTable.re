@@ -134,7 +134,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
              <img src=Images.noTransaction className=Styles.noTransactionLogo />
            </div>
      | _ =>
-       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+       Belt_Array.make(isMobile ? 1 : 10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
            isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
          )

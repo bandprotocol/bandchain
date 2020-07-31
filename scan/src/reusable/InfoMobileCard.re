@@ -16,6 +16,8 @@ type t =
   | Messages(Hash.t, list(TxSub.Msg.t), bool, string)
   | PubKey(PubKey.t)
   | Badge(TxSub.Msg.badge_theme_t)
+  | VotingPower(Coin.t, float)
+  | Uptime(option(float))
   | Loading(int)
   | Text(string)
   | Nothing;
@@ -85,7 +87,7 @@ let make = (~info) => {
       moniker
       size=Text.Md
       identity
-      width={`percent(100.)}
+      width={`px(230)}
     />
   | PubKey(publicKey) => <PubKeyRender pubKey=publicKey />
   | TxHash(txHash, width) => <TxLink txHash width size=Text.Lg />
@@ -95,6 +97,42 @@ let make = (~info) => {
     <div className={Styles.badge(bgColor)}>
       <Text value=text size=Text.Xs spacing={Text.Em(0.07)} color=textColor />
     </div>
+  | VotingPower(tokens, votingPercent) =>
+    <div className=Styles.vFlex>
+      <Text
+        value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
+        color=Colors.gray7
+        code=true
+        weight=Text.Regular
+        spacing={Text.Em(0.02)}
+        block=true
+      />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value={"(" ++ (votingPercent |> Format.fPercent(~digits=2)) ++ ")"}
+        color=Colors.gray6
+        code=true
+        weight=Text.Thin
+        spacing={Text.Em(0.02)}
+        block=true
+      />
+    </div>
+  // Special case for uptime to have loading state inside.
+  | Uptime(uptimeOpt) =>
+    switch (uptimeOpt) {
+    | Some(uptime) =>
+      <div className=Styles.vFlex>
+        <Text
+          value={uptime |> Format.fPercent(~digits=2)}
+          spacing={Text.Em(0.02)}
+          code=true
+          nowrap=true
+        />
+        <HSpacing size=Spacing.lg />
+        <UptimeBar percent=uptime />
+      </div>
+    | None => <Text value="N/A" spacing={Text.Em(0.02)} code=true nowrap=true />
+    }
   | Loading(width) => <LoadingCensorBar width height=21 />
   | Nothing => React.null
   };

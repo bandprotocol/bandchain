@@ -51,8 +51,8 @@ func TestExecuteSuccess(t *testing.T) {
 	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
-	executor := NewRestExec(testServer.URL)
-	res, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	executor := NewRestExec(testServer.URL, 1*time.Second)
+	res, err := executor.Exec([]byte("executable"), "calldata")
 	require.NoError(t, err)
 	require.Equal(t, uint32(0), res.Code)
 	require.Equal(t, []byte("BEEB"), res.Output)
@@ -62,8 +62,8 @@ func TestExecuteBadUrlFail(t *testing.T) {
 	testServer := creatDefaultServer()
 	defer func() { testServer.Close() }()
 
-	executor := NewRestExec("www.beeb.com") // bad url
-	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	executor := NewRestExec("www.beeb.com", 1*time.Second) // bad url
+	_, err := executor.Exec([]byte("executable"), "calldata")
 	require.Error(t, err)
 }
 
@@ -71,8 +71,8 @@ func TestExecuteDecodeStructFail(t *testing.T) {
 	testServer := createCannotDecodeJsonSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := NewRestExec(testServer.URL)
-	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	executor := NewRestExec(testServer.URL, 1*time.Second)
+	_, err := executor.Exec([]byte("executable"), "calldata")
 	require.Error(t, err)
 }
 
@@ -80,8 +80,8 @@ func TestExecuteResponseNotOk(t *testing.T) {
 	testServer := createResponseNotOkSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := NewRestExec(testServer.URL)
-	_, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	executor := NewRestExec(testServer.URL, 1*time.Second)
+	_, err := executor.Exec([]byte("executable"), "calldata")
 	require.Error(t, err)
 }
 
@@ -89,8 +89,8 @@ func TestExecuteFail(t *testing.T) {
 	testServer := creatExecuteFailSenarioServer()
 	defer func() { testServer.Close() }()
 
-	executor := NewRestExec(testServer.URL)
-	res, err := executor.Exec(1*time.Second, []byte("executable"), "calldata")
+	executor := NewRestExec(testServer.URL, 1*time.Second)
+	res, err := executor.Exec([]byte("executable"), "calldata")
 	require.NoError(t, err)
 	require.Equal(t, uint32(1), res.Code)
 	require.Equal(t, []byte("Stderr"), res.Output)

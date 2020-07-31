@@ -36,7 +36,6 @@ module Styles = {
       ]),
       fontSize(`px(12)),
       outline(`px(1), `none, white),
-      transition(~duration=250, "border"),
       border(`px(1), `solid, white),
       placeholder([color(Colors.blueGray3)]),
     ]);

@@ -9,7 +9,7 @@ module Styles = {
       width(`percent(100.)),
       padding2(~v=Spacing.lg, ~h=`zero),
       backgroundColor(Colors.white),
-      border(`px(2), `solid, Colors.blueGray1),
+      borderBottom(`px(2), `solid, Colors.blueGray1),
       top(`zero),
       zIndex(3),
       Media.mobile([padding(Spacing.md), justifyContent(`spaceBetween), position(`fixed)]),
@@ -34,6 +34,7 @@ module Styles = {
   let bandLogo = style([width(`px(40)), Media.mobile([width(`px(34))])]);
   let twitterLogo = style([width(`px(15))]);
   let telegramLogo = style([width(`px(15))]);
+  let cmcLogo = style([width(`px(17))]);
 
   let socialLink =
     style([
@@ -102,6 +103,11 @@ module DesktopRender = {
                 <div className=Styles.socialLink>
                   <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
                     <img src=Images.telegramLogo className=Styles.telegramLogo />
+                  </a>
+                </div>
+                <div className=Styles.socialLink>
+                  <a href="https://coinmarketcap.com/currencies/band-protocol/" target="_blank" rel="noopener">
+                    <img src=Images.cmcLogo className=Styles.telegramLogo />
                   </a>
                 </div>
               </div>

@@ -16,6 +16,7 @@ module Styles = {
         width(`px(164)),
         height(`px(128)),
       ]),
+      Media.smallMobile([width(`px(120)), height(`px(110)), margin(`px(10))]),
     ]);
 
   let innerCard =

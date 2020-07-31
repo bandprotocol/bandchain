@@ -91,6 +91,9 @@ input {
   border: 0;
   margin: 0;
   padding: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -153,15 +156,9 @@ a:not(:hover) {
   box-sizing: border-box;
 }
 
-html {
-  overflow: hidden;
-}
-
 html,
 body {
-  height: 100%;
   max-width: 100vw;
-  overflow: hidden;
 }
 
 body {
@@ -170,7 +167,6 @@ body {
   color: #555;
   display: flex;
   flex-direction: column;
-  overflow: auto;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;

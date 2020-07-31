@@ -76,6 +76,7 @@ module Styles = {
       ),
       selector("> div", [padding2(~h=`px(3), ~v=`px(3))]),
     ]);
+  let validatorDetailsBox = style([marginBottom(`px(5))]);
 };
 
 type value_row_t =
@@ -89,29 +90,29 @@ type value_row_t =
   | Loading(int, int);
 
 let kvRowMobile = (k, v: value_row_t) => {
-  <Col>
-    <Row> <Text value=k size=Text.Xs color=Colors.gray5 /> </Row>
-    <Row>
-      <div className={Styles.fullWidth(`row)}>
-        {switch (v) {
-         | VAddress(address) => <AddressRender address />
-         | VValidatorAddress(address) =>
-           <div className=Styles.operatorAddressMobile>
-             <AddressRender address accountType=`validator />
-           </div>
-         | VText(value) => <Text value nowrap=true />
-         | VDetail(value) => <Text value />
-         | VExtLink(value) =>
-           <a href=value target="_blank" rel="noopener">
-             <div className=Styles.validatorWebsiteLink> <Text value nowrap=true /> </div>
-           </a>
-         | VCode(value) => <Text value code=true nowrap=true />
-         | VReactElement(element) => element
-         | Loading(width, height) => <LoadingCensorBar width height />
-         }}
-      </div>
-    </Row>
-  </Col>;
+  <div>
+    <div className=Styles.validatorDetailsBox>
+      <Text value=k size=Text.Xs color=Colors.gray5 />
+    </div>
+    <div className={Styles.fullWidth(`row)}>
+      {switch (v) {
+       | VAddress(address) => <AddressRender address />
+       | VValidatorAddress(address) =>
+         <div className=Styles.operatorAddressMobile>
+           <AddressRender address accountType=`validator />
+         </div>
+       | VText(value) => <Text value nowrap=true />
+       | VDetail(value) => <Text value />
+       | VExtLink(value) =>
+         <a href=value target="_blank" rel="noopener">
+           <div className=Styles.validatorWebsiteLink> <Text value nowrap=true /> </div>
+         </a>
+       | VCode(value) => <Text value code=true nowrap=true />
+       | VReactElement(element) => element
+       | Loading(width, height) => <LoadingCensorBar width height />
+       }}
+    </div>
+  </div>;
 };
 
 let kvRow = (k, description, v: value_row_t) => {

@@ -30,7 +30,10 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, id int64) ([]sdk.
 		return nil, sdkerrors.Wrapf(
 			types.ErrInsufficientValidators, "%d < %d", len(valOperators), size)
 	}
-	rng := bandrng.NewRng(fmt.Sprintf("%x:%d", k.GetRollingSeed(ctx), id))
+	rng, err := bandrng.NewRng(k.GetRollingSeed(ctx), sdk.Uint64ToBigEndian(uint64(id)), []byte(ctx.ChainID()))
+	if err != nil {
+		return nil, sdkerrors.Wrapf(types.ErrBadDrbgInitialization, err.Error())
+	}
 	tryCount := int(k.GetParam(ctx, types.KeySamplingTryCount))
 	chosenValIndexes := bandrng.ChooseSomeMaxWeight(rng, valPowers, size, tryCount)
 	validators := make([]sdk.ValAddress, size)
@@ -67,7 +70,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 		return err
 	}
 	code := k.GetFile(script.Filename)
-	err = owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
+	output, err := owasm.Prepare(code, types.WasmPrepareGas, types.MaxDataSize, env)
 	if err != nil {
 		return sdkerrors.Wrapf(types.ErrBadWasmExecution, err.Error())
 	}
@@ -87,6 +90,7 @@ func (k Keeper) PrepareRequest(ctx sdk.Context, r types.RequestSpec) error {
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(req.Calldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, fmt.Sprintf("%d", askCount)),
 		sdk.NewAttribute(types.AttributeKeyMinCount, fmt.Sprintf("%d", req.MinCount)),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, fmt.Sprintf("%d", output.GasUsed)),
 	)
 	for _, val := range req.RequestedValidators {
 		event = event.AppendAttributes(sdk.NewAttribute(types.AttributeKeyValidator, val.String()))
@@ -116,12 +120,12 @@ func (k Keeper) ResolveRequest(ctx sdk.Context, reqID types.RequestID) {
 	env := types.NewExecuteEnv(req, k.GetReports(ctx, reqID))
 	script := k.MustGetOracleScript(ctx, req.OracleScriptID)
 	code := k.GetFile(script.Filename)
-	err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
+	output, err := owasm.Execute(code, types.WasmExecuteGas, types.MaxDataSize, env)
 	if err != nil {
 		k.ResolveFailure(ctx, reqID, err.Error())
 	} else if env.Retdata == nil {
 		k.ResolveFailure(ctx, reqID, "no return data")
 	} else {
-		k.ResolveSuccess(ctx, reqID, env.Retdata)
+		k.ResolveSuccess(ctx, reqID, env.Retdata, output.GasUsed)
 	}
 }

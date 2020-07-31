@@ -52,7 +52,7 @@ module RenderMobile = {
         display(`flex),
         flexDirection(`column),
         opacity(show ? 1. : 0.),
-        zIndex(show ? 1 : (-3)),
+        zIndex(2),
         pointerEvents(show ? `auto : `none),
         width(`percent(100.)),
         position(`absolute),
@@ -66,9 +66,11 @@ module RenderMobile = {
       ]);
 
     let nav = style([color(Colors.gray8), padding2(~v=`px(16), ~h=`zero)]);
+    let menuContainer = style([padding2(~v=`px(10), ~h=`px(5))]);
     let menu = style([width(`px(20))]);
     let twitterLogo = style([width(`px(19))]);
     let telegramLogo = style([width(`px(17))]);
+    let cmcLogo = style([width(`px(21))]);
     let socialContainer = style([display(`flex), flexDirection(`row), marginTop(`px(10))]);
     let socialLink =
       style([
@@ -77,17 +79,27 @@ module RenderMobile = {
         justifyContent(`center),
         alignItems(`center),
       ]);
+    let backdropContainer = show =>
+      style([
+        width(`percent(100.)),
+        height(`percent(100.)),
+        backgroundColor(`rgba((0, 0, 0, 0.5))),
+        position(`fixed),
+        opacity(show ? 1. : 0.),
+        pointerEvents(show ? `auto : `none),
+        left(`zero),
+        top(`px(62)),
+        transition(~duration=400, "all"),
+      ]);
   };
 
   [@react.component]
   let make = (~routes) => {
     let (show, setShow) = React.useState(_ => false);
     <>
-      <img
-        src={show ? Images.close : Images.menu}
-        className=Styles.menu
-        onClick={_ => setShow(prev => !prev)}
-      />
+      <div className=Styles.menuContainer onClick={_ => setShow(prev => !prev)}>
+        <img src={show ? Images.close : Images.menu} className=Styles.menu />
+      </div>
       <div className={Styles.navContainer(show)}>
         {routes
          ->Belt.List.map(((v, route)) =>
@@ -109,8 +121,18 @@ module RenderMobile = {
               <img src=Images.telegramLogo className=Styles.telegramLogo />
             </a>
           </div>
+          <HSpacing size={`px(24)} />
+          <div className=Styles.socialLink>
+            <a
+              href="https://coinmarketcap.com/currencies/band-protocol"
+              target="_blank"
+              rel="noopener">
+              <img src=Images.cmcLogo className=Styles.cmcLogo />
+            </a>
+          </div>
         </div>
       </div>
+      <div onClick={_ => setShow(prev => !prev)} className={Styles.backdropContainer(show)} />
     </>;
   };
 };

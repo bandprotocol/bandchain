@@ -68,13 +68,13 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(130)}> <AddressRender address=toAddress /> </div>
       <div className="labelContainer">
-        <div className={Styles.withBg(Colors.blue1, 50)}>
+        <div className={Styles.withBg(Colors.green1, 50)}>
           <Text
             value="RECEIVE"
             size=Text.Xs
             spacing={Text.Em(0.07)}
             weight=Text.Medium
-            color=Colors.blue7
+            color=Colors.green7
           />
         </div>
       </div>
@@ -82,7 +82,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <HSpacing size=Spacing.sm />
       <Text value={j| from |j} size=Text.Md code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(width - 285)}> <AddressRender address=fromAddress /> </div>
+      <div className={Styles.withWidth(width - 315)}> <AddressRender address=fromAddress /> </div>
     </div>
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
@@ -1101,7 +1101,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
       {switch (message) {
        | SendBadge => makeBadge("SEND", 40, Colors.blue1, Colors.blue7)
-       | ReceiveBadge => makeBadge("RECEIVE", 50, Colors.blue1, Colors.blue7)
+       | ReceiveBadge => makeBadge("RECEIVE", 50, Colors.green1, Colors.green7)
        | CreateDataSourceBadge =>
          makeBadge("CREATE DATASOURCE", 110, Colors.yellow1, Colors.yellow6)
        | EditDataSourceBadge => makeBadge("EDIT DATASOURCE", 100, Colors.yellow1, Colors.yellow6)
