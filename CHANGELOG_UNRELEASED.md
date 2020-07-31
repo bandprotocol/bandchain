@@ -22,6 +22,7 @@
 
 ### Yoda
 
+- (impv) [\#2231](https://github.com/bandprotocol/bandchain/pull/2231) Fix sync broadcast and poll for transaction status.
 - (impv) [\#2307](https://github.com/bandprotocol/bandchain/pull/2307) Add Yoda configurable timeout duration.
 
 ### Emitter & Flusher

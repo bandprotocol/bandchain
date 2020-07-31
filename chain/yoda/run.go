@@ -98,6 +98,15 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			c.fileCache = filecache.New(filepath.Join(viper.GetString(flags.FlagHome), "files"))
+			c.broadcastTimeout, err = time.ParseDuration(cfg.BroadcastTimeout)
+			if err != nil {
+				return err
+			}
+			c.maxTry = cfg.MaxTry
+			c.rpcPollIntervall, err = time.ParseDuration(cfg.RPCPollInterval)
+			if err != nil {
+				return err
+			}
 			return runImpl(c, l)
 		},
 	}
@@ -107,11 +116,17 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagExecutor, "", "executor name and url for executing the data source script")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
+	cmd.Flags().String(flagBroadcastTimeout, "30s", "The time that Yoda will wait for tx commit")
+	cmd.Flags().String(flagRPCPollInterval, "1s", "The duration of rpc poll interval")
+	cmd.Flags().Uint64(flagMaxTry, 5, "The maximum number of tries to submit a report transaction")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
 	viper.BindPFlag(flags.FlagGasPrices, cmd.Flags().Lookup(flags.FlagGasPrices))
 	viper.BindPFlag(flagLogLevel, cmd.Flags().Lookup(flagLogLevel))
 	viper.BindPFlag(flagExecutor, cmd.Flags().Lookup(flagExecutor))
+	viper.BindPFlag(flagBroadcastTimeout, cmd.Flags().Lookup(flagBroadcastTimeout))
+	viper.BindPFlag(flagRPCPollInterval, cmd.Flags().Lookup(flagRPCPollInterval))
+	viper.BindPFlag(flagMaxTry, cmd.Flags().Lookup(flagMaxTry))
 	return cmd
 }
