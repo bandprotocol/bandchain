@@ -10,8 +10,8 @@
 
 ### Chain (Consensus)
 
+- (chain) [\#2352](https://github.com/bandprotocol/bandchain/pull/2352) Upgrade to Cosmos-SDK v0.39.1-rc1. + [\#2333](https://github.com/bandprotocol/bandchain/pull/2333) Upgrade to Cosmos-SDK version 0.39.1.
 - (chain) [\#2349](https://github.com/bandprotocol/bandchain/pull/2349) chain/rng: Use HMAC in NIST SP 800-90 for RNG.
-- (chain) [\#2333](https://github.com/bandprotocol/bandchain/pull/2333) Upgrade to Cosmos-SDK version 0.39.1.
 
 ### Chain (Non-consensus)
 
