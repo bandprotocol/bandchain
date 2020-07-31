@@ -54,7 +54,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 	var res sdk.TxResponse
 	found := false
 
-	for try := 1; try <= c.maxTry; try++ {
+	for try := uint64(1); try <= c.maxTry; try++ {
 		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
 		res, err = cliCtx.BroadcastTxSync(out)
 		if err == nil {
