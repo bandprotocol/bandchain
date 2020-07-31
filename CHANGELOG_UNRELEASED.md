@@ -22,6 +22,8 @@
 
 ### Yoda
 
+- (impv) [\#2307](https://github.com/bandprotocol/bandchain/pull/2307) Add Yoda configurable timeout duration.
+
 ### Emitter & Flusher
 
 - (impv) [\#2319](https://github.com/bandprotocol/bandchain/pull/2319) Add index on blocks table and swap order of primary key of validator_votes table.

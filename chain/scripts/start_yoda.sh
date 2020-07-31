@@ -9,7 +9,7 @@ yoda config chain-id bandchain
 yoda config validator $(bandcli keys show $1 -a --bech val --keyring-backend test)
 
 # setup execution endpoint
-yoda config executor "docker:bandprotocol/runtime:1.0.1"
+yoda config executor "docker:bandprotocol/runtime:1.0.1?timeout=10s"
 
 echo "y" | bandcli tx oracle activate --from $1 --keyring-backend test
 

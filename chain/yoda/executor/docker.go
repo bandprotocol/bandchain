@@ -16,14 +16,15 @@ import (
 )
 
 type DockerExec struct {
-	image string
+	image   string
+	timeout time.Duration
 }
 
 var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
 
-func NewDockerExec(image string) *DockerExec {
-	exec := &DockerExec{image: image}
-	res, err := exec.Exec(5*time.Second, testProgram, "TEST_ARG")
+func NewDockerExec(image string, timeout time.Duration) *DockerExec {
+	exec := &DockerExec{image: image, timeout: timeout}
+	res, err := exec.Exec(testProgram, "TEST_ARG")
 	if err != nil {
 		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
 	}
@@ -36,7 +37,7 @@ func NewDockerExec(image string) *DockerExec {
 	return exec
 }
 
-func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
+func (e *DockerExec) Exec(code []byte, arg string) (ExecResult, error) {
 	dir, err := ioutil.TempDir("/tmp", "executor")
 	if err != nil {
 		return ExecResult{}, err
@@ -58,7 +59,7 @@ func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecR
 		e.image,
 		"/scratch/exec",
 	}, args...)
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "docker", dockerArgs...)
 	var buf bytes.Buffer

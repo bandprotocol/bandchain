@@ -2,7 +2,6 @@ package yoda
 
 import (
 	"strconv"
-	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -95,8 +94,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
-			// TODO: Make timeout can configurable.
-			result, err := c.executor.Exec(10*time.Second, exec, req.calldata)
+			result, err := c.executor.Exec(exec, req.calldata)
 			if err != nil {
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
