@@ -66,6 +66,7 @@ module RenderMobile = {
       ]);
 
     let nav = style([color(Colors.gray8), padding2(~v=`px(16), ~h=`zero)]);
+    let menuContainer = style([padding2(~v=`px(10), ~h=`px(5))]);
     let menu = style([width(`px(20))]);
     let twitterLogo = style([width(`px(19))]);
     let telegramLogo = style([width(`px(17))]);
@@ -95,11 +96,9 @@ module RenderMobile = {
   let make = (~routes) => {
     let (show, setShow) = React.useState(_ => false);
     <>
-      <img
-        src={show ? Images.close : Images.menu}
-        className=Styles.menu
-        onClick={_ => setShow(prev => !prev)}
-      />
+      <div className=Styles.menuContainer onClick={_ => setShow(prev => !prev)}>
+        <img src={show ? Images.close : Images.menu} className=Styles.menu />
+      </div>
       <div className={Styles.navContainer(show)}>
         {routes
          ->Belt.List.map(((v, route)) =>

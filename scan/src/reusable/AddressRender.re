@@ -49,6 +49,11 @@ module Styles = {
     | _ => "";
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
+
+  let setWidth =
+    fun
+    | Title => style([Media.mobile([width(`percent(90.))])])
+    | _ => "";
 };
 
 [@react.component]
@@ -63,7 +68,11 @@ let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~click
 
   <>
     <Link
-      className={Css.merge([Styles.container, Styles.clickable(clickable)])}
+      className={Css.merge([
+        Styles.container,
+        Styles.clickable(clickable),
+        Styles.setWidth(position),
+      ])}
       route={
         isValidator
           ? Route.ValidatorIndexPage(address, Route.ProposedBlocks)
