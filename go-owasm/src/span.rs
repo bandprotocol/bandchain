@@ -1,4 +1,4 @@
-use crate::error::Error;
+use owasm::core::error::Error;
 
 #[derive(Copy, Clone)]
 #[repr(C)]
