@@ -9,12 +9,18 @@ import (
 )
 
 func TestRngRandom(t *testing.T) {
-	r := bandrng.NewRng("SEED")
-	require.Equal(t, r.NextUint64(), uint64(15735084640102210068))
-	require.Equal(t, r.NextUint64(), uint64(3485776390957061973))
-	require.Equal(t, r.NextUint64(), uint64(17609118114147816341))
-	require.Equal(t, r.NextUint64(), uint64(15960811988050104523))
-	require.Equal(t, r.NextUint64(), uint64(11919533627209787235))
-	require.Equal(t, r.NextUint64(), uint64(1371552714025041832))
-	require.Equal(t, r.NextUint64(), uint64(1582662084421402041))
+	r, err := bandrng.NewRng([]byte("THIS_IS_A_RANDOM_SEED_LONG_ENOUGH_FOR_ENTROPY"), []byte("1"), []byte("TEST"))
+	require.NoError(t, err)
+	require.Equal(t, uint64(5751621621077249396), r.NextUint64())
+	require.Equal(t, uint64(16474548556352052882), r.NextUint64())
+	require.Equal(t, uint64(17097048712898369316), r.NextUint64())
+	require.Equal(t, uint64(10686498023352306525), r.NextUint64())
+	require.Equal(t, uint64(2144097648649487685), r.NextUint64())
+	require.Equal(t, uint64(1642256529570429276), r.NextUint64())
+	require.Equal(t, uint64(1298883664373060799), r.NextUint64())
+}
+
+func TestRngRandomNotEnoughEntropy(t *testing.T) {
+	_, err := bandrng.NewRng([]byte("TOO_SHORT"), []byte("1"), []byte("TEST"))
+	require.EqualError(t, err, "drbg: insufficient entropyInput")
 }
