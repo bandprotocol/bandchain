@@ -916,7 +916,7 @@ module Msg = {
   let getBadge = badgeVariant => {
     switch (badgeVariant) {
     | SendBadge => {text: "SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.blue7, bgColor: Colors.blue1}
+    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.green1, bgColor: Colors.green7}
     | CreateDataSourceBadge => {
         text: "CREATE DATA SOURCE",
         textColor: Colors.yellow5,
