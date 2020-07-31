@@ -70,6 +70,7 @@ module RenderMobile = {
     let menu = style([width(`px(20))]);
     let twitterLogo = style([width(`px(19))]);
     let telegramLogo = style([width(`px(17))]);
+    let cmcLogo = style([width(`px(21))]);
     let socialContainer = style([display(`flex), flexDirection(`row), marginTop(`px(10))]);
     let socialLink =
       style([
@@ -118,6 +119,15 @@ module RenderMobile = {
           <div className=Styles.socialLink>
             <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
               <img src=Images.telegramLogo className=Styles.telegramLogo />
+            </a>
+          </div>
+          <HSpacing size={`px(24)} />
+          <div className=Styles.socialLink>
+            <a
+              href="https://coinmarketcap.com/currencies/band-protocol"
+              target="_blank"
+              rel="noopener">
+              <img src=Images.cmcLogo className=Styles.cmcLogo />
             </a>
           </div>
         </div>
