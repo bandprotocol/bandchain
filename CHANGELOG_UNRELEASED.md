@@ -10,10 +10,13 @@
 
 ### Chain (Consensus)
 
+- (chain) [\#2349](https://github.com/bandprotocol/bandchain/pull/2349) chain/rng: Use HMAC in NIST SP 800-90 for RNG.
 - (chain) [\#2333](https://github.com/bandprotocol/bandchain/pull/2333) Upgrade to Cosmos-SDK version 0.39.1.
 
 ### Chain (Non-consensus)
 
+- (docs) [\#2344](https://github.com/bandprotocol/bandchain/pull/2344) Improve code comments in module.go / msg.go / params.go.
+- (impv) [\#2345](https://github.com/bandprotocol/bandchain/pull/2345) Update proof struct comment.
 - (impv) [\#2332](https://github.com/bandprotocol/bandchain/pull/2232) Emit gas used as an attribute event during prepare and execute.
 - (bugs) [\#2297](https://github.com/bandprotocol/bandchain/pull/2297) Update json key name of request and response packets.
 
@@ -30,6 +33,13 @@
 
 ### Scan
 
+- (impv) [\#2351](https://github.com/bandprotocol/bandchain/pull/2351) Added cmc link and edit social logo color
+- (bugs) [\#2350](https://github.com/bandprotocol/bandchain/pull/2350) Fixed the overflow scroll issue on mobile
+- (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
+- (impv) [\#2347](https://github.com/bandprotocol/bandchain/pull/2347) Added media query for small mobile
+- (bugs) [\#2346](https://github.com/bandprotocol/bandchain/pull/2346) Fixed the dropdown sort position
+- (bugs) [\#2343](https://github.com/bandprotocol/bandchain/pull/2343) Fixed burger menu and sorting text issues.
+- (bugs) [\#2342](https://github.com/bandprotocol/bandchain/pull/2342) Fixed bugs on mobile screen.
 - (impv) [\#2334](https://github.com/bandprotocol/bandchain/pull/2334) Implemented the sorting function on validator homepage's mobile layout.
 - (impv) [\#2330](https://github.com/bandprotocol/bandchain/pull/2330) Fixed share_percentage decoder in DelegationSub
 - (impv) [\#2317](https://github.com/bandprotocol/bandchain/pull/2317) Implemented account Index Page (Mobile)

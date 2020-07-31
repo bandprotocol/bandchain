@@ -13,7 +13,7 @@ module Styles = {
       padding2(~v=`zero, ~h=`px(20)),
       borderBottom(`px(1), `solid, Colors.gray4),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(10), Css.rgba(0, 0, 0, 0.08))),
-      Media.mobile([overflow(`auto)]),
+      Media.mobile([overflow(`auto), padding2(~v=`px(5), ~h=`px(10))]),
     ]);
 
   let buttonContainer = active =>
@@ -26,13 +26,13 @@ module Styles = {
       padding2(~v=Spacing.md, ~h=`px(20)),
       borderBottom(`pxFloat(1.5), `solid, active ? Colors.bandBlue : Colors.white),
       textShadow(Shadow.text(~blur=`pxFloat(active ? 1. : 0.), Colors.bandBlue)),
-      Media.mobile([whiteSpace(`nowrap)]),
+      Media.mobile([whiteSpace(`nowrap), borderColor(Colors.white)]),
     ]);
 
   let childrenContainer =
     style([
       backgroundColor(Colors.blueGray1),
-      Media.mobile([padding2(~h=`px(16), ~v=`zero)]),
+      Media.mobile([padding2(~h=`px(16), ~v=`zero), minHeight(`px(200))]),
     ]);
 };
 

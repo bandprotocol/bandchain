@@ -5,8 +5,8 @@ pragma solidity 0.6.11;
 /// @dev Library for performing signer recovery for ECDSA secp256k1 signature. Note that the
 /// library is written specifically for signature signed on Tendermint's precommit data, which
 /// includes the block hash and some additional information prepended and appended to the block
-/// hash. The prepended part (prefix) is the same for all the signers, while the appended part
-/// (suffix) is different for each signer (including machine clock, validator index, etc).
+/// hash. The prepended part (prefix) and the appended part (suffix) are different for each signer
+/// (including signature size, machine clock, validator index, etc).
 library TMSignature {
     struct Data {
         bytes32 r;

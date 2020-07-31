@@ -46,11 +46,11 @@
     "@glennsl/bs-jest": "^0.5.1",
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
-    "css-loader": "^4.1.0",
+    "css-loader": "^4.1.1",
     "html-webpack-plugin": "^4.3.0",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^1.2.1",
-    "webpack": "^4.44.0",
+    "webpack": "^4.44.1",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
   },

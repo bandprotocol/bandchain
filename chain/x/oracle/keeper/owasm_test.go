@@ -15,26 +15,26 @@ import (
 
 func TestGetRandomValidatorsSuccessActivateAll(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	// Getting 3 validators using ROLLING_SEED_1
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
 	vals, err := k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
-	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
 	// Getting 3 validators using ROLLING_SEED_A
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A"))
-	vals, err = k.GetRandomValidators(ctx, 3, 1)
-	require.NoError(t, err)
-	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
-	// Getting 3 validators using ROLLING_SEED_1 again should return the same result as the first one.
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A_WITH_LONG_ENOUGH_ENTROPY"))
 	vals, err = k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
 	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
-	// Getting 3 validators using ROLLING_SEED_1 but for a different request ID.
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
-	vals, err = k.GetRandomValidators(ctx, 3, 2)
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY again should return the same result as the first one.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
 	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY but for a different request ID.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
+	vals, err = k.GetRandomValidators(ctx, 3, 42)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {
@@ -53,7 +53,7 @@ func TestGetRandomValidatorsTooBigSize(t *testing.T) {
 
 func TestGetRandomValidatorsWithActivate(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(false)
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED"))
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_WITH_LONG_ENOUGH_ENTROPY"))
 	// If no validators are active, you must not be able to get random validators
 	_, err := k.GetRandomValidators(ctx, 1, 1)
 	require.Error(t, err)

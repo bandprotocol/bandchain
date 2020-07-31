@@ -23,10 +23,10 @@ var (
 // AppModuleBasic is Band Oracle's module basic object.
 type AppModuleBasic struct{}
 
-// Name implements AppModuleBasic interface.
+// Name returns this module's name - "oracle" (SDK AppModuleBasic interface).
 func (AppModuleBasic) Name() string { return ModuleName }
 
-// RegisterCodec implements AppModuleBasic interface.
+// RegisterCodec registers codec encoders and decoders for oracle messages (SDK AppModuleBasic interface).
 func (AppModuleBasic) RegisterCodec(cdc *codec.Codec) { RegisterCodec(cdc) }
 
 // DefaultGenesis returns the default genesis state as raw bytes.
@@ -40,17 +40,17 @@ func (AppModuleBasic) ValidateGenesis(bz json.RawMessage) error {
 	return ModuleCdc.UnmarshalJSON(bz, &data)
 }
 
-// RegisterRESTRoutes implements AppModuleBasic interface.
+// RegisterRESTRoutes adds oracle REST endpoints to the main mux (SDK AppModuleBasic interface).
 func (AppModuleBasic) RegisterRESTRoutes(ctx context.CLIContext, rtr *mux.Router) {
 	rest.RegisterRoutes(ctx, rtr, StoreKey)
 }
 
-// GetQueryCmd implements AppModuleBasic interface.
+// GetQueryCmd returns cobra CLI command to query chain state (SDK AppModuleBasic interface).
 func (AppModuleBasic) GetQueryCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetQueryCmd(StoreKey, cdc)
 }
 
-// GetTxCmd implements AppModuleBasic interface.
+// GetTxCmd returns cobra CLI command to send txs for this module (SDK AppModuleBasic interface).
 func (AppModuleBasic) GetTxCmd(cdc *codec.Codec) *cobra.Command {
 	return cli.GetTxCmd(StoreKey, cdc)
 }
@@ -69,27 +69,27 @@ func NewAppModule(k Keeper) AppModule {
 	}
 }
 
-// RegisterInvariants implements the AppModule interface.
+// RegisterInvariants is a noop function to satisfy SDK AppModule interface.
 func (am AppModule) RegisterInvariants(ir sdk.InvariantRegistry) {}
 
-// Route implements the AppModule interface.
+// Route returns the module's path for message route (SDK AppModule interface).
 func (am AppModule) Route() string { return RouterKey }
 
-// NewHandler implements the AppModule interface.
+// NewHandler returns the function to process oracle messages (SDK AppModule interface).
 func (am AppModule) NewHandler() sdk.Handler { return NewHandler(am.keeper) }
 
-// QuerierRoute implements the AppModule interface.
+// QuerierRoute returns the module's path for querier route (SDK AppModule interface).
 func (am AppModule) QuerierRoute() string { return ModuleName }
 
-// NewQuerierHandler implements the AppModule interface.
+// NewQuerierHandler returns the function to process ABCI queries (SDK AppModule interface).
 func (am AppModule) NewQuerierHandler() sdk.Querier { return NewQuerier(am.keeper) }
 
-// BeginBlock implements the AppModule interface.
+// BeginBlock processes ABCI begin block message for this oracle module (SDK AppModule interface).
 func (am AppModule) BeginBlock(ctx sdk.Context, req abci.RequestBeginBlock) {
 	handleBeginBlock(ctx, am.keeper, req)
 }
 
-// EndBlock implements the AppModule interface.
+// EndBlock processes ABCI end block message for this oracle module (SDK AppModule interface).
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
 	handleEndBlock(ctx, am.keeper)
 	return []abci.ValidatorUpdate{}

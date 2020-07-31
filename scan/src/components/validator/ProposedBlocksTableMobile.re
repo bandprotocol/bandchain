@@ -1,3 +1,9 @@
+module Styles = {
+  open Css;
+
+  let blockWrapper = style([padding2(~v=`px(20), ~h=`zero)]);
+};
+
 let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
   switch (blockSub) {
   | Data({height, timestamp, txn}) =>
@@ -36,9 +42,7 @@ module Loading = {
 let make = (~consensusAddress) => {
   let blocksSub =
     BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize=10, ~page=1, ());
-  <>
-    <VSpacing size=Spacing.md />
-    <VSpacing size=Spacing.sm />
+  <div className=Styles.blockWrapper>
     {switch (blocksSub) {
      | Data(blocks) =>
        blocks
@@ -46,5 +50,5 @@ let make = (~consensusAddress) => {
        ->React.array
      | _ => <Loading />
      }}
-  </>;
+  </div>;
 };
