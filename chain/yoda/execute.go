@@ -31,13 +31,13 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		return
 	}
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
-	broadcasted := false
 	txHash := ""
 	for try := uint64(1); try <= c.maxTry; try++ {
 		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
 		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 		if err != nil {
 			l.Debug(":warning: Failed to retreive account with error: %s", err.Error())
+			time.Sleep(c.rpcPollIntervall)
 			continue
 		}
 
@@ -53,18 +53,18 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 		if err != nil {
 			l.Debug(":warning: Failed to build tx with error: %s", err.Error())
+			time.Sleep(c.rpcPollIntervall)
 			continue
 		}
 		res, err := cliCtx.BroadcastTxSync(out)
 		if err == nil {
 			txHash = res.TxHash
-			broadcasted = true
 			break
 		}
 		l.Debug(":warning: Failed to broadcast tx with error: %s", err.Error())
 		time.Sleep(c.rpcPollIntervall)
 	}
-	if !broadcasted {
+	if txHash == "" {
 		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
 		return
 	}
