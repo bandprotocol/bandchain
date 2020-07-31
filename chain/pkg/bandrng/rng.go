@@ -1,28 +1,35 @@
 package bandrng
 
 import (
-	"crypto/sha256"
+	"crypto"
 	"encoding/binary"
+
+	"github.com/oasisprotocol/oasis-core/go/common/crypto/drbg"
 )
 
-// Rng implements a simple determinisic random number generator. Starting from an initial seed,
-// random uint64 numbers are produced from the first 8 bytes of sha256 results, repeatedly.
+// Rng implements a simple determinisic random number generator. Starting from an initial entropy,
+// nonce, and personalizationString, it utilizes HMAC_DRBG construct as per NIST Special
+// Publication 800-90A to produce a stream of random uint64 integers.
 type Rng struct {
-	seed [sha256.Size]byte
+	rng *drbg.Drbg
 }
 
-func nextSeed(prev [sha256.Size]byte) [sha256.Size]byte {
-	return sha256.Sum256(prev[:])
-}
-
-// NewRng creates a new psudo-random generator, using the given seed as the initial random source.
-func NewRng(initSeed string) *Rng {
-	return &Rng{seed: sha256.Sum256([]byte(initSeed))}
+// NewRng creates a new psudo-random generator, using the given seeds as the initial random source.
+func NewRng(entropyInput, nonce, personalizationString []byte) (*Rng, error) {
+	rng, err := drbg.New(crypto.SHA256, entropyInput, nonce, personalizationString)
+	if err != nil {
+		return nil, err
+	}
+	return &Rng{rng: rng}, nil
 }
 
 // NextUint64 returns the next 64-bit unsigned random integer produced by this generator.
 func (r *Rng) NextUint64() uint64 {
-	val := binary.BigEndian.Uint64(r.seed[:8])
-	r.seed = nextSeed(r.seed)
-	return val
+	data := make([]byte, 8)
+	_, err := r.rng.Read(data)
+	if err != nil {
+		// Reaching error is not possible in hmbc_drbg codepath.
+		panic(err)
+	}
+	return binary.BigEndian.Uint64(data)
 }
