@@ -28,6 +28,7 @@
 
 ### Scan
 
+- (impv) [\#2351](https://github.com/bandprotocol/bandchain/pull/2351) Added cmc link and edit social logo color
 - (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
 - (impv) [\#2347](https://github.com/bandprotocol/bandchain/pull/2347) Added media query for small mobile
 - (bugs) [\#2346](https://github.com/bandprotocol/bandchain/pull/2346) Fixed the dropdown sort position
