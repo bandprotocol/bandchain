@@ -32,7 +32,7 @@ func (k Keeper) GetRandomValidators(ctx sdk.Context, size int, id int64) ([]sdk.
 	}
 	rng, err := bandrng.NewRng(k.GetRollingSeed(ctx), sdk.Uint64ToBigEndian(uint64(id)), []byte(ctx.ChainID()))
 	if err != nil {
-		return nil, sdkerrors.Wrapf(types.ErrBadDrngInitialization, err.Error())
+		return nil, sdkerrors.Wrapf(types.ErrBadDrbgInitialization, err.Error())
 	}
 	tryCount := int(k.GetParam(ctx, types.KeySamplingTryCount))
 	chosenValIndexes := bandrng.ChooseSomeMaxWeight(rng, valPowers, size, tryCount)
