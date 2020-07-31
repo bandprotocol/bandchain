@@ -4,6 +4,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+// RequestPacketEthereum is an Ethereum version of OracleRequestPacketData for solidity ABI-encoding.
 type RequestPacketEthereum struct {
 	ClientId       string
 	OracleScriptId uint64
@@ -22,6 +23,7 @@ func transformRequestPacket(p types.OracleRequestPacketData) RequestPacketEthere
 	}
 }
 
+// ResponsePacketEthereum is an Ethereum version of OracleResponsePacketData for solidity ABI-encoding.
 type ResponsePacketEthereum struct {
 	ClientId      string
 	RequestId     uint64
