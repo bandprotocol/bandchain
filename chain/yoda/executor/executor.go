@@ -53,7 +53,7 @@ func parseExecutor(executorStr string) (name string, base string, timeout time.D
 	query := u.Query()
 	timeoutStr := query.Get(flagQueryTimeout)
 	if timeoutStr == "" {
-		return "", "", 0, fmt.Errorf("Invalid query timeout, executor required have query timeout")
+		return "", "", 0, fmt.Errorf("Invalid timeout, executor requires query timeout")
 	}
 	// Remove timeout from query because we need to return `base`
 	query.Del(flagQueryTimeout)

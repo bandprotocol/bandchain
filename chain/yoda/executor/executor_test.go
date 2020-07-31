@@ -28,12 +28,8 @@ func TestParseExecutor(t *testing.T) {
 }
 
 func TestParseExecutorWithoutRawQuery(t *testing.T) {
-	name, url, timeout, err := parseExecutor("beeb:www.beebprotocol.com")
-	require.NoError(t, err)
-	require.Equal(t, name, "beeb")
-	require.Equal(t, timeout, 10*time.Second)
-	require.Equal(t, url, "www.beebprotocol.com")
-	require.NoError(t, err)
+	_, _, _, err := parseExecutor("beeb:www.beebprotocol.com")
+	require.EqualError(t, err, "Invalid timeout, executor requires query timeout")
 }
 
 func TestParseExecutorInvalidExecutorError(t *testing.T) {
