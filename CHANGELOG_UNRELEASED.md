@@ -61,6 +61,7 @@
 
 ### Owasm
 
+- (impv) [\#2359](https://github.com/bandprotocol/bandchain/pull/2359) Add NaN canonicalization flag during initialization.
 - (chore) [\#2339](https://github.com/bandprotocol/bandchain/pull/2339) Refactor runtime code into owasm package.
 
 ### Oracle Binary Encoding (OBI)
