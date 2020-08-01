@@ -7,7 +7,7 @@ use parity_wasm::elements::{self, External, ImportEntry, MemoryType, Module};
 
 use pwasm_utils::{self, rules};
 use std::ffi::c_void;
-use wasmer_runtime::{instantiate, Ctx};
+use wasmer_runtime::Ctx;
 use wasmer_runtime_core::error::RuntimeError;
 use wasmer_runtime_core::{func, imports, wasmparser, Func};
 
@@ -209,7 +209,16 @@ where
         },
     };
 
-    let instance = instantiate(code, &import_object).map_err(|_| Error::InstantiationError)?;
+    let module = wasmer_runtime_core::compile_with_config(
+        code,
+        &wasmer_singlepass_backend::SinglePassCompiler::new(),
+        wasmer_runtime_core::backend::CompilerConfig {
+            nan_canonicalization: true,
+            ..Default::default()
+        },
+    )
+    .map_err(|_| Error::InstantiationError)?;
+    let instance = module.instantiate(&import_object).map_err(|_| Error::InstantiationError)?;
     let entry = if is_prepare { "prepare" } else { "execute" };
     let function: Func<(), ()> =
         instance.exports.get(entry).map_err(|_| Error::BadEntrySignatureError)?;
