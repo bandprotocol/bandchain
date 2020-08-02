@@ -87,23 +87,19 @@ let renderBodyMobile =
     ) => {
   switch (unbondingListSub) {
   | Data({validator: {operatorAddress, moniker, identity}, amount, completionTime}) =>
+    let key_ =
+      (operatorAddress |> Address.toBech32)
+      ++ (completionTime |> MomentRe.Moment.toISOString)
+      ++ (reserveIndex |> string_of_int);
     <MobileCard
       values=InfoMobileCard.[
         ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
         ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
         ("UNBONDED AT", Timestamp(completionTime)),
       ]
-      key={
-        (operatorAddress |> Address.toBech32)
-        ++ (completionTime |> MomentRe.Moment.toISOString)
-        ++ (reserveIndex |> string_of_int)
-      }
-      idx={
-        (operatorAddress |> Address.toBech32)
-        ++ (completionTime |> MomentRe.Moment.toISOString)
-        ++ (reserveIndex |> string_of_int)
-      }
-    />
+      key=key_
+      idx=key_
+    />;
   | _ =>
     <MobileCard
       values=InfoMobileCard.[

@@ -211,14 +211,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     let rewardAmount = reward->Coin.getBandAmountFromCoin;
     let commissionAmount = commission->Coin.getBandAmountFromCoins;
 
-    let totalBalance =
-      availableBalance
-      +. balanceAtStakeAmount
-      +. rewardAmount
-      +. unbondingAmount
-      +. commissionAmount;
-
-    totalBalance;
+    availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount +. commissionAmount;
   };
   let send = chainID => {
     switch (accountOpt) {

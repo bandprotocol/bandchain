@@ -125,6 +125,12 @@ let renderBodyMobile =
       completionTime,
       amount,
     }) =>
+    let key_ =
+      (srcAddress |> Address.toBech32)
+      ++ (dstAddress |> Address.toBech32)
+      ++ (completionTime |> MomentRe.Moment.toISOString)
+      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reserveIndex |> string_of_int);
     <MobileCard
       values=InfoMobileCard.[
         ("SOURCE\nVALIDATOR", Validator(srcAddress, srcMoniker, srcIdentity)),
@@ -132,21 +138,9 @@ let renderBodyMobile =
         ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
         ("REDELEGATE\nCOMPLETE AT", Timestamp(completionTime)),
       ]
-      key={
-        (srcAddress |> Address.toBech32)
-        ++ (dstAddress |> Address.toBech32)
-        ++ (completionTime |> MomentRe.Moment.toISOString)
-        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reserveIndex |> string_of_int)
-      }
-      idx={
-        (srcAddress |> Address.toBech32)
-        ++ (dstAddress |> Address.toBech32)
-        ++ (completionTime |> MomentRe.Moment.toISOString)
-        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reserveIndex |> string_of_int)
-      }
-    />
+      key=key_
+      idx=key_
+    />;
   | _ =>
     <MobileCard
       values=InfoMobileCard.[

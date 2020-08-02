@@ -75,25 +75,20 @@ let renderBodyMobile =
     (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
   switch (delegationsSub) {
   | Data({amount, moniker, operatorAddress, reward, identity}) =>
+    let key_ =
+      (operatorAddress |> Address.toHex)
+      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reward |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reserveIndex |> string_of_int);
     <MobileCard
       values=InfoMobileCard.[
         ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
         ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
         ("REWARD\n(BAND)", Coin({value: [reward], hasDenom: false})),
       ]
-      key={
-        (operatorAddress |> Address.toHex)
-        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reward |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reserveIndex |> string_of_int)
-      }
-      idx={
-        (operatorAddress |> Address.toHex)
-        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reward |> Coin.getBandAmountFromCoin |> Js.Float.toString)
-        ++ (reserveIndex |> string_of_int)
-      }
-    />
+      key=key_
+      idx=key_
+    />;
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
