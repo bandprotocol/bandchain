@@ -31,7 +31,7 @@ module Styles = {
   let childrenContainer =
     style([
       backgroundColor(Colors.blueGray1),
-      Media.mobile([padding2(~h=`px(16), ~v=`zero), minHeight(`px(200))]),
+      Media.mobile([padding2(~h=`px(16), ~v=`zero)]),
     ]);
 };
 
