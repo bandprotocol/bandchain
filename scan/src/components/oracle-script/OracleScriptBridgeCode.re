@@ -153,14 +153,14 @@ module LanguageIcon = {
 let getFileNameFromLanguage = (~language, ~dataType) => {
   let dataTypeString = dataType |> Obi.dataTypeToString;
   switch (language) {
-  | Solidity => {j|$(dataTypeString)Decoder.sol|j}
+  | Solidity => "Decoders.sol"
   | Go => {j|$(dataTypeString)Decoder.go|j}
   };
 };
 
 let getCodeFromSchema = (~schema, ~language, ~dataType) => {
   switch (language) {
-  | Solidity => Obi.generateDecoderSolidity(schema, dataType)
+  | Solidity => Obi.generateDecoderSolidity(schema)
   | Go => Obi.generateDecoderGo("main", schema, dataType)
   };
 };
@@ -168,6 +168,12 @@ let getCodeFromSchema = (~schema, ~language, ~dataType) => {
 module GenerateDecodeCode = {
   [@react.component]
   let make = (~language, ~schema, ~dataType) => {
+    let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
+    let code =
+      switch (codeOpt) {
+      | Some(code) => code
+      | _ => "Code is not available."
+      };
     <div className=Styles.tableLowerContainer>
       <div className=Styles.vFlex>
         <img src=Images.code className=Styles.codeImage />
@@ -176,13 +182,11 @@ module GenerateDecodeCode = {
           size=Text.Lg
           color=Colors.gray7
         />
+        <HSpacing size=Spacing.md />
+        <CopyRender width=15 message=code />
       </div>
       <VSpacing size=Spacing.lg />
-      {let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
-       switch (codeOpt) {
-       | Some(code) => code->renderCode
-       | None => {j|"Code is not available."|j}->renderCode
-       }}
+      code->renderCode
     </div>;
   };
 };
@@ -211,9 +215,9 @@ let make = (~schema) => {
               let newLanguage = newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
               setLanguage(_ => newLanguage);
             }}>
-            // TODO: Add back Kadena
+            // TODO: Add back Kadena and Cosmos
 
-              {[|Ethereum, CosmosIBC|]
+              {[|Ethereum|]
                ->Belt_Array.map(symbol =>
                    <option value={symbol |> toPlatformString}>
                      {symbol |> toPlatformString |> React.string}
@@ -257,8 +261,16 @@ let make = (~schema) => {
              <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
            </div>
            <VSpacing size={`px(35)} /> */
+    <div className=Styles.tableLowerContainer>
+      <div className=Styles.vFlex>
+        <img src=Images.code className=Styles.codeImage />
+        <Text value="Oracle Script Schema" size=Text.Lg color=Colors.gray7 />
+        <HSpacing size=Spacing.md />
+        <CopyRender width=15 message=schema />
+      </div>
+      <VSpacing size=Spacing.lg />
+      schema->renderCode
+    </div>
     <GenerateDecodeCode language schema dataType=Obi.Params />
-    <VSpacing size=Spacing.md />
-    <GenerateDecodeCode language schema dataType=Obi.Result />
   </div>;
 };
