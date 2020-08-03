@@ -9,10 +9,13 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func TestGetRequestCount(t *testing.T) {
+func TestGetSetRequestCount(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially request count must be 0.
 	require.Equal(t, int64(0), k.GetRequestCount(ctx))
+	// After we set the count manually, it should be reflected.
+	k.SetRequestCount(ctx, 42)
+	require.Equal(t, int64(42), k.GetRequestCount(ctx))
 }
 
 func TestGetNextRequestID(t *testing.T) {
