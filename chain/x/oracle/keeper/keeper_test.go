@@ -18,6 +18,24 @@ func TestGetSetRequestCount(t *testing.T) {
 	require.Equal(t, int64(42), k.GetRequestCount(ctx))
 }
 
+func TestGetDataSourceCount(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetDataSourceCount(ctx, 42)
+	require.Equal(t, int64(42), k.GetDataSourceCount(ctx))
+}
+
+func TestGetSetOracleScriptCount(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetOracleScriptCount(ctx, 42)
+	require.Equal(t, int64(42), k.GetOracleScriptCount(ctx))
+}
+
+func TestGetSetRollingSeed(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	k.SetRollingSeed(ctx, []byte("HELLO_WORLD"))
+	require.Equal(t, []byte("HELLO_WORLD"), k.GetRollingSeed(ctx))
+}
+
 func TestGetNextRequestID(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	// First request id must be 1.
@@ -28,6 +46,22 @@ func TestGetNextRequestID(t *testing.T) {
 	require.Equal(t, types.RequestID(3), k.GetNextRequestID(ctx))
 	require.Equal(t, types.RequestID(4), k.GetNextRequestID(ctx))
 	require.Equal(t, int64(4), k.GetRequestCount(ctx))
+}
+
+func TestGetNextDataSourceID(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	initialID := k.GetDataSourceCount(ctx)
+	require.Equal(t, types.DataSourceID(initialID+1), k.GetNextDataSourceID(ctx))
+	require.Equal(t, types.DataSourceID(initialID+2), k.GetNextDataSourceID(ctx))
+	require.Equal(t, types.DataSourceID(initialID+3), k.GetNextDataSourceID(ctx))
+}
+
+func TestGetNextOracleScriptID(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	initialID := k.GetOracleScriptCount(ctx)
+	require.Equal(t, types.OracleScriptID(initialID+1), k.GetNextOracleScriptID(ctx))
+	require.Equal(t, types.OracleScriptID(initialID+2), k.GetNextOracleScriptID(ctx))
+	require.Equal(t, types.OracleScriptID(initialID+3), k.GetNextOracleScriptID(ctx))
 }
 
 func TestGetSetRequestLastExpiredID(t *testing.T) {
