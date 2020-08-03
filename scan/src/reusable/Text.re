@@ -59,19 +59,29 @@ let toPlacementString = {
 module Styles = {
   open Css;
   open Belt.Option;
-
+  let isSmallMobile = Media.isSmallMobile();
   let fontSize =
     mapWithDefault(
       _,
       style([fontSize(px(12)), lineHeight(`px(16))]),
       fun
-      | Xs => style([fontSize(px(8)), letterSpacing(`em(0.07))])
-      | Sm => style([fontSize(px(10)), letterSpacing(`em(0.05))])
-      | Md => style([fontSize(px(12)), lineHeight(`px(16))])
-      | Lg => style([fontSize(px(14)), lineHeight(`px(18))])
-      | Xl => style([fontSize(px(16)), lineHeight(`px(18))])
-      | Xxl => style([fontSize(px(18))])
-      | Xxxl => style([fontSize(px(24))]),
+      | Xs =>
+        style([
+          fontSize(px(isSmallMobile ? 7 : 8)),
+          letterSpacing(`em(0.07)),
+          lineHeight(`em(1.14)),
+        ])
+      | Sm =>
+        style([
+          fontSize(px(isSmallMobile ? 8 : 10)),
+          letterSpacing(`em(0.05)),
+          lineHeight(`em(1.14)),
+        ])
+      | Md => style([fontSize(px(isSmallMobile ? 10 : 12)), lineHeight(`px(16))])
+      | Lg => style([fontSize(px(isSmallMobile ? 12 : 14)), lineHeight(`px(18))])
+      | Xl => style([fontSize(px(isSmallMobile ? 14 : 16)), lineHeight(`px(18))])
+      | Xxl => style([fontSize(px(isSmallMobile ? 16 : 18))])
+      | Xxxl => style([fontSize(px(isSmallMobile ? 22 : 24))]),
     );
 
   let fontWeight =
@@ -108,7 +118,7 @@ module Styles = {
   let block = style([display(`block)]);
   let ellipsis =
     style([
-      overflow(`hidden),
+      overflowX(`hidden),
       textOverflow(`ellipsis),
       whiteSpace(`nowrap),
       width(`percent(100.)),

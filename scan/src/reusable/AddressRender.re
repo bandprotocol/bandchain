@@ -43,10 +43,12 @@ module Styles = {
       active([color(Colors.gray7)]),
     ]);
 
-  let wordBreak =
-    fun
-    | Title => style([Media.mobile([wordBreak(`breakAll), whiteSpace(`unset)])])
-    | _ => "";
+  let wordBreak = ellipsis =>
+    ellipsis
+      ? style([])
+      : style([
+          Media.mobile([textOverflow(`unset), whiteSpace(`unset), wordBreak(`breakAll)]),
+        ]);
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
 
@@ -57,7 +59,15 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~clickable=true) => {
+let make =
+    (
+      ~address,
+      ~position=Text,
+      ~accountType=`account,
+      ~copy=false,
+      ~clickable=true,
+      ~ellipsis=true,
+    ) => {
   let isValidator = accountType == `validator;
   let prefix = isValidator ? "bandvaloper" : "band";
 
@@ -83,7 +93,7 @@ let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~click
           Styles.base,
           Text.Styles.code,
           Styles.font(position),
-          Styles.wordBreak(position),
+          Styles.wordBreak(ellipsis),
         ])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}

@@ -13,10 +13,14 @@ module Styles = {
       Media.mobile([
         flexBasis(`calc((`sub, `percent(50.), `px(20)))),
         margin(`px(10)),
-        width(`px(164)),
+        width(`auto),
         height(`px(128)),
       ]),
-      Media.smallMobile([width(`px(120)), height(`px(110)), margin(`px(10))]),
+      Media.smallMobile([
+        flexBasis(`calc((`sub, `percent(50.), `px(10)))),
+        margin(`px(5)),
+        height(`px(105)),
+      ]),
     ]);
 
   let innerCard =
@@ -29,6 +33,7 @@ module Styles = {
       position(`relative),
       zIndex(2),
       padding4(~top=`px(13), ~bottom=`px(13), ~left=`px(14), ~right=`px(10)),
+      Media.smallMobile([padding2(~v=`px(10), ~h=`px(5))]),
     ]);
 
   let labelContainer =
@@ -42,7 +47,12 @@ module Styles = {
   let vFlexWithMobile =
     style([display(`flex), flexDirection(`row), Media.mobile([flexDirection(`column)])]);
 
-  let withWidth = style([width(`px(170)), Media.mobile([width(`px(142))])]);
+  let withWidth =
+    style([
+      width(`px(170)),
+      Media.mobile([width(`px(142))]),
+      Media.smallMobile([width(`percent(100.))]),
+    ]);
 
   let bgCard = (url: string) =>
     style([

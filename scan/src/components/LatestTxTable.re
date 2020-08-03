@@ -171,7 +171,7 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | Data({txHash, blockHeight, success, messages, errMsg}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", TxHash(txHash, 200)),
+        ("TX HASH", TxHash(txHash, 170)),
         ("BLOCK", Height(blockHeight)),
         ("ACTIONS", Messages(txHash, messages, success, errMsg)),
       ]
@@ -183,8 +183,15 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
     <MobileCard
       values=InfoMobileCard.[
         ("TX HASH", Loading(200)),
-        ("BLOCK", Loading(18)),
-        ("ACTIONS", Loading(230)),
+        ("BLOCK", Loading(70)),
+        (
+          "ACTIONS",
+          Loading(
+            {
+              Media.isSmallMobile() ? 160 : 230;
+            },
+          ),
+        ),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}

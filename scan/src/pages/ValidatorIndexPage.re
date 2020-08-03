@@ -59,12 +59,12 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), ~spread=`zero, rgba(0, 0, 0, 0.08)),
       ),
-      padding4(~top=`px(16), ~left=`px(12), ~right=`zero, ~bottom=`px(16)),
+      padding2(~v=`px(15), ~h=`px(10)),
     ]);
 
   let monikerContainer =
     style([display(`flex), flexDirection(`row), alignItems(`center), minHeight(`px(60))]);
-  let operatorAddressMobile = style([width(`px(330))]);
+  let addressMobileContainer = style([width(`percent(100.))]);
   let votingPowerMobile = style([display(`flex), flexDirection(`column), paddingTop(`px(3))]);
   let headerMobile = style([paddingTop(`px(10))]);
 
@@ -96,10 +96,13 @@ let kvRowMobile = (k, v: value_row_t) => {
     </div>
     <div className={Styles.fullWidth(`row)}>
       {switch (v) {
-       | VAddress(address) => <AddressRender address />
+       | VAddress(address) =>
+         <div className=Styles.addressMobileContainer>
+           <AddressRender address ellipsis=false />
+         </div>
        | VValidatorAddress(address) =>
-         <div className=Styles.operatorAddressMobile>
-           <AddressRender address accountType=`validator />
+         <div className=Styles.addressMobileContainer>
+           <AddressRender address accountType=`validator ellipsis=false />
          </div>
        | VText(value) => <Text value nowrap=true />
        | VDetail(value) => <Text value />
