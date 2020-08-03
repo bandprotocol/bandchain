@@ -37,11 +37,12 @@ let get = () => {
     bandReload((), ());
   };
 
-  let data =
-    switch (usdJson, btcJson, bandJson) {
-    | (Some(usd), Some(btc), Some(band)) => Some(Price.decode(usd, btc, band))
-    | _ => None
-    };
+  let data = {
+    let%Opt usd = usdJson;
+    let%Opt btc = btcJson;
+    let%Opt band = bandJson;
+    Some(Price.decode(usd, btc, band));
+  };
 
   (data, reload);
 };

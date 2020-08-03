@@ -13,7 +13,7 @@ let make = (~children) => {
 
   React.useEffect1(
     () => {
-      let intervalID = Js.Global.setInterval(() => {reload()}, 2000);
+      let intervalID = Js.Global.setInterval(reload, 60000);
       Some(() => Js.Global.clearInterval(intervalID));
     },
     [|financialOpt|],
