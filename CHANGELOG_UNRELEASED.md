@@ -34,6 +34,7 @@
 
 ### Scan
 
+- (impv) [\#2375](https://github.com/bandprotocol/bandchain/pull/2375) Added Tx memo on TxIndexPage
 - (impv) [\#2351](https://github.com/bandprotocol/bandchain/pull/2351) Added cmc link and edit social logo color
 - (bugs) [\#2350](https://github.com/bandprotocol/bandchain/pull/2350) Fixed the overflow scroll issue on mobile
 - (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
