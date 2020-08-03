@@ -62,6 +62,7 @@
 
 ### Owasm
 
+- (impv) [\#2359](https://github.com/bandprotocol/bandchain/pull/2359) Add NaN canonicalization flag during initialization.
 - (impv) [\#2362](https://github.com/bandprotocol/bandchain/pull/2362) Remove unnecessary traits in ext and add more docs.
 - (chore) [\#2339](https://github.com/bandprotocol/bandchain/pull/2339) Refactor runtime code into owasm package.
 
