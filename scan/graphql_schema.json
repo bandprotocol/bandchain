@@ -1968,7 +1968,7 @@
         "interfaces": null,
         "name": "account_transactions_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"account_transactions\"",
+        "description": "input type for incrementing integer column in table \"account_transactions\"",
         "fields": null
       },
       {
@@ -2346,6 +2346,45 @@
         "name": "account_transactions_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"account_transactions\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "account_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "transaction_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "account_transactions_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"account_transactions\"",
         "fields": null
       },
       {
@@ -4987,7 +5026,7 @@
         "interfaces": null,
         "name": "accounts_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"accounts\"",
+        "description": "input type for incrementing integer column in table \"accounts\"",
         "fields": null
       },
       {
@@ -5569,6 +5608,31 @@
         "name": "accounts_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"accounts\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "address",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "accounts_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"accounts\"",
         "fields": null
       },
       {
@@ -7376,6 +7440,16 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "inflation",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "float8",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -7383,7 +7457,7 @@
         "interfaces": null,
         "name": "blocks_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"blocks\"",
+        "description": "input type for incrementing integer column in table \"blocks\"",
         "fields": null
       },
       {
@@ -7553,6 +7627,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -7590,6 +7676,16 @@
           },
           {
             "name": "supply",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "timestamp",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -7663,6 +7759,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "timestamp",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -7700,6 +7808,16 @@
           },
           {
             "name": "supply",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "timestamp",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -7969,6 +8087,31 @@
         "name": "blocks_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"blocks\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "height",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "blocks_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"blocks\"",
         "fields": null
       },
       {
@@ -9637,7 +9780,7 @@
         "interfaces": null,
         "name": "data_sources_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"data_sources\"",
+        "description": "input type for incrementing integer column in table \"data_sources\"",
         "fields": null
       },
       {
@@ -10227,6 +10370,31 @@
         "name": "data_sources_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"data_sources\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "data_sources_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"data_sources\"",
         "fields": null
       },
       {
@@ -11595,6 +11763,26 @@
             "description": null
           },
           {
+            "name": "last_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "shares",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "validator_id",
             "defaultValue": null,
             "type": {
@@ -11610,7 +11798,7 @@
         "interfaces": null,
         "name": "delegations_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"delegations\"",
+        "description": "input type for incrementing integer column in table \"delegations\"",
         "fields": null
       },
       {
@@ -12116,6 +12304,45 @@
         "name": "delegations_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"delegations\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "delegator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "delegations_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"delegations\"",
         "fields": null
       },
       {
@@ -15521,7 +15748,7 @@
         "interfaces": null,
         "name": "deposits_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"deposits\"",
+        "description": "input type for incrementing integer column in table \"deposits\"",
         "fields": null
       },
       {
@@ -16047,6 +16274,45 @@
         "name": "deposits_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"deposits\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "depositor_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "proposal_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "deposits_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"deposits\"",
         "fields": null
       },
       {
@@ -17079,6 +17345,47 @@
           {
             "args": [
               {
+                "name": "account_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "transaction_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_account_transactions_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "account_transactions",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"account_transactions\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17102,6 +17409,33 @@
               "ofType": null
             },
             "description": "delete data from the table: \"accounts\""
+          },
+          {
+            "args": [
+              {
+                "name": "address",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_accounts_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "accounts",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"accounts\""
           },
           {
             "args": [
@@ -17133,6 +17467,33 @@
           {
             "args": [
               {
+                "name": "height",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_blocks_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "blocks",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"blocks\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17156,6 +17517,33 @@
               "ofType": null
             },
             "description": "delete data from the table: \"data_sources\""
+          },
+          {
+            "args": [
+              {
+                "name": "id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_data_sources_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "data_sources",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"data_sources\""
           },
           {
             "args": [
@@ -17187,6 +17575,47 @@
           {
             "args": [
               {
+                "name": "delegator_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "validator_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_delegations_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "delegations",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"delegations\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17210,6 +17639,47 @@
               "ofType": null
             },
             "description": "delete data from the table: \"deposits\""
+          },
+          {
+            "args": [
+              {
+                "name": "depositor_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "proposal_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_deposits_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "deposits",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"deposits\""
           },
           {
             "args": [
@@ -17241,6 +17711,33 @@
           {
             "args": [
               {
+                "name": "id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_oracle_scripts_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "oracle_scripts",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"oracle_scripts\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17264,6 +17761,33 @@
               "ofType": null
             },
             "description": "delete data from the table: \"proposals\""
+          },
+          {
+            "args": [
+              {
+                "name": "id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_proposals_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "proposals",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"proposals\""
           },
           {
             "args": [
@@ -17295,6 +17819,61 @@
           {
             "args": [
               {
+                "name": "external_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "request_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "validator_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_raw_reports_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_reports",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"raw_reports\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17318,6 +17897,47 @@
               "ofType": null
             },
             "description": "delete data from the table: \"raw_requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "external_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bigint",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "request_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_raw_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_requests",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"raw_requests\""
           },
           {
             "args": [
@@ -17376,6 +17996,47 @@
           {
             "args": [
               {
+                "name": "request_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "validator_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_reports_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "reports",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"reports\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17399,6 +18060,33 @@
               "ofType": null
             },
             "description": "delete data from the table: \"requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "requests",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"requests\""
           },
           {
             "args": [
@@ -17430,6 +18118,33 @@
           {
             "args": [
               {
+                "name": "chain_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_tracking_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "tracking",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"tracking\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17453,6 +18168,33 @@
               "ofType": null
             },
             "description": "delete data from the table: \"transactions\""
+          },
+          {
+            "args": [
+              {
+                "name": "hash",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "bytea",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_transactions_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "transactions",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"transactions\""
           },
           {
             "args": [
@@ -17511,6 +18253,47 @@
           {
             "args": [
               {
+                "name": "request_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "validator_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_val_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "val_requests",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"val_requests\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17534,6 +18317,47 @@
               "ofType": null
             },
             "description": "delete data from the table: \"validator_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "block_height",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "consensus_address",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_validator_votes_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_votes",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"validator_votes\""
           },
           {
             "args": [
@@ -17565,6 +18389,33 @@
           {
             "args": [
               {
+                "name": "operator_address",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_validators_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validators",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"validators\""
+          },
+          {
+            "args": [
+              {
                 "name": "where",
                 "defaultValue": null,
                 "type": {
@@ -17588,6 +18439,47 @@
               "ofType": null
             },
             "description": "delete data from the table: \"votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "proposal_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              },
+              {
+                "name": "voter_id",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "Int",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "delete_votes_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "votes",
+              "ofType": null
+            },
+            "description": "delete single row from the table: \"votes\""
           },
           {
             "args": [
@@ -17637,6 +18529,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "account_transactions_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "account_transactions_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_account_transactions_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "account_transactions",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"account_transactions\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -17678,6 +18607,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"accounts\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "accounts_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "accounts_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_accounts_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "accounts",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"accounts\""
           },
           {
             "args": [
@@ -17727,6 +18693,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "blocks_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "blocks_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_blocks_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "blocks",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"blocks\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -17768,6 +18771,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"data_sources\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "data_sources_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_sources_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_data_sources_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "data_sources",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"data_sources\""
           },
           {
             "args": [
@@ -17817,6 +18857,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "delegations_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "delegations_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_delegations_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "delegations",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"delegations\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -17858,6 +18935,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"deposits\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "deposits_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "deposits_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_deposits_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "deposits",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"deposits\""
           },
           {
             "args": [
@@ -17907,6 +19021,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "oracle_scripts_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "oracle_scripts_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_oracle_scripts_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "oracle_scripts",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"oracle_scripts\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -17948,6 +19099,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"proposals\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "proposals_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "proposals_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_proposals_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "proposals",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"proposals\""
           },
           {
             "args": [
@@ -17997,6 +19185,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "raw_reports_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "raw_reports_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_raw_reports_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_reports",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"raw_reports\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18042,6 +19267,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "raw_requests_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "raw_requests_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_raw_requests_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_requests",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"raw_requests\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18073,6 +19335,33 @@
               "ofType": null
             },
             "description": "insert data into the table: \"redelegations\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "redelegations_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_redelegations_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "redelegations",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"redelegations\""
           },
           {
             "args": [
@@ -18122,6 +19411,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "reports_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "reports_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_reports_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "reports",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"reports\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18163,6 +19489,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "requests_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "requests_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_requests_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "requests",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"requests\""
           },
           {
             "args": [
@@ -18212,6 +19575,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "tracking_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "tracking_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_tracking_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "tracking",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"tracking\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18257,6 +19657,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "transactions_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "transactions_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_transactions_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "transactions",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"transactions\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18288,6 +19725,33 @@
               "ofType": null
             },
             "description": "insert data into the table: \"unbonding_delegations\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "unbonding_delegations_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_unbonding_delegations_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "unbonding_delegations",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"unbonding_delegations\""
           },
           {
             "args": [
@@ -18337,6 +19801,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "val_requests_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "val_requests_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_val_requests_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "val_requests",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"val_requests\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18378,6 +19879,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"validator_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "validator_votes_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_votes_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_validator_votes_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_votes",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"validator_votes\""
           },
           {
             "args": [
@@ -18427,6 +19965,43 @@
           {
             "args": [
               {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "validators_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validators_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_validators_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validators",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"validators\""
+          },
+          {
+            "args": [
+              {
                 "name": "objects",
                 "defaultValue": null,
                 "type": {
@@ -18468,6 +20043,43 @@
               "ofType": null
             },
             "description": "insert data into the table: \"votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "object",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "votes_insert_input",
+                    "ofType": null
+                  }
+                },
+                "description": "the row to be inserted"
+              },
+              {
+                "name": "on_conflict",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "votes_on_conflict",
+                  "ofType": null
+                },
+                "description": "on conflict condition"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "insert_votes_one",
+            "type": {
+              "kind": "OBJECT",
+              "name": "votes",
+              "ofType": null
+            },
+            "description": "insert a single row into the table: \"votes\""
           },
           {
             "args": [
@@ -18523,6 +20135,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "account_transactions_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "account_transactions_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "account_transactions_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_account_transactions_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "account_transactions",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"account_transactions\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "accounts_inc_input",
                   "ofType": null
                 },
@@ -18562,6 +20221,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"accounts\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "accounts_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "accounts_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "accounts_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_accounts_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "accounts",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"accounts\""
           },
           {
             "args": [
@@ -18617,6 +20323,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "blocks_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "blocks_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "blocks_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_blocks_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "blocks",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"blocks\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "data_sources_inc_input",
                   "ofType": null
                 },
@@ -18656,6 +20409,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"data_sources\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_sources_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_sources_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "data_sources_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_data_sources_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "data_sources",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"data_sources\""
           },
           {
             "args": [
@@ -18711,6 +20511,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "delegations_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "delegations_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "delegations_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_delegations_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "delegations",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"delegations\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "deposits_inc_input",
                   "ofType": null
                 },
@@ -18750,6 +20597,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"deposits\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "deposits_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "deposits_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "deposits_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_deposits_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "deposits",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"deposits\""
           },
           {
             "args": [
@@ -18805,6 +20699,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "oracle_scripts_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "oracle_scripts_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "oracle_scripts_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_oracle_scripts_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "oracle_scripts",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"oracle_scripts\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "proposals_inc_input",
                   "ofType": null
                 },
@@ -18844,6 +20785,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"proposals\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "proposals_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "proposals_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "proposals_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_proposals_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "proposals",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"proposals\""
           },
           {
             "args": [
@@ -18899,6 +20887,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "raw_reports_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "raw_reports_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "raw_reports_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_raw_reports_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_reports",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"raw_reports\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "raw_requests_inc_input",
                   "ofType": null
                 },
@@ -18938,6 +20973,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"raw_requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "raw_requests_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "raw_requests_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "raw_requests_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_raw_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "raw_requests",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"raw_requests\""
           },
           {
             "args": [
@@ -19040,6 +21122,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "reports_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "reports_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "reports_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_reports_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "reports",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"reports\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "requests_inc_input",
                   "ofType": null
                 },
@@ -19079,6 +21208,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "requests_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "requests_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "requests_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "requests",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"requests\""
           },
           {
             "args": [
@@ -19134,6 +21310,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "tracking_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "tracking_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "tracking_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_tracking_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "tracking",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"tracking\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "transactions_inc_input",
                   "ofType": null
                 },
@@ -19173,6 +21396,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"transactions\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "transactions_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "transactions_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "transactions_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_transactions_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "transactions",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"transactions\""
           },
           {
             "args": [
@@ -19275,6 +21545,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "val_requests_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "val_requests_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "val_requests_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_val_requests_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "val_requests",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"val_requests\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "validator_votes_inc_input",
                   "ofType": null
                 },
@@ -19314,6 +21631,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"validator_votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_votes_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validator_votes_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "validator_votes_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_validator_votes_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validator_votes",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"validator_votes\""
           },
           {
             "args": [
@@ -19369,6 +21733,53 @@
                 "defaultValue": null,
                 "type": {
                   "kind": "INPUT_OBJECT",
+                  "name": "validators_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "validators_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "validators_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_validators_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "validators",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"validators\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
                   "name": "votes_inc_input",
                   "ofType": null
                 },
@@ -19408,6 +21819,53 @@
               "ofType": null
             },
             "description": "update data of the table: \"votes\""
+          },
+          {
+            "args": [
+              {
+                "name": "_inc",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "votes_inc_input",
+                  "ofType": null
+                },
+                "description": "increments the integer columns with given value of the filtered values"
+              },
+              {
+                "name": "_set",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "votes_set_input",
+                  "ofType": null
+                },
+                "description": "sets the columns of the filtered rows to the given values"
+              },
+              {
+                "name": "pk_columns",
+                "defaultValue": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "votes_pk_columns_input",
+                    "ofType": null
+                  }
+                },
+                "description": null
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "update_votes_by_pk",
+            "type": {
+              "kind": "OBJECT",
+              "name": "votes",
+              "ofType": null
+            },
+            "description": "update single row of the table: \"votes\""
           }
         ]
       },
@@ -20502,7 +22960,7 @@
         "interfaces": null,
         "name": "oracle_scripts_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"oracle_scripts\"",
+        "description": "input type for incrementing integer column in table \"oracle_scripts\"",
         "fields": null
       },
       {
@@ -21264,6 +23722,31 @@
         "name": "oracle_scripts_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"oracle_scripts\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "oracle_scripts_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"oracle_scripts\"",
         "fields": null
       },
       {
@@ -23244,7 +25727,7 @@
         "interfaces": null,
         "name": "proposals_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"proposals\"",
+        "description": "input type for incrementing integer column in table \"proposals\"",
         "fields": null
       },
       {
@@ -23421,6 +25904,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "deposit_end_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "description",
             "type": {
               "kind": "SCALAR",
@@ -23469,6 +25964,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "submit_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "title",
             "type": {
               "kind": "SCALAR",
@@ -23497,6 +26004,30 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voting_end_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voting_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
               "ofType": null
             },
             "description": null
@@ -23506,6 +26037,16 @@
       {
         "inputFields": [
           {
+            "name": "deposit_end_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -23546,6 +26087,16 @@
             "description": null
           },
           {
+            "name": "submit_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "title",
             "defaultValue": null,
             "type": {
@@ -23567,6 +26118,26 @@
           },
           {
             "name": "type",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voting_end_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voting_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -23597,6 +26168,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "deposit_end_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "description",
             "type": {
               "kind": "SCALAR",
@@ -23645,6 +26228,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "submit_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "title",
             "type": {
               "kind": "SCALAR",
@@ -23673,6 +26268,30 @@
             "type": {
               "kind": "SCALAR",
               "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voting_end_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "voting_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
               "ofType": null
             },
             "description": null
@@ -23682,6 +26301,16 @@
       {
         "inputFields": [
           {
+            "name": "deposit_end_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -23722,6 +26351,16 @@
             "description": null
           },
           {
+            "name": "submit_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "title",
             "defaultValue": null,
             "type": {
@@ -23743,6 +26382,26 @@
           },
           {
             "name": "type",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voting_end_time",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "voting_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -24062,6 +26721,31 @@
         "name": "proposals_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"proposals\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "proposals_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"proposals\"",
         "fields": null
       },
       {
@@ -30555,7 +33239,7 @@
         "interfaces": null,
         "name": "raw_reports_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"raw_reports\"",
+        "description": "input type for incrementing integer column in table \"raw_reports\"",
         "fields": null
       },
       {
@@ -31081,6 +33765,59 @@
         "name": "raw_reports_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"raw_reports\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "external_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "request_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "raw_reports_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"raw_reports\"",
         "fields": null
       },
       {
@@ -32922,7 +35659,7 @@
         "interfaces": null,
         "name": "raw_requests_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"raw_requests\"",
+        "description": "input type for incrementing integer column in table \"raw_requests\"",
         "fields": null
       },
       {
@@ -33404,6 +36141,45 @@
         "name": "raw_requests_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"raw_requests\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "external_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bigint",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "request_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "raw_requests_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"raw_requests\"",
         "fields": null
       },
       {
@@ -34897,6 +37673,16 @@
       {
         "inputFields": [
           {
+            "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "delegator_id",
             "defaultValue": null,
             "type": {
@@ -34932,7 +37718,7 @@
         "interfaces": null,
         "name": "redelegations_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"redelegations\"",
+        "description": "input type for incrementing integer column in table \"redelegations\"",
         "fields": null
       },
       {
@@ -35051,6 +37837,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "completion_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "delegator_id",
             "type": {
               "kind": "SCALAR",
@@ -35089,6 +37887,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "completion_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -35161,6 +37969,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "completion_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "delegator_id",
             "type": {
               "kind": "SCALAR",
@@ -35199,6 +38019,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "completion_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -37295,7 +40125,7 @@
         "interfaces": null,
         "name": "reports_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"reports\"",
+        "description": "input type for incrementing integer column in table \"reports\"",
         "fields": null
       },
       {
@@ -37861,6 +40691,45 @@
         "name": "reports_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"reports\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "request_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "reports_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"reports\"",
         "fields": null
       },
       {
@@ -40372,7 +43241,7 @@
         "interfaces": null,
         "name": "requests_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"requests\"",
+        "description": "input type for incrementing integer column in table \"requests\"",
         "fields": null
       },
       {
@@ -41318,6 +44187,31 @@
         "name": "requests_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"requests\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "requests_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"requests\"",
         "fields": null
       },
       {
@@ -48516,7 +51410,7 @@
         "interfaces": null,
         "name": "tracking_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"tracking\"",
+        "description": "input type for incrementing integer column in table \"tracking\"",
         "fields": null
       },
       {
@@ -48918,6 +51812,31 @@
         "name": "tracking_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"tracking\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "chain_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "tracking_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"tracking\"",
         "fields": null
       },
       {
@@ -51558,7 +54477,7 @@
         "interfaces": null,
         "name": "transactions_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"transactions\"",
+        "description": "input type for incrementing integer column in table \"transactions\"",
         "fields": null
       },
       {
@@ -52500,6 +55419,31 @@
         "name": "transactions_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"transactions\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "hash",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "bytea",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "transactions_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"transactions\"",
         "fields": null
       },
       {
@@ -54293,6 +57237,16 @@
       {
         "inputFields": [
           {
+            "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "creation_height",
             "defaultValue": null,
             "type": {
@@ -54328,7 +57282,7 @@
         "interfaces": null,
         "name": "unbonding_delegations_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"unbonding_delegations\"",
+        "description": "input type for incrementing integer column in table \"unbonding_delegations\"",
         "fields": null
       },
       {
@@ -54447,6 +57401,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "completion_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "creation_height",
             "type": {
               "kind": "SCALAR",
@@ -54485,6 +57451,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "completion_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -54557,6 +57533,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "completion_time",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "creation_height",
             "type": {
               "kind": "SCALAR",
@@ -54595,6 +57583,16 @@
         "inputFields": [
           {
             "name": "amount",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "completion_time",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -56339,7 +59337,7 @@
         "interfaces": null,
         "name": "val_requests_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"val_requests\"",
+        "description": "input type for incrementing integer column in table \"val_requests\"",
         "fields": null
       },
       {
@@ -56717,6 +59715,45 @@
         "name": "val_requests_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"val_requests\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "request_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "val_requests_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"val_requests\"",
         "fields": null
       },
       {
@@ -60970,7 +64007,7 @@
         "interfaces": null,
         "name": "validator_votes_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"validator_votes\"",
+        "description": "input type for incrementing integer column in table \"validator_votes\"",
         "fields": null
       },
       {
@@ -61368,6 +64405,45 @@
         "name": "validator_votes_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"validator_votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "block_height",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "consensus_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validator_votes_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"validator_votes\"",
         "fields": null
       },
       {
@@ -64466,11 +67542,51 @@
             "description": null
           },
           {
+            "name": "current_ratio",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "current_reward",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "delegator_shares",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "tokens",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "numeric",
               "ofType": null
             },
             "description": null
@@ -64481,7 +67597,7 @@
         "interfaces": null,
         "name": "validators_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"validators\"",
+        "description": "input type for incrementing integer column in table \"validators\"",
         "fields": null
       },
       {
@@ -65000,6 +68116,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "status_since",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "tokens",
             "type": {
               "kind": "SCALAR",
@@ -65176,6 +68304,16 @@
           },
           {
             "name": "operator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "status_since",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65418,6 +68556,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "status_since",
+            "type": {
+              "kind": "SCALAR",
+              "name": "timestamp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "tokens",
             "type": {
               "kind": "SCALAR",
@@ -65594,6 +68744,16 @@
           },
           {
             "name": "operator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "status_since",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -66083,6 +69243,31 @@
         "name": "validators_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"validators\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "operator_address",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "validators_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"validators\"",
         "fields": null
       },
       {
@@ -68553,7 +71738,7 @@
         "interfaces": null,
         "name": "votes_inc_input",
         "enumValues": null,
-        "description": "input type for incrementing integer columne in table \"votes\"",
+        "description": "input type for incrementing integer column in table \"votes\"",
         "fields": null
       },
       {
@@ -69035,6 +72220,45 @@
         "name": "votes_order_by",
         "enumValues": null,
         "description": "ordering options when selecting data from \"votes\"",
+        "fields": null
+      },
+      {
+        "inputFields": [
+          {
+            "name": "proposal_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "name": "voter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          }
+        ],
+        "kind": "INPUT_OBJECT",
+        "possibleTypes": null,
+        "interfaces": null,
+        "name": "votes_pk_columns_input",
+        "enumValues": null,
+        "description": "primary key columns input for table: \"votes\"",
         "fields": null
       },
       {
