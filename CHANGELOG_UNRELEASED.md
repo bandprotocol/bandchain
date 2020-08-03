@@ -34,6 +34,7 @@
 
 ### Scan
 
+- (impv) [\#2375](https://github.com/bandprotocol/bandchain/pull/2375) Added Tx memo on TxIndexPage
 - (impv) [\#2351](https://github.com/bandprotocol/bandchain/pull/2351) Added cmc link and edit social logo color
 - (bugs) [\#2350](https://github.com/bandprotocol/bandchain/pull/2350) Fixed the overflow scroll issue on mobile
 - (bugs) [\#2348](https://github.com/bandprotocol/bandchain/pull/2348) Fixed msg badge bug on mobile.
@@ -62,6 +63,7 @@
 ### Owasm
 
 - (impv) [\#2359](https://github.com/bandprotocol/bandchain/pull/2359) Add NaN canonicalization flag during initialization.
+- (impv) [\#2362](https://github.com/bandprotocol/bandchain/pull/2362) Remove unnecessary traits in ext and add more docs.
 - (chore) [\#2339](https://github.com/bandprotocol/bandchain/pull/2339) Refactor runtime code into owasm package.
 
 ### Oracle Binary Encoding (OBI)

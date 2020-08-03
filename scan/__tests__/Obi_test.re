@@ -197,20 +197,6 @@ library ParamsDecoder {
         result.multiplier = data.decodeU64();
     }
 }
-|j},
-      ),
-    )
-    |> toEqual(
-         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Params),
-       )
-  });
-
-  test("should be able to generate solidity 2", () => {
-    expect(
-      Some(
-        {j|pragma solidity ^0.5.0;
-
-import "./Obi.sol";
 
 library ResultDecoder {
     using Obi for Obi.Data;
@@ -228,13 +214,12 @@ library ResultDecoder {
         result.px = data.decodeU64();
     }
 }
+
 |j},
       ),
     )
-    |> toEqual(
-         generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}, Obi.Result),
-       )
-  });
+    |> toEqual(generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}))
+  })
 });
 
 describe("should be able to generate go code correctly", () => {
