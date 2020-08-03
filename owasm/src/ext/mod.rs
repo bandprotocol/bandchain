@@ -10,7 +10,7 @@ where
     let mut vals: Vec<T> = Vec::new();
     for idx in 0..oei::get_ask_count() {
         let external_data = oei::get_external_data(external_id, idx);
-        match external_data.and_then(|x| x.trim_end().parse::<T>().ok()) {
+        match external_data.ok().and_then(|x| x.trim_end().parse::<T>().ok()) {
             Some(v) => vals.push(v),
             None => (),
         }
@@ -20,24 +20,24 @@ where
 
 pub fn load_average<T>(external_id: i64) -> T
 where
-    T: std::str::FromStr + num::Num + num::NumCast + std::clone::Clone,
+    T: std::str::FromStr + num::Num,
 {
     let vals = load_input(external_id);
     if vals.len() == 0 {
         T::zero()
     } else {
-        average(&vals)
+        average(vals)
     }
 }
 
-fn average<T>(vals: &Vec<T>) -> T
+fn average<T>(vals: Vec<T>) -> T
 where
-    T: std::str::FromStr + num::Num + num::NumCast + std::clone::Clone,
+    T: num::Num,
 {
     let mut sum = T::zero();
     let mut count = T::zero();
     for x in vals {
-        sum = sum + x.clone();
+        sum = sum + x;
         count = count + T::one();
     }
     sum / count
@@ -45,10 +45,9 @@ where
 
 pub fn load_majority<T>(external_id: i64) -> Option<T>
 where
-    T: std::str::FromStr + std::cmp::PartialEq + std::clone::Clone,
+    T: std::str::FromStr + std::cmp::PartialEq,
 {
     let vec: Vec<T> = load_input(external_id);
-
     if vec.len() == 0 {
         None
     } else {
@@ -56,37 +55,37 @@ where
     }
 }
 
-fn majority<T>(vec: Vec<T>) -> Option<T>
+fn majority<T>(mut vec: Vec<T>) -> Option<T>
 where
-    T: std::str::FromStr + std::cmp::PartialEq + std::clone::Clone,
+    T: std::cmp::PartialEq,
 {
-    let mut candidate = vec[0].clone();
+    let mut candidate = 0;
     let mut count = 1;
     let len = vec.len();
 
     // Find majority by Boyer–Moore majority vote algorithm
     // https://en.wikipedia.org/wiki/Boyer%E2%80%93Moore_majority_vote_algorithm
     for idx in 1..len {
-        if candidate == vec[idx] {
+        if vec[candidate] == vec[idx] {
             count = count + 1;
         } else {
             count = count - 1;
         }
         if count == 0 {
-            candidate = vec[idx].clone();
+            candidate = idx;
             count = 1;
         }
     }
 
     count = 0;
     for idx in 0..len {
-        if candidate == vec[idx] {
+        if vec[candidate] == vec[idx] {
             count = count + 1;
         }
     }
 
     if 2 * count > len {
-        Some(candidate)
+        Some(vec.swap_remove(candidate))
     } else {
         None
     }
@@ -94,26 +93,28 @@ where
 
 pub fn load_median<T>(external_id: i64) -> Option<T>
 where
-    T: std::str::FromStr + std::cmp::PartialOrd + std::clone::Clone + num::Num + num::NumCast,
+    T: std::str::FromStr + std::cmp::PartialOrd + num::Num,
 {
-    let mut vals = load_input(external_id);
+    let vals = load_input(external_id);
     if vals.len() == 0 {
         None
     } else {
-        Some(median(&mut vals))
+        Some(median(vals))
     }
 }
 
-fn median<T>(vals: &mut Vec<T>) -> T
+fn median<T>(mut vals: Vec<T>) -> T
 where
-    T: std::str::FromStr + std::cmp::PartialOrd + std::clone::Clone + num::Num + num::NumCast,
+    T: std::cmp::PartialOrd + num::Num,
 {
     vals.sort_by(|a, b| a.partial_cmp(b).unwrap());
     let mid = vals.len() / 2;
     if vals.len() % 2 == 0 {
-        (vals[mid - 1].clone() + vals[mid].clone()) / num::cast(2).unwrap()
+        let rhs = vals.swap_remove(mid);
+        let lhs = vals.swap_remove(mid - 1);
+        (lhs + rhs) / (T::one() + T::one())
     } else {
-        vals[mid].clone()
+        vals.swap_remove(mid)
     }
 }
 
@@ -124,67 +125,69 @@ mod tests {
     #[test]
     fn test_average_int() {
         let vals = vec![3, 2, 5, 7, 2, 9, 1];
-        assert_eq!(average(&vals), 4);
+        assert_eq!(average(vals), 4);
     }
 
     #[test]
     fn test_average_single_int() {
         let vals = vec![3];
-        assert_eq!(average(&vals), 3);
+        assert_eq!(average(vals), 3);
     }
 
     #[test]
     fn test_average_float() {
         let vals = vec![3.0, 2.0, 5.0, 7.0, 2.0, 9.0, 1.0];
-        assert_eq!(average(&vals), 4.142857142857143);
+        assert_eq!(average(vals), 4.142857142857143);
     }
 
     #[test]
     fn test_average_single_float() {
         let vals = vec![3.0];
-        assert_eq!(average(&vals), 3.0);
+        assert_eq!(average(vals), 3.0);
     }
 
     #[test]
     fn test_median_odd_int() {
-        let mut vals = vec![3, 2, 5, 7, 2, 9, 1];
-        assert_eq!(median(&mut vals), 3);
+        let vals = vec![3, 2, 5, 7, 2, 9, 1];
+        assert_eq!(median(vals), 3);
     }
 
     #[test]
     fn test_median_single_int() {
-        let mut vals = vec![3];
-        assert_eq!(median(&mut vals), 3);
+        let vals = vec![3];
+        assert_eq!(median(vals), 3);
     }
 
     #[test]
     fn test_median_even_int() {
-        let mut vals = vec![3, 2, 5, 7, 2, 10, 32, 1];
-        assert_eq!(median(&mut vals), 4);
-
-        let mut vals = vec![13, 36, 33, 45];
-        assert_eq!(median(&mut vals), 34);
+        let vals = vec![3, 2, 5, 7, 2, 10, 32, 1];
+        assert_eq!(median(vals), 4);
+        let vals = vec![13, 36, 33, 45];
+        assert_eq!(median(vals), 34);
+        let vals = vec![13, 15];
+        assert_eq!(median(vals), 14);
     }
 
     #[test]
     fn test_median_odd_float() {
-        let mut vals = vec![3.5, 2.7, 5.1, 7.4, 2.0, 9.1, 1.9];
-        assert_eq!(median(&mut vals), 3.5);
+        let vals = vec![3.5, 2.7, 5.1, 7.4, 2.0, 9.1, 1.9];
+        assert_eq!(median(vals), 3.5);
     }
 
     #[test]
     fn test_median_single_float() {
-        let mut vals = vec![3.0];
-        assert_eq!(median(&mut vals), 3.0);
+        let vals = vec![3.0];
+        assert_eq!(median(vals), 3.0);
     }
 
     #[test]
     fn test_median_even_float() {
-        let mut vals = vec![3.4, 2.0, 5.7, 7.1, 2.2, 10.1, 32.0, 1.8];
-        assert_eq!(median(&mut vals), 4.55);
-
-        let mut vals = vec![13.0, 36.0, 45.0, 33.0];
-        assert_eq!(median(&mut vals), 34.5);
+        let vals = vec![3.4, 2.0, 5.7, 7.1, 2.2, 10.1, 32.0, 1.8];
+        assert_eq!(median(vals), 4.55);
+        let vals = vec![13.0, 36.0, 45.0, 33.0];
+        assert_eq!(median(vals), 34.5);
+        let vals = vec![13.0, 36.2];
+        assert_eq!(median(vals), 24.6);
     }
 
     #[test]
