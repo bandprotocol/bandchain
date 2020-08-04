@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#2384](https://github.com/bandprotocol/bandchain/pull/2384) Handle 404page for ValidatorIndex and AccountIndex pages.
 - (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
 - (impv) [\#2380](https://github.com/bandprotocol/bandchain/pull/2380) Fixed case sensitive issue on Validator Homepage.
 
