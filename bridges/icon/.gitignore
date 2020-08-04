@@ -2,3 +2,4 @@ bin
 lib
 share
 __pycache__
+*.key
