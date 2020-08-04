@@ -28,6 +28,7 @@
 - (impv) [\#2455](https://github.com/bandprotocol/bandchain/pull/2455) Implement full copy non evm proof
 
 ### Bridges
+- (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge.
 
 ### Runtime
 
