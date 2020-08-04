@@ -11,13 +11,10 @@ let make = (~children) => {
     Some({financial: financial});
   };
 
-  React.useEffect1(
-    () => {
-      let intervalID = Js.Global.setInterval(reload, 60000);
-      Some(() => Js.Global.clearInterval(intervalID));
-    },
-    [|financialOpt|],
-  );
+  React.useEffect0(() => {
+    let intervalID = Js.Global.setInterval(reload, 60000);
+    Some(() => Js.Global.clearInterval(intervalID));
+  });
 
   React.createElement(
     React.Context.provider(context),
