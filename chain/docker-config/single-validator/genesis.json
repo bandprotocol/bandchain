@@ -1,0 +1,215 @@
+{
+  "genesis_time": "2020-07-30T06:44:05.273108Z",
+  "chain_id": "bandchain",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "200000",
+      "max_gas": "2000000",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age": "100000"
+    },
+    "validator": {
+      "pub_key_types": [
+        "secp256k1"
+      ]
+    }
+  },
+  "app_hash": "",
+  "app_state": {
+    "supply": {
+      "supply": []
+    },
+    "distribution": {
+      "fee_pool": {
+        "community_pool": []
+      },
+      "community_tax": "0.020000000000000000",
+      "base_proposer_reward": "0.010000000000000000",
+      "bonus_proposer_reward": "0.040000000000000000",
+      "withdraw_addr_enabled": true,
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "mint": {
+      "minter": {
+        "inflation": "0.135000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "uband",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "10519200"
+      }
+    },
+    "auth": {
+      "params": {
+        "max_memo_characters": "512",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "10",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      }
+    },
+    "slashing": {
+      "params": {
+        "max_evidence_age": "1814400000000000",
+        "signed_blocks_window": "30000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
+    },
+    "genutil": {
+      "gentxs": [
+        {
+          "type": "cosmos-sdk/StdTx",
+          "value": {
+            "msg": [
+              {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                  "description": {
+                    "moniker": "validator",
+                    "identity": "",
+                    "website": "",
+                    "details": ""
+                  },
+                  "commission": {
+                    "rate": "0.100000000000000000",
+                    "max_rate": "0.200000000000000000",
+                    "max_change_rate": "0.010000000000000000"
+                  },
+                  "min_self_delegation": "1",
+                  "delegator_address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
+                  "validator_address": "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec",
+                  "pubkey": "bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg",
+                  "value": {
+                    "denom": "uband",
+                    "amount": "100000000"
+                  }
+                }
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas": "200000"
+            },
+            "signatures": [
+              {
+                "pub_key": {
+                  "type": "tendermint/PubKeySecp256k1",
+                  "value": "AiS3jI4M4wP0Aqn+4RhteonBF82QvzdR6OGFF2rlFKMk"
+                },
+                "signature": "DfMEv6B7zTqMWGHNuviWtdV2Az2EaEq6uSev8bef9gpX7e0CaYXeBFJBZ4IsCBxG1Yfg6HDDoaSUAz5K1KHNzQ=="
+              }
+            ],
+            "memo": "11392b605378063b1c505c0ab123f04bd710d7d7@192.168.101.66:26656"
+          }
+        }
+      ]
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "uband",
+            "amount": "1000000000"
+          }
+        ],
+        "max_deposit_period": "1209600000000000"
+      },
+      "voting_params": {
+        "voting_period": "1209600000000000"
+      },
+      "tally_params": {
+        "quorum": "0.400000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto": "0.334000000000000000"
+      }
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "10000000000"
+      }
+    },
+    "bank": {
+      "send_enabled": true
+    },
+    "accounts": [
+      {
+        "address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      },
+      {
+        "address": "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
+        "coins": [
+          {
+            "denom": "uband",
+            "amount": "10000000000000"
+          }
+        ],
+        "sequence_number": "0",
+        "account_number": "0",
+        "original_vesting": [],
+        "delegated_free": [],
+        "delegated_vesting": [],
+        "start_time": "0",
+        "end_time": "0",
+        "module_name": "",
+        "module_permissions": [
+          ""
+        ]
+      }
+    ]
+  }
+}
