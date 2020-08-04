@@ -43,12 +43,8 @@ module Styles = {
       active([color(Colors.gray7)]),
     ]);
 
-  let wordBreak = ellipsis =>
-    ellipsis
-      ? style([])
-      : style([
-          Media.mobile([textOverflow(`unset), whiteSpace(`unset), wordBreak(`breakAll)]),
-        ]);
+  let wordBreak =
+    style([Media.mobile([textOverflow(`unset), whiteSpace(`unset), wordBreak(`breakAll)])]);
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
 
@@ -93,7 +89,7 @@ let make =
           Styles.base,
           Text.Styles.code,
           Styles.font(position),
-          Styles.wordBreak(ellipsis),
+          !ellipsis ? Styles.wordBreak : "",
         ])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}

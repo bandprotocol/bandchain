@@ -20,7 +20,7 @@ module Styles = {
         ),
       ]),
       Media.smallMobile([
-        selector("> div:nth-child(1)", [width(`px(80)), marginBottom(`px(10))]),
+        selector("> div:nth-child(1)", [width(`px(68)), marginBottom(`px(10))]),
       ]),
     ]);
   let withWidth = (w: int) => style([width(`px(w))]);

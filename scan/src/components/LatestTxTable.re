@@ -171,7 +171,7 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | Data({txHash, blockHeight, success, messages, errMsg}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", TxHash(txHash, 170)),
+        ("TX HASH", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
         ("BLOCK", Height(blockHeight)),
         ("ACTIONS", Messages(txHash, messages, success, errMsg)),
       ]

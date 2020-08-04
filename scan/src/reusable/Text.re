@@ -59,29 +59,46 @@ let toPlacementString = {
 module Styles = {
   open Css;
   open Belt.Option;
-  let isSmallMobile = Media.isSmallMobile();
+
   let fontSize =
     mapWithDefault(
       _,
-      style([fontSize(px(12)), lineHeight(`px(16))]),
+      style([fontSize(`px(12)), lineHeight(`px(16))]),
       fun
       | Xs =>
         style([
-          fontSize(px(isSmallMobile ? 7 : 8)),
+          fontSize(`px(8)),
           letterSpacing(`em(0.07)),
           lineHeight(`em(1.14)),
+          Media.smallMobile([fontSize(px(7))]),
         ])
       | Sm =>
         style([
-          fontSize(px(isSmallMobile ? 8 : 10)),
+          fontSize(`px(10)),
           letterSpacing(`em(0.05)),
           lineHeight(`em(1.14)),
+          Media.smallMobile([fontSize(`px(8))]),
         ])
-      | Md => style([fontSize(px(isSmallMobile ? 10 : 12)), lineHeight(`px(16))])
-      | Lg => style([fontSize(px(isSmallMobile ? 12 : 14)), lineHeight(`px(18))])
-      | Xl => style([fontSize(px(isSmallMobile ? 14 : 16)), lineHeight(`px(18))])
-      | Xxl => style([fontSize(px(isSmallMobile ? 16 : 18))])
-      | Xxxl => style([fontSize(px(isSmallMobile ? 22 : 24))]),
+      | Md =>
+        style([
+          fontSize(`px(12)),
+          lineHeight(`px(16)),
+          Media.smallMobile([fontSize(`px(10))]),
+        ])
+      | Lg =>
+        style([
+          fontSize(`px(14)),
+          lineHeight(`px(18)),
+          Media.smallMobile([fontSize(`px(12))]),
+        ])
+      | Xl =>
+        style([
+          fontSize(`px(16)),
+          lineHeight(`px(18)),
+          Media.smallMobile([fontSize(`px(14))]),
+        ])
+      | Xxl => style([fontSize(`px(18)), Media.smallMobile([fontSize(`px(16))])])
+      | Xxxl => style([fontSize(`px(24)), Media.smallMobile([fontSize(`px(22))])]),
     );
 
   let fontWeight =
