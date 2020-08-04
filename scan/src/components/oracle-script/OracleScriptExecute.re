@@ -132,7 +132,6 @@ module ExecutionPart = {
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
     let (result, setResult) = React.useState(_ => Nothing);
 
-    // TODO: Change when input can be empty
     let isUnused = {
       let field = paramsInput->Belt_Array.getExn(0);
       switch (field.fieldType) {
