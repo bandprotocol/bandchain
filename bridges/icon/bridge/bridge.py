@@ -259,19 +259,6 @@ def ecrecover(_e: bytes, _r: bytes, _s: bytes, v):
 
 # =-=-=-=-=-=-=-=-=-=-=-=-= /ECRecoverPubKey =-=-=-=-=-=-=-=-=-=-=-=-=
 
-# =-=-=-=-=-=-=-=-=-=-=-=-= \Utils =-=-=-=-=-=-=-=-=-=-=-=-=
-
-
-def merkle_leaf_hash(value: bytes) -> bytes:
-    return sha256(b'\x00' + value)
-
-
-def merkle_inner_hash(left: bytes, right: bytes) -> bytes:
-    return sha256(b'\x01' + left + right)
-
-
-# =-=-=-=-=-=-=-=-=-=-=-=-= /Utils =-=-=-=-=-=-=-=-=-=-=-=-=
-
 
 class BRIDGE(IconScoreBase):
 
@@ -322,12 +309,12 @@ class BRIDGE(IconScoreBase):
     # =-=-=-=-=-=-=-=-=-=-=-=-= \BlockHeaderMerkleParts =-=-=-=-=-=-=-=-=-=-=-=-=
 
     def get_block_header(self, data: bytes, app_hash: bytes, block_height: int) -> bytes:
-        return merkle_inner_hash(  # [BlockHeader]
-            merkle_inner_hash(  # [3A]
-                merkle_inner_hash(  # [2A]
+        return self.merkle_inner_hash(  # [BlockHeader]
+            self.merkle_inner_hash(  # [3A]
+                self.merkle_inner_hash(  # [2A]
                     data[0:32],  # [1A]
-                    merkle_inner_hash(  # [1B]
-                        merkle_leaf_hash(  # [2]
+                    self.merkle_inner_hash(  # [1B]
+                        self.merkle_leaf_hash(  # [2]
                             self.encode_varint_unsigned(block_height)
                         ),
                         data[32:64]  # [3]
@@ -335,11 +322,11 @@ class BRIDGE(IconScoreBase):
                 ),
                 data[64:96]  # [2B]
             ),
-            merkle_inner_hash(  # [3B]
-                merkle_inner_hash(  # [2C]
+            self.merkle_inner_hash(  # [3B]
+                self.merkle_inner_hash(  # [2C]
                     data[96:128],  # [1E]
-                    merkle_inner_hash(  # [1F]
-                        merkle_leaf_hash(  # [A]
+                    self.merkle_inner_hash(  # [1F]
+                        self.merkle_leaf_hash(  # [A]
                             (32).to_bytes(1, "big") + app_hash
                         ),
                         data[128:160]  # [B]
@@ -434,13 +421,13 @@ class BRIDGE(IconScoreBase):
         params_stores_merkle_hash = multi_store[96:128]  # [7]
         slashing_to_upgrade_stores_merkle_hash = multi_store[128:160]  # [I10]
         return (
-            merkle_inner_hash(  # [AppHash]
-                merkle_inner_hash(  # [I9]
+            self.merkle_inner_hash(  # [AppHash]
+                self.merkle_inner_hash(  # [I9]
                     acc_to_gov_stores_merkle_hash,  # [I5]
-                    merkle_inner_hash(  # [I6]
+                    self.merkle_inner_hash(  # [I6]
                         main_and_mint_stores_merkle_hash,  # [I3]
-                        merkle_inner_hash(
-                            merkle_leaf_hash(  # [I4]
+                        self.merkle_inner_hash(
+                            self.merkle_leaf_hash(  # [I4]
                                 # [6]
                                 # oracle prefix (uint8(6) + "oracle" + uint8(32))
                                 bytes.fromhex("066f7261636c6520") +
