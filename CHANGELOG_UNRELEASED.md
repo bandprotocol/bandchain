@@ -18,6 +18,8 @@
 
 ### Scan
 
+- (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
+
 ### Bridges
 
 ### Runtime
