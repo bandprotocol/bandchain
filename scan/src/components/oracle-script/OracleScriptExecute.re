@@ -128,17 +128,19 @@ module ExecutionPart = {
   [@react.component]
   let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Obi.field_key_type_t)) => {
     let (_, dispatch) = React.useContext(AccountContext.context);
-
     let numParams = paramsInput->Belt_Array.size;
-
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
     let (result, setResult) = React.useState(_ => Nothing);
 
     // TODO: Change when input can be empty
     let isUnused = {
       let field = paramsInput->Belt_Array.getExn(0);
-      field.fieldName |> Js.String.startsWith("_");
+      switch (field.fieldType) {
+      | "string" => false
+      | _ => true
+      };
     };
+
     React.useEffect0(() => {
       if (isUnused) {
         setCallDataArr(_ => [|"0"|]);
