@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (impv) [\#2380](https://github.com/bandprotocol/bandchain/pull/2380) Fixed case sensitive issue on Validator Homepage.
+
 ### Bridges
 
 ### Runtime

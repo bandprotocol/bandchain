@@ -328,7 +328,7 @@ let make = () => {
             className=Styles.searchBar
             placeholder="Search Validator"
             onChange={event => {
-              let newVal = ReactEvent.Form.target(event)##value;
+              let newVal = ReactEvent.Form.target(event)##value |> String.lowercase_ascii;
               setSearchTerm(_ => newVal);
             }}
           />
