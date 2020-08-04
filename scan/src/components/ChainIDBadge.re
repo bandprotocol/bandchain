@@ -79,7 +79,8 @@ let parseChainID =
   | "band-guanyu-devnet8"
   | "bandchain" => GuanYuDevnet
   | "band-guanyu-testnet1"
-  | "band-guanyu-testnet2" => GuanYuTestnet
+  | "band-guanyu-testnet2"
+  | "band-guanyu-testnet3" => GuanYuTestnet
   | _ => Unknown;
 
 let getLink =
@@ -87,7 +88,7 @@ let getLink =
   | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
-  | GuanYuTestnet
+  | GuanYuTestnet => "https://guanyu-testnet2.cosmoscan.io/"
   | Unknown => "";
 
 let getName =
@@ -124,7 +125,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|WenchangTestnet, WenchangMainnet, GuanYuDevnet|]
+        {[|WenchangTestnet, WenchangMainnet, GuanYuDevnet, GuanYuTestnet|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
