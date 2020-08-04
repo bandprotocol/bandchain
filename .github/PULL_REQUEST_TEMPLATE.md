@@ -20,7 +20,3 @@ Fixed: #XXXX
 - [ ] The pull request includes any and all appropriate unit/integration tests
 - [ ] You have added a relevant changelog entry to `CHANGELOG_UNRELEASED.md`
 - [ ] You have re-reviewed the files affected by the pull request (e.g. using the `Files changed` tab in the Github PR explorer)
-
-## If this PR doesn't need to be merged into v1.0.6 please remove this option:
-
-- [ ] The pull request has been cherry-picked to `rc/1.0.6`

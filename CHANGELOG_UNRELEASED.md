@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (chore) [\#2381](https://github.com/bandprotocol/bandchain/pull/2381) test: Add more unit tests in keeper.go.
+
 ### Yoda
 
 ### Emitter & Flusher
