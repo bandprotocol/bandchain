@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (chore) [\#2381](https://github.com/bandprotocol/bandchain/pull/2381) test: Add more unit tests in keeper.go.
+
 ### Yoda
 
 ### Emitter & Flusher
@@ -19,6 +21,7 @@
 ### Scan
 
 - (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
+- (impv) [\#2380](https://github.com/bandprotocol/bandchain/pull/2380) Fixed case sensitive issue on Validator Homepage.
 
 ### Bridges
 
