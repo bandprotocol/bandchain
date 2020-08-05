@@ -57,6 +57,7 @@ class BRIDGE(IconScoreBase):
     def update_validator_powers(self, validators_bytes: bytes):
         if self.msg.sender != self.owner:
             revert("NOT_AUTHORIZED")
+
         (n, remaining) = obi.decode_int(validators_bytes, 32)
         total_validator_power = self.total_validator_power.get()
         for i in range(n):
@@ -96,7 +97,7 @@ class BRIDGE(IconScoreBase):
         signers_checking = set()
         for signer in recover_signers:
             if signer in signers_checking:
-                revert(f'REPEATED_PUBKEY_FOUND: {signer}')
+                revert(f'REPEATED_PUBKEY_FOUND: {signer.hex()}')
 
             signers_checking.add(signer)
             sum_voting_power += self.validator_powers[signer]
@@ -181,12 +182,12 @@ class BRIDGE(IconScoreBase):
         self.relay_oracle_state(
             block_height, multi_store, merkle_parts, signatures)
 
-        encode_packet, remaining = obi.decode_bytes(remaining)
+        encoded_packet, remaining = obi.decode_bytes(remaining)
         version, remaining = obi.decode_int(remaining, 64)
         merkle_paths, remaining = obi.decode_bytes(remaining)
         return self.verify_oracle_data(
             block_height,
-            encode_packet,
+            encoded_packet,
             version,
             merkle_paths
         )

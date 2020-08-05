@@ -3,3 +3,5 @@ lib
 share
 __pycache__
 *.key
+.testscore
+.teststatedb

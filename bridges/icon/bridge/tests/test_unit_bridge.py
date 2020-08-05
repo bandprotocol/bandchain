@@ -1,6 +1,7 @@
 from ..bridge import BRIDGE
 from ..utils import *
 from tbears.libs.scoretest.score_test_case import ScoreTestCase
+from iconservice.base.exception import IconScoreException
 
 
 class TestBRIDGE(ScoreTestCase):
@@ -14,7 +15,7 @@ class TestBRIDGE(ScoreTestCase):
                 "0000000300000040a54ffaa84c8f2f798782de8b962a84784e288487a747813a0857243a60e2ba331db530b76775beb0348c52bb8fc1fdac207525e5689caa01c0af8d2f8f371ec5000000000000006400000040724ae29cfeb7497051d09edfd8e822352c4c8361b757647645b78c8cc74ce885f04c26ee07ff6ada08587a4037363838b1dda6e306091ee0690caa8fe0e6fcd2000000000000006400000040f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909caefd2ec5f359903d492bc45026b6b45baafe5ad67974e75d8d3e0bb44b704790000000000000064")}
         )
 
-    def test_set_validators(self):
+    def test_get_validator_power(self):
         self.assertEqual(
             self.score.get_validator_power(
                 bytes.fromhex(
@@ -88,7 +89,45 @@ class TestBRIDGE(ScoreTestCase):
                 "f57f3997a4e81d8f321e9710927e22c2e6d30fb6d8f749a9e4a07afb3b3b7909caefd2ec5f359903d492bc45026b6b45baafe5ad67974e75d8d3e0bb44b70479"),
         ])
 
-    def test_verify_oracle_data(self):
+    # fail because there is no correspond oracle state
+    # NO_ORACLE_ROOT_STATE_DATA
+    def test_verify_oracle_data_fail_1(self):
+        self.assertRaises(
+            IconScoreException,
+            lambda x: self.score.verify_oracle_data(*x),
+            (
+                182,
+                bytes.fromhex("000000046265656200000000000000010000000f0000000342544300000000000003e800000000000000040000000000000004000000046265656200000000000000010000000000000004000000005edddcd3000000005edddcd700000001000000080000000000948e69"),
+                163,
+                bytes.fromhex(
+                    "000000060102000000000000000300000000000000b4000000204d4479f8cf02cba65f95231b06eeaa51e99f75a153c3ed28d9a86b565de593060103000000000000000500000000000000b4000000208861ad25f99a677d4934541a99928cdbe18bbf34ee39d754e93cce090be705020104000000000000000900000000000000b4000000205d162c955ae030390cea63ca7ed8ba72b7a49e0bc73daea23cf6b79e8899c49c0105000000000000001000000000000000b40000002008dd24b96c3c9413ba46a7149232c18ad66db68ac04cf2a770b707b6d29fc8f70106000000000000001800000000000000b40000002032d2e1cc89f3fbd139c35b5d5fe6430799aeefd495c882c419a120b7257e3f5a0107000000000000003e00000000000000b500000020691b2504cd253868bccd43774c8b8dbfa1e2d0d41c07c23f2f1237fcf0d2f0d8")
+            )
+        )
+
+    # fail because of wrong proof
+    # INVALID_ORACLE_DATA_PROOF
+
+    def test_verify_oracle_data_fail_2(self):
+        self.score.set_oracle_state(
+            182,
+            bytes.fromhex(
+                "B59AD73DB9147F6AC7C88A64B1BAD51C90F8C48B4487ADA9276A323808E56E3E")
+        )
+
+        with self.assertRaises(IconScoreException) as e:
+            self.score.verify_oracle_data(
+                182,
+                # client_id should be beeb(62656562) not beee(62656565)
+                bytes.fromhex("000000046265656500000000000000010000000f0000000342544300000000000003e800000000000000040000000000000004000000046265656200000000000000010000000000000004000000005edddcd3000000005edddcd700000001000000080000000000948e69"),
+                163,
+                bytes.fromhex(
+                    "000000060102000000000000000300000000000000b4000000204d4479f8cf02cba65f95231b06eeaa51e99f75a153c3ed28d9a86b565de593060103000000000000000500000000000000b4000000208861ad25f99a677d4934541a99928cdbe18bbf34ee39d754e93cce090be705020104000000000000000900000000000000b4000000205d162c955ae030390cea63ca7ed8ba72b7a49e0bc73daea23cf6b79e8899c49c0105000000000000001000000000000000b40000002008dd24b96c3c9413ba46a7149232c18ad66db68ac04cf2a770b707b6d29fc8f70106000000000000001800000000000000b40000002032d2e1cc89f3fbd139c35b5d5fe6430799aeefd495c882c419a120b7257e3f5a0107000000000000003e00000000000000b500000020691b2504cd253868bccd43774c8b8dbfa1e2d0d41c07c23f2f1237fcf0d2f0d8")
+            )
+
+        self.assertEqual(e.exception.code, 32)
+        self.assertEqual(e.exception.message, "INVALID_ORACLE_DATA_PROOF")
+
+    def test_verify_oracle_data_success(self):
         self.score.set_oracle_state(
             182,
             bytes.fromhex(

@@ -93,7 +93,7 @@ class TestTest(IconIntegrateTestBase):
             signed_transaction, self.icon_service)
         self.assertEqual(False, tx_result['status'])
 
-    def test_relay_oracle_state_1(self):
+    def test_relay_oracle_state_success_1(self):
         params = {}
         params["block_height"] = 191
         call = CallBuilder().from_(self._test1.get_address()).to(
@@ -122,7 +122,7 @@ class TestTest(IconIntegrateTestBase):
         self.assertEqual(
             "1912057fff0b3e85abf1a319f75d37b21b430f3da7db9e486a5041de47c686d3", response.hex())
 
-    def test_relay_oracle_state_2(self):
+    def test_relay_oracle_state_success_2(self):
         params = {}
         params["block_height"] = 446
         call = CallBuilder().from_(self._test1.get_address()).to(
@@ -150,6 +150,64 @@ class TestTest(IconIntegrateTestBase):
         response = self.process_call(call, self.icon_service)
         self.assertEqual(
             "cbadb1694a5152c2b03f4960e1229745b39d7c41b32dc54e0c207799ae471981", response.hex())
+
+    # fail because sum of validator powers is less than 2/3
+    def test_relay_oracle_state_fail_1(self):
+        params = {}
+        params["block_height"] = 191
+        call = CallBuilder().from_(self._test1.get_address()).to(
+            self._score_address).method("get_oracle_state").params(params).build()
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(None, response)
+
+        params = {}
+        params["block_height"] = 191
+        params["multi_store_bytes"] = "685430546d23a44e6b8034eaafbc2f4cd7fef54b54d5b66528cb4e5225bd74fb4f8d0bb0cd3eb9dc70b4dbbea5f0cbd5b523195f7bae02bb401bb00a93aba08e1912057fff0b3e85abf1a319f75d37b21b430f3da7db9e486a5041de47c686d3b1f2fd852e790e735ca2d3014f96a2a53c60393e9c6bbf941b9a6dd6a05cf6f991cc906286235b676ad402fc04ed768eb2bfeca664e8d595c286571da1433c60"
+        params["merkle_part_bytes"] = "32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869ed9f175396c0e2d0e77f69856abf5d8e69283cb915eb8886262feda1d519b30054f4d548668a3986db253689234b9cac96303a128b7081b16e53b79ab9e65b887004209a161040ab1778e2f2c00ee482f205b28efba439fcb04ea283f619478d96e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01dd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137"
+        params["signatures_bytes"] = "00000002000000209279257914bfee6faec46df086e9a673a4c1576fb299094d45f77e12fa3728e70000002004dbf23f5ebb07ba8fd7ca06843dfe363b5e86596930e1889d9bd5bd3e98fc531c000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510979fbd9801320962616e64636861696e00000020d775fd0e1580499ef16a4ab1998dcb4cbd47cf6f342cdc51a9552d1434552ed8000000205a1a2075ae97a6bbd07a5a40efe287eceab37c7a7caae82e6c997c51c62334701b000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510ab94a59201320962616e64636861696e"
+        transaction = CallTransactionBuilder().from_(self._test1.get_address()).to(
+            self._score_address).step_limit(100_000_000_000).nid(
+            3).nonce(100).method("relay_oracle_state").params(params).build()
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(
+            signed_transaction, self.icon_service)
+        self.assertEqual(False, tx_result['status'])
+
+        params = {}
+        params["block_height"] = 191
+        call = CallBuilder().from_(self._test1.get_address()).to(
+            self._score_address).method("get_oracle_state").params(params).build()
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(None, response)
+
+    # fail because repeated pubkey
+    def test_relay_oracle_state_fail_2(self):
+        params = {}
+        params["block_height"] = 191
+        call = CallBuilder().from_(self._test1.get_address()).to(
+            self._score_address).method("get_oracle_state").params(params).build()
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(None, response)
+
+        params = {}
+        params["block_height"] = 191
+        params["multi_store_bytes"] = "685430546d23a44e6b8034eaafbc2f4cd7fef54b54d5b66528cb4e5225bd74fb4f8d0bb0cd3eb9dc70b4dbbea5f0cbd5b523195f7bae02bb401bb00a93aba08e1912057fff0b3e85abf1a319f75d37b21b430f3da7db9e486a5041de47c686d3b1f2fd852e790e735ca2d3014f96a2a53c60393e9c6bbf941b9a6dd6a05cf6f991cc906286235b676ad402fc04ed768eb2bfeca664e8d595c286571da1433c60"
+        params["merkle_part_bytes"] = "32fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869ed9f175396c0e2d0e77f69856abf5d8e69283cb915eb8886262feda1d519b30054f4d548668a3986db253689234b9cac96303a128b7081b16e53b79ab9e65b887004209a161040ab1778e2f2c00ee482f205b28efba439fcb04ea283f619478d96e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01dd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137"
+        params["signatures_bytes"] = "00000004000000209279257914bfee6faec46df086e9a673a4c1576fb299094d45f77e12fa3728e70000002004dbf23f5ebb07ba8fd7ca06843dfe363b5e86596930e1889d9bd5bd3e98fc531c000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510979fbd9801320962616e64636861696e00000020826bb17b714ebcd8199ee2a01334102f19248087cfdeee42ebd406b3991c389500000020621281eedf97f3a9ec121224cef9f8c07872d2c81cce44dd846bb3678dd505231b000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510dd89e98a01320962616e64636861696e00000020d775fd0e1580499ef16a4ab1998dcb4cbd47cf6f342cdc51a9552d1434552ed8000000205a1a2075ae97a6bbd07a5a40efe287eceab37c7a7caae82e6c997c51c62334701b000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510ab94a59201320962616e64636861696e000000209279257914bfee6faec46df086e9a673a4c1576fb299094d45f77e12fa3728e70000002004dbf23f5ebb07ba8fd7ca06843dfe363b5e86596930e1889d9bd5bd3e98fc531c000000106e080211bf0000000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510979fbd9801320962616e64636861696e"
+        transaction = CallTransactionBuilder().from_(self._test1.get_address()).to(
+            self._score_address).step_limit(100_000_000_000).nid(
+            3).nonce(100).method("relay_oracle_state").params(params).build()
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(
+            signed_transaction, self.icon_service)
+        self.assertEqual(False, tx_result['status'])
+
+        params = {}
+        params["block_height"] = 191
+        call = CallBuilder().from_(self._test1.get_address()).to(
+            self._score_address).method("get_oracle_state").params(params).build()
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(None, response)
 
     def test_relay_and_verify(self):
         params = {}
