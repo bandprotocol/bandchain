@@ -8,8 +8,8 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       selector("+ div", [marginTop(`px(10))]),
     ]);
-  let cardItem = alignItems_ =>
-    style([display(`flex), alignItems(alignItems_), padding(`px(5))]);
+  let cardItem = (alignItems_, isOneColumn) =>
+    style([display(isOneColumn ? `block : `flex), alignItems(alignItems_), padding(`px(5))]);
   let cardItemHeading =
     style([
       display(`flex),
@@ -20,7 +20,12 @@ module Styles = {
     ]);
   let logo = style([width(`px(20)), position(`absolute), top(`px(5)), right(`px(8))]);
   let cardItemHeadingLg = style([padding2(~v=`px(10), ~h=`zero)]);
-  let infoContainer = style([width(`percent(100.))]);
+  let infoContainer = isOneColumn =>
+    style([
+      width(`percent(100.)),
+      marginTop(isOneColumn ? `px(10) : `zero),
+      overflow(`hidden),
+    ]);
 };
 
 [@react.component]
@@ -37,8 +42,15 @@ let make = (~values, ~idx, ~status=?) => {
            | InfoMobileCard.Messages(_) => `baseline
            | _ => `center
            };
-
-         <div className={Styles.cardItem(alignItem)} key={idx ++ (index |> string_of_int)}>
+         let isOneColumn =
+           switch (value) {
+           | InfoMobileCard.KVTableReport(_)
+           | KVTableRequest(_) => true
+           | _ => false
+           };
+         <div
+           className={Styles.cardItem(alignItem, isOneColumn)}
+           key={idx ++ (index |> string_of_int)}>
            <div className=Styles.cardItemHeading>
              {heading
               ->Js.String2.split("\n")
@@ -68,7 +80,9 @@ let make = (~values, ~idx, ~status=?) => {
                 })
               ->React.array}
            </div>
-           <div className=Styles.infoContainer> <InfoMobileCard info=value /> </div>
+           <div className={Styles.infoContainer(isOneColumn)}>
+             <InfoMobileCard info=value />
+           </div>
          </div>;
        })
      ->Belt.List.toArray

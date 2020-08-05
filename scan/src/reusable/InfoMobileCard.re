@@ -8,7 +8,13 @@ type t =
   | Height(ID.Block.t)
   | Coin(coin_amount_t)
   | Count(int)
+  | DataSources(ID.DataSource.t, string)
+  | OracleScript(ID.OracleScript.t, string)
+  | RequestID(ID.Request.t)
   | Float(float, option(int))
+  | KVTableReport(list(string), list(TxSub.RawDataReport.t))
+  | KVTableRequest(option(array(Obi.field_key_value_t)))
+  | CopyButton(JsBuffer.t)
   | Percentage(float, option(int))
   | Timestamp(MomentRe.Moment.t)
   | TxHash(Hash.t, int)
@@ -46,6 +52,8 @@ let make = (~info) => {
     </div>
   | Height(height) =>
     <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
+  | Coin({value, hasDenom}) =>
+    <AmountRender coins=value pos={hasDenom ? AmountRender.TxIndex : Fee} />
   | Count(value) =>
     <Text
       value={value |> Format.iPretty}
@@ -54,6 +62,19 @@ let make = (~info) => {
       spacing={Text.Em(0.02)}
       code=true
     />
+  | DataSources(id, name) =>
+    <div className=Styles.vFlex>
+      <TypeID.DataSource id />
+      <HSpacing size=Spacing.sm />
+      <Text value=name />
+    </div>
+  | OracleScript(id, name) =>
+    <div className=Styles.vFlex>
+      <TypeID.OracleScript id />
+      <HSpacing size=Spacing.sm />
+      <Text value=name />
+    </div>
+  | RequestID(id) => <TypeID.Request id />
   | Float(value, digits) =>
     <Text
       value={value |> Format.fPretty(~digits?)}
@@ -61,6 +82,37 @@ let make = (~info) => {
       spacing={Text.Em(0.02)}
       code=true
     />
+  | KVTableReport(heading, rawReports) =>
+    <KVTable
+      tableWidth=480
+      headers=heading
+      rows={
+        rawReports
+        |> Belt_List.map(_, rawReport =>
+             [
+               KVTable.Value(rawReport.externalDataID |> string_of_int),
+               KVTable.Value(rawReport.exitCode |> string_of_int),
+               KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+             ]
+           )
+      }
+    />
+  | KVTableRequest(calldataKVsOpt) =>
+    switch (calldataKVsOpt) {
+    | Some(calldataKVs) =>
+      <KVTable
+        tableWidth=480
+        rows={
+          calldataKVs
+          ->Belt_Array.map(({fieldName, fieldValue}) =>
+              [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+            )
+          ->Belt_List.fromArray
+        }
+      />
+    | None => React.null
+    }
+  | CopyButton(calldata) => <CopyButton data=calldata title="Copy as bytes" />
   | Percentage(value, digits) =>
     <Text
       value={value |> Format.fPercent(~digits?)}
@@ -68,17 +120,15 @@ let make = (~info) => {
       spacing={Text.Em(0.02)}
       code=true
     />
-  | Coin({value, hasDenom}) =>
-    <AmountRender coins=value pos={hasDenom ? AmountRender.TxIndex : Fee} />
   | Text(text) =>
     <Text
       value=text
-      size=Text.Lg
-      weight=Text.Semibold
-      code=true
+      size=Text.Md
       spacing={Text.Em(0.02)}
       nowrap=true
       ellipsis=true
+      code=true
+      block=true
     />
   | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular code=true />
   | Validator(address, moniker, identity) =>

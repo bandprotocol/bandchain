@@ -237,7 +237,9 @@ let make =
                        mainElem,
                        sumSizes <= 0.
                          ? tableWidth
-                         : (tableWidth |> float_of_int) *. size /. sumSizes |> int_of_float,
+                         : Media.isMobile()
+                             ? 70
+                             : (tableWidth |> float_of_int) *. size /. sumSizes |> int_of_float,
                        isRight,
                      )}
                   </div>
