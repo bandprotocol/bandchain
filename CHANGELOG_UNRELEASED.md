@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (feat) [\#2389](https://github.com/bandprotocol/bandchain/pull/2389) implement hasura command in flusher
 - (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
 - (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
 
