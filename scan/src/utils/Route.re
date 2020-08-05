@@ -73,7 +73,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
   | (["requests"], _) => RequestHomePage
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
-  | (["account", address], x) =>
+  | (["account", address], hash) =>
     let urlHash = (
       fun
       | "delegations" => AccountDelegations
@@ -82,7 +82,7 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       | _ => AccountTransactions
     );
     switch (address |> Address.fromBech32Opt) {
-    | Some(address) => AccountIndexPage(address, urlHash(x))
+    | Some(address) => AccountIndexPage(address, urlHash(hash))
     | None => NotFound
     };
   | (["validator", address], hash) =>
