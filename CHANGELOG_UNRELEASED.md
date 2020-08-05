@@ -30,6 +30,8 @@
 
 ### Owasm
 
+- (impv) [\#2392](https://github.com/bandprotocol/bandchain/pull/2392) Improve ext code structure and fix partial cmp bug
+
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
