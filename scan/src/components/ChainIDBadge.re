@@ -6,15 +6,14 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.blue1),
-      padding2(~v=`pxFloat(5.), ~h=`px(8)),
+      padding2(~v=`pxFloat(5.), ~h=`px(10)),
       justifyContent(`center),
-      minWidth(`px(120)),
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
       position(`relative),
       cursor(`pointer),
-      Media.mobile([minWidth(`px(160)), zIndex(4)]),
+      Media.mobile([padding2(~v=`pxFloat(5.), ~h=`px(8))]),
     ]);
 
   let versionLoading =
@@ -24,12 +23,10 @@ module Styles = {
       backgroundColor(Colors.blue1),
       overflow(`hidden),
       height(`px(16)),
-      width(`px(120)),
       justifyContent(`center),
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
-      Media.mobile([height(`px(25)), width(`px(160))]),
     ]);
 
   let downIcon = show =>
@@ -102,7 +99,6 @@ let getName =
 [@react.component]
 let make = () =>
   {
-    let isMobile = Media.isMobile();
     let (show, setShow) = React.useState(_ => false);
     let trackingSub = TrackingSub.use();
     let%Sub tracking = trackingSub;
@@ -116,7 +112,7 @@ let make = () =>
       }}>
       <Text
         value={currentChainID->getName}
-        size={isMobile ? Text.Md : Text.Sm}
+        size=Text.Sm
         color=Colors.blue6
         nowrap=true
         weight=Text.Semibold
@@ -137,7 +133,7 @@ let make = () =>
                rel="noopener">
                <Text
                  value=name
-                 size={isMobile ? Text.Md : Text.Sm}
+                 size=Text.Sm
                  color=Colors.blue6
                  nowrap=true
                  weight=Text.Semibold
@@ -156,8 +152,8 @@ let make = () =>
        <div className=Styles.versionLoading>
          {Media.isMobile()
             ? <LoadingCensorBar
-                width=160
-                height=25
+                width=110
+                height=20
                 colorBase=Colors.blue1
                 colorLighter=Colors.white
               />

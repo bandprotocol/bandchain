@@ -59,12 +59,12 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), ~spread=`zero, rgba(0, 0, 0, 0.08)),
       ),
-      padding4(~top=`px(16), ~left=`px(12), ~right=`zero, ~bottom=`px(16)),
+      padding2(~v=`px(15), ~h=`px(10)),
     ]);
 
   let monikerContainer =
     style([display(`flex), flexDirection(`row), alignItems(`center), minHeight(`px(60))]);
-  let operatorAddressMobile = style([width(`px(330))]);
+  let addressMobileContainer = style([width(`percent(100.))]);
   let votingPowerMobile = style([display(`flex), flexDirection(`column), paddingTop(`px(3))]);
   let headerMobile = style([paddingTop(`px(10))]);
 
@@ -81,7 +81,7 @@ module Styles = {
 
 type value_row_t =
   | VAddress(Address.t)
-  | VValidatorAddress(Address.t)
+  | ValidatorAddress(Address.t)
   | VText(string)
   | VDetail(string)
   | VExtLink(string)
@@ -96,10 +96,13 @@ let kvRowMobile = (k, v: value_row_t) => {
     </div>
     <div className={Styles.fullWidth(`row)}>
       {switch (v) {
-       | VAddress(address) => <AddressRender address />
-       | VValidatorAddress(address) =>
-         <div className=Styles.operatorAddressMobile>
-           <AddressRender address accountType=`validator />
+       | VAddress(address) =>
+         <div className=Styles.addressMobileContainer>
+           <AddressRender address wordBreak=true />
+         </div>
+       | ValidatorAddress(address) =>
+         <div className=Styles.addressMobileContainer>
+           <AddressRender address accountType=`validator wordBreak=true />
          </div>
        | VText(value) => <Text value nowrap=true />
        | VDetail(value) => <Text value />
@@ -127,7 +130,7 @@ let kvRow = (k, description, v: value_row_t) => {
         <div className=Styles.fillLeft />
         {switch (v) {
          | VAddress(address) => <AddressRender address />
-         | VValidatorAddress(address) =>
+         | ValidatorAddress(address) =>
            <AddressRender address accountType=`validator clickable=false />
          | VText(value) => <Text value nowrap=true />
          | VDetail(value) => <Text value align=Text.Right />
@@ -309,7 +312,7 @@ module RenderDesktop = {
            },
            {
              switch (allSub) {
-             | Data(_) => VValidatorAddress(address)
+             | Data(_) => ValidatorAddress(address)
              | _ => Loading(360, 16)
              };
            },
@@ -603,7 +606,7 @@ module RenderMobile = {
            "OPERATOR ADDRESS",
            {
              switch (allSub) {
-             | Data(_) => VValidatorAddress(address)
+             | Data(_) => ValidatorAddress(address)
              | _ => Loading(360, 16)
              };
            },
