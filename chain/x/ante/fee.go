@@ -6,6 +6,7 @@ import (
 	types "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 )
 
 var (
@@ -44,13 +45,31 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 
 	isValidReportTx := true
 	for _, msg := range tx.GetMsgs() {
-		reportMsg, ok := msg.(oracle.MsgReportData)
+		report, ok := msg.(oracle.MsgReportData)
 		if !ok {
 			isValidReportTx = false
 			break
 		}
-		if !mfd.oracleKeeper.GetValidatorStatus(ctx, reportMsg.Validator).IsActive {
+
+		if !mfd.oracleKeeper.GetValidatorStatus(ctx, report.Validator).IsActive {
 			isValidReportTx = false
+			break
+		}
+
+		request := mfd.oracleKeeper.MustGetRequest(ctx, report.RequestID)
+		if !keeper.ContainsVal(request.RequestedValidators, report.Validator) {
+			isValidReportTx = false
+			break
+		}
+
+		reports := mfd.oracleKeeper.GetReports(ctx, report.RequestID)
+		vals := make([]sdk.ValAddress, len(reports))
+		for idx, rp := range reports {
+			vals[idx] = rp.Validator
+		}
+		if keeper.ContainsVal(vals, report.Validator) {
+			isValidReportTx = false
+			break
 		}
 	}
 

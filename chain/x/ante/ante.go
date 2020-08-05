@@ -15,10 +15,10 @@ import (
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 )
 
-func NewAnteHandler(ak keeper.AccountKeeper, supplyKeeper types.SupplyKeeper, oracleKeeper oracle.Keeper, sigGasConsumer auth.SignatureVerificationGasConsumer) sdk.AnteHandler {
+func NewAnteHandler(ak keeper.AccountKeeper, supplyKeeper types.SupplyKeeper, ok oracle.Keeper, sigGasConsumer auth.SignatureVerificationGasConsumer) sdk.AnteHandler {
 	return sdk.ChainAnteDecorators(
 		ante.NewSetUpContextDecorator(), // outermost AnteDecorator. SetUpContext must be called first
-		NewMempoolFeeDecorator(oracleKeeper),
+		NewMempoolFeeDecorator(ok),
 		ante.NewValidateBasicDecorator(),
 		ante.NewValidateMemoDecorator(ak),
 		ante.NewConsumeGasForTxSizeDecorator(ak),
