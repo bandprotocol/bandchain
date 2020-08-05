@@ -265,7 +265,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
           position=AddressRender.Title
           copy=true
           clickable=false
-          ellipsis=false
+          wordBreak=true
         />
         {isMobile
            ? React.null

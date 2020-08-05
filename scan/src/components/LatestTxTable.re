@@ -182,7 +182,7 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", Loading(200)),
+        ("TX HASH", Loading(Media.isSmallMobile() ? 170 : 200),
         ("BLOCK", Loading(70)),
         (
           "ACTIONS",

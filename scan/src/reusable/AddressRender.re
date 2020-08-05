@@ -62,7 +62,7 @@ let make =
       ~accountType=`account,
       ~copy=false,
       ~clickable=true,
-      ~ellipsis=true,
+      ~wordBreak=false,
     ) => {
   let isValidator = accountType == `validator;
   let prefix = isValidator ? "bandvaloper" : "band";
@@ -89,7 +89,7 @@ let make =
           Styles.base,
           Text.Styles.code,
           Styles.font(position),
-          !ellipsis ? Styles.wordBreak : "",
+          wordBreak ? Styles.wordBreak : "",
         ])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}
