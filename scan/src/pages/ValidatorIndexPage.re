@@ -81,7 +81,7 @@ module Styles = {
 
 type value_row_t =
   | VAddress(Address.t)
-  | VValidatorAddress(Address.t)
+  | ValidatorAddress(Address.t)
   | VText(string)
   | VDetail(string)
   | VExtLink(string)
@@ -98,11 +98,11 @@ let kvRowMobile = (k, v: value_row_t) => {
       {switch (v) {
        | VAddress(address) =>
          <div className=Styles.addressMobileContainer>
-           <AddressRender address ellipsis=false />
+           <AddressRender address wordBreak=true />
          </div>
-       | VValidatorAddress(address) =>
+       | ValidatorAddress(address) =>
          <div className=Styles.addressMobileContainer>
-           <AddressRender address accountType=`validator ellipsis=false />
+           <AddressRender address accountType=`validator wordBreak=true />
          </div>
        | VText(value) => <Text value nowrap=true />
        | VDetail(value) => <Text value />
@@ -130,7 +130,7 @@ let kvRow = (k, description, v: value_row_t) => {
         <div className=Styles.fillLeft />
         {switch (v) {
          | VAddress(address) => <AddressRender address />
-         | VValidatorAddress(address) =>
+         | ValidatorAddress(address) =>
            <AddressRender address accountType=`validator clickable=false />
          | VText(value) => <Text value nowrap=true />
          | VDetail(value) => <Text value align=Text.Right />
@@ -312,7 +312,7 @@ module RenderDesktop = {
            },
            {
              switch (allSub) {
-             | Data(_) => VValidatorAddress(address)
+             | Data(_) => ValidatorAddress(address)
              | _ => Loading(360, 16)
              };
            },
@@ -606,7 +606,7 @@ module RenderMobile = {
            "OPERATOR ADDRESS",
            {
              switch (allSub) {
-             | Data(_) => VValidatorAddress(address)
+             | Data(_) => ValidatorAddress(address)
              | _ => Loading(360, 16)
              };
            },
