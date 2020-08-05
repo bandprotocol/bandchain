@@ -152,7 +152,7 @@ let make = () =>
        <div className=Styles.versionLoading>
          {Media.isMobile()
             ? <LoadingCensorBar
-                width=130
+                width=110
                 height=20
                 colorBase=Colors.blue1
                 colorLighter=Colors.white
