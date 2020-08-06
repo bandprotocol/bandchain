@@ -9,14 +9,17 @@ class BRIDGE(IconScoreBase):
 
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
-        # address => voting_power
-        self.validator_powers = DictDB("validator_powers", db, value_type=int)
-        # total validator power
+        # a single integer
         self.total_validator_power = VarDB(
             "total_validator_power", db, value_type=int)
-        # oracle state
+
+        # pubkey:bytes => voting_power:int
+        self.validator_powers = DictDB("validator_powers", db, value_type=int)
+
+        # block_number:int => oracle_state_hash:bytes
         self.oracle_state = DictDB("oracle_state", db, value_type=bytes)
-        # requests cache
+
+        # encoded_request:bytes => response:dict
         self.requests_cache = DictDB("requests_cache", db, value_type=dict)
 
     # For testing
