@@ -2,24 +2,13 @@ package ante
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	types "github.com/cosmos/cosmos-sdk/x/auth/types"
+	"github.com/cosmos/cosmos-sdk/x/auth/ante"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-)
 
-var (
-	_ FeeTx = (*types.StdTx)(nil) // assert StdTx implements FeeTx
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
-
-// FeeTx defines the interface to be implemented by Tx to use the FeeDecorators
-type FeeTx interface {
-	sdk.Tx
-	GetGas() uint64
-	GetFee() sdk.Coins
-	FeePayer() sdk.AccAddress
-}
 
 // MempoolFeeDecorator will check if the transaction's fee is at least as large
 // as the local validator's minimum gasFee (defined in validator config).
@@ -29,19 +18,18 @@ type FeeTx interface {
 // CONTRACT: Tx must implement FeeTx to use MempoolFeeDecorator
 type MempoolFeeDecorator struct {
 	oracleKeeper oracle.Keeper
+	mempool      ante.MempoolFeeDecorator
 }
 
 func NewMempoolFeeDecorator(ok oracle.Keeper) MempoolFeeDecorator {
-	return MempoolFeeDecorator{oracleKeeper: ok}
+	return MempoolFeeDecorator{oracleKeeper: ok, mempool: ante.NewMempoolFeeDecorator()}
 }
 
 func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	feeTx, ok := tx.(FeeTx)
+	_, ok := tx.(ante.FeeTx)
 	if !ok {
 		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
 	}
-	feeCoins := feeTx.GetFee()
-	gas := feeTx.GetGas()
 
 	isValidReportTx := true
 	for _, msg := range tx.GetMsgs() {
@@ -72,27 +60,11 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 			break
 		}
 	}
-
 	// Ensure that the provided fees meet a minimum threshold for the validator,
 	// if this is a CheckTx. This is only for local mempool purposes, and thus
 	// is only ran on check tx.
 	if ctx.IsCheckTx() && !simulate && !isValidReportTx {
-		minGasPrices := ctx.MinGasPrices()
-		if !minGasPrices.IsZero() {
-			requiredFees := make(sdk.Coins, len(minGasPrices))
-
-			// Determine the required fees by multiplying each required minimum gas
-			// price by the gas limit, where fee = ceil(minGasPrice * gasLimit).
-			glDec := sdk.NewDec(int64(gas))
-			for i, gp := range minGasPrices {
-				fee := gp.Amount.Mul(glDec)
-				requiredFees[i] = sdk.NewCoin(gp.Denom, fee.Ceil().RoundInt())
-			}
-
-			if !feeCoins.IsAnyGTE(requiredFees) {
-				return ctx, sdkerrors.Wrapf(sdkerrors.ErrInsufficientFee, "insufficient fees; got: %s required: %s", feeCoins, requiredFees)
-			}
-		}
+		return mfd.mempool.AnteHandle(ctx, tx, simulate, next)
 	}
 
 	return next(ctx, tx, simulate)
