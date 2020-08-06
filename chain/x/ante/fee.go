@@ -6,9 +6,6 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 // MempoolFeeDecorator will check if the transaction's fee is at least as large
@@ -26,59 +23,46 @@ func NewMempoolFeeDecorator(ok oracle.Keeper) MempoolFeeDecorator {
 	return MempoolFeeDecorator{oracleKeeper: ok, mempool: ante.NewMempoolFeeDecorator()}
 }
 
-func (mfd MempoolFeeDecorator) checkValidatorIsRequestedValidator(ctx sdk.Context, report types.MsgReportData) bool {
-	request := mfd.oracleKeeper.MustGetRequest(ctx, report.RequestID)
-	return keeper.ContainsVal(request.RequestedValidators, report.Validator)
-}
-
-func (mfd MempoolFeeDecorator) checkIsValidatorExistInReport(ctx sdk.Context, report types.MsgReportData) bool {
-	reports := mfd.oracleKeeper.GetReports(ctx, report.RequestID)
-	vals := make([]sdk.ValAddress, len(reports))
-	for idx, rp := range reports {
-		vals[idx] = rp.Validator
+func (mfd MempoolFeeDecorator) checkValidReportMsg(ctx sdk.Context, msg sdk.Msg) bool {
+	rep, ok := msg.(oracle.MsgReportData)
+	if !ok {
+		return false
 	}
-	return keeper.ContainsVal(vals, report.Validator)
+	if !mfd.oracleKeeper.IsReporter(ctx, rep.Validator, rep.Reporter) {
+		return false
+	}
+	if rep.RequestID <= mfd.oracleKeeper.GetRequestLastExpired(ctx) {
+		return false
+	}
+
+	req, err := mfd.oracleKeeper.GetRequest(ctx, rep.RequestID)
+	if err != nil {
+		return false
+	}
+	if !keeper.ContainsVal(req.RequestedValidators, rep.Validator) {
+		return false
+	}
+	if len(rep.RawReports) != len(req.RawRequests) {
+		return false
+	}
+	for _, report := range rep.RawReports {
+		if !keeper.ContainsEID(req.RawRequests, report.ExternalID) {
+			return false
+		}
+	}
+	return true
 }
 
 func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
-	_, ok := tx.(ante.FeeTx)
-	if !ok {
-		return ctx, sdkerrors.Wrap(sdkerrors.ErrTxDecode, "Tx must be a FeeTx")
-	}
-
 	isValidReportTx := true
 	for _, msg := range tx.GetMsgs() {
-		report, ok := msg.(oracle.MsgReportData)
-		if !ok {
-			isValidReportTx = false
-			break
-		}
-		if !mfd.oracleKeeper.IsReporter(ctx, report.Validator, report.Reporter) {
-			isValidReportTx = false
-			break
-		}
-
-		if !mfd.oracleKeeper.GetValidatorStatus(ctx, report.Validator).IsActive {
-			isValidReportTx = false
-			break
-		}
-
-		if !mfd.checkValidatorIsRequestedValidator(ctx, report) {
-			isValidReportTx = false
-			break
-		}
-
-		if mfd.checkIsValidatorExistInReport(ctx, report) {
-			isValidReportTx = false
+		if isValidReportTx = mfd.checkValidReportMsg(ctx, msg); !isValidReportTx {
 			break
 		}
 	}
-	// Ensure that the provided fees meet a minimum threshold for the validator,
-	// if this is a CheckTx. This is only for local mempool purposes, and thus
-	// is only ran on check tx.
-	if !isValidReportTx {
-		return mfd.mempool.AnteHandle(ctx, tx, simulate, next)
+	newCtx = ctx
+	if ctx.IsCheckTx() && !simulate && isValidReportTx {
+		newCtx = newCtx.WithMinGasPrices(sdk.DecCoins{})
 	}
-
-	return next(ctx, tx, simulate)
+	return mfd.mempool.AnteHandle(newCtx, tx, simulate, next)
 }
