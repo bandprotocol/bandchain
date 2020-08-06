@@ -31,7 +31,7 @@ func (mfd MempoolFeeDecorator) checkValidatorIsRequestedValidator(ctx sdk.Contex
 	return keeper.ContainsVal(request.RequestedValidators, report.Validator)
 }
 
-func (mfd MempoolFeeDecorator) checkIsValidatorReport(ctx sdk.Context, report types.MsgReportData) bool {
+func (mfd MempoolFeeDecorator) checkIsValidatorExistInReport(ctx sdk.Context, report types.MsgReportData) bool {
 	reports := mfd.oracleKeeper.GetReports(ctx, report.RequestID)
 	vals := make([]sdk.ValAddress, len(reports))
 	for idx, rp := range reports {
@@ -68,7 +68,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 			break
 		}
 
-		if mfd.checkIsValidatorReport(ctx, report) {
+		if mfd.checkIsValidatorExistInReport(ctx, report) {
 			isValidReportTx = false
 			break
 		}
