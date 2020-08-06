@@ -1,5 +1,6 @@
 from iconservice import *
-from . import secp256k1, sha256, obi
+from . import secp256k1, sha256
+from ..pyobi import *
 
 
 def recover_signer(
@@ -15,13 +16,13 @@ def recover_signer(
 
 def recover_signers(signatures: bytes, block_hash: bytes) -> list:
     pubkeys = []
-    len_sigs, remaining = obi.decode_int(signatures, 32)
+    len_sigs, remaining = PyObiInteger("u32").decode(signatures)
     for i in range(len_sigs):
-        r, remaining = obi.decode_bytes(remaining)
-        s, remaining = obi.decode_bytes(remaining)
-        v, remaining = obi.decode_int(remaining, 8)
-        signed_data_prefix, remaining = obi.decode_bytes(remaining)
-        signed_data_suffix, remaining = obi.decode_bytes(remaining)
+        r, remaining = PyObiBytes().decode(remaining)
+        s, remaining = PyObiBytes().decode(remaining)
+        v, remaining = PyObiInteger("u8").decode(remaining)
+        signed_data_prefix, remaining = PyObiBytes().decode(remaining)
+        signed_data_suffix, remaining = PyObiBytes().decode(remaining)
         pubkeys.append(
             recover_signer(
                 r,

@@ -13,7 +13,7 @@ from tbears.libs.icon_integrate_test import IconIntegrateTestBase, SCORE_INSTALL
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-class TestTest(IconIntegrateTestBase):
+class TestIntegrationBRIDGE(IconIntegrateTestBase):
     TEST_HTTP_ENDPOINT_URI_V3 = "http://127.0.0.1:9000/api/v3"
     SCORE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, '..'))
 
@@ -209,7 +209,7 @@ class TestTest(IconIntegrateTestBase):
         response = self.process_call(call, self.icon_service)
         self.assertEqual(None, response)
 
-    def test_relay_and_verify(self):
+    def test_relay_and_verify_success_1(self):
         params = {}
         params["block_height"] = 446
         call = CallBuilder().from_(self._test1.get_address()).to(
@@ -234,3 +234,29 @@ class TestTest(IconIntegrateTestBase):
         response = self.process_call(call, self.icon_service)
         self.assertEqual(
             "cbadb1694a5152c2b03f4960e1229745b39d7c41b32dc54e0c207799ae471981", response.hex())
+
+    def test_relay_and_verify_success_2(self):
+        params = {}
+        params["block_height"] = 1412
+        call = CallBuilder().from_(self._test1.get_address()).to(
+            self._score_address).method("get_oracle_state").params(params).build()
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(None, response)
+
+        # params = {}
+        # params["proof"] = bytes.fromhex("0000000000000584000000a0811032f41a5918cfc860ebcea1b7678564c622b4e3f04e28c9d8b195f04661e11e06ea167a89de60abf52c60350793c3823a0a4b9681f59daeb8f20942b8bcf3ff2b888760ffa9efa09e35763d8a5ba3ec794d00bcd1f9a901fa007f1f16e2ebb1f2fd852e790e735ca2d3014f96a2a53c60393e9c6bbf941b9a6dd6a05cf6f9c6507de937080730702a2c39ad8aa4666fd24e12a9496e4546a0bd4031e6d4ee000000c032fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e2a448c96300f1cb90567d815c6b2f6ec0bba29615fd88deab57299c76f0b30fa3ebf2264c2c941df347eb97f55b4adcd4784f4f0a8e66d9f2e3fda413115e085004209a161040ab1778e2f2c00ee482f205b28efba439fcb04ea283f619478d96e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d0efe3e12f46363c7779140d4ce659925db52f19053e114d7cc4efd666b37f79f000001e40000000300000020628716ac49023de84adddddcbef8007c2e41e5b58306ce87a0afad5447bc6210000000202f520db2bff3003d5612e03b7aaa99472164c73922a977af95e1ffc2a67c53b41b000000106e080211840500000000000022480a200000003f12240a2066424e8f0417945a71067a55b7121282a90524e3c0709d8f8addb6adc8fd46d110012a0c08e6e9c6f70510979fbd9801320962616e64636861696e00000020ff2ba7e2bd2175827997c706451b5da768b6873d7ba4129fc6ee54e62ba9c593000000203c7f7e5b08d1733d430658431545c9a2f57e4641b3b4cd52e567f27be9485e601c000000106e080211840500000000000022480a200000003f12240a20b8aac9c5f107c71eacda8ccddd2506f30ecfa75685e12e403ddcc6411f6822ff10012a0c088d92c7f70510a3f0e5be02320962616e64636861696e000000205a2f66b4d62d905b98277cd2807a324f0651340e80ae0249e500beb5ddcdce11000000203c1ed3d960b19e0ca7d321215874c6e91407ae3d2748f2e3b617fad833c30b6d1b000000106e080211840500000000000022480a200000003f12240a20b8aac9c5f107c71eacda8ccddd2506f30ecfa75685e12e403ddcc6411f6822ff10012a0c088d92c7f70510a394a6bf02320962616e64636861696e000000630000000000000000000000010000000f0000000342544300000000000003e8000000000000000400000000000000040000000000000000000000020000000000000004000000005ef1c903000000005ef1c907000000010000000800000000009269b300000000000005810000014800000006010100000000000000020000000000000581000000208d09a67a6aebb1498f3d104ae86c23d0c8e2e86dcb0a96f1088aca50b6d5e4030102000000000000000300000000000005810000002021c6cca538be5e9673479ba5694886335cdbbd0fcccd8d62376728c1133f00270103000000000000000500000000000005810000002057c9a0c6d2089b3911dc3bfd173ccd88922ed48030686ba3b3f8e4325b5f3cac0104000000000000000c00000000000005810000002014dc21a48e352ec5d08b52473da16cc6ca515e9e94124ea68b84a011b5da400c010500000000000000170000000000000581000000200fcacf91a581cf180802122abb9d02a67590fe38c7aea5baaa53416e91bf30e201070000000000000043000000000000058300000020c0062b4ff613ecbcf16e37a4423961afebf0302a208702d67e583622ad4a3dda")
+        # transaction = CallTransactionBuilder().from_(self._test1.get_address()).to(
+        #     self._score_address).step_limit(100_000_000_000).nid(
+        #     3).nonce(100).method("relay_and_verify").params(params).build()
+        # signed_transaction = SignedTransaction(transaction, self._test1)
+        # tx_result = self.process_transaction(
+        #     signed_transaction, self.icon_service)
+        # self.assertEqual(True, tx_result['status'])
+
+        # params = {}
+        # params["block_height"] = 446
+        # call = CallBuilder().from_(self._test1.get_address()).to(
+        #     self._score_address).method("get_oracle_state").params(params).build()
+        # response = self.process_call(call, self.icon_service)
+        # self.assertEqual(
+        #     "cbadb1694a5152c2b03f4960e1229745b39d7c41b32dc54e0c207799ae471981", response.hex())
