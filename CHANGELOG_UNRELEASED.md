@@ -10,7 +10,7 @@
 
 ### Chain (Consensus)
 
-- (chain) [\#2396](https://github.com/bandprotocol/bandchain/pull/2396) Upgrade to Cosmos-SDK v0.39.1-rc3.
+- (patch) [\#2396](https://github.com/bandprotocol/bandchain/pull/2396) Upgrade to Cosmos-SDK v0.39.1-rc3.
 
 ### Chain (Non-consensus)
 
