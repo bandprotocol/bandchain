@@ -104,9 +104,6 @@ def ecrecover(_e: bytes, _r: bytes, _s: bytes, v):
 
     x = r % _n
     y1, y2 = ecc_sqrt(r*r*r + r*_a + _b, _p)
-    if y1 % 2 == y2 % 2:
-        revert(f'ECRECOVER_ERROR: y1%2 == y2%2, ({y1},{y2})')
-
     if v == 27:
         y = y1 if y1 % 2 == 0 else y2
     elif v == 28:
