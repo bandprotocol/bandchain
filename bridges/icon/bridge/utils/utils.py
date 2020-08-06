@@ -20,10 +20,10 @@ def encode_varint_unsigned(value: int) -> bytes:
     result = b''
     temp_value = value
     for i in range(size):
-        result += (128 | (temp_value & 127)).to_bytes(1, "big")
+        result += bytes([128 | (temp_value & 127)])
         temp_value >>= 7
 
-    return result[:size - 1] + (result[size - 1] & 127).to_bytes(1, "big")
+    return result[:size - 1] + bytes([result[size - 1] & 127])
 
 
 def encode_varint_signed(value: int) -> bytes:
