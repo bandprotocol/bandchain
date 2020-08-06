@@ -103,7 +103,7 @@ def ecrecover(_e: bytes, _r: bytes, _s: bytes, v):
     s = int.from_bytes(_s, "big")
 
     x = r % _n
-    y1, y2 = ecc_sqrt(r*r*r + r*_a + _b, _p)
+    y1, y2 = ecc_sqrt(x*x*x + x*_a + _b, _p)
     if v == 27:
         y = y1 if y1 % 2 == 0 else y2
     elif v == 28:
@@ -112,9 +112,9 @@ def ecrecover(_e: bytes, _r: bytes, _s: bytes, v):
         revert(f'ECRECOVER_ERROR: v must be 27 or 28 but got {v}')
 
     R = (x, y % _n)
-    r_inv = inv_mod(x, _n)
+    x_inv = inv_mod(x, _n)
     gxh = ecc_mul(_g, -e % _n)
 
-    pub = ecc_mul(ecc_add(gxh, ecc_mul(R, s)), r_inv)
+    pub = ecc_mul(ecc_add(gxh, ecc_mul(R, s)), x_inv)
 
     return bytes.fromhex("%064x" % pub[0] + "%064x" % pub[1])
