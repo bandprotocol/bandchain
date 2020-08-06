@@ -41,27 +41,29 @@ type t =
   | IBCHomePage;
 
 let fromUrl = (url: ReasonReactRouter.url) =>
+  // TODO: We'll handle the NotFound case for Datasources and Oraclescript later
   switch (url.path, url.hash) {
   | (["data-sources"], _) => DataSourceHomePage
-  | (["data-source", dataSourceID], "code") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
-  | (["data-source", dataSourceID], "requests") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRequests)
-  | (["data-source", dataSourceID], "revisions") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
-  | (["data-source", dataSourceID], _) =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
+  | (["data-source", dataSourceID], hash) =>
+    let urlHash = (
+      fun
+      | "code" => DataSourceCode
+      | "requests" => DataSourceRequests
+      | "revisions" => DataSourceRevisions
+      | _ => DataSourceExecute
+    );
+    DataSourceIndexPage(dataSourceID |> int_of_string, urlHash(hash));
   | (["oracle-scripts"], _) => OracleScriptHomePage
-  | (["oracle-script", oracleScriptID], "code") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptCode)
-  | (["oracle-script", oracleScriptID], "bridge") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptBridgeCode)
-  | (["oracle-script", oracleScriptID], "requests") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRequests)
-  | (["oracle-script", oracleScriptID], "revisions") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRevisions)
-  | (["oracle-script", oracleScriptID], _) =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptExecute)
+  | (["oracle-script", oracleScriptID], hash) =>
+    let urlHash = (
+      fun
+      | "code" => OracleScriptCode
+      | "bridge" => OracleScriptBridgeCode
+      | "requests" => OracleScriptRequests
+      | "revisions" => OracleScriptRequests
+      | _ => OracleScriptExecute
+    );
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, urlHash(hash));
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
@@ -71,20 +73,29 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
   | (["requests"], _) => RequestHomePage
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
-  | (["account", address], "delegations") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
-  | (["account", address], "unbonding") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountUnbonding)
-  | (["account", address], "redelegate") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountRedelegate)
-  | (["account", address], _) =>
-    AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
-  | (["validator", address], "delegators") =>
-    ValidatorIndexPage(address |> Address.fromBech32, Delegators)
-  | (["validator", address], "reports") =>
-    ValidatorIndexPage(address |> Address.fromBech32, Reports)
-  | (["validator", address], _) =>
-    ValidatorIndexPage(address |> Address.fromBech32, ProposedBlocks)
+  | (["account", address], hash) =>
+    let urlHash = (
+      fun
+      | "delegations" => AccountDelegations
+      | "unbonding" => AccountUnbonding
+      | "redelegate" => AccountRedelegate
+      | _ => AccountTransactions
+    );
+    switch (address |> Address.fromBech32Opt) {
+    | Some(address) => AccountIndexPage(address, urlHash(hash))
+    | None => NotFound
+    };
+  | (["validator", address], hash) =>
+    let urlHash = (
+      fun
+      | "delegators" => Delegators
+      | "reports" => Reports
+      | _ => ProposedBlocks
+    );
+    switch (address |> Address.fromBech32Opt) {
+    | Some(address) => ValidatorIndexPage(address, urlHash(hash))
+    | None => NotFound
+    };
   | (["ibcs"], _) => IBCHomePage
   | ([], _) => HomePage
   | (_, _) => NotFound
