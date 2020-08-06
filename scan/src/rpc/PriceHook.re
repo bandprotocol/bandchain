@@ -6,32 +6,41 @@ module Price = {
     btcPrice: float,
     btcMarketCap: float,
     btc24HrChange: float,
-    circulatingSupply: float,
+    // circulatingSupply: float,
   };
-  let decode = (usdJson, btcJson, bandJson) =>
+  let decode = (usdJson, btcJson) =>
     JsonUtils.Decode.{
-      usdPrice: usdJson |> at(["band-protocol", "usd"], JsonUtils.Decode.float),
-      usdMarketCap: usdJson |> at(["band-protocol", "usd_market_cap"], JsonUtils.Decode.float),
-      usd24HrChange: usdJson |> at(["band-protocol", "usd_24h_change"], JsonUtils.Decode.float),
-      btcPrice: btcJson |> at(["band-protocol", "btc"], JsonUtils.Decode.float),
-      btcMarketCap: btcJson |> at(["band-protocol", "btc_market_cap"], JsonUtils.Decode.float),
-      btc24HrChange: btcJson |> at(["band-protocol", "btc_24h_change"], JsonUtils.Decode.float),
-      circulatingSupply:
-        bandJson |> at(["market_data", "circulating_supply"], JsonUtils.Decode.float),
+      usdPrice: usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float),
+      usdMarketCap: usdJson |> at(["RAW", "BAND", "USD", "MKTCAP"], JsonUtils.Decode.float),
+      usd24HrChange:
+        usdJson |> at(["RAW", "BAND", "USD", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
+      btcPrice: btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float),
+      btcMarketCap: btcJson |> at(["RAW", "BAND", "BTC", "MKTCAP"], JsonUtils.Decode.float),
+      btc24HrChange:
+        btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
+      // circulatingSupply: btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
     };
 };
 let get = () => {
-  let usdJson =
-    AxiosHooks.use(
-      "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true",
+  let (usdJson, usdReload) =
+    AxiosHooks.useWithReload(
+      "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=USD",
     );
-  let btcJson =
-    AxiosHooks.use(
-      "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true",
+  let (btcJson, btcReload) =
+    AxiosHooks.useWithReload(
+      "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=BTC",
     );
-  let bandJson = AxiosHooks.use("https://api.coingecko.com/api/v3/coins/band-protocol");
-  let%Opt usd = usdJson;
-  let%Opt btc = btcJson;
-  let%Opt band = bandJson;
-  Some(Price.decode(usd, btc, band));
+
+  let reload = () => {
+    usdReload((), ());
+    btcReload((), ());
+  };
+
+  let data = {
+    let%Opt usd = usdJson;
+    let%Opt btc = btcJson;
+    Some(Price.decode(usd, btc));
+  };
+
+  (data, reload);
 };

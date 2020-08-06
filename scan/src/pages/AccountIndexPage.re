@@ -260,7 +260,13 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.sm />
       <div className=Styles.addressContainer>
-        <AddressRender address position=AddressRender.Title copy=true clickable=false />
+        <AddressRender
+          address
+          position=AddressRender.Title
+          copy=true
+          clickable=false
+          wordBreak=true
+        />
         {isMobile
            ? React.null
            : <>

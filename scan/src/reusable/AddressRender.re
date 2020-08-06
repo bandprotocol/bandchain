@@ -44,9 +44,7 @@ module Styles = {
     ]);
 
   let wordBreak =
-    fun
-    | Title => style([Media.mobile([wordBreak(`breakAll), whiteSpace(`unset)])])
-    | _ => "";
+    style([Media.mobile([textOverflow(`unset), whiteSpace(`unset), wordBreak(`breakAll)])]);
 
   let copy = style([width(`px(15)), marginLeft(`px(10)), cursor(`pointer)]);
 
@@ -57,7 +55,15 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~clickable=true) => {
+let make =
+    (
+      ~address,
+      ~position=Text,
+      ~accountType=`account,
+      ~copy=false,
+      ~clickable=true,
+      ~wordBreak=false,
+    ) => {
   let isValidator = accountType == `validator;
   let prefix = isValidator ? "bandvaloper" : "band";
 
@@ -83,7 +89,7 @@ let make = (~address, ~position=Text, ~accountType=`account, ~copy=false, ~click
           Styles.base,
           Text.Styles.code,
           Styles.font(position),
-          Styles.wordBreak(position),
+          wordBreak ? Styles.wordBreak : "",
         ])}>
         <span className=Styles.prefix> {prefix |> React.string} </span>
         {noPrefixAddress |> React.string}
