@@ -22,8 +22,10 @@
 
 ### Scan
 
+- (impv) [\#2397](https://github.com/bandprotocol/bandchain/pull/2397) Updated the price API from CoinGecko to CryptoCompare
 - (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
 - (impv) [\#2380](https://github.com/bandprotocol/bandchain/pull/2380) Fixed case sensitive issue on Validator Homepage.
+- (impv) [\#2378](https://github.com/bandprotocol/bandchain/pull/2378) Improved the layout to compatable with small mobile screen
 - (impv) [\#2355](https://github.com/bandprotocol/bandchain/pull/2355) Implemented the realtime price function
 
 ### Bridges
