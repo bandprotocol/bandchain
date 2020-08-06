@@ -6,6 +6,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
@@ -25,6 +26,20 @@ func NewMempoolFeeDecorator(ok oracle.Keeper) MempoolFeeDecorator {
 	return MempoolFeeDecorator{oracleKeeper: ok, mempool: ante.NewMempoolFeeDecorator()}
 }
 
+func (mfd MempoolFeeDecorator) checkValidatorIsRequestedValidator(ctx sdk.Context, report types.MsgReportData) bool {
+	request := mfd.oracleKeeper.MustGetRequest(ctx, report.RequestID)
+	return keeper.ContainsVal(request.RequestedValidators, report.Validator)
+}
+
+func (mfd MempoolFeeDecorator) checkIsValidatorReport(ctx sdk.Context, report types.MsgReportData) bool {
+	reports := mfd.oracleKeeper.GetReports(ctx, report.RequestID)
+	vals := make([]sdk.ValAddress, len(reports))
+	for idx, rp := range reports {
+		vals[idx] = rp.Validator
+	}
+	return keeper.ContainsVal(vals, report.Validator)
+}
+
 func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate bool, next sdk.AnteHandler) (newCtx sdk.Context, err error) {
 	_, ok := tx.(ante.FeeTx)
 	if !ok {
@@ -38,24 +53,22 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 			isValidReportTx = false
 			break
 		}
+		if !mfd.oracleKeeper.IsReporter(ctx, report.Validator, report.Reporter) {
+			isValidReportTx = false
+			break
+		}
 
 		if !mfd.oracleKeeper.GetValidatorStatus(ctx, report.Validator).IsActive {
 			isValidReportTx = false
 			break
 		}
 
-		request := mfd.oracleKeeper.MustGetRequest(ctx, report.RequestID)
-		if !keeper.ContainsVal(request.RequestedValidators, report.Validator) {
+		if !mfd.checkValidatorIsRequestedValidator(ctx, report) {
 			isValidReportTx = false
 			break
 		}
 
-		reports := mfd.oracleKeeper.GetReports(ctx, report.RequestID)
-		vals := make([]sdk.ValAddress, len(reports))
-		for idx, rp := range reports {
-			vals[idx] = rp.Validator
-		}
-		if keeper.ContainsVal(vals, report.Validator) {
+		if mfd.checkIsValidatorReport(ctx, report) {
 			isValidReportTx = false
 			break
 		}
@@ -63,7 +76,7 @@ func (mfd MempoolFeeDecorator) AnteHandle(ctx sdk.Context, tx sdk.Tx, simulate b
 	// Ensure that the provided fees meet a minimum threshold for the validator,
 	// if this is a CheckTx. This is only for local mempool purposes, and thus
 	// is only ran on check tx.
-	if ctx.IsCheckTx() && !simulate && !isValidReportTx {
+	if !isValidReportTx {
 		return mfd.mempool.AnteHandle(ctx, tx, simulate, next)
 	}
 
