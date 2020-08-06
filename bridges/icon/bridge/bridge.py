@@ -145,14 +145,14 @@ class BRIDGE(IconScoreBase):
 
         current_merkle_hash = sha256.digest(
             # Height of tree (only leaf node) is 0 (signed-varint encode)
-            b'\x00' +
-            b'\x02' +  # Size of subtree is 1 (signed-varint encode)
+            bytes([0]) +
+            bytes([2]) +  # Size of subtree is 1 (signed-varint encode)
             utils.encode_varint_signed(version) +
             # Size of data key (1-byte constant 0x01 + 8-byte request ID)
-            b'\x09' +
+            bytes([9]) +
             b'\xff' +  # Constant 0xff prefix data request info storage key
             packet["res"]["request_id"].to_bytes(8, "big") +
-            b'\x20' +  # Size of data hash
+            bytes([32]) +  # Size of data hash
             sha256.digest(encode_packet)
         )
 

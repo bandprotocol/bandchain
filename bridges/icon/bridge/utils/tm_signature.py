@@ -15,22 +15,27 @@ def recover_signer(
 
 
 def recover_signers(signatures: bytes, block_hash: bytes) -> list:
-    pubkeys = []
-    len_sigs, remaining = PyObiInteger("u32").decode(signatures)
-    for i in range(len_sigs):
-        r, remaining = PyObiBytes().decode(remaining)
-        s, remaining = PyObiBytes().decode(remaining)
-        v, remaining = PyObiInteger("u8").decode(remaining)
-        signed_data_prefix, remaining = PyObiBytes().decode(remaining)
-        signed_data_suffix, remaining = PyObiBytes().decode(remaining)
-        pubkeys.append(
-            recover_signer(
-                r,
-                s,
-                v,
-                signed_data_prefix,
-                signed_data_suffix,
-                block_hash
-            )
-        )
-    return pubkeys
+    obi = PyObi(
+        """
+        [
+            {
+                r: bytes,
+                s: bytes,
+                v: u8,
+                signed_data_prefix: bytes,
+                signed_data_suffix: bytes
+            }
+        ]
+        """
+    )
+
+    return [
+        recover_signer(
+            sig["r"],
+            sig["s"],
+            sig["v"],
+            sig["signed_data_prefix"],
+            sig["signed_data_suffix"],
+            block_hash
+        ) for sig in obi.decode(signatures)
+    ]

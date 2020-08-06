@@ -3,11 +3,11 @@ from . import sha256
 
 
 def merkle_leaf_hash(value: bytes) -> bytes:
-    return sha256.digest(b'\x00' + value)
+    return sha256.digest(bytes([0]) + value)
 
 
 def merkle_inner_hash(left: bytes, right: bytes) -> bytes:
-    return sha256.digest(b'\x01' + left + right)
+    return sha256.digest(bytes([1]) + left + right)
 
 
 def encode_varint_unsigned(value: int) -> bytes:
