@@ -10,10 +10,9 @@
 
 ### Chain (Consensus)
 
-- (patch) [\#2396](https://github.com/bandprotocol/bandchain/pull/2396) Upgrade to Cosmos-SDK v0.39.1-rc3.
-
 ### Chain (Non-consensus)
 
+- (patch) [\#2396](https://github.com/bandprotocol/bandchain/pull/2396) Upgrade to Cosmos-SDK v0.39.1-rc3.
 - (chore) [\#2381](https://github.com/bandprotocol/bandchain/pull/2381) test: Add more unit tests in keeper.go.
 
 ### Yoda
