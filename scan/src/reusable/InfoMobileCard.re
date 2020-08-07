@@ -92,7 +92,7 @@ let make = (~info) => {
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
                KVTable.Value(rawReport.exitCode |> string_of_int),
-               KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+               KVTable.Value(rawReport.data |> JsBuffer.toUTF8),
              ]
            )
       }
@@ -110,7 +110,15 @@ let make = (~info) => {
           ->Belt_List.fromArray
         }
       />
-    | None => React.null
+    | None =>
+      <Text
+        value="Could not decode calldata."
+        spacing={Text.Em(0.02)}
+        nowrap=true
+        ellipsis=true
+        code=true
+        block=true
+      />
     }
   | CopyButton(calldata) => <CopyButton data=calldata title="Copy as bytes" />
   | Percentage(value, digits) =>
@@ -121,15 +129,7 @@ let make = (~info) => {
       code=true
     />
   | Text(text) =>
-    <Text
-      value=text
-      size=Text.Md
-      spacing={Text.Em(0.02)}
-      nowrap=true
-      ellipsis=true
-      code=true
-      block=true
-    />
+    <Text value=text spacing={Text.Em(0.02)} nowrap=true ellipsis=true code=true block=true />
   | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular code=true />
   | Validator(address, moniker, identity) =>
     <ValidatorMonikerLink
@@ -139,7 +139,7 @@ let make = (~info) => {
       identity
       width={`px(230)}
     />
-  | PubKey(publicKey) => <PubKeyRender pubKey=publicKey />
+  | PubKey(publicKey) => <PubKeyRender alignLeft=true pubKey=publicKey display=`block />
   | TxHash(txHash, width) => <TxLink txHash width size=Text.Lg />
   | Messages(txHash, messages, success, errMsg) =>
     <TxMessages txHash messages success errMsg width=360 />

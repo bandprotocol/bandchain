@@ -39,7 +39,8 @@ let make = (~values, ~idx, ~status=?) => {
      ->Belt_List.mapWithIndex((index, (heading, value)) => {
          let alignItem =
            switch (value) {
-           | InfoMobileCard.Messages(_) => `baseline
+           | InfoMobileCard.Messages(_)
+           | PubKey(_) => `baseline
            | _ => `center
            };
          let isOneColumn =
