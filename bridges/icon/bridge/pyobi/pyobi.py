@@ -40,9 +40,8 @@ class PyObiInteger(PyObiSpec):
 
     def decode(self, data):
         return (
-            int.from_bytes(data[: self.size_in_bytes],
-                           byteorder="big", signed=self.is_signed,),
-            data[self.size_in_bytes:],
+            int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed),
+            data[self.size_in_bytes :],
         )
 
 
@@ -106,8 +105,7 @@ class PyObiStruct(PyObiSpec):
         for each in fields:
             tokens = each.split(":", 1)
             if len(tokens) != 2:
-                raise ValueError(
-                    "Expect at least one colon for each struct field")
+                raise ValueError("Expect at least one colon for each struct field")
             self.intl_obi_kvs.append((tokens[0], self.from_spec(tokens[1])))
 
     @classmethod
