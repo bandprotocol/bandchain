@@ -135,7 +135,7 @@ module Styles = {
   let block = style([display(`block)]);
   let ellipsis =
     style([
-      overflowX(`hidden),
+      overflow(`hidden),
       textOverflow(`ellipsis),
       whiteSpace(`nowrap),
       width(`percent(100.)),

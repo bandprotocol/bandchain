@@ -6,13 +6,14 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.blue1),
-      padding2(~v=`pxFloat(5.), ~h=`px(10)),
+      padding2(~v=`pxFloat(5.), ~h=`px(18)),
       justifyContent(`center),
       alignItems(`center),
       marginLeft(Spacing.xs),
       marginTop(`px(1)),
       position(`relative),
       cursor(`pointer),
+      zIndex(3),
       Media.mobile([padding2(~v=`pxFloat(5.), ~h=`px(8))]),
     ]);
 
@@ -64,6 +65,7 @@ type chainID =
   | WenchangMainnet
   | GuanYuDevnet
   | GuanYuTestnet
+  | GuanYuPOA
   | Unknown;
 
 let parseChainID =
@@ -78,6 +80,7 @@ let parseChainID =
   | "band-guanyu-testnet1"
   | "band-guanyu-testnet2"
   | "band-guanyu-testnet3" => GuanYuTestnet
+  | "band-guanyu-poa" => GuanYuPOA
   | _ => Unknown;
 
 let getLink =
@@ -86,6 +89,7 @@ let getLink =
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet2.cosmoscan.io/"
+  | GuanYuPOA => ""
   | Unknown => "";
 
 let getName =
@@ -94,6 +98,7 @@ let getName =
   | WenchangMainnet => "wenchang-mainnet"
   | GuanYuDevnet => "guanyu-devnet"
   | GuanYuTestnet => "guanyu-testnet"
+  | GuanYuPOA => "guanyu-poa"
   | Unknown => "unknown";
 
 [@react.component]
