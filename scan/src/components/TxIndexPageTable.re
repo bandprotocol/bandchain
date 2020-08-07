@@ -105,7 +105,15 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
            ->Belt_List.fromArray
          }
        />
-     | None => React.null
+     | None =>
+       <Text
+         value="Could not decode calldata."
+         spacing={Text.Em(0.02)}
+         nowrap=true
+         ellipsis=true
+         code=true
+         block=true
+       />
      }}
     <VSpacing size=Spacing.xl />
     <div className=Styles.topicContainer>
@@ -145,7 +153,7 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
              [
                KVTable.Value(rawReport.externalDataID |> string_of_int),
                KVTable.Value(rawReport.exitCode |> string_of_int),
-               KVTable.Value(rawReport.data |> JsBuffer._toString(_, "UTF-8")),
+               KVTable.Value(rawReport.data |> JsBuffer.toUTF8),
              ]
            )
       }

@@ -31,7 +31,7 @@ let renderCode = content => {
 
 [@react.component]
 let make = (~executable) => {
-  let code = executable |> JsBuffer._toString(_, "UTF-8");
+  let code = executable |> JsBuffer.toUTF8;
 
   React.useMemo1(
     () => <div className=Styles.tableLowerContainer> {code |> renderCode} </div>,
