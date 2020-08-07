@@ -34,6 +34,8 @@
 
 ### Oracle Binary Encoding (OBI)
 
+- (impv) [\#2410](https://github.com/bandprotocol/bandchain/pull/2410) Improve code structure, Add PyObiBool and add more tests
+
 ### Helpers
 
 ### MISC
