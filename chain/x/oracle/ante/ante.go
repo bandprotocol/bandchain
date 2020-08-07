@@ -1,9 +1,10 @@
 package ante
 
 import (
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func checkValidReportMsg(ctx sdk.Context, oracleKeeper oracle.Keeper, msg sdk.Msg) bool {
@@ -36,17 +37,20 @@ func checkValidReportMsg(ctx sdk.Context, oracleKeeper oracle.Keeper, msg sdk.Ms
 	return true
 }
 
-func BandWrapAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
+func BandWrapAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper, withFeeReportTx bool) sdk.AnteHandler {
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
-		isValidReportTx := true
-		for _, msg := range tx.GetMsgs() {
-			if isValidReportTx = checkValidReportMsg(ctx, oracleKeeper, msg); !isValidReportTx {
-				break
-			}
-		}
 		newCtx = ctx
-		if ctx.IsCheckTx() && !simulate && isValidReportTx {
-			newCtx = newCtx.WithMinGasPrices(sdk.DecCoins{})
+		if !withFeeReportTx {
+			isValidReportTx := true
+			for _, msg := range tx.GetMsgs() {
+				isValidReportTx = checkValidReportMsg(ctx, oracleKeeper, msg)
+				if !isValidReportTx {
+					break
+				}
+			}
+			if ctx.IsCheckTx() && !simulate && isValidReportTx {
+				newCtx = newCtx.WithMinGasPrices(sdk.DecCoins{})
+			}
 		}
 		return ante(newCtx, tx, simulate)
 	}

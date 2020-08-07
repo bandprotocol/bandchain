@@ -34,8 +34,8 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	bandante "github.com/bandprotocol/bandchain/chain/x/ante"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	bandante "github.com/bandprotocol/bandchain/chain/x/oracle/ante"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
 
@@ -136,7 +136,7 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	baseAppOptions ...func(*bam.BaseApp),
+	withFeeReportTx bool, baseAppOptions ...func(*bam.BaseApp),
 ) *BandApp {
 	cdc := MakeCodec()
 	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -238,7 +238,10 @@ func NewBandApp(
 	// initialize BaseApp.
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	wrappedAnte := bandante.BandWrapAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer), app.OracleKeeper)
+	wrappedAnte := bandante.BandWrapAnteHandler(
+		ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer),
+		app.OracleKeeper, withFeeReportTx,
+	)
 	app.SetAnteHandler(wrappedAnte)
 	app.SetEndBlocker(app.EndBlocker)
 	if loadLatest {
