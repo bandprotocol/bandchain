@@ -91,16 +91,16 @@ class PyObiVector(PyObiSpec):
 class PyObiStruct(PyObiSpec):
     def __init__(self, spec):
         self.intl_obi_kvs = []
-        fields = [""]
+        fields = ['']
         curly_count = 0
         for c in spec[1:-1]:
-            if c == "," and curly_count == 0:
-                fields.append("")
+            if c == ',' and curly_count == 0:
+                fields.append('')
             else:
                 fields[-1] = fields[-1] + c
-                if c == "{":
+                if c == '{':
                     curly_count += 1
-                if c == "}":
+                if c == '}':
                     curly_count -= 1
         for each in fields:
             tokens = each.split(":", 1)
