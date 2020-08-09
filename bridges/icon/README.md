@@ -16,8 +16,10 @@ tbears test bridge
 
 ### Encoding (OBI)
 
-- `validators_bytes`
+- `validators_bytes`:
   An Array of validators with voting power which is a parameter of function `on_install` and function `update_validator_powers`
+
+  #### Struct
 
   ```
       PyObi(
