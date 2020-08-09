@@ -5,19 +5,20 @@ import (
 	"io/ioutil"
 	"time"
 
+	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	errors "github.com/cosmos/cosmos-sdk/types/errors"
-	genutil "github.com/cosmos/cosmos-sdk/x/genutil/types"
-	"github.com/spf13/cobra"
-	tmtypes "github.com/tendermint/tendermint/types"
-
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	errors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
+	"github.com/cosmos/cosmos-sdk/x/evidence"
 	extypes "github.com/cosmos/cosmos-sdk/x/genutil"
 	v038 "github.com/cosmos/cosmos-sdk/x/genutil/legacy/v0_38"
 	v039 "github.com/cosmos/cosmos-sdk/x/genutil/legacy/v0_39"
+	"github.com/cosmos/cosmos-sdk/x/upgrade"
+	"github.com/spf13/cobra"
+	tmtypes "github.com/tendermint/tendermint/types"
 )
 
 const (
@@ -25,116 +26,68 @@ const (
 	flagChainID     = "chain-id"
 )
 
-// Allow applications to extend and modify the migration process.
-//
-// Ref: https://github.com/cosmos/cosmos-sdk/issues/5041
-var migrationMap = extypes.MigrationMap{
-	"v0.38": v038.Migrate, // NOTE: v0.37 and v0.38 are genesis compatible
-	"v0.39": v039.Migrate,
-}
-
-func Guanyu(appState genutil.AppMap) genutil.AppMap {
-	oracleCodec := codec.New()
-	codec.RegisterCrypto(oracleCodec)
-	// migrate distribution state
-	// var oracleGenState oracle.GenesisState
-	// fmt.Println(oracle.DefaultGenesisState())
-	// panic("yo")
-	appState[oracle.ModuleName] = oracleCodec.MustMarshalJSON(oracle.DefaultGenesisState())
-	return appState
-}
-
-// GetMigrationCallback returns a MigrationCallback for a given version.
-func GetMigrationCallback(version string) extypes.MigrationCallback {
-	return migrationMap[version]
-}
-
-// GetMigrationVersions get all migration version in a sorted slice.
-func GetMigrationVersions() []string {
-	versions := make([]string, len(migrationMap))
-
-	var i int
-	for version := range migrationMap {
-		versions[i] = version
-		i++
-	}
-
-	return versions
-}
-
-func GenesisDocFromJSON(jsonBlob []byte, cdc *codec.Codec) (*tmtypes.GenesisDoc, error) {
-	genDoc := tmtypes.GenesisDoc{}
-	// cdc.
-	err := cdc.UnmarshalJSON(jsonBlob, &genDoc)
-	if err != nil {
-		return nil, err
-	}
-
-	genDoc.ConsensusParams.Evidence.MaxAgeNumBlocks = 100000
-	genDoc.ConsensusParams.Evidence.MaxAgeDuration = 172800000000000
-
-	if err := genDoc.ValidateAndComplete(); err != nil {
-		return nil, err
-	}
-
-	return &genDoc, err
-}
-
 // GenesisDocFromFile reads JSON data from a file and unmarshalls it into a GenesisDoc.
 func GenesisDocFromFile(genDocFile string, cdc *codec.Codec) (*tmtypes.GenesisDoc, error) {
 	jsonBlob, err := ioutil.ReadFile(genDocFile)
 	if err != nil {
 		return nil, errors.Wrap(err, "Couldn't read GenesisDoc file")
 	}
-	genDoc, err := GenesisDocFromJSON(jsonBlob, cdc)
+
+	var genDoc tmtypes.GenesisDoc
+	err = cdc.UnmarshalJSON(jsonBlob, &genDoc)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("Error reading GenesisDoc at %v", genDocFile))
+		return nil, err
 	}
-	return genDoc, nil
+
+	// Set up Tendermint consensus params with default value.
+	genDoc.ConsensusParams.Evidence = tmtypes.DefaultEvidenceParams()
+
+	if err := genDoc.ValidateAndComplete(); err != nil {
+		return nil, err
+	}
+
+	return &genDoc, nil
 }
 
 // MigrateGenesisCmd returns a command to execute genesis state migration.
 // nolint: funlen
 func MigrateGenesisCmd(_ *server.Context, cdc *codec.Codec) *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "migrate [target-version] [genesis-file]",
-		Short: "Migrate genesis to a specified target version",
-		Long: fmt.Sprintf(`Migrate the source genesis into the target version and print to STDOUT.
+		Use:   "migrate [genesis-file]",
+		Short: "Migrate Wenchang genesis to Guanyu version",
+		Long: fmt.Sprintf(`Migrate the Wenchang genesis into the Guanyu version and print to STDOUT.
 
 Example:
-$ %s migrate v0.36 /path/to/genesis.json --chain-id=cosmoshub-3 --genesis-time=2019-04-22T17:00:00Z
+$ %s migrate /path/to/genesis.json --chain-id=band-guanyu --genesis-time=2020-08-11T17:00:00Z
 `, version.ServerName),
-		Args: cobra.ExactArgs(2),
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			var err error
 
-			target := args[0]
-			importGenesis := args[1]
+			importGenesis := args[0]
 			genDoc, err := GenesisDocFromFile(importGenesis, cdc)
 			if err != nil {
 				return errors.Wrapf(err, "failed to read genesis document from file %s", importGenesis)
 			}
 
-			var initialState extypes.AppMap
-			if err := cdc.UnmarshalJSON(genDoc.AppState, &initialState); err != nil {
+			var state extypes.AppMap
+			if err := cdc.UnmarshalJSON(genDoc.AppState, &state); err != nil {
 				return errors.Wrap(err, "failed to JSON unmarshal initial genesis state")
 			}
-			_ = GetMigrationCallback(target)
-			// if migrationFunc == nil {
-			// 	return fmt.Errorf("unknown migration function for version: %s", target)
-			// }
 
-			// TODO: handler error from migrationFunc call
-			initialState = v038.Migrate(initialState)
-			initialState = v039.Migrate(initialState)
-			newGenState := Guanyu(initialState)
+			// Migrate from Wenchang (0.36 like genesis file) to cosmos-sdk v0.39
+			state = v039.Migrate(v038.Migrate(state))
 
-			genDoc.AppState, err = cdc.MarshalJSON(newGenState)
+			// Add genesis state of the new modules get state from `app` default genesis.
+			defaultGaunyu := app.NewDefaultGenesisState()
+			state[oracle.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[oracle.ModuleName])
+			state[evidence.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[evidence.ModuleName])
+			state[upgrade.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[upgrade.ModuleName])
 
+			genDoc.AppState, err = cdc.MarshalJSON(state)
 			if err != nil {
 				return errors.Wrap(err, "failed to JSON marshal migrated genesis state")
 			}
-
 			if err := genDoc.ValidateAndComplete(); err != nil {
 				return err
 			}
@@ -170,9 +123,7 @@ $ %s migrate v0.36 /path/to/genesis.json --chain-id=cosmoshub-3 --genesis-time=2
 			return nil
 		},
 	}
-
 	cmd.Flags().String(flagGenesisTime, "", "override genesis_time with this flag")
-	cmd.Flags().String(flagChainID, "", "override chain_id with this flag")
-
+	cmd.Flags().String(flagChainID, "band-guanyu", "override chain_id with this flag")
 	return cmd
 }
