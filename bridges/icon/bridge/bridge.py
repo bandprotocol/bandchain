@@ -116,10 +116,10 @@ class BRIDGE(IconScoreBase):
     # @param block_height The block height. Someone must already relay this block.
     # @param encode_packet The OBI encoded of a request packet and a response packet of this request.
     # @param version Lastest block height that the data node was updated.
-    # @param merkle_paths The OBI encoded of merkle proof that shows how the data leave is part of the oracle iAVL.
+    # @param iavl_merkle_paths The OBI encoded of merkle proof that shows how the data leave is part of the oracle iAVL.
     @external(readonly=True)
     def verify_oracle_data(
-        self, block_height: int, encode_packet: bytes, version: int, merkle_paths: bytes
+        self, block_height: int, encode_packet: bytes, version: int, iavl_merkle_paths: bytes
     ) -> dict:
         oracle_state_root = self.oracle_state[block_height]
         if oracle_state_root == None:
@@ -176,7 +176,7 @@ class BRIDGE(IconScoreBase):
                 }
             ]
             """
-        ).decode(merkle_paths)
+        ).decode(iavl_merkle_paths)
 
         # Goes step-by-step computing hash of parent nodes until reaching root node.
         for path in len_merkle_paths:
@@ -209,7 +209,7 @@ class BRIDGE(IconScoreBase):
                 signatures: bytes,
                 encoded_packet: bytes,
                 version: u64,
-                merkle_paths: bytes
+                iavl_merkle_paths: bytes
             }
             """
         ).decode(proof)
@@ -225,7 +225,7 @@ class BRIDGE(IconScoreBase):
             proof_dict["block_height"],
             proof_dict["encoded_packet"],
             proof_dict["version"],
-            proof_dict["merkle_paths"],
+            proof_dict["iavl_merkle_paths"],
         )
 
     # Returns the response packet for a given request packet.
