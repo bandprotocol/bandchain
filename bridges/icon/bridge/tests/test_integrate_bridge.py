@@ -13,7 +13,8 @@ DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 class TestIntegrationBRIDGE(IconIntegrateTestBase):
     TEST_HTTP_ENDPOINT_URI_V3 = "http://127.0.0.1:9000/api/v3"
-    SCORE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, ".."))
+    BRIDGE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, ".."))
+    RECEIVER_MOCK_PROJECT = os.path.abspath(os.path.join(DIR_PATH, "../../receiver_mock"))
 
     def setUp(self):
         super().setUp()
@@ -23,9 +24,12 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         # self.icon_service = IconService(HTTPProvider(self.TEST_HTTP_ENDPOINT_URI_V3))
 
         # install SCORE
-        self._score_address = self._deploy_score()["scoreAddress"]
+        self._bridge_address = self._deploy_bridge()["scoreAddress"]
+        self._receiver_mock_address = self._deploy_receiver_mock(self._bridge_address)[
+            "scoreAddress"
+        ]
 
-    def _deploy_score(self, to: str = SCORE_INSTALL_ADDRESS) -> dict:
+    def _deploy_bridge(self, to: str = SCORE_INSTALL_ADDRESS) -> dict:
         params = {}
         params[
             "validators_bytes"
@@ -41,7 +45,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
             .nid(3)
             .nonce(100)
             .content_type("application/zip")
-            .content(gen_deploy_data_content(self.SCORE_PROJECT))
+            .content(gen_deploy_data_content(self.BRIDGE_PROJECT))
             .build()
         )
 
@@ -56,6 +60,46 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
 
         return tx_result
 
+    def _deploy_receiver_mock(self, bridge_address: str, to: str = SCORE_INSTALL_ADDRESS) -> dict:
+        params = {}
+        params["bridge_address"] = bridge_address
+
+        # Generates an instance of transaction for deploying SCORE.
+        transaction = (
+            DeployTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(to)
+            .params(params)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .content_type("application/zip")
+            .content(gen_deploy_data_content(self.RECEIVER_MOCK_PROJECT))
+            .build()
+        )
+
+        # Returns the signed transaction object having a signature
+        signed_transaction = SignedTransaction(transaction, self._test1)
+
+        # process the transaction in local
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+
+        self.assertEqual(True, tx_result["status"])
+        self.assertTrue("scoreAddress" in tx_result)
+
+        return tx_result
+
+    def test_get_bridge_address(self):
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .method("get_bridge_address")
+            .build()
+        )
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(self._bridge_address, response)
+
     def test_update_validator_powers_success(self):
         params = {}
         params[
@@ -64,7 +108,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_validator_power")
             .params(params)
             .build()
@@ -80,7 +124,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -99,7 +143,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_validator_power")
             .params(params)
             .build()
@@ -116,7 +160,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(new_owner.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_validator_power")
             .params(params)
             .build()
@@ -132,7 +176,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(new_owner.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -150,7 +194,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -172,7 +216,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -189,7 +233,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -205,7 +249,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -227,7 +271,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -244,7 +288,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -260,7 +304,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -285,7 +329,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -302,7 +346,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -319,7 +363,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -341,7 +385,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -358,7 +402,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -373,7 +417,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -395,7 +439,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -412,7 +456,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -426,7 +470,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -441,7 +485,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -458,7 +502,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -474,7 +518,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -490,7 +534,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -507,7 +551,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_oracle_state")
             .params(params)
             .build()
@@ -542,7 +586,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -558,7 +602,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -575,7 +619,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -614,7 +658,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -630,7 +674,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -647,7 +691,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -690,7 +734,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -712,7 +756,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -729,7 +773,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -772,7 +816,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -789,7 +833,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .method("get_latest_response")
             .params(params)
             .build()
@@ -811,7 +855,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -854,7 +898,7 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
-            .to(self._score_address)
+            .to(self._bridge_address)
             .step_limit(100_000_000_000)
             .nid(3)
             .nonce(100)
@@ -865,3 +909,74 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         signed_transaction = SignedTransaction(transaction, self._test1)
         tx_result = self.process_transaction(signed_transaction, self.icon_service)
         self.assertEqual(False, tx_result["status"])
+
+    def test_relay_and_verify_via_receiver_mock_success(self):
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .method("get_req")
+            .build()
+        )
+        req = self.process_call(call, self.icon_service)
+        self.assertEqual(None, req)
+
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .method("get_res")
+            .build()
+        )
+        res = self.process_call(call, self.icon_service)
+        self.assertEqual(None, res)
+
+        params = {}
+        params["proof"] = bytes.fromhex(
+            "00000000000001be000000a0b0cc616f4e76eba2c1845fd2321ad881991a2990f17cd278eb5f6d17da032faf9459616c154a23567a7281fb577bbfa1aa8d36382c4f64362968202fd32a0b65cbadb1694a5152c2b03f4960e1229745b39d7c41b32dc54e0c207799ae471981b1f2fd852e790e735ca2d3014f96a2a53c60393e9c6bbf941b9a6dd6a05cf6f93d913423122f2237a9a046d7ebfd13c3a6f1df93a1517a9f0b60a492dbc369d8000000c032fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869eeea5d164b32b494765eb256279014366747db8941c23f23b2fb09a9bbbf721762c4fd636adf805490129912f7fc18a2766aabd9fd4807f2ff18ed4ccd23f2583004209a161040ab1778e2f2c00ee482f205b28efba439fcb04ea283f619478d96e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01d7f4be7e5a1eb872ad44103360ddc190410331280c42a54d829a5d752c796685d000001e40000000300000020b0eff36d1214c35f785d82a7947589dba3f7d6ae35dcb92b1b3aca1df441e1e7000000207be19dd7f54c0ab0726cc5074fe65a887c2f2cd736cdab1ade1b7bd5c378abe11b000000106e080211be0100000000000022480a200000003f12240a201e0d38ac4548746d650a022463529c1f64777038aefdd2d16bf358daa6e41b8010012a0c08ce87c7f705108c9fa29b01320962616e64636861696e00000020fc6a4aae096d2606050269fde7ac02f58c23fe10dd219f8805696c8aa3b1bb65000000206c324293f560b082923f9f1f1cc0307a78633095b87e4f4047a57ad650fd971b1b000000106e080211be0100000000000022480a200000003f12240a201e0d38ac4548746d650a022463529c1f64777038aefdd2d16bf358daa6e41b8010012a0c08ce87c7f70510f6a5fd9c01320962616e64636861696e00000020d039e1d13e1837731a5719626075f1ef92ff48c6fbbec68b2ef9b3b34a6086db00000020278405f72ca62f7ff67c28b896ca38ab0534974d96a24adcefc509e0525301871b000000106e080211be0100000000000022480a200000003f12240a201e0d38ac4548746d650a022463529c1f64777038aefdd2d16bf358daa6e41b8010012a0c08ce87c7f70510d3d5dd9b01320962616e64636861696e0000006b000000047465737400000000000000010000000f00000003425443000000000000006400000000000000040000000000000004000000047465737400000000000000010000000000000004000000005ef1c3c2000000005ef1c3c9000000010000000800000000000eaae600000000000001bc00000148000000060101000000000000000200000000000001bc000000201d3927941aec0602e1fcab94b4d3e57da16a2455165cb097adfdfdf34a3e16880102000000000000000400000000000001bc0000002017480c9a0faca2c2ecef5fdc7627b11f898f5652f3022e8d0b2da40356d6d8e40103000000000000000700000000000001bc00000020d90fcf3847ccd9ec012100f251f6e258d1e6b4e5e03a94fb06927dbb11f386230104000000000000000d00000000000001bc000000205332e6182a047d2b63df9c4a5edbb34d0760a5eea2816bfcc50ef0a316267a490105000000000000001200000000000001bc00000020fdd7908f23ba8fbe99c7f91c660a94a96231e807566e89fe524e739b1f6252c40107000000000000003800000000000001bd00000020efdf574e7d863cf4d8b8b08ed1558a6e6f47d5091667f29b7b2d37dc44d5f156"
+        )
+        transaction = (
+            CallTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .method("relay_and_safe")
+            .params(params)
+            .build()
+        )
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+        self.assertEqual(True, tx_result["status"])
+
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .method("get_req")
+            .build()
+        )
+        req = self.process_call(call, self.icon_service)
+        self.assertEqual("test", req["client_id"])
+        self.assertEqual(1, req["oracle_script_id"])
+        self.assertEqual(bytes.fromhex("000000034254430000000000000064"), req["calldata"])
+        self.assertEqual(4, req["ask_count"])
+        self.assertEqual(4, req["min_count"])
+
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._receiver_mock_address)
+            .method("get_res")
+            .build()
+        )
+        res = self.process_call(call, self.icon_service)
+        self.assertEqual("test", res["client_id"])
+        self.assertEqual(1, res["request_id"])
+        self.assertEqual(4, res["ans_count"])
+        self.assertEqual(1592902594, res["request_time"])
+        self.assertEqual(1592902601, res["resolve_time"])
+        self.assertEqual(1, res["resolve_status"])
+        self.assertEqual(b"\x00\x00\x00\x00\x00\x0e\xaa\xe6", res["result"])
+

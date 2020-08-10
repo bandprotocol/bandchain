@@ -19,7 +19,7 @@ tbears test bridge
 - `validators_bytes`:
   An Array of validators with voting power which is a parameter of function `on_install` and function `update_validator_powers`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
       PyObi(
@@ -60,7 +60,7 @@ tbears test bridge
 
 - `multi_store_bytes`: The concatenation of stores hash in Bandchain which is one of the parameters of a function `relay_oracle_state`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     bytes
@@ -80,7 +80,7 @@ tbears test bridge
 
 - `block_merkle_part_bytes`: The concatenation of extra merkle parts to compute block hash which is one of the parameters of a function `relay_oracle_state`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     bytes
@@ -101,7 +101,7 @@ tbears test bridge
 
 - `signatures_bytes`: The OBI encoded of an array of signatures signed on the block which is one of the parameters of a function `relay_oracle_state`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     PyObi(
@@ -150,7 +150,7 @@ tbears test bridge
 
 - `encode_packet`: The OBI encode of request packet and response packet which is one of the parameters of a function `verify_oracle_data`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     PyObi(
@@ -203,7 +203,7 @@ tbears test bridge
 
 - `iavl_merkle_paths`: The merkle proof that shows how the data leave is part of the oracle iAVL which is one of the parameters of a function `verify_oracle_data`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     PyObi(
@@ -246,7 +246,7 @@ tbears test bridge
 
 - `proof`: The encoded data for oracle state relay and data verification which is the parameter of function `relay_and_verify` and function `relay`
 
-  #### Struct
+  #### Encoding/Decoding
 
   ```
     PyObi(

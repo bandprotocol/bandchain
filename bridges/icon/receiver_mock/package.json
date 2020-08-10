@@ -1,0 +1,5 @@
+{
+    "version": "0.0.1",
+    "main_module": "receiver_mock",
+    "main_score": "RECEIVER_MOCK"
+}

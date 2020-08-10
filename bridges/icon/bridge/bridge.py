@@ -20,7 +20,7 @@ class BRIDGE(IconScoreBase):
         # encoded_request:bytes => response:dict
         self.requests_cache = DictDB("requests_cache", db, value_type=bytes)
 
-    # For testing
+    # For unit tests
     def set_oracle_state(self, block_height: int, oracle_state: bytes) -> None:
         self.oracle_state[block_height] = oracle_state
 
