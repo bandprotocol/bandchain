@@ -22,8 +22,6 @@ module Styles = {
 
   let col = style([margin4(~top=`zero, ~right=Spacing.xs, ~left=Spacing.xs, ~bottom=`zero)]);
   let colSize = sz => style([flex(`num(sz))]);
-  let colFlexSize = percent =>
-    style([width(`percent(percent |> float_of_string)), padding2(~v=`zero, ~h=`px(24))]);
   let alignSelf =
     Belt.Option.mapWithDefault(
       _,
@@ -61,6 +59,7 @@ module Styles = {
       padding2(~v=`zero, ~h=`px(12)),
       width(`percent(100.)),
     ]);
+
   let colGrid =
     fun
     | One => style([maxWidth(`percent(8.333333)), flexBasis(`percent(8.333333))])

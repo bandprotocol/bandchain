@@ -37,46 +37,28 @@ module Styles = {
     | Right => style([textAlign(`right)])
     | Left => style([textAlign(`left)]);
 
-  let marginBottom = size => {
+  let mb = size => {
     style([marginBottom(`px(size))]);
   };
 };
 
 [@react.component]
-let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0) => {
+let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=20) => {
+  let children_ = React.string(value);
+  let style_ = size =>
+    Css.merge(
+      Styles.[
+        fontSize(size),
+        fontWeight(weight),
+        textAlign(align),
+        lineHeight,
+        mb(marginBottom),
+      ],
+    );
+
   switch (size) {
-  | H1 =>
-    <h1
-      className={Css.merge([
-        Styles.fontSize(size),
-        Styles.fontWeight(weight),
-        Styles.textAlign(align),
-        Styles.lineHeight,
-        Styles.marginBottom(marginBottom),
-      ])}>
-      {React.string(value)}
-    </h1>
-  | H2 =>
-    <h2
-      className={Css.merge([
-        Styles.fontSize(size),
-        Styles.fontWeight(weight),
-        Styles.textAlign(align),
-        Styles.lineHeight,
-        Styles.marginBottom(marginBottom),
-      ])}>
-      {React.string(value)}
-    </h2>
-  | H3 =>
-    <h3
-      className={Css.merge([
-        Styles.fontSize(size),
-        Styles.fontWeight(weight),
-        Styles.textAlign(align),
-        Styles.lineHeight,
-        Styles.marginBottom(marginBottom),
-      ])}>
-      {React.string(value)}
-    </h3>
+  | H1 => <h1 className={style_(size)}> children_ </h1>
+  | H2 => <h2 className={style_(size)}> children_ </h2>
+  | H3 => <h2 className={style_(size)}> children_ </h2>
   };
 };

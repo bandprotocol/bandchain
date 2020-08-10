@@ -139,7 +139,7 @@ let renderBodyMobile =
   | Data({id, timestamp, description, name}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sourse", DataSources(id, name)),
+        ("Data Sourse", DataSource(id, name)),
         ("Description", Text(description)),
         ("Request", Count(2000)),
         ("Timestamp", Timestamp(timestamp)),
