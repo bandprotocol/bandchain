@@ -171,7 +171,7 @@ let make = (~chainID, ~ledgerApp) => {
           let newAccountIndex = ReactEvent.Form.target(event)##value |> int_of_string;
           setAccountIndex(_ => newAccountIndex);
         }}>
-        {[|0, 1, 2, 3, 4, 5|]
+        {[|0, 1, 2, 3, 4, 5, 6, 7, 8, 9|]
          |> Belt.Array.map(_, index =>
               <option key={index |> string_of_int} value={index |> string_of_int}>
                 {let prefixPath =

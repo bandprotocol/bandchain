@@ -16,6 +16,7 @@ type t = {
   description: string,
   executable: JsBuffer.t,
   timestamp: MomentRe.Moment.t,
+  request: int,
 };
 
 let toExternal = ({id, owner, name, description, executable, transaction}) => {
@@ -30,12 +31,14 @@ let toExternal = ({id, owner, name, description, executable, transaction}) => {
     // TODO: Please revisit again.
     | _ => MomentRe.momentNow()
     },
+  //TODO: wire up later
+  request: Js.Math.random_int(300, 200000),
 };
 
 module MultiConfig = [%graphql
   {|
-  subscription DataSources($limit: Int!, $offset: Int!) {
-    data_sources(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
+  subscription DataSources($limit: Int!, $offset: Int!, $searchTerm: String!) {
+    data_sources(limit: $limit, offset: $offset, where: {name: {_ilike: $searchTerm}}, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
@@ -72,8 +75,8 @@ module SingleConfig = [%graphql
 
 module DataSourcesCountConfig = [%graphql
   {|
-  subscription DataSourcesCount {
-    data_sources_aggregate{
+  subscription DataSourcesCount($searchTerm: String!) {
+    data_sources_aggregate(where: {name: {_ilike: $searchTerm}}){
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
       }
@@ -96,18 +99,24 @@ let get = id => {
   };
 };
 
-let getList = (~page, ~pageSize, ()) => {
+let getList = (~page, ~pageSize, ~searchTerm, ()) => {
   let offset = (page - 1) * pageSize;
+  let keyword = {j|%$searchTerm%|j};
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
-      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
+      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~searchTerm=keyword, ()),
     );
   result |> Sub.map(_, x => x##data_sources->Belt_Array.map(toExternal));
 };
 
-let count = () => {
-  let (result, _) = ApolloHooks.useSubscription(DataSourcesCountConfig.definition);
+let count = (~searchTerm, ()) => {
+  let keyword = {j|%$searchTerm%|j};
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      DataSourcesCountConfig.definition,
+      ~variables=DataSourcesCountConfig.makeVariables(~searchTerm=keyword, ()),
+    );
   result
   |> Sub.map(_, x => x##data_sources_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };

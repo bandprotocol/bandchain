@@ -65,5 +65,5 @@ let getVariables = str => {
 };
 
 let parseExecutableScript = (buff: JsBuffer.t) => {
-  buff |> JsBuffer._toString(_, "UTF-8") |> getVariables;
+  buff |> JsBuffer.toUTF8 |> getVariables;
 };

@@ -122,33 +122,80 @@ let renderDetailMobile =
       ("AMOUNT", Coin({value: amount, hasDenom: true})),
     ]
   | UnjailMsg({address}) => [("VALIDATOR ADDRESS", Address(address, addressWidth, `validator))]
+  | CreateDataSourceMsg({id, owner, name})
+  | EditDataSourceMsg({id, owner, name}) => [
+      ("OWNER", Address(owner, addressWidth, `account)),
+      ("NAME", DataSource(id, name)),
+    ]
+  | CreateOracleScriptMsg({id, owner, name})
+  | EditOracleScriptMsg({id, owner, name}) => [
+      ("OWNER", Address(owner, addressWidth, `account)),
+      ("NAME", OracleScript(id, name)),
+    ]
+  | RequestMsg({oracleScriptID, oracleScriptName, calldata, askCount, schema, minCount}) => {
+      let calldataKVsOpt = Obi.decode(schema, "input", calldata);
+      [
+        ("ORACLE SCRIPT", OracleScript(oracleScriptID, oracleScriptName)),
+        ("CALLDATA", CopyButton(calldata)),
+        ("", KVTableRequest(calldataKVsOpt)),
+        ("ASK COUNT", Count(askCount)),
+        ("MIN COUNT", Count(minCount)),
+      ];
+    }
+  | ReportMsg({requestID, rawReports}) => [
+      ("REQUEST ID", RequestID(requestID)),
+      ("RAW DATA REPORTS", KVTableReport(["EXTERNAL ID", "EXIT CODE", "VALUE"], rawReports)),
+    ]
+  | AddReporterMsg({reporter, validatorMoniker})
+  | RemoveReporterMsg({reporter, validatorMoniker}) => [
+      ("VALIDATOR", Text(validatorMoniker)),
+      ("REPORTER ADDRESS", Address(reporter, addressWidth, `account)),
+    ]
+  | ActivateMsg({validatorAddress}) => [
+      ("VALIDATOR ADDRESS", Address(validatorAddress, addressWidth, `validator)),
+    ]
+  | SubmitProposalMsg({proposer, title, description, initialDeposit}) => [
+      ("TITLE", Text(title)),
+      ("DESCRIPTION", Text(description)),
+      ("PROPOSER", Address(proposer, addressWidth, `account)),
+      ("AMOUNT", Coin({value: initialDeposit, hasDenom: true})),
+    ]
+  | DepositMsg({depositor, proposalID, amount}) => [
+      ("DOPOSITER", Address(depositor, addressWidth, `account)),
+      ("PROPOSAL ID", Count(proposalID)),
+      ("AMOUNT", Coin({value: amount, hasDenom: true})),
+    ]
+  | VoteMsg({voterAddress, proposalID, option}) => [
+      ("VOTER ADDRESS", Address(voterAddress, addressWidth, `account)),
+      ("PROPOSAL ID", Count(proposalID)),
+      ("OPTION", Text(option)),
+    ]
   | _ => [];
 
 [@react.component]
 let make = (~messages: list(TxSub.Msg.t)) => {
   <div className=Styles.blockWrapper>
-    //TODO: Change index to be unique something
-
-      {messages
-       ->Belt.List.mapWithIndex((index, msg) => {
-           let renderList = msg |> renderDetailMobile;
-           let theme = msg |> TxSub.Msg.getBadgeTheme;
-           let creator = msg |> TxSub.Msg.getCreator;
-           <MobileCard
-             values={
-               InfoMobileCard.[
-                 ("MESSAGE\nTYPE", Badge(theme)),
-                 ("CREATOR", Address(creator, addressWidth, `account)),
-               ]
-               ->Belt.List.concat(renderList)
-             }
-             key={index |> string_of_int}
-             idx={index |> string_of_int}
-           />;
-         })
-       ->Array.of_list
-       ->React.array}
-    </div>;
+    {messages
+     ->Belt.List.mapWithIndex((index, msg) => {
+         let renderList = msg |> renderDetailMobile;
+         let theme = msg |> TxSub.Msg.getBadgeTheme;
+         let creator = msg |> TxSub.Msg.getCreator;
+         let key_ = (index |> string_of_int) ++ (creator |> Address.toBech32);
+         <MobileCard
+           values={
+             InfoMobileCard.[
+               ("MESSAGE\nTYPE", Badge(theme)),
+               ("CREATOR", Address(creator, addressWidth, `account)),
+             ]
+             ->Belt.List.concat(renderList)
+           }
+           key=key_
+           idx=key_
+         />;
+       })
+     ->Array.of_list
+     ->React.array}
+  </div>;
 };
 
 module Loading = {
