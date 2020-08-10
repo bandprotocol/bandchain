@@ -32,7 +32,7 @@ let toExternal = ({id, owner, name, description, executable, transaction}) => {
     | _ => MomentRe.momentNow()
     },
   //TODO: wire up later
-  request: Js.Math.random_int(300, 2000000),
+  request: Js.Math.random_int(300, 200000),
 };
 
 module MultiConfig = [%graphql

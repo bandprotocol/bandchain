@@ -43,7 +43,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=20) => {
+let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0) => {
   let children_ = React.string(value);
   let style_ = size =>
     Css.merge(

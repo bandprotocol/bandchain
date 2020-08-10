@@ -1,7 +1,13 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let vFlex = justify =>
+    style([
+      display(`flex),
+      flexDirection(`row),
+      justifyContent(justify),
+      alignItems(`center),
+    ]);
 
   let seperatedLine =
     style([
@@ -99,7 +105,7 @@ let renderBody =
       <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({id, name}) =>
-           <div className=Styles.vFlex>
+           <div className={Styles.vFlex(`flexStart)}>
              <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text value=name ellipsis=true />
@@ -110,24 +116,31 @@ let renderBody =
       <Col.Grid col=Col.Four>
         {switch (dataSourcesSub) {
          | Data({description}) => <Text value=description weight=Text.Medium block=true />
-         | _ => <LoadingCensorBar width=300 height=15 />
+         | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.One>
         {switch (dataSourcesSub) {
          | Data({request}) =>
            <div>
-             <Text value={request |> string_of_int} weight=Text.Medium block=true ellipsis=true />
+             <Text value={request |> Format.iPretty} weight=Text.Medium block=true ellipsis=true />
            </div>
          | _ => <LoadingCensorBar width=70 height=15 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Two>
-        {switch (dataSourcesSub) {
-         | Data({timestamp}) =>
-           <Timestamp.Grid time=timestamp size=Text.Md weight=Text.Regular textAlign=Text.Right />
-         | _ => <LoadingCensorBar width=150 height=15 />
-         }}
+        <div className={Styles.vFlex(`flexEnd)}>
+          {switch (dataSourcesSub) {
+           | Data({timestamp}) =>
+             <Timestamp.Grid
+               time=timestamp
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
+             />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
       </Col.Grid>
     </Row.Grid>
   </TBody.Grid>;
@@ -136,12 +149,12 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
   switch (dataSourcesSub) {
-  | Data({id, timestamp, description, name}) =>
+  | Data({id, timestamp, description, name, request}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Data Sourse", DataSource(id, name)),
         ("Description", Text(description)),
-        ("Request", Count(2000)),
+        ("Requests", Count(request)),
         ("Timestamp", Timestamp(timestamp)),
       ]
       key={id |> ID.DataSource.toString}
@@ -152,7 +165,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Data Sources", Loading(70)),
         ("Description", Loading(136)),
-        ("Request", Loading(20)),
+        ("Requests", Loading(20)),
         ("Timestamp", Loading(166)),
       ]
       key={reserveIndex |> string_of_int}
@@ -171,10 +184,12 @@ let getName =
   | LatestUpdate => "Latest Update";
 
 let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
-  if (a.request != b.request) {
-    compare(b.request, a.request);
+  if (a.timestamp != b.timestamp) {
+    let ID.DataSource.ID(a_) = a.id;
+    let ID.DataSource.ID(b_) = b.id;
+    compare(b_, a_);
   } else {
-    compare(b.id, a.id);
+    compare(b.request, a.request);
   };
 
 let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
@@ -297,7 +312,7 @@ let make = () => {
                <Col.Grid col=Col.One>
                  <Text
                    block=true
-                   value="Request"
+                   value="Requests"
                    size=Text.Md
                    weight=Text.Semibold
                    color=Colors.gray7
