@@ -18,5 +18,5 @@ let gasLimit =
   | Send(_)
   | Delegate(_)
   | Undelegate(_)
-  | WithdrawReward(_) => 200000.
-  | Redelegate(_) => 300000.;
+  | WithdrawReward(_) => 200000
+  | Redelegate(_) => 300000;
