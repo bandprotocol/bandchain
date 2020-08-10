@@ -8,7 +8,7 @@ source bin/activate
 pip install tbears
 ```
 
---
+---
 
 ### Run test
 
@@ -16,7 +16,7 @@ pip install tbears
 tbears test bridge
 ```
 
---
+---
 
 ### Deployment
 
@@ -38,7 +38,7 @@ CacheConsumerMock
 tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/deploy_config_testnet.json
 ```
 
---
+---
 
 ### Interaction
 
@@ -68,7 +68,7 @@ CacheConsumerMock
 tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
 ```
 
---
+---
 
 ### Example deployed contracts on the testnet
 
@@ -84,7 +84,7 @@ tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.k
 
 [`cx71e33c94c5827af2039578fb7ad30044326e4348`](https://bicon.tracker.solidwallet.io/contract/cxc4b59b0def8bbc2306c77d0e9d11075407a9f70e#readcontract)
 
---
+---
 
 ### Encoding (OBI)
 
