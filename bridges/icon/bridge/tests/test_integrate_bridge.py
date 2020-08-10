@@ -15,6 +15,9 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
     TEST_HTTP_ENDPOINT_URI_V3 = "http://127.0.0.1:9000/api/v3"
     BRIDGE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, ".."))
     RECEIVER_MOCK_PROJECT = os.path.abspath(os.path.join(DIR_PATH, "../../receiver_mock"))
+    CACHE_CONSUMER_MOCK_PROJECT = os.path.abspath(
+        os.path.join(DIR_PATH, "../../cache_consumer_mock")
+    )
 
     def setUp(self):
         super().setUp()
@@ -28,6 +31,12 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         self._receiver_mock_address = self._deploy_receiver_mock(self._bridge_address)[
             "scoreAddress"
         ]
+        self._cache_consumer_mock = self._deploy_cache_consumer_mock(
+            self._bridge_address,
+            bytes.fromhex(
+                "0000000966726f6d5f7363616e00000000000000010000000f00000003425443000000000000006400000000000000040000000000000004"
+            ),
+        )["scoreAddress"]
 
     def _deploy_bridge(self, to: str = SCORE_INSTALL_ADDRESS) -> dict:
         params = {}
@@ -89,7 +98,39 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
 
         return tx_result
 
-    def test_get_bridge_address(self):
+    def _deploy_cache_consumer_mock(
+        self, bridge_address: str, req_template: bytes, to: str = SCORE_INSTALL_ADDRESS
+    ) -> dict:
+        params = {}
+        params["bridge_address"] = bridge_address
+        params["req_template"] = req_template
+
+        # Generates an instance of transaction for deploying SCORE.
+        transaction = (
+            DeployTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(to)
+            .params(params)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .content_type("application/zip")
+            .content(gen_deploy_data_content(self.CACHE_CONSUMER_MOCK_PROJECT))
+            .build()
+        )
+
+        # Returns the signed transaction object having a signature
+        signed_transaction = SignedTransaction(transaction, self._test1)
+
+        # process the transaction in local
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+
+        self.assertEqual(True, tx_result["status"])
+        self.assertTrue("scoreAddress" in tx_result)
+
+        return tx_result
+
+    def test_receiver_get_bridge_address(self):
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
@@ -99,6 +140,37 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         )
         response = self.process_call(call, self.icon_service)
         self.assertEqual(self._bridge_address, response)
+
+    def test_cache_consumer_get_bridge_address(self):
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .method("get_bridge_address")
+            .build()
+        )
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(self._bridge_address, response)
+
+    def test_cache_consumer_get_req_template(self):
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .method("get_request_key_template")
+            .build()
+        )
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(
+            {
+                "client_id": "from_scan",
+                "oracle_script_id": 1,
+                "calldata": b"\x00\x00\x00\x03BTC\x00\x00\x00\x00\x00\x00\x00d",
+                "ask_count": 4,
+                "min_count": 4,
+            },
+            response,
+        )
 
     def test_update_validator_powers_success(self):
         params = {}
@@ -979,4 +1051,85 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         self.assertEqual(1592902601, res["resolve_time"])
         self.assertEqual(1, res["resolve_status"])
         self.assertEqual(b"\x00\x00\x00\x00\x00\x0e\xaa\xe6", res["result"])
+
+    def test_relay_and_consume_data_by_consumer_success(self):
+        # should get None because haven't relay and comsume yet
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .method("get_res")
+            .build()
+        )
+        res = self.process_call(call, self.icon_service)
+        self.assertEqual(None, res)
+
+        # relay
+        params = {}
+        params["proof"] = bytes.fromhex(
+            "0000000000000a4f000000a02fb6b7c75032af08bb37d3df59722d54f400bec1f9f14bf840e7711cfc95e12b8e5deda960b2dc8f53406382441e13fc0821322c2b3dae3d8bbb5a4c6326ef087c80a176184bffaf33dcb3618c15e3371727c5b047598647ca3f9aecc4bd305cb1f2fd852e790e735ca2d3014f96a2a53c60393e9c6bbf941b9a6dd6a05cf6f995e24c5fd917b4277cfac3e06fde09ae89231b58b1db51dc69f57b98ec18d9e7000000c032fa694879095840619f5e49380612bd296ff7e950eafb66ff654d99ca70869e4c68ced6b571ac169f65570fd568a2bf2821ca8880ec1d7b1b8052beb3bb4adf15798391d1c7d642e97b1a8fd91c11ab50cb91aa780a859fc5d62ca96c338602004209a161040ab1778e2f2c00ee482f205b28efba439fcb04ea283f619478d96e340b9cffb37a989ca544e6bb780a2c78901d3fb33738768511a30617afa01dd991da4d4e69473cc75a4b819f9e07d4956671a6f4a74df4cc16596fcbe68137000001e400000003000000201297951f2c4fb97690848ce759ce1ab8ad8d972a951a869818828663159a8a6f000000200871114919ac2b6882b26da7728dd52d150ade92c4f6bca45791f005eb1bbbfe1c000000106e0802114f0a00000000000022480a200000003f12240a203a69db2cf26a980e8f51b3fcb05662eb72389ba98b5a6eec7ab7d51d18f8f04d10012a0c08c896c8f70510b39089e702320962616e64636861696e00000020d9efd0734b37e70e917d92c83e9b3ec9ab1cd3b1b5c91147310588bae960d25c000000202c85bb019f10afb9d2062ff880f0fca633a31e9e191f17c33006233281b131851c000000106e0802114f0a00000000000022480a200000003f12240a203a69db2cf26a980e8f51b3fcb05662eb72389ba98b5a6eec7ab7d51d18f8f04d10012a0c08c896c8f7051086f3c0e602320962616e64636861696e0000002026be63ade11a107dbef75d5e506f1c64173d8bf1d9508bba19b74d7da222df56000000201d1a861a5541af331fb13a5def77e5c3fbfe70378b134292f5380854817a9e9c1b000000106e0802114f0a00000000000022480a200000003f12240a203a69db2cf26a980e8f51b3fcb05662eb72389ba98b5a6eec7ab7d51d18f8f04d10012a0c08c896c8f7051094b592e602320962616e64636861696e000000750000000966726f6d5f7363616e00000000000000010000000f000000034254430000000000000064000000000000000400000000000000040000000966726f6d5f7363616e00000000000000040000000000000004000000005ef20a73000000005ef20a77000000010000000800000000000eb4bf00000000000009b20000017e000000070101000000000000000200000000000009b200000020680ad6cf6e554cee42ff66ecbd120e66009b10284cabc5e02241552c818aae7d0102000000000000000400000000000009b200000020bbd0ad34229408383dc3e8f4eaa1c44481ae7198a8ad5dfa234ed0559f09183c0103000000000000000600000000000009c300000020d15486b84f62b5535c0fd46c437489d212911d95501211f1c3a730e32f630eb60104000000000000000d00000000000009c3000000203cdb5cc721bc11d70d6eb33377a26c387ef3c45c064916d6a36659402252ff560105000000000000001b00000000000009c300000020121889d461b385a0d77fa5e484f58ad580f126d307526e7ef487c6742a8da9d90106000000000000003200000000000009c300000020562e86bb47132ccc0223eea4c35ef16d0d512086a975f1b473706dd23a571354010700000000000000500000000000000a4e00000020240608de388ec1d1100d05d87f2766cc22f98376f955791546074aa8ae6b6d8e"
+        )
+
+        transaction = (
+            CallTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(self._bridge_address)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .method("relay")
+            .params(params)
+            .build()
+        )
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+        self.assertEqual(True, tx_result["status"])
+
+        # should get None because haven't comsume yet
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .method("get_res")
+            .build()
+        )
+        res = self.process_call(call, self.icon_service)
+        self.assertEqual(None, res)
+
+        # consume cache
+        transaction = (
+            CallTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .method("consume_cache")
+            .build()
+        )
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+        self.assertEqual(True, tx_result["status"])
+
+        # should get a correct res
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .method("get_res")
+            .build()
+        )
+        res = self.process_call(call, self.icon_service)
+        self.assertEqual(
+            {
+                "client_id": "from_scan",
+                "request_id": 4,
+                "ans_count": 4,
+                "request_time": 1592920691,
+                "resolve_time": 1592920695,
+                "resolve_status": 1,
+                "result": b"\x00\x00\x00\x00\x00\x0e\xb4\xbf",
+            },
+            res,
+        )
 
