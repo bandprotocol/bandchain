@@ -62,7 +62,7 @@ CacheConsumerMock
 tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
 ```
 
-### Example deployed contracts
+### Example deployed contracts on the testnet
 
 #### Bridge contract
 
