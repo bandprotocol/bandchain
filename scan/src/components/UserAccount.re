@@ -190,13 +190,13 @@ let make = () => {
   switch (accountOpt) {
   | Some({address}) =>
     <>
-      <Row justify=Row.Right>
+      <Row justify=Row.End>
         <Col> <AddressRender address position=AddressRender.Nav /> </Col>
         <Col> <HSpacing size={`px(27)} /> </Col>
         <Col> <DisconnectBtn disconnect /> </Col>
       </Row>
       <VSpacing size=Spacing.md />
-      <Row justify=Row.Right>
+      <Row justify=Row.End>
         <Col> <Balance address /> </Col>
         <Col> <HSpacing size={`px(5)} /> </Col>
         <Col> <SendBtn send /> </Col>

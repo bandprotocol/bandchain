@@ -16,7 +16,8 @@ type weight =
 
 type align =
   | Center
-  | Right;
+  | Right
+  | Left;
 
 type spacing =
   | Unset
@@ -70,7 +71,7 @@ module Styles = {
           fontSize(`px(8)),
           letterSpacing(`em(0.07)),
           lineHeight(`em(1.14)),
-          Media.smallMobile([fontSize(px(7))]),
+          Media.smallMobile([fontSize(`px(7))]),
         ])
       | Sm =>
         style([
@@ -142,7 +143,8 @@ module Styles = {
       style([textAlign(`left)]),
       fun
       | Center => style([textAlign(`center)])
-      | Right => style([textAlign(`right)]),
+      | Right => style([textAlign(`right)])
+      | Left => style([textAlign(`left)]),
     );
 
   let code =

@@ -8,7 +8,7 @@ type t =
   | Height(ID.Block.t)
   | Coin(coin_amount_t)
   | Count(int)
-  | DataSources(ID.DataSource.t, string)
+  | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
   | RequestID(ID.Request.t)
   | Float(float, option(int))
@@ -62,11 +62,11 @@ let make = (~info) => {
       spacing={Text.Em(0.02)}
       code=true
     />
-  | DataSources(id, name) =>
+  | DataSource(id, name) =>
     <div className=Styles.vFlex>
       <TypeID.DataSource id />
       <HSpacing size=Spacing.sm />
-      <Text value=name />
+      <Text value=name ellipsis=true />
     </div>
   | OracleScript(id, name) =>
     <div className=Styles.vFlex>

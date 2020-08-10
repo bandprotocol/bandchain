@@ -125,12 +125,12 @@ let renderDetailMobile =
   | CreateDataSourceMsg({id, owner, name})
   | EditDataSourceMsg({id, owner, name}) => [
       ("OWNER", Address(owner, addressWidth, `account)),
-      ("Name", DataSources(id, name)),
+      ("NAME", DataSource(id, name)),
     ]
   | CreateOracleScriptMsg({id, owner, name})
   | EditOracleScriptMsg({id, owner, name}) => [
       ("OWNER", Address(owner, addressWidth, `account)),
-      ("Name", OracleScript(id, name)),
+      ("NAME", OracleScript(id, name)),
     ]
   | RequestMsg({oracleScriptID, oracleScriptName, calldata, askCount, schema, minCount}) => {
       let calldataKVsOpt = Obi.decode(schema, "input", calldata);
