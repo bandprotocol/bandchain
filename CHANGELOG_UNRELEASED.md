@@ -18,6 +18,8 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2447](https://github.com/bandprotocol/bandchain/pull/2447) Improve validator votes view performance
+
 ### Scan
 
 - (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
