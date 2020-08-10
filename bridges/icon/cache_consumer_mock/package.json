@@ -1,5 +1,5 @@
 {
-    "version": "0.0.1",
-    "main_module": "cache_consumer_mock",
-    "main_score": "CACHE_CONSUMER_MOCK"
+  "version": "0.0.1",
+  "main_module": "cache_consumer_mock",
+  "main_score": "CACHE_CONSUMER_MOCK"
 }
