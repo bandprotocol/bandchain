@@ -10,7 +10,7 @@ pip install tbears
 
 ---
 
-### Run test
+## Run test
 
 ```
 tbears test bridge
@@ -18,7 +18,7 @@ tbears test bridge
 
 ---
 
-### Deployment
+## Deployment
 
 Bridge
 
@@ -40,7 +40,7 @@ tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/dep
 
 ---
 
-### Interaction
+## Interaction
 
 Bridge
 
@@ -70,7 +70,7 @@ tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.k
 
 ---
 
-### Example deployed contracts on the testnet
+## Example deployed contracts on the testnet
 
 #### Bridge contract
 
@@ -86,7 +86,7 @@ tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.k
 
 ---
 
-### Encoding (OBI)
+## Encoding (OBI)
 
 - `validators_bytes`:
   An Array of validators with voting power which is a parameter of function `on_install` and function `update_validator_powers`
