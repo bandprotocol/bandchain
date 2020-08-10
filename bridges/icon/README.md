@@ -38,7 +38,7 @@ tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/dep
 
 #### Bridge
 
-- relay
+- relay (only relay the newer oracle state)
   ```
   tbears sendtx ./bridge/example_send_relay.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
   ```
