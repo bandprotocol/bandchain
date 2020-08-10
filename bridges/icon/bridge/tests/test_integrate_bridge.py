@@ -1052,6 +1052,21 @@ class TestIntegrationBRIDGE(IconIntegrateTestBase):
         self.assertEqual(1, res["resolve_status"])
         self.assertEqual(b"\x00\x00\x00\x00\x00\x0e\xaa\xe6", res["result"])
 
+    def test_consume_data_fail_because_no_data(self):
+        transaction = (
+            CallTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(self._cache_consumer_mock)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .method("consume_cache")
+            .build()
+        )
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+        self.assertEqual(False, tx_result["status"])
+
     def test_relay_and_consume_data_by_consumer_success(self):
         # should get None because haven't relay and comsume yet
         call = (
