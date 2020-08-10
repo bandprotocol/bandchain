@@ -14,6 +14,68 @@ pip install tbears
 tbears test bridge
 ```
 
+### Deployment
+
+Bridge
+
+```
+tbears deploy bridge -k mumustorekey.key -c bridge/tbears_cli_config_testnet.json
+```
+
+ReceiverMock
+
+```
+tbears deploy receiver_mock -k mumustorekey.key -c receiver_mock/deploy_config_testnet.json
+```
+
+CacheConsumerMock
+
+```
+tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/deploy_config_testnet.json
+```
+
+### Interaction
+
+Bridge
+
+- relay
+  ```
+  tbears sendtx ./bridge/example_send_relay.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
+  ```
+- relay_and_verify
+  ```
+  tbears sendtx ./bridge/example_send_relay_and_verify.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
+  ```
+
+ReceiverMock
+
+- relay_and_safe
+  ```
+  tbears sendtx ./receiver_mock/example_send_relay_and_safe.json -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
+  ```
+
+CacheConsumerMock
+
+- consume_cache
+
+```
+tbears sendtx ./cache_consumer_mock/example_send_consume.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
+```
+
+### Example deployed contracts
+
+#### Bridge contract
+
+[`cx947d7eb9766c4a59a127967574add8bf22304c8e`](https://bicon.tracker.solidwallet.io/contract/cx947d7eb9766c4a59a127967574add8bf22304c8e#readcontract)
+
+#### ReceiverMock contract
+
+[`cxc4b59b0def8bbc2306c77d0e9d11075407a9f70e`](https://bicon.tracker.solidwallet.io/contract/cxc4b59b0def8bbc2306c77d0e9d11075407a9f70e#readcontract)
+
+#### CacheConsumerMock contract
+
+[`cx71e33c94c5827af2039578fb7ad30044326e4348`](https://bicon.tracker.solidwallet.io/contract/cxc4b59b0def8bbc2306c77d0e9d11075407a9f70e#readcontract)
+
 ### Encoding (OBI)
 
 - `validators_bytes`:
