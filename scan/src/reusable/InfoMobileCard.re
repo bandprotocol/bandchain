@@ -66,7 +66,7 @@ let make = (~info) => {
     <div className=Styles.vFlex>
       <TypeID.DataSource id />
       <HSpacing size=Spacing.sm />
-      <Text value=name />
+      <Text value=name ellipsis=true />
     </div>
   | OracleScript(id, name) =>
     <div className=Styles.vFlex>

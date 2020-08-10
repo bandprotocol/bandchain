@@ -106,7 +106,10 @@ module DesktopRender = {
                   </a>
                 </div>
                 <div className=Styles.socialLink>
-                  <a href="https://coinmarketcap.com/currencies/band-protocol/" target="_blank" rel="noopener">
+                  <a
+                    href="https://coinmarketcap.com/currencies/band-protocol/"
+                    target="_blank"
+                    rel="noopener">
                     <img src=Images.cmcLogo className=Styles.telegramLogo />
                   </a>
                 </div>
@@ -151,7 +154,7 @@ module MobileRender = {
           </LinkToHome>
         </Col>
       </Row>
-      <Row justify=Row.Right>
+      <Row justify=Row.End>
         <Col> <ChainIDBadge /> </Col>
         <Col> <HSpacing size=Spacing.xs /> </Col>
         <Col> <NavBar /> </Col>

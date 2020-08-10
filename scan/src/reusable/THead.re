@@ -10,9 +10,17 @@ module Styles = {
       alignItems(`center),
       height(`px(height_)),
     ]);
+  let containerBase =
+    style([backgroundColor(Colors.blueGray1), padding2(~v=`px(18), ~h=`px(24))]);
 };
 
 [@react.component]
 let make = (~children, ~height=30) => {
   <div className={Styles.container(height)}> children </div>;
+};
+module Grid = {
+  [@react.component]
+  let make = (~children) => {
+    <div className=Styles.containerBase> children </div>;
+  };
 };
