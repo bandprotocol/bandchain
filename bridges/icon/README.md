@@ -16,19 +16,19 @@ tbears test bridge
 
 ## Deployment
 
-Bridge
+#### Bridge
 
 ```
 tbears deploy bridge -k mumustorekey.key -c bridge/tbears_cli_config_testnet.json
 ```
 
-ReceiverMock
+#### ReceiverMock
 
 ```
 tbears deploy receiver_mock -k mumustorekey.key -c receiver_mock/deploy_config_testnet.json
 ```
 
-CacheConsumerMock
+#### CacheConsumerMock
 
 ```
 tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/deploy_config_testnet.json
@@ -36,7 +36,7 @@ tbears deploy cache_consumer_mock -k mumustorekey.key -c cache_consumer_mock/dep
 
 ## Interaction
 
-Bridge
+#### Bridge
 
 - relay
   ```
@@ -47,14 +47,14 @@ Bridge
   tbears sendtx ./bridge/example_send_relay_and_verify.json  -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
   ```
 
-ReceiverMock
+#### ReceiverMock
 
 - relay_and_safe
   ```
   tbears sendtx ./receiver_mock/example_send_relay_and_safe.json -k mumustorekey.key -u https://bicon.net.solidwallet.io/api/v3 -n 3
   ```
 
-CacheConsumerMock
+#### CacheConsumerMock
 
 - consume_cache
 
