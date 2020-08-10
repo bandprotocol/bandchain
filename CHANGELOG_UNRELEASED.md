@@ -21,7 +21,7 @@
 
 ### Scan
 
-- (impv) [\#2449](https://github.com/bandprotocol/bandchain/pull/2449) Decreased Tx's gas limit
+- (impv) [\#2449](https://github.com/bandprotocol/bandchain/pull/2449) Adjusted gas limit as msg
 - (impv) [\#2416](https://github.com/bandprotocol/bandchain/pull/2416) Added more HD Path index for ledger
 - (impv) [\#2394](https://github.com/bandprotocol/bandchain/pull/2394) Implemented the msg on TxMobileTable for GUANYU
 - (bugs) [\#2383](https://github.com/bandprotocol/bandchain/pull/2383) Support `EditValidator` Message for Wenchang and Guan Yu
