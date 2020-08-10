@@ -12,3 +12,11 @@ let toString =
   | Undelegate(_) => "Undelegate"
   | Redelegate(_) => "Redelegate"
   | WithdrawReward(_) => "Withdraw Reward";
+
+let gasLimit =
+  fun
+  | Send(_)
+  | Delegate(_)
+  | Undelegate(_)
+  | WithdrawReward(_) => 200000
+  | Redelegate(_) => 300000;
