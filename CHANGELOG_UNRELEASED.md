@@ -20,7 +20,7 @@
 ### Emitter & Flusher
 
 ### Scan
-
+- (impv) [\#2454](https://github.com/bandprotocol/bandchain/pull/2454) Implemented datasource top part box and created the new tooltip component
 - (impv) [\#2449](https://github.com/bandprotocol/bandchain/pull/2449) Adjusted gas limit as msg
 - (impv) [\#2448](https://github.com/bandprotocol/bandchain/pull/2448) Implemented All Datasources page with the new grid system.
 - (impv) [\#2416](https://github.com/bandprotocol/bandchain/pull/2416) Added more HD Path index for ledger
