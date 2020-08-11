@@ -37,21 +37,25 @@ func checkValidReportMsg(ctx sdk.Context, oracleKeeper oracle.Keeper, msg sdk.Ms
 	return true
 }
 
-func BandWrapAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper, withFeeReportTx bool) sdk.AnteHandler {
+// BandWrapAnteHandler returns a new ante handler that set minimum gas price to be zero if the
+// incoming tx is a valid report transaction.
+func BandWrapAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
-		newCtx = ctx
-		if !withFeeReportTx {
+		if ctx.IsCheckTx() && !simulate {
 			isValidReportTx := true
 			for _, msg := range tx.GetMsgs() {
-				isValidReportTx = checkValidReportMsg(ctx, oracleKeeper, msg)
-				if !isValidReportTx {
+				if !checkValidReportMsg(ctx, oracleKeeper, msg) {
+					isValidReportTx = false
 					break
 				}
 			}
-			if ctx.IsCheckTx() && !simulate && isValidReportTx {
-				newCtx = newCtx.WithMinGasPrices(sdk.DecCoins{})
+			if isValidReportTx {
+				minGas := ctx.MinGasPrices()
+				newCtx, err := ante(ctx.WithMinGasPrices(sdk.DecCoins{}), tx, simulate)
+				// Set minimum gas price context and return context to caller.
+				return newCtx.WithMinGasPrices(minGas), err
 			}
 		}
-		return ante(newCtx, tx, simulate)
+		return ante(ctx, tx, simulate)
 	}
 }

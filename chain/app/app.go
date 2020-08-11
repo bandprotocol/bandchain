@@ -136,7 +136,7 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	withFeeReportTx bool, baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
 ) *BandApp {
 	cdc := MakeCodec()
 	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -238,11 +238,11 @@ func NewBandApp(
 	// initialize BaseApp.
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	wrappedAnte := bandante.BandWrapAnteHandler(
-		ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer),
-		app.OracleKeeper, withFeeReportTx,
-	)
-	app.SetAnteHandler(wrappedAnte)
+	anteHandler := ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer)
+	if !disableFeelessReports {
+		anteHandler = bandante.BandWrapAnteHandler(anteHandler, app.OracleKeeper)
+	}
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])

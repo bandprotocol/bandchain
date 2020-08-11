@@ -26,9 +26,9 @@ import (
 )
 
 const (
-	flagInvCheckPeriod  = "inv-check-period"
-	flagWithEmitter     = "with-emitter"
-	flagWithFeeReportTx = "with-fee-report-tx"
+	flagInvCheckPeriod        = "inv-check-period"
+	flagWithEmitter           = "with-emitter"
+	flagDisableFeelessReports = "disable-feeless-reports"
 )
 
 var invCheckPeriod uint
@@ -61,7 +61,7 @@ func main() {
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
-	rootCmd.PersistentFlags().Bool(flagWithFeeReportTx, false, "")
+	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -87,7 +87,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		return emitter.NewBandAppWithEmitter(
 			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			skipUpgradeHeights, viper.GetString(flags.FlagHome),
-			viper.GetBool(flagWithFeeReportTx),
+			viper.GetBool(flagDisableFeelessReports),
 			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -98,7 +98,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		return app.NewBandApp(
 			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 			viper.GetString(flags.FlagHome),
-			viper.GetBool(flagWithFeeReportTx),
+			viper.GetBool(flagDisableFeelessReports),
 			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -113,7 +113,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagWithFeeReportTx))
+		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports))
 		err := bandApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -122,6 +122,6 @@ func exportAppStateAndTMValidators(
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagWithFeeReportTx))
+	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports))
 	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
