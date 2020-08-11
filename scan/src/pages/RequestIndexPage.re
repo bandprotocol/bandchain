@@ -246,7 +246,7 @@ let make = (~reqID) =>
             request.rawDataRequests
             ->Belt_Array.map(({externalID, dataSource, calldata}) =>
                 [
-                  KVTable.Value(externalID |> string_of_int),
+                  KVTable.Value(externalID),
                   KVTable.DataSource(dataSource.dataSourceID, dataSource.name),
                   KVTable.Value(calldata |> JsBuffer.toUTF8),
                 ]
@@ -356,12 +356,12 @@ let make = (~reqID) =>
                        KVTable.TxHash(report.transaction.hash),
                        KVTable.Values(
                          report.reportDetails
-                         ->Belt_Array.map(({externalID}) => externalID |> Format.iPretty)
+                         ->Belt_Array.map(({externalID}) => externalID)
                          ->Belt_List.fromArray,
                        ),
                        KVTable.Values(
                          report.reportDetails
-                         ->Belt_Array.map(({exitCode}) => exitCode |> Format.iPretty)
+                         ->Belt_Array.map(({exitCode}) => exitCode)
                          ->Belt_List.fromArray,
                        ),
                        KVTable.Values(
