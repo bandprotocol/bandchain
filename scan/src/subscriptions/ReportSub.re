@@ -12,8 +12,8 @@ module ValidatorReport = {
   type raw_request_t = {dataSourceID: ID.DataSource.t};
 
   type report_details_t = {
-    externalID: int,
-    exitCode: int,
+    externalID: string,
+    exitCode: string,
     data: JsBuffer.t,
     rawRequest: option(raw_request_t),
   };
@@ -54,8 +54,8 @@ module ValidatorReport = {
                 hash @bsDecoder (fn: "GraphQLParser.hash")
               }
               reportDetails: raw_reports @bsRecord {
-                externalID: external_id @bsDecoder (fn:"GraphQLParser.int64")
-                exitCode: exit_code
+                externalID: external_id @bsDecoder (fn:"GraphQLParser.string")
+                exitCode: exit_code  @bsDecoder (fn:"GraphQLParser.string")
                 data @bsDecoder (fn: "GraphQLParser.buffer")
                 rawRequest: raw_request @bsRecord {
                   dataSourceID: data_source_id @bsDecoder (fn: "ID.DataSource.fromInt")
