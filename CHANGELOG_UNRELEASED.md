@@ -19,6 +19,8 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2447](https://github.com/bandprotocol/bandchain/pull/2447) Improve validator votes view performance
+
 ### Scan
 
 - (impv) [\#2449](https://github.com/bandprotocol/bandchain/pull/2449) Adjusted gas limit as msg
