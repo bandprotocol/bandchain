@@ -178,8 +178,7 @@ module Reports = {
                               }
                          />
                        </Row>
-                       <VSpacing size=Spacing.sm />
-                       <VSpacing size=Spacing.xs />
+                       <VSpacing size=Spacing.md />
                      </div>
                  })
                ->React.array}
