@@ -80,7 +80,7 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
                   }}
                </div>
              </div>
-             <OracleScriptExecuteProof id requestOpt />
+             <OracleScriptExecuteProof id />
            </>;
          | Some(request) =>
            <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
