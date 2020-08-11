@@ -38,9 +38,9 @@ module Styles = {
       textOverflow(`ellipsis),
       whiteSpace(`nowrap),
       display(`block),
-      color(Colors.gray7),
-      hover([color(Colors.gray7)]),
-      active([color(Colors.gray7)]),
+      color(Colors.bandBlue),
+      hover([color(Colors.bandBlue)]),
+      active([color(Colors.bandBlue)]),
     ]);
 
   let wordBreak =
