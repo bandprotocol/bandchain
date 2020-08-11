@@ -1,19 +1,11 @@
 module Styles = {
   open Css;
-
-  let vFlex = justify =>
-    style([
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(justify),
-      alignItems(`center),
-    ]);
   let infoContainer =
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      // padding2(~v=`px(16), ~h=`px(24)),
       padding(`px(24)),
+      Media.mobile([padding(`px(16))]),
     ]);
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
