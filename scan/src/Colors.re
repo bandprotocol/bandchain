@@ -82,6 +82,7 @@ let gray5 = Css.hex("A4A4A4");
 let gray6 = Css.hex("888888");
 let gray7 = Css.hex("555555");
 let gray8 = Css.hex("333333");
+let gray9 = Css.hex("EAEAEA");
 
 let white = Css.hex("ffffff");
 
