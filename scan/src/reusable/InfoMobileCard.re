@@ -11,6 +11,7 @@ type t =
   | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
   | RequestID(ID.Request.t)
+  | ProgressBar(int, int, int)
   | Float(float, option(int))
   | KVTableReport(list(string), list(TxSub.RawDataReport.t))
   | KVTableRequest(option(array(Obi.field_key_value_t)))
@@ -72,9 +73,15 @@ let make = (~info) => {
     <div className=Styles.vFlex>
       <TypeID.OracleScript id />
       <HSpacing size=Spacing.sm />
-      <Text value=name />
+      <Text value=name ellipsis=true />
     </div>
   | RequestID(id) => <TypeID.Request id />
+  | ProgressBar(minCount, askCount, reportsCount) =>
+    <ProgressBar.Modern
+      reportedValidators=reportsCount
+      minimumValidators=minCount
+      requestValidators=askCount
+    />
   | Float(value, digits) =>
     <Text
       value={value |> Format.fPretty(~digits?)}

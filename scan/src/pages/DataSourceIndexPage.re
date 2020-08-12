@@ -16,9 +16,9 @@ module Styles = {
 let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
   let dataSourceSub = DataSourceSub.get(dataSourceID);
   <>
-    <Row.Grid marginBottom=40>
+    <Row.Grid marginBottom=40 marginBottomSm=16>
       <Col.Grid>
-        <Heading value="Data Source" size=Heading.H4 marginBottom=40 />
+        <Heading value="Data Source" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
         {switch (dataSourceSub) {
          | Data({id, name}) =>
            <div className={CssHelper.flexBox()}>
@@ -64,32 +64,36 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         </div>
       </Col.Grid>
     </Row.Grid>
-    // <Tab
-    //   tabs=[|
-    //     {
-    //       name: "Requests",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
-    //     },
-    //     {
-    //       name: "Code",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
-    //     },
-    //     {
-    //       name: "Test Execution",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
-    //     },
-    //     // {
-    //     //   name: "REVISIONS",
-    //     //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
-    //     // },
-    //   |]
-    //   currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
-    //   {switch (hashtag) {
-    //    | DataSourceExecute => <DataSourceExecute executable />
-    //    | DataSourceCode => <DataSourceCode executable />
-    //    | DataSourceRequests => <DataSourceRequestTable dataSourceID />
-    //    | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
-    //    }}
-    // </Tab>
+    <Tab
+      tabs=[|
+        {
+          name: "Requests",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
+        },
+        {
+          name: "Code",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
+        },
+        {
+          name: "Test Execution",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
+        },
+        // {
+        //   name: "REVISIONS",
+        //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
+        // },
+      |]
+      currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
+      {switch (dataSourceSub) {
+       | Data({executable}) =>
+         switch (hashtag) {
+         | DataSourceExecute => <DataSourceExecute executable />
+         | DataSourceCode => <DataSourceCode executable />
+         | DataSourceRequests => <DataSourceRequestTable dataSourceID />
+         | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
+         }
+       | _ => React.null
+       }}
+    </Tab>
   </>;
 };

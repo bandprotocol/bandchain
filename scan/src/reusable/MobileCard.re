@@ -29,10 +29,21 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~values, ~idx, ~status=?) => {
+let make = (~values, ~idx, ~status=?, ~requestStatus=?) => {
   <div className=Styles.cardContainer>
     {switch (status) {
      | Some(success) => <img src={success ? Images.success : Images.fail} className=Styles.logo />
+     | None => React.null
+     }}
+    {switch (requestStatus) {
+     | Some(resolveStatus) =>
+       switch (resolveStatus) {
+       | RequestSub.Success => <img src=Images.success className=Styles.logo />
+       | RequestSub.Failure => <img src=Images.fail className=Styles.logo />
+       | RequestSub.Pending => <img src=Images.pending className=Styles.logo />
+       | RequestSub.Expired => <img src=Images.expired className=Styles.logo />
+       | _ => React.null
+       }
      | None => React.null
      }}
     {values
