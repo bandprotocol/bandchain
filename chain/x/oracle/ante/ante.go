@@ -37,9 +37,9 @@ func checkValidReportMsg(ctx sdk.Context, oracleKeeper oracle.Keeper, msg sdk.Ms
 	return true
 }
 
-// BandWrapAnteHandler returns a new ante handler that set minimum gas price to be zero if the
+// NewFeelessReportsAnteHandler returns a new ante handler that set minimum gas price to be zero if the
 // incoming tx is a valid report transaction.
-func BandWrapAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
+func NewFeelessReportsAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
 		if ctx.IsCheckTx() && !simulate {
 			isValidReportTx := true
