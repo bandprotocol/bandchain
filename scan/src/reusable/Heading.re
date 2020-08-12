@@ -1,7 +1,10 @@
 type size =
   | H1
   | H2
-  | H3;
+  | H3
+  | H4
+  | H5;
+
 type weight =
   | Thin
   | Regular
@@ -21,7 +24,9 @@ module Styles = {
     fun
     | H1 => style([fontSize(`px(24)), Media.mobile([fontSize(`px(20))])])
     | H2 => style([fontSize(`px(20)), Media.mobile([fontSize(`px(18))])])
-    | H3 => style([fontSize(`px(18)), Media.mobile([fontSize(`px(16))])]);
+    | H3 => style([fontSize(`px(18)), Media.mobile([fontSize(`px(16))])])
+    | H4 => style([fontSize(`px(14)), Media.mobile([fontSize(`px(12))])])
+    | H5 => style([fontSize(`px(12)), Media.mobile([fontSize(`px(11))])]);
 
   let fontWeight =
     fun
@@ -43,7 +48,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0) => {
+let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0, ~style="") => {
   let children_ = React.string(value);
   let style_ = size =>
     Css.merge(
@@ -53,6 +58,7 @@ let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0) =>
         textAlign(align),
         lineHeight,
         mb(marginBottom),
+        style,
       ],
     );
 
@@ -60,5 +66,7 @@ let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0) =>
   | H1 => <h1 className={style_(size)}> children_ </h1>
   | H2 => <h2 className={style_(size)}> children_ </h2>
   | H3 => <h2 className={style_(size)}> children_ </h2>
+  | H4 => <h2 className={style_(size)}> children_ </h2>
+  | H5 => <h2 className={style_(size)}> children_ </h2>
   };
 };
