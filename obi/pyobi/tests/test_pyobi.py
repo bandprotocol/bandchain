@@ -413,3 +413,13 @@ def test_encode_decode_not_all_data_is_consumed_fail():
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
+    with pytest.raises(ValueError) as e:
+        PyObi("""[u32]""").decode(bytes.fromhex("00000000aabb"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
+    with pytest.raises(ValueError) as e:
+        PyObi("""{ x:i16 }""").decode(bytes.fromhex("00000000"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
