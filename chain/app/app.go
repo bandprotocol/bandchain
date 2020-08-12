@@ -240,7 +240,7 @@ func NewBandApp(
 	app.SetBeginBlocker(app.BeginBlocker)
 	anteHandler := ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer)
 	if !disableFeelessReports {
-		anteHandler = bandante.BandWrapAnteHandler(anteHandler, app.OracleKeeper)
+		anteHandler = bandante.NewFeelessReportsAnteHandler(anteHandler, app.OracleKeeper)
 	}
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
