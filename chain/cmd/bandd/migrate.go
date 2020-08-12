@@ -79,10 +79,10 @@ $ %s migrate /path/to/genesis.json --chain-id=band-guanyu --genesis-time=2020-08
 			state = v039.Migrate(v038.Migrate(state))
 
 			// Add genesis state of the new modules get state from `app` default genesis.
-			defaultGaunyu := app.NewDefaultGenesisState()
-			state[oracle.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[oracle.ModuleName])
-			state[evidence.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[evidence.ModuleName])
-			state[upgrade.ModuleName] = cdc.MustMarshalJSON(defaultGaunyu[upgrade.ModuleName])
+			defaultGuanyu := app.NewDefaultGenesisState()
+			state[oracle.ModuleName] = cdc.MustMarshalJSON(defaultGuanyu[oracle.ModuleName])
+			state[evidence.ModuleName] = cdc.MustMarshalJSON(defaultGuanyu[evidence.ModuleName])
+			state[upgrade.ModuleName] = cdc.MustMarshalJSON(defaultGuanyu[upgrade.ModuleName])
 
 			genDoc.AppState, err = cdc.MarshalJSON(state)
 			if err != nil {
