@@ -2,7 +2,7 @@ import pytest
 from pyobi import *
 
 
-def test_encode_decode_bool():
+def test_encode_decode_bool_success():
     # encode
     assert PyObiBool().encode(True) == bytes.fromhex("01")
     assert PyObiBool().encode(False) == bytes.fromhex("00")
@@ -12,7 +12,14 @@ def test_encode_decode_bool():
     assert PyObiBool().decode(bytes.fromhex("00")) == (False, b"")
 
 
-def test_encode_decode_unsigned_integer():
+def test_encode_decode_bool_fail():
+    with pytest.raises(ValueError) as e:
+        PyObiBool().decode(bytes.fromhex("07"))
+
+    assert str(e.value) == "Boolean value must be 1 or 0 but got 7"
+
+
+def test_encode_decode_unsigned_integer_success():
     # encode
     assert PyObiInteger("u8").encode(55) == bytes.fromhex("37")
     assert PyObiInteger("u16").encode(55555) == bytes.fromhex("d903")
@@ -42,6 +49,38 @@ def test_encode_decode_unsigned_integer():
     ) == (55555555555555555555555555555555555555555555555555555555555555555555555555555, b"")
 
 
+def test_encode_decode_unsigned_integer_fail():
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u8").encode(2 ** 8)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u16").encode(2 ** 16)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u32").encode(2 ** 32)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u64").encode(2 ** 64)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u128").encode(2 ** 128)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("u256").encode(2 ** 256)
+
+    assert str(e.value) == "int too big to convert"
+
+
 def test_encode_decode_signed_integer():
     # encode
     assert PyObiInteger("i8").encode(42) == bytes.fromhex("2a")
@@ -53,14 +92,14 @@ def test_encode_decode_signed_integer():
         "000000000000000000000000000000000000000000000000000000000000002a"
     )
 
-    assert PyObiInteger("i8").encode(-2 ** 7) == bytes.fromhex("80")
-    assert PyObiInteger("i16").encode(-2 ** 15) == bytes.fromhex("8000")
-    assert PyObiInteger("i32").encode(-2 ** 31) == bytes.fromhex("80000000")
-    assert PyObiInteger("i64").encode(-2 ** 63) == bytes.fromhex("8000000000000000")
-    assert PyObiInteger("i128").encode(-2 ** 127) == bytes.fromhex(
+    assert PyObiInteger("i8").encode(-(2 ** 7)) == bytes.fromhex("80")
+    assert PyObiInteger("i16").encode(-(2 ** 15)) == bytes.fromhex("8000")
+    assert PyObiInteger("i32").encode(-(2 ** 31)) == bytes.fromhex("80000000")
+    assert PyObiInteger("i64").encode(-(2 ** 63)) == bytes.fromhex("8000000000000000")
+    assert PyObiInteger("i128").encode(-(2 ** 127)) == bytes.fromhex(
         "80000000000000000000000000000000"
     )
-    assert PyObiInteger("i256").encode(-2 ** 255) == bytes.fromhex(
+    assert PyObiInteger("i256").encode(-(2 ** 255)) == bytes.fromhex(
         "8000000000000000000000000000000000000000000000000000000000000000"
     )
 
@@ -77,24 +116,58 @@ def test_encode_decode_signed_integer():
         bytes.fromhex("000000000000000000000000000000000000000000000000000000000000002a")
     ) == (42, b"")
 
-    assert PyObiInteger("i8").decode(bytes.fromhex("80")) == (-2 ** 7, b"")
-    assert PyObiInteger("i16").decode(bytes.fromhex("8000")) == (-2 ** 15, b"")
-    assert PyObiInteger("i32").decode(bytes.fromhex("80000000")) == (-2 ** 31, b"")
-    assert PyObiInteger("i64").decode(bytes.fromhex("8000000000000000")) == (-2 ** 63, b"")
+    assert PyObiInteger("i8").decode(bytes.fromhex("80")) == (-(2 ** 7), b"")
+    assert PyObiInteger("i16").decode(bytes.fromhex("8000")) == (-(2 ** 15), b"")
+    assert PyObiInteger("i32").decode(bytes.fromhex("80000000")) == (-(2 ** 31), b"")
+    assert PyObiInteger("i64").decode(bytes.fromhex("8000000000000000")) == (-(2 ** 63), b"")
     assert PyObiInteger("i128").decode(bytes.fromhex("80000000000000000000000000000000")) == (
-        -2 ** 127,
+        -(2 ** 127),
         b"",
     )
     assert PyObiInteger("i256").decode(
         bytes.fromhex("8000000000000000000000000000000000000000000000000000000000000000")
-    ) == (-2 ** 255, b"")
+    ) == (-(2 ** 255), b"")
 
 
-def test_encode_decode_str():
+def test_encode_decode_signed_integer_fail():
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i8").encode(2 ** 8)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i16").encode(2 ** 16)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i32").encode(2 ** 32)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i64").encode(2 ** 64)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i128").encode(2 ** 128)
+
+    assert str(e.value) == "int too big to convert"
+
+    with pytest.raises(OverflowError) as e:
+        PyObiInteger("i256").encode(2 ** 256)
+
+    assert str(e.value) == "int too big to convert"
+
+
+def test_encode_decode_str_success():
     # encode
+    assert PyObiString().encode("") == bytes.fromhex("00000000")
     assert PyObiString().encode("mumu") == bytes.fromhex("000000046d756d75")
 
     # decode
+    assert PyObiString().decode(bytes.fromhex("00000000")) == ("", b"")
     assert PyObiString().decode(bytes.fromhex("000000046d756d75")) == ("mumu", b"")
 
 
@@ -158,7 +231,7 @@ def test_decode_multi_obis():
     assert ["band", 400, 100] == [symbol, x, y]
 
 
-def test_encode_decode_single():
+def test_encode_decode_single_success():
     obi = PyObi(
         """
         {
@@ -312,4 +385,31 @@ def test_encode_decode_muti():
         == encoded.hex()
     )
     assert test_structs[4] == obi.decode(encoded, 4)
+
+
+def test_encode_decode_not_all_data_is_consumed_fail():
+    with pytest.raises(ValueError) as e:
+        PyObi("""bool""").decode(bytes.fromhex("00aa"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
+    with pytest.raises(ValueError) as e:
+        PyObi("""i64""").decode(bytes.fromhex("00112233445566778899"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
+    with pytest.raises(ValueError) as e:
+        PyObi("""u64""").decode(bytes.fromhex("00112233445566778899"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
+    with pytest.raises(ValueError) as e:
+        PyObi("""string""").decode(bytes.fromhex("00000000aabb"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
+
+    with pytest.raises(ValueError) as e:
+        PyObi("""bytes""").decode(bytes.fromhex("00000000aabb"))
+
+    assert str(e.value) == "Not all data is consumed after decoding input"
 
