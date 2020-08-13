@@ -17,6 +17,8 @@
 
 ### Yoda
 
+- (impv) [\#2463](https://github.com/bandprotocol/bandchain/pull/2463) Remove docker from executor option.
+
 ### Emitter & Flusher
 
 - (impv) [\#2453](https://github.com/bandprotocol/bandchain/pull/2453) Add index to improve graphql performance
