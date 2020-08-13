@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2466](https://github.com/bandprotocol/bandchain/pull/2466) Change exit code variable type
 - (impv) [\#2453](https://github.com/bandprotocol/bandchain/pull/2453) Add index to improve graphql performance
 - (bugs) [\#2447](https://github.com/bandprotocol/bandchain/pull/2447) Improve validator votes view performance
 
