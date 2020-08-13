@@ -78,7 +78,8 @@ let renderMostRequestedCard =
       <div className=Styles.descriptionBox>
         {switch (oracleScriptSub) {
          | Data({description}) =>
-           <Text size=Text.Lg value=description weight=Text.Regular block=true />
+           let text = Ellipsis.ellipsis(~text=description, ~limit=70, ());
+           <Text size=Text.Lg value=text weight=Text.Regular block=true />;
          | _ => <LoadingCensorBar width=250 height=15 />
          }}
       </div>
@@ -133,7 +134,9 @@ let renderBody =
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (oracleScriptSub) {
-         | Data({description}) => <Text value=description weight=Text.Medium block=true />
+         | Data({description}) =>
+           let text = Ellipsis.ellipsis(~text=description, ~limit=70, ());
+           <Text value=text weight=Text.Medium block=true />;
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
