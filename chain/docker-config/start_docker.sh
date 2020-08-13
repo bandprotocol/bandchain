@@ -123,7 +123,7 @@ do
     yoda config node tcp://172.18.0.1$v:26657
     yoda config chain-rest-server http://172.18.0.20:1317
     yoda config validator $(bandcli keys show validator$v -a --bech val --keyring-backend test)
-    yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution"
+    yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution?timeout=10s"
 
     # activate validator
     echo "y" | bandcli tx oracle activate --from validator$v --keyring-backend test
