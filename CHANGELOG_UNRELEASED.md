@@ -18,6 +18,8 @@
 
 ### Scan
 
+ - (imprv) [\#2473](https://github.com/bandprotocol/bandchain/pull/2473) Implemented OWASM code tab for OC index page, improved some components
+
 ### Bridges
 
 ### Runtime
