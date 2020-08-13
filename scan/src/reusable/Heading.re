@@ -41,7 +41,9 @@ module Styles = {
     | Center => style([textAlign(`center)])
     | Right => style([textAlign(`right)])
     | Left => style([textAlign(`left)]);
-
+  let textColor = color_ => {
+    style([color(color_)]);
+  };
   let mb = size => {
     style([marginBottom(`px(size))]);
   };
@@ -60,6 +62,7 @@ let make =
       ~marginBottom=0,
       ~marginBottomSm=marginBottom,
       ~style="",
+      ~color=Colors.gray7,
     ) => {
   let children_ = React.string(value);
   let style_ = size =>
@@ -67,6 +70,7 @@ let make =
       Styles.[
         fontSize(size),
         fontWeight(weight),
+        textColor(color),
         textAlign(align),
         lineHeight,
         mb(marginBottom),

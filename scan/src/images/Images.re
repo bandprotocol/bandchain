@@ -79,3 +79,6 @@
 [@bs.module] external mobileSortDescActive: string = "./mobile-sort-desc-active-icon.svg";
 [@bs.module] external cmcLogo: string = "./coinmarketcap.svg";
 [@bs.module] external infoIcon: string = "./information-icon.svg";
+[@bs.module] external noBlock: string = "./no-block.svg";
+[@bs.module] external noAccount: string = "./no-account.svg";
+[@bs.module] external noSource: string = "./no-source.svg";

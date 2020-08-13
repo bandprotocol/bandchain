@@ -16,9 +16,10 @@ module Styles = {
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
+      flexDirection(`column),
       backgroundColor(white),
     ]);
-  let noTransactionLogo = style([width(`px(160))]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
@@ -215,8 +216,15 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                 )
               ->React.array
             : <div className=Styles.emptyContainer>
-                //TODO It needs to replace image to no request image.
-                 <img src=Images.noTransaction className=Styles.noTransactionLogo /> </div>}
+                <img src=Images.noSource className=Styles.noDataImage />
+                <Heading
+                  size=Heading.H4
+                  value="No Request"
+                  align=Heading.Center
+                  weight=Heading.Thin
+                  color=Colors.bandBlue
+                />
+              </div>}
          {isMobile
             ? React.null
             : pageCount > 1

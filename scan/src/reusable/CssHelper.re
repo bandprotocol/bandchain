@@ -21,3 +21,5 @@ let btn = (~fsize=12, ()) => {
     hover([backgroundColor(Colors.bandBlue)]),
   ]);
 };
+
+let mobileSpacing = style([Media.mobile([paddingBottom(`px(20))])]);
