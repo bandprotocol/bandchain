@@ -36,7 +36,7 @@ func NewExecutor(executor string) (Executor, error) {
 	case "rest":
 		return NewRestExec(base, timeout), nil
 	case "docker":
-		return nil, fmt.Errorf("Docker does not support for current Yoda version")
+		return nil, fmt.Errorf("Docker executor is currently not supported")
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, base: %s", name, base)
 	}
