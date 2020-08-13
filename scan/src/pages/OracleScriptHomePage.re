@@ -121,7 +121,7 @@ let renderBody =
     }
     paddingH={`px(24)}>
     <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Five>
+      <Col.Grid col=Col.Four>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
            <div className={CssHelper.flexBox()}>
@@ -132,7 +132,7 @@ let renderBody =
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.Four>
+      <Col.Grid col=Col.Three>
         {switch (oracleScriptSub) {
          | Data({description}) =>
            let text = Ellipsis.ellipsis(~text=description, ~limit=70, ());
@@ -140,7 +140,7 @@ let renderBody =
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.One>
+      <Col.Grid col=Col.Two>
         {switch (oracleScriptSub) {
          | Data({request, responseTime}) =>
            <>
@@ -274,7 +274,7 @@ let make = () => {
          ? React.null
          : <THead.Grid>
              <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Five>
+               <Col.Grid col=Col.Four>
                  <div className=TElement.Styles.hashContainer>
                    <Text
                      block=true
