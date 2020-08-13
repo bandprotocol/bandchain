@@ -48,7 +48,7 @@ module Code = {
         CssHelper.flexBox(~align=`center, ~justify=`center, ()),
       ])}
       onClick={_ => {
-        Copy.copy(data |> JsBuffer.toUTF8);
+        Copy.copy(data);
         setCopy(_ => true);
         let _ = Js.Global.setTimeout(() => setCopy(_ => false), 700);
         ();

@@ -32,7 +32,12 @@ module Styles = {
       top(`px(30)),
       right(`px(30)),
       zIndex(9),
-      Media.mobile([right(`px(20))]),
+      Media.mobile([
+        position(`static),
+        display(`flex),
+        justifyContent(`flexEnd),
+        marginBottom(`px(8)),
+      ]),
     ]);
 };
 
@@ -45,13 +50,10 @@ let renderCode = content => {
 [@react.component]
 let make = (~executable) => {
   let code = executable |> JsBuffer.toUTF8;
-
   React.useMemo1(
     () =>
       <div className=Styles.tableLowerContainer>
-        <div className=Styles.copyContainer>
-          <CopyButton.Code data=executable title="Copy Code" />
-        </div>
+        <div className=Styles.copyContainer> <CopyButton.Code data=code title="Copy Code" /> </div>
         {code |> renderCode}
       </div>,
     [||],
