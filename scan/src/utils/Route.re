@@ -48,9 +48,9 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     let urlHash = (
       fun
       | "code" => DataSourceCode
-      | "requests" => DataSourceRequests
+      | "execute" => DataSourceExecute
       | "revisions" => DataSourceRevisions
-      | _ => DataSourceExecute
+      | _ => DataSourceRequests
     );
     DataSourceIndexPage(dataSourceID |> int_of_string, urlHash(hash));
   | (["oracle-scripts"], _) => OracleScriptHomePage
@@ -104,9 +104,9 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 let toString =
   fun
   | DataSourceHomePage => "/data-sources"
-  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID|j}
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
-  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID#execute|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
   | OracleScriptHomePage => "/oracle-scripts"
   | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}

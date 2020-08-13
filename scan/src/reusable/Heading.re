@@ -41,23 +41,40 @@ module Styles = {
     | Center => style([textAlign(`center)])
     | Right => style([textAlign(`right)])
     | Left => style([textAlign(`left)]);
-
+  let textColor = color_ => {
+    style([color(color_)]);
+  };
   let mb = size => {
+    style([marginBottom(`px(size))]);
+  };
+  let mbSm = size => {
     style([marginBottom(`px(size))]);
   };
 };
 
 [@react.component]
-let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0, ~style="") => {
+let make =
+    (
+      ~value,
+      ~align=Left,
+      ~weight=Semibold,
+      ~size=H1,
+      ~marginBottom=0,
+      ~marginBottomSm=marginBottom,
+      ~style="",
+      ~color=Colors.gray7,
+    ) => {
   let children_ = React.string(value);
   let style_ = size =>
     Css.merge(
       Styles.[
         fontSize(size),
         fontWeight(weight),
+        textColor(color),
         textAlign(align),
         lineHeight,
         mb(marginBottom),
+        mbSm(marginBottomSm),
         style,
       ],
     );
@@ -65,8 +82,8 @@ let make = (~value, ~align=Left, ~weight=Semibold, ~size=H1, ~marginBottom=0, ~s
   switch (size) {
   | H1 => <h1 className={style_(size)}> children_ </h1>
   | H2 => <h2 className={style_(size)}> children_ </h2>
-  | H3 => <h2 className={style_(size)}> children_ </h2>
-  | H4 => <h2 className={style_(size)}> children_ </h2>
-  | H5 => <h2 className={style_(size)}> children_ </h2>
+  | H3 => <h3 className={style_(size)}> children_ </h3>
+  | H4 => <h4 className={style_(size)}> children_ </h4>
+  | H5 => <h5 className={style_(size)}> children_ </h5>
   };
 };

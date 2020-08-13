@@ -3,6 +3,12 @@ type coin_amount_t = {
   hasDenom: bool,
 };
 
+type request_count_t = {
+  reportedValidators: int,
+  minimumValidators: int,
+  requestValidators: int,
+};
+
 type t =
   | Address(Address.t, int, [ | `account | `validator])
   | Height(ID.Block.t)
@@ -11,6 +17,7 @@ type t =
   | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
   | RequestID(ID.Request.t)
+  | ProgressBar(request_count_t)
   | Float(float, option(int))
   | KVTableReport(list(string), list(TxSub.RawDataReport.t))
   | KVTableRequest(option(array(Obi.field_key_value_t)))
@@ -72,9 +79,11 @@ let make = (~info) => {
     <div className=Styles.vFlex>
       <TypeID.OracleScript id />
       <HSpacing size=Spacing.sm />
-      <Text value=name />
+      <Text value=name ellipsis=true />
     </div>
   | RequestID(id) => <TypeID.Request id />
+  | ProgressBar({reportedValidators, minimumValidators, requestValidators}) =>
+    <ProgressBar reportedValidators minimumValidators requestValidators />
   | Float(value, digits) =>
     <Text
       value={value |> Format.fPretty(~digits?)}

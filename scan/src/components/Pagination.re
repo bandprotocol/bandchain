@@ -8,6 +8,7 @@ module Styles = {
       width(`percent(100.)),
       justifyContent(`center),
       minHeight(`px(30)),
+      padding2(~v=`px(16), ~h=`zero),
     ]);
 
   let innerContainer =
