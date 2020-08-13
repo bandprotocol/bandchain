@@ -53,6 +53,7 @@ let make = (~url: string) =>
             <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
               <Heading size=Heading.H5 value="Platform" />
               <HSpacing size=Spacing.xs />
+              //TODO: remove mock message later
               <CTooltip
                 tooltipPlacementSm=CTooltip.BottomLeft
                 tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
@@ -71,6 +72,7 @@ let make = (~url: string) =>
             <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
               <Heading size=Heading.H5 value="Language" />
               <HSpacing size=Spacing.xs />
+              //TODO: remove mock message later
               <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
                 <img className=Styles.infoIcon src=Images.infoIcon />
               </CTooltip>
