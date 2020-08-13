@@ -36,7 +36,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
 		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 		if err != nil {
-			l.Info(":warning: Failed to retreive account with error: %s", err.Error())
+			l.Debug(":warning: Failed to retreive account with error: %s", err.Error())
 			time.Sleep(c.rpcPollIntervall)
 			continue
 		}
@@ -52,7 +52,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		// }
 		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 		if err != nil {
-			l.Info(":warning: Failed to build tx with error: %s", err.Error())
+			l.Debug(":warning: Failed to build tx with error: %s", err.Error())
 			time.Sleep(c.rpcPollIntervall)
 			continue
 		}
@@ -61,7 +61,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 			txHash = res.TxHash
 			break
 		}
-		l.Info(":warning: Failed to broadcast tx with error: %s", err.Error())
+		l.Debug(":warning: Failed to broadcast tx with error: %s", err.Error())
 		time.Sleep(c.rpcPollIntervall)
 	}
 	if txHash == "" {
@@ -72,7 +72,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		time.Sleep(c.rpcPollIntervall)
 		txRes, err := utils.QueryTx(cliCtx, txHash)
 		if err != nil {
-			l.Info(":warning: Failed to query tx with error: %s", err.Error())
+			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
 			continue
 		}
 		if txRes.Code != 0 {
