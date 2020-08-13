@@ -99,7 +99,6 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			}
 			result, err := c.executor.Exec(exec, req.calldata)
 			if err != nil {
-				version.Store(result.Version, true)
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
 			} else {

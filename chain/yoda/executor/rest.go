@@ -51,7 +51,7 @@ func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
 	err = resp.JSON(&r)
 
 	if err != nil {
-		return ExecResult{Version: r.Version}, err
+		return ExecResult{}, err
 	}
 
 	if r.Returncode == 0 {
