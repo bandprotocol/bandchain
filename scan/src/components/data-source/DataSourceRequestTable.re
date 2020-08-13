@@ -234,17 +234,11 @@ let make = (~dataSourceID: ID.DataSource.t) => {
               </div>}
          {isMobile
             ? React.null
-            : pageCount > 1
-                ? <>
-                    <VSpacing size=Spacing.lg />
-                    <Pagination
-                      currentPage=page
-                      pageCount
-                      onPageChange={newPage => setPage(_ => newPage)}
-                    />
-                    <VSpacing size=Spacing.lg />
-                  </>
-                : React.null}
+            : <Pagination
+                currentPage=page
+                pageCount
+                onPageChange={newPage => setPage(_ => newPage)}
+              />}
        </>;
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
