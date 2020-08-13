@@ -2,7 +2,7 @@
 
 VERSION=1.0.3
 CURRENT_DIR=$(shell pwd)
-RUNTIME_VERSION="lambda:v1.0.3"
+RUNTIME_VERSION="lambda:$(VERSION)"
 
 lambda:
 	cp $(CURRENT_DIR)/lambda/lambda_function.py $(CURRENT_DIR)/lambda/lambda_function.bak
