@@ -46,13 +46,13 @@ func NewExecutor(executor string) (exec Executor, err error) {
 
 	res, err := exec.Exec(testProgram, "TEST_ARG")
 	if err != nil {
-		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
+		return nil, fmt.Errorf("failed to run test program: %s", err.Error())
 	}
 	if res.Code != 0 {
-		panic(fmt.Sprintf("NewDockerExec: test program returned nonzero code: %d", res.Code))
+		return nil, fmt.Errorf("test program returned nonzero code: %d", res.Code)
 	}
 	if string(res.Output) != "TEST_ARG\n" {
-		panic(fmt.Sprintf("NewDockerExec: test program returned wrong output: %s", res.Output))
+		return nil, fmt.Errorf("test program returned wrong output: %s", res.Output)
 	}
 	return exec, nil
 }

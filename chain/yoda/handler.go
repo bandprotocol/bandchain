@@ -2,6 +2,8 @@ package yoda
 
 import (
 	"strconv"
+	"strings"
+	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -84,7 +86,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	}
 
 	reportsChan := make(chan otypes.RawReport, len(reqs))
-	version := make(map[string]bool)
+	var version sync.Map
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, req.dataSourceHash)
@@ -97,7 +99,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			}
 			result, err := c.executor.Exec(exec, req.calldata)
 			if err != nil {
-				version[result.Version] = true
+				version.Store(result.Version, true)
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
 			} else {
@@ -105,21 +107,20 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 					req.calldata, result.Output, result.Code,
 				)
-				version[result.Version] = true
+				version.Store(result.Version, true)
 				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
 			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
 	reports := make([]otypes.RawReport, 0)
-	execVersion := ""
+	execVersions := make([]string, 0)
 	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
-
-	for ver, _ := range version {
-		execVersion += ver
-	}
-
-	SubmitReport(c, l, otypes.RequestID(id), reports, execVersion)
+	version.Range(func(key, value interface{}) bool {
+		execVersions = append(execVersions, key.(string))
+		return true
+	})
+	SubmitReport(c, l, otypes.RequestID(id), reports, strings.Join(execVersions, "+"))
 }
