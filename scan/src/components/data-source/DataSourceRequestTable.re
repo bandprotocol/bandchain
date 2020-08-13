@@ -221,7 +221,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                   size=Heading.H4
                   value="No Request"
                   align=Heading.Center
-                  weight=Heading.Thin
+                  weight=Heading.Regular
                   color=Colors.bandBlue
                 />
               </div>}
