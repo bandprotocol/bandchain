@@ -8,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
@@ -66,7 +67,7 @@ func Main() {
 		Short: "BandChain oracle daemon to subscribe and response to oracle requests",
 	}
 
-	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx))
+	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx), version.Cmd)
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		home, err := rootCmd.PersistentFlags().GetString(flags.FlagHome)
 		if err != nil {
