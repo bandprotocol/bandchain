@@ -73,7 +73,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 		time.Sleep(c.rpcPollIntervall)
 		txRes, err := utils.QueryTx(cliCtx, txHash)
 		if err != nil {
-			l.Info(":warning: Failed to query tx with error: %s", err.Error())
+			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
 			continue
 		}
 		if txRes.Code != 0 {

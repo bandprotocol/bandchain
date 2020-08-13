@@ -17,6 +17,7 @@
 
 ### Yoda
 
+- (chore) [\#2470](https://github.com/bandprotocol/bandchain/pull/2470) Fix log spam when failed to query tx.
 - (impv) [\#2467](https://github.com/bandprotocol/bandchain/pull/2467) Add yoda version in memo tx
 - (impv) [\#2463](https://github.com/bandprotocol/bandchain/pull/2463) Remove docker from executor option.
 
