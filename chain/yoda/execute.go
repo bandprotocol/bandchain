@@ -7,6 +7,7 @@ import (
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
@@ -19,7 +20,7 @@ var (
 	cdc = app.MakeCodec()
 )
 
-func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
+func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport, execVersion string) {
 	key := <-c.keys
 	defer func() {
 		c.keys <- key
@@ -43,7 +44,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 
 		txBldr := auth.NewTxBuilder(
 			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, "", sdk.NewCoins(), c.gasPrices,
+			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, execVersion), sdk.NewCoins(), c.gasPrices,
 		)
 		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 		// if err != nil {
