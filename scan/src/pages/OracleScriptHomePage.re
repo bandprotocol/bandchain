@@ -121,7 +121,7 @@ let renderBody =
     }
     paddingH={`px(24)}>
     <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Four>
+      <Col.Grid col=Col.Five>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
            <div className={CssHelper.flexBox()}>
@@ -274,7 +274,7 @@ let make = () => {
          ? React.null
          : <THead.Grid>
              <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Four>
+               <Col.Grid col=Col.Five>
                  <div className=TElement.Styles.hashContainer>
                    <Text
                      block=true
