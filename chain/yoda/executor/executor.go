@@ -18,28 +18,43 @@ var (
 )
 
 type ExecResult struct {
-	Output []byte
-	Code   uint32
+	Output  []byte
+	Code    uint32
+	Version string
 }
 
 type Executor interface {
 	Exec(exec []byte, arg string) (ExecResult, error)
 }
 
+var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
+
 // NewExecutor returns executor by name and executor URL
-func NewExecutor(executor string) (Executor, error) {
+func NewExecutor(executor string) (exec Executor, err error) {
 	name, base, timeout, err := parseExecutor(executor)
 	if err != nil {
 		return nil, err
 	}
 	switch name {
 	case "rest":
-		return NewRestExec(base, timeout), nil
+		exec = NewRestExec(base, timeout)
 	case "docker":
 		return nil, fmt.Errorf("Docker executor is currently not supported")
 	default:
 		return nil, fmt.Errorf("Invalid executor name: %s, base: %s", name, base)
 	}
+
+	res, err := exec.Exec(testProgram, "TEST_ARG")
+	if err != nil {
+		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
+	}
+	if res.Code != 0 {
+		panic(fmt.Sprintf("NewDockerExec: test program returned nonzero code: %d", res.Code))
+	}
+	if string(res.Output) != "TEST_ARG\n" {
+		panic(fmt.Sprintf("NewDockerExec: test program returned wrong output: %s", res.Output))
+	}
+	return exec, nil
 }
 
 // parseExecutor splits the executor string in the form of "name:base?timeout=" into parts.

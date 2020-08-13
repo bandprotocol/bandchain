@@ -84,6 +84,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	}
 
 	reportsChan := make(chan otypes.RawReport, len(reqs))
+	version := make(map[string]bool)
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, req.dataSourceHash)
@@ -96,6 +97,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			}
 			result, err := c.executor.Exec(exec, req.calldata)
 			if err != nil {
+				version[result.Version] = true
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
 			} else {
@@ -103,15 +105,21 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 					req.calldata, result.Output, result.Code,
 				)
+				version[result.Version] = true
 				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
 			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
 	reports := make([]otypes.RawReport, 0)
+	execVersion := ""
 	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
 
-	SubmitReport(c, l, otypes.RequestID(id), reports)
+	for ver, _ := range version {
+		execVersion += ver
+	}
+
+	SubmitReport(c, l, otypes.RequestID(id), reports, execVersion)
 }

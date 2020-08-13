@@ -20,6 +20,7 @@ type externalExecutionResponse struct {
 	Returncode uint32 `json:"returncode"`
 	Stdout     string `json:"stdout"`
 	Stderr     string `json:"stderr"`
+	Version    string `json:"version"`
 }
 
 func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
@@ -50,12 +51,12 @@ func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
 	err = resp.JSON(&r)
 
 	if err != nil {
-		return ExecResult{}, err
+		return ExecResult{Version: r.Version}, err
 	}
 
 	if r.Returncode == 0 {
-		return ExecResult{Output: []byte(r.Stdout), Code: 0}, nil
+		return ExecResult{Output: []byte(r.Stdout), Code: 0, Version: r.Version}, nil
 	} else {
-		return ExecResult{Output: []byte(r.Stderr), Code: r.Returncode}, nil
+		return ExecResult{Output: []byte(r.Stderr), Code: r.Returncode, Version: r.Version}, nil
 	}
 }

@@ -20,7 +20,7 @@ var (
 	cdc = app.MakeCodec()
 )
 
-func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport) {
+func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport, execVersions string) {
 	key := <-c.keys
 	defer func() {
 		c.keys <- key
@@ -44,7 +44,7 @@ func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawR
 
 		txBldr := auth.NewTxBuilder(
 			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, fmt.Sprintf("Yoda version: %s", version.Version), sdk.NewCoins(), c.gasPrices,
+			200000, 1, false, cfg.ChainID, fmt.Sprintf("Yoda version: %s / Executor version: %s", version.Version, execVersions), sdk.NewCoins(), c.gasPrices,
 		)
 		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 		// if err != nil {
