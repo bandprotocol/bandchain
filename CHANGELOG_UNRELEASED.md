@@ -17,6 +17,7 @@
 
 ### Yoda
 
+- (chore) [\#2470](https://github.com/bandprotocol/bandchain/pull/2470) Change yoda log in SubmitReport.
 - (impv) [\#2463](https://github.com/bandprotocol/bandchain/pull/2463) Remove docker from executor option.
 
 ### Emitter & Flusher
