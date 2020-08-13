@@ -17,6 +17,7 @@
 
 ### Yoda
 
+- (impv) [\#2467](https://github.com/bandprotocol/bandchain/pull/2467) Add yoda version in memo tx
 - (impv) [\#2463](https://github.com/bandprotocol/bandchain/pull/2463) Remove docker from executor option.
 
 ### Emitter & Flusher
