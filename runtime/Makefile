@@ -2,11 +2,10 @@
 
 VERSION=1.0.3
 CURRENT_DIR=$(shell pwd)
-RUNTIME_VERSION="lambda:$(VERSION)"
 
 lambda:
 	cp $(CURRENT_DIR)/lambda/lambda_function.py $(CURRENT_DIR)/lambda/lambda_function.bak
-	RUNTIME_VERSION=$(RUNTIME_VERSION) envsubst < $(CURRENT_DIR)/lambda/lambda_function.bak > $(CURRENT_DIR)/lambda/lambda_function.py
+	RUNTIME_VERSION="lambda:$(VERSION)" envsubst < $(CURRENT_DIR)/lambda/lambda_function.bak > $(CURRENT_DIR)/lambda/lambda_function.py
 	cp $(CURRENT_DIR)/requirements.txt $(CURRENT_DIR)/lambda
 	docker run --rm -v $(CURRENT_DIR)/lambda:/pack amazonlinux:latest ./pack/pack.sh
 	rm $(CURRENT_DIR)/lambda/requirements.txt
