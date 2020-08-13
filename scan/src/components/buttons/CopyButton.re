@@ -41,13 +41,21 @@ let make = (~data, ~title, ~width=105) => {
 module Code = {
   [@react.component]
   let make = (~data, ~title, ~width=105) => {
+    let (copied, setCopy) = React.useState(_ => false);
     <a
       className={Css.merge([
         Styles.buttonCode(width),
         CssHelper.flexBox(~align=`center, ~justify=`center, ()),
       ])}
-      onClick={_ => {Copy.copy(data |> JsBuffer.toUTF8)}}>
-      <img src=Images.copy className=Styles.withHeight />
+      onClick={_ => {
+        Copy.copy(data |> JsBuffer.toUTF8);
+        setCopy(_ => true);
+        let _ = Js.Global.setTimeout(() => setCopy(_ => false), 700);
+        ();
+      }}>
+      {copied
+         ? <img src=Images.tickIcon className=Styles.withHeight />
+         : <img src=Images.copy className=Styles.withHeight />}
       <HSpacing size=Spacing.sm />
       <Text value=title size=Text.Md block=true color=Colors.bandBlue nowrap=true />
     </a>;

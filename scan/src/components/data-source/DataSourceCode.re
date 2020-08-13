@@ -31,6 +31,7 @@ module Styles = {
       position(`absolute),
       top(`px(30)),
       right(`px(30)),
+      zIndex(9),
       Media.mobile([right(`px(20))]),
     ]);
 };

@@ -52,7 +52,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       <Col.Grid col=Col.Three>
         {switch (requestsSub) {
          | Data({minCount, askCount, reportsCount}) =>
-           <ProgressBar.Modern
+           <ProgressBar
              reportedValidators=reportsCount
              minimumValidators=minCount
              requestValidators=askCount
@@ -66,10 +66,10 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            | Data({resolveStatus}) =>
              switch (resolveStatus) {
              | RequestSub.Success => <img src=Images.success />
-             | RequestSub.Failure => <img src=Images.fail />
-             | RequestSub.Pending => <img src=Images.pending />
-             | RequestSub.Expired => <img src=Images.expired />
-             | _ => React.null
+             | Failure => <img src=Images.fail />
+             | Pending => <img src=Images.pending />
+             | Expired => <img src=Images.expired />
+             | Unknown => <img src=Images.unknown />
              }
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
@@ -110,7 +110,14 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Request ID", RequestID(id)),
         ("Oracle Script", OracleScript(oracleScriptID, oracleScriptName)),
-        ("Report Status", ProgressBar(minCount, askCount, reportsCount)),
+        (
+          "Report Status",
+          ProgressBar({
+            reportedValidators: reportsCount,
+            minimumValidators: minCount,
+            requestValidators: askCount,
+          }),
+        ),
         ("Timestamp", Timestamp(txTimestamp)),
       ]
       key={id |> ID.Request.toString}
