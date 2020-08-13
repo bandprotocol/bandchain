@@ -41,6 +41,8 @@
 
 ### Runtime
 
+- (impv) [\#2469](https://github.com/bandprotocol/bandchain/pull/2469) Add field version in success response.
+
 ### Owasm
 
 - (impv) [\#2392](https://github.com/bandprotocol/bandchain/pull/2392) Improve ext code structure and fix partial cmp bug
