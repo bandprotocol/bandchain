@@ -18,7 +18,8 @@
 
 ### Scan
 
- - (imprv) [\#2473](https://github.com/bandprotocol/bandchain/pull/2473) Implemented OWASM code tab for OC index page, improved some components
+- (imprv) [\#2473](https://github.com/bandprotocol/bandchain/pull/2473) Implemented OWASM code tab for OC index page, improved some components
+- (impv) [\#2471](https://github.com/bandprotocol/bandchain/pull/2471) Implemented the all oraclescripts page and refactor some part
 
 ### Bridges
 
