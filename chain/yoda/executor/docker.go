@@ -3,7 +3,6 @@ package executor
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -20,21 +19,8 @@ type DockerExec struct {
 	timeout time.Duration
 }
 
-var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
-
 func NewDockerExec(image string, timeout time.Duration) *DockerExec {
-	exec := &DockerExec{image: image, timeout: timeout}
-	res, err := exec.Exec(testProgram, "TEST_ARG")
-	if err != nil {
-		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
-	}
-	if res.Code != 0 {
-		panic(fmt.Sprintf("NewDockerExec: test program returned nonzero code: %d", res.Code))
-	}
-	if string(res.Output) != "TEST_ARG\n" {
-		panic(fmt.Sprintf("NewDockerExec: test program returned wrong output: %s", res.Output))
-	}
-	return exec
+	return &DockerExec{image: image, timeout: timeout}
 }
 
 func (e *DockerExec) Exec(code []byte, arg string) (ExecResult, error) {
