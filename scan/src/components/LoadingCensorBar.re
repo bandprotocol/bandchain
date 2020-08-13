@@ -53,11 +53,13 @@ let make =
       ~colorBase=Colors.blueGray2,
       ~colorLighter=Colors.blueGray1,
       ~isRight=false,
+      ~style="",
     ) => {
   <div
     className={Css.merge([
       Styles.main(~w=width, ~h=height, ~r=radius, ~colorBase, ~colorLighter, ()),
       isRight ? Styles.alignRight : "",
+      style,
     ])}
   />;
 };

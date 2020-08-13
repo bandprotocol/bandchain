@@ -10,6 +10,7 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
+  let loadingBox = style([width(`percent(100.))]);
 };
 
 [@react.component]
@@ -84,15 +85,19 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         // },
       |]
       currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
-      {switch (dataSourceSub) {
-       | Data({executable}) =>
-         switch (hashtag) {
-         | DataSourceExecute => <DataSourceExecute executable />
-         | DataSourceCode => <DataSourceCode executable />
-         | DataSourceRequests => <DataSourceRequestTable dataSourceID />
-         | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
+      {switch (hashtag) {
+       | DataSourceExecute =>
+         switch (dataSourceSub) {
+         | Data({executable}) => <DataSourceExecute executable />
+         | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
          }
-       | _ => React.null
+       | DataSourceCode =>
+         switch (dataSourceSub) {
+         | Data({executable}) => <DataSourceCode executable />
+         | _ => <LoadingCensorBar width=100 height=300 style=Styles.loadingBox />
+         }
+       | DataSourceRequests => <DataSourceRequestTable dataSourceID />
+       | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
        }}
     </Tab>
   </>;
