@@ -166,8 +166,7 @@ requests = sa.Table(
     Column("resolve_status", CustomResolveStatus),
     Column("resolve_time", sa.Integer, nullable=True),
     Column("result", CustomBase64, nullable=True),
-
-    sa.Index("ix_requests_oracle_script_id", "oracle_script_id", "id")
+    sa.Index("ix_requests_oracle_script_id", "oracle_script_id", "id"),
 )
 
 raw_requests = sa.Table(
@@ -202,7 +201,7 @@ raw_reports = sa.Table(
     Column("validator_id", sa.Integer, primary_key=True),
     Column("external_id", sa.BigInteger, primary_key=True),
     Column("data", CustomBase64),
-    Column("exit_code", sa.Integer),
+    Column("exit_code", sa.BigInteger),
     sa.ForeignKeyConstraint(
         ["request_id", "validator_id"], ["reports.request_id", "reports.validator_id"]
     ),
