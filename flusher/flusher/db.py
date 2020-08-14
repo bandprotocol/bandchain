@@ -319,3 +319,10 @@ votes = sa.Table(
     Column("answer", CustomVoteOption),
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
+
+bonded_tokens_by_timestamps = sa.Table(
+    "bonded_tokens_by_timestamps",
+    metadata,
+    Column("bonded_amount", sa.DECIMAL),
+    Column("timestamp", CustomDateTime, index=True),
+)

@@ -273,6 +273,14 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
+	modifiedMsgs = append(modifiedMsgs, Message{
+		Key: "NEW_BONDED_TOKENS_BY_TIMESTAMP",
+		Value: JsDict{
+			"timestamp":     app.DeliverContext.BlockTime().UnixNano(),
+			"bonded_amount": app.StakingKeeper.TotalBondedTokens(app.DeliverContext),
+		},
+	})
+
 	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res

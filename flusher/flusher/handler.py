@@ -23,6 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
+    bonded_tokens_by_timestamps,
 )
 
 
@@ -223,3 +224,6 @@ class Handler(object):
         for col in proposals.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(proposals.update().where(condition).values(**msg))
+
+    def handle_new_bonded_tokens_by_timestamp(self, msg):
+        self.conn.execute(bonded_tokens_by_timestamps.insert(), msg)
