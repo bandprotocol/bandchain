@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  // Sort Dropdown
-
   let sortDrowdownContainer =
     style([position(`relative), zIndex(2), flexBasis(`percent(40.))]);
   let sortDrowdownPanel = show => {
