@@ -57,10 +57,10 @@ def init(chain_id, topic, db):
     )
     engine.execute(
         """CREATE VIEW request_counts AS
-            SELECT date_trunc('minute', blocks.timestamp) as date, COUNT(*) as request_count
+            SELECT date_trunc('day', blocks.timestamp) as date, COUNT(*) as request_count
             FROM blocks
             JOIN transactions ON blocks.height = transactions.block_height
             JOIN requests ON requests.transaction_id = transactions.id
-            GROUP BY date_trunc('minute',blocks.timestamp);
+            GROUP BY date_trunc('day',blocks.timestamp);
             """
     )
