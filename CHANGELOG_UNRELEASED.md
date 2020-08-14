@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+ - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented bonded tokens by timestamps table
+
 ### Scan
 
  - (imprv) [\#2473](https://github.com/bandprotocol/bandchain/pull/2473) Implemented OWASM code tab for OC index page, improved some components
