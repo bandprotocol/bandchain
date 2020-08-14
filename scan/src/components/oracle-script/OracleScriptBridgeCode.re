@@ -1,11 +1,13 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(8))]);
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
+  let tableLowerContainer = style([position(`relative)]);
+  let tableWrapper =
+    style([padding(`px(24)), Media.mobile([padding2(~v=`px(20), ~h=`zero)])]);
+
   let codeImage = style([width(`px(20)), marginRight(`px(10))]);
   let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
+  let titleSpacing = style([marginBottom(`px(8))]);
   let scriptContainer =
     style([
       fontSize(`px(12)),
@@ -27,26 +29,25 @@ module Styles = {
 
   let selectWrapper =
     style([
+      backgroundColor(Colors.white),
+      border(`px(1), `solid, Colors.gray9),
+      borderRadius(`px(4)),
       display(`flex),
       flexDirection(`row),
-      padding2(~v=`px(3), ~h=`px(8)),
-      position(`static),
-      width(`px(169)),
-      height(`px(30)),
-      left(`zero),
-      top(`px(32)),
-      background(rgba(255, 255, 255, 1.)),
-      borderRadius(`px(100)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
-      float(`left),
+      padding2(~v=`px(10), ~h=`px(16)),
+      width(`percent(100.)),
+      maxWidth(`px(200)),
+      minHeight(`px(37)),
+      Media.mobile([padding2(~v=`px(10), ~h=`px(8))]),
     ]);
 
   let selectContent =
     style([
-      background(rgba(255, 255, 255, 1.)),
-      border(`px(0), `solid, hex("FFFFFF")),
-      width(`px(169)),
-      float(`right),
+      backgroundColor(Colors.transparent),
+      borderStyle(`none),
+      color(Colors.gray7),
+      width(`percent(100.)),
+      outlineStyle(`none),
     ]);
 
   let iconWrapper = style([display(`flex), alignItems(`center), justifyContent(`center)]);
@@ -55,7 +56,16 @@ module Styles = {
 
   let languageOption = style([display(`flex), flexDirection(`row), alignContent(`center)]);
 
-  let languageText = style([alignItems(`center), display(`flex)]);
+  let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
+
+  let copyContainer =
+    style([
+      position(`absolute),
+      top(`px(10)),
+      right(`px(10)),
+      zIndex(2),
+      Media.mobile([right(`zero), top(`px(-38))]),
+    ]);
 };
 
 let renderCode = content => {
@@ -174,20 +184,27 @@ module GenerateDecodeCode = {
       | Some(code) => code
       | _ => "Code is not available."
       };
-    <div className=Styles.tableLowerContainer>
-      <div className=Styles.vFlex>
-        <img src=Images.code className=Styles.codeImage />
-        <Text
-          value={getFileNameFromLanguage(~language, ~dataType)}
-          size=Text.Lg
-          color=Colors.gray7
-        />
-        <HSpacing size=Spacing.md />
-        <CopyRender width=15 message=code />
+    <>
+      <Row.Grid marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
+        <Col.Grid>
+          <div className={CssHelper.flexBox()}>
+            <Icon name="fal fa-file" size=16 />
+            <HSpacing size=Spacing.sm />
+            <Text
+              value={getFileNameFromLanguage(~language, ~dataType)}
+              weight=Text.Semibold
+              size=Text.Lg
+              block=true
+              color=Colors.gray7
+            />
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <div className=Styles.tableLowerContainer>
+        <div className=Styles.copyContainer> <CopyButton.Code data=code title="Copy Code" /> </div>
+        {code |> renderCode}
       </div>
-      <VSpacing size=Spacing.lg />
-      code->renderCode
-    </div>;
+    </>;
   };
 };
 
@@ -196,15 +213,18 @@ let make = (~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
-    <VSpacing size={`px(10)} />
-    <Row>
-      <HSpacing size={`px(15)} />
-      <Col> <div> <Text value="Target Platform" /> </div> </Col>
-      <HSpacing size={`px(370)} />
-    </Row>
-    <Row>
-      <Col size=1.>
-        <VSpacing size={`px(5)} />
+    <Row.Grid marginBottom=24>
+      <Col.Grid col=Col.Three colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Heading size=Heading.H5 value="Target Platform" />
+          <HSpacing size=Spacing.xs />
+          //TODO: remove mock message later
+          <CTooltip
+            tooltipPlacementSm=CTooltip.BottomLeft
+            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+            <img className=Styles.infoIcon src=Images.infoIcon />
+          </CTooltip>
+        </div>
         <div className=Styles.selectWrapper>
           <TargetPlatformIcon icon=targetPlatform />
           <select
@@ -215,22 +235,26 @@ let make = (~schema) => {
               let newLanguage = newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
               setLanguage(_ => newLanguage);
             }}>
-            // TODO: Add back Kadena and Cosmos
-
-              {[|Ethereum|]
-               ->Belt_Array.map(symbol =>
-                   <option value={symbol |> toPlatformString}>
-                     {symbol |> toPlatformString |> React.string}
-                   </option>
-                 )
-               |> React.array}
-            </select>
+            {[|Ethereum|]
+             ->Belt_Array.map(symbol =>
+                 <option value={symbol |> toPlatformString}>
+                   {symbol |> toPlatformString |> React.string}
+                 </option>
+               )
+             |> React.array}
+          </select>
         </div>
-      </Col>
-      <Col size=1.>
+      </Col.Grid>
+      <Col.Grid col=Col.Three colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Heading size=Heading.H5 value="Language" />
+          <HSpacing size=Spacing.xs />
+          //TODO: remove mock message later
+          <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+            <img className=Styles.infoIcon src=Images.infoIcon />
+          </CTooltip>
+        </div>
         <div className=Styles.languageOption>
-          <div className=Styles.languageText> <Text value="Language" /> </div>
-          <HSpacing size={`px(15)} />
           <div className=Styles.selectWrapper>
             <LanguageIcon icon=language />
             <select
@@ -250,26 +274,26 @@ let make = (~schema) => {
             </select>
           </div>
         </div>
-      </Col>
-    </Row>
-    <VSpacing size={`px(35)} />
-    /*     <div className=Styles.tableLowerContainer>
-             <div className=Styles.vFlex>
-               <Text value="Description" size=Text.Lg color=Colors.gray7 spacing={Text.Em(0.03)} />
-             </div>
-             <VSpacing size=Spacing.lg />
-             <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
-           </div>
-           <VSpacing size={`px(35)} /> */
+      </Col.Grid>
+    </Row.Grid>
+    <Row.Grid marginBottom=24 marginBottomSm=12>
+      <Col.Grid>
+        <div className={CssHelper.flexBox()}>
+          <Icon name="fal fa-file" size=16 />
+          <HSpacing size=Spacing.sm />
+          <Text
+            value="Oracle Script Schema"
+            weight=Text.Semibold
+            size=Text.Lg
+            block=true
+            color=Colors.gray7
+          />
+        </div>
+      </Col.Grid>
+    </Row.Grid>
     <div className=Styles.tableLowerContainer>
-      <div className=Styles.vFlex>
-        <img src=Images.code className=Styles.codeImage />
-        <Text value="Oracle Script Schema" size=Text.Lg color=Colors.gray7 />
-        <HSpacing size=Spacing.md />
-        <CopyRender width=15 message=schema />
-      </div>
-      <VSpacing size=Spacing.lg />
-      schema->renderCode
+      <div className=Styles.copyContainer> <CopyButton.Code data=schema title="Copy Code" /> </div>
+      {schema |> renderCode}
     </div>
     <GenerateDecodeCode language schema dataType=Obi.Params />
   </div>;
