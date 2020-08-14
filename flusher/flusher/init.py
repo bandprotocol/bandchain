@@ -55,4 +55,12 @@ def init(chain_id, topic, db):
 			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
 			GROUP BY consensus_address, voted;"""
     )
-
+    engine.execute(
+        """CREATE VIEW request_counts AS
+            SELECT date_trunc('minute', blocks.timestamp) as date, COUNT(*) as request_count
+            FROM blocks
+            JOIN transactions ON blocks.height = transactions.block_height
+            JOIN requests ON requests.transaction_id = transactions.id
+            GROUP BY date_trunc('minute',blocks.timestamp);
+            """
+    )
