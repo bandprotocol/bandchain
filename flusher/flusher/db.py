@@ -108,7 +108,7 @@ transactions = sa.Table(
     metadata,
     Column("id", sa.Integer, sa.Sequence("seq_transaction_id"), unique=True),
     Column("hash", CustomBase64, primary_key=True),
-    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height")),
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), index=True),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix
@@ -118,7 +118,6 @@ transactions = sa.Table(
     Column("memo", sa.String),
     Column("messages", sa.JSON),
 )
-
 
 accounts = sa.Table(
     "accounts",
@@ -167,6 +166,7 @@ requests = sa.Table(
     Column("resolve_status", CustomResolveStatus),
     Column("resolve_time", sa.Integer, nullable=True),
     Column("result", CustomBase64, nullable=True),
+    sa.Index("ix_requests_oracle_script_id", "oracle_script_id", "id"),
 )
 
 raw_requests = sa.Table(
@@ -201,7 +201,7 @@ raw_reports = sa.Table(
     Column("validator_id", sa.Integer, primary_key=True),
     Column("external_id", sa.BigInteger, primary_key=True),
     Column("data", CustomBase64),
-    Column("exit_code", sa.Integer),
+    Column("exit_code", sa.BigInteger),
     sa.ForeignKeyConstraint(
         ["request_id", "validator_id"], ["reports.request_id", "reports.validator_id"]
     ),

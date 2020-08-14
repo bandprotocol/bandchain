@@ -267,7 +267,7 @@ let make = () => {
   let allSub = Sub.all2(dataSourcesSub, dataSourcesCountSub);
   let isMobile = Media.isMobile();
 
-  <>
+  <div className=CssHelper.mobileSpacing>
     <Row.Grid alignItems=Row.Center marginBottom=40>
       <Col.Grid col=Col.Twelve>
         <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 />
@@ -360,5 +360,5 @@ let make = () => {
          )
        ->React.array
      }}
-  </>;
+  </div>;
 };

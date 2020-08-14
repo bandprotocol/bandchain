@@ -11,13 +11,21 @@ HEADERS = {
     "access-control-allow-methods": "OPTIONS, POST",
 }
 
+runtime_version = "${RUNTIME_VERSION}"
+
 
 def success(returncode, stdout, stderr, err):
     return {
         "statusCode": 200,
         "headers": HEADERS,
         "body": json.dumps(
-            {"returncode": returncode, "stdout": stdout, "stderr": stderr, "error": err}
+            {
+                "returncode": returncode,
+                "stdout": stdout,
+                "stderr": stderr,
+                "error": err,
+                "version": runtime_version,
+            }
         ),
     }
 
@@ -90,4 +98,3 @@ def lambda_handler(event, context):
         return success(126, "", "", "Execution fail")
     except subprocess.TimeoutExpired:
         return success(111, "", "", "Execution time limit exceeded")
-

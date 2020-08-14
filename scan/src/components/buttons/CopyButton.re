@@ -13,6 +13,18 @@ module Styles = {
     ]);
 
   let withHeight = style([maxHeight(`px(12))]);
+
+  // Code
+
+  let buttonCode = w =>
+    style([
+      backgroundColor(Colors.white),
+      border(`px(1), `solid, Colors.bandBlue),
+      borderRadius(`px(4)),
+      cursor(`pointer),
+      padding2(~v=`px(5), ~h=`px(10)),
+      width(`px(w)),
+    ]);
 };
 
 [@react.component]
@@ -24,4 +36,28 @@ let make = (~data, ~title, ~width=105) => {
     <HSpacing size=Spacing.sm />
     <Text value=title size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
   </div>;
+};
+
+module Code = {
+  [@react.component]
+  let make = (~data, ~title, ~width=105) => {
+    let (copied, setCopy) = React.useState(_ => false);
+    <a
+      className={Css.merge([
+        Styles.buttonCode(width),
+        CssHelper.flexBox(~align=`center, ~justify=`center, ()),
+      ])}
+      onClick={_ => {
+        Copy.copy(data);
+        setCopy(_ => true);
+        let _ = Js.Global.setTimeout(() => setCopy(_ => false), 700);
+        ();
+      }}>
+      {copied
+         ? <img src=Images.tickIcon className=Styles.withHeight />
+         : <img src=Images.copy className=Styles.withHeight />}
+      <HSpacing size=Spacing.sm />
+      <Text value=title size=Text.Md block=true color=Colors.bandBlue nowrap=true />
+    </a>;
+  };
 };

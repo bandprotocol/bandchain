@@ -27,6 +27,12 @@ type lineHeight =
   | Px(int)
   | PxFloat(float);
 
+type transform =
+  | Uppercase
+  | Capitalize
+  | Lowercase
+  | Normal;
+
 type placement =
   | AlignBottomEnd
   | AlignBottomStart
@@ -162,6 +168,13 @@ module Styles = {
       ]),
     ]);
 
+  let textTransform =
+    fun
+    | Uppercase => style([textTransform(`uppercase)])
+    | Lowercase => style([textTransform(`lowercase)])
+    | Capitalize => style([textTransform(`capitalize)])
+    | Normal => style([textTransform(`unset)]);
+
   let breakAll = style([wordBreak(`breakAll)]);
 };
 
@@ -180,6 +193,7 @@ let make =
       ~ellipsis=false,
       ~underline=false,
       ~breakAll=false,
+      ~transform=Normal,
       ~value,
       ~tooltipItem=React.null,
       ~tooltipPlacement=AlignBottom,
@@ -193,6 +207,7 @@ let make =
           Styles.textAlign(align),
           Styles.letterSpacing(spacing),
           Styles.lineHeight(height),
+          Styles.textTransform(transform),
           nowrap ? Styles.noWrap : "",
           block ? Styles.block : "",
           code ? Styles.code : "",

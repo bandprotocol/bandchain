@@ -2,6 +2,8 @@ package yoda
 
 import (
 	"strconv"
+	"strings"
+	"sync"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -84,6 +86,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	}
 
 	reportsChan := make(chan otypes.RawReport, len(reqs))
+	var version sync.Map
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, req.dataSourceHash)
@@ -103,15 +106,20 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 					req.calldata, result.Output, result.Code,
 				)
+				version.Store(result.Version, true)
 				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
 			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
 	reports := make([]otypes.RawReport, 0)
+	execVersions := make([]string, 0)
 	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
-
-	SubmitReport(c, l, otypes.RequestID(id), reports)
+	version.Range(func(key, value interface{}) bool {
+		execVersions = append(execVersions, key.(string))
+		return true
+	})
+	SubmitReport(c, l, otypes.RequestID(id), reports, strings.Join(execVersions, "+"))
 }

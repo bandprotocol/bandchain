@@ -11,7 +11,7 @@ module RawDataSourceID = {
   let prefix = "#D";
   let color = Colors.yellow5;
   let route = (id, tab) => Route.DataSourceIndexPage(id, tab);
-  let defaultTab = Route.DataSourceExecute;
+  let defaultTab = Route.DataSourceRequests;
 };
 
 module RawOracleScriptID = {

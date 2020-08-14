@@ -10,15 +10,16 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
+  let loadingBox = style([width(`percent(100.))]);
 };
 
 [@react.component]
 let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
   let dataSourceSub = DataSourceSub.get(dataSourceID);
   <>
-    <Row.Grid marginBottom=40>
+    <Row.Grid marginBottom=40 marginBottomSm=16>
       <Col.Grid>
-        <Heading value="Data Source" size=Heading.H4 marginBottom=40 />
+        <Heading value="Data Source" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
         {switch (dataSourceSub) {
          | Data({id, name}) =>
            <div className={CssHelper.flexBox()}>
@@ -64,32 +65,40 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
         </div>
       </Col.Grid>
     </Row.Grid>
-    // <Tab
-    //   tabs=[|
-    //     {
-    //       name: "Requests",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
-    //     },
-    //     {
-    //       name: "Code",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
-    //     },
-    //     {
-    //       name: "Test Execution",
-    //       route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
-    //     },
-    //     // {
-    //     //   name: "REVISIONS",
-    //     //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
-    //     // },
-    //   |]
-    //   currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
-    //   {switch (hashtag) {
-    //    | DataSourceExecute => <DataSourceExecute executable />
-    //    | DataSourceCode => <DataSourceCode executable />
-    //    | DataSourceRequests => <DataSourceRequestTable dataSourceID />
-    //    | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
-    //    }}
-    // </Tab>
+    <Tab
+      tabs=[|
+        {
+          name: "Requests",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
+        },
+        {
+          name: "Code",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
+        },
+        {
+          name: "Test Execution",
+          route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
+        },
+        // {
+        //   name: "REVISIONS",
+        //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
+        // },
+      |]
+      currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
+      {switch (hashtag) {
+       | DataSourceExecute =>
+         switch (dataSourceSub) {
+         | Data({executable}) => <DataSourceExecute executable />
+         | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+         }
+       | DataSourceCode =>
+         switch (dataSourceSub) {
+         | Data({executable}) => <DataSourceCode executable />
+         | _ => <LoadingCensorBar width=100 height=300 style=Styles.loadingBox />
+         }
+       | DataSourceRequests => <DataSourceRequestTable dataSourceID />
+       | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
+       }}
+    </Tab>
   </>;
 };
