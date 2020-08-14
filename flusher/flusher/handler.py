@@ -23,6 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
+    related_data_source_oracle_scripts,
 )
 
 
@@ -103,7 +104,22 @@ class Handler(object):
             condition = (col == msg[col.name]) & condition
         self.conn.execute(requests.update().where(condition).values(**msg))
 
+    def handle_update_related_ds_os(self, msg):
+        self.conn.execute(
+            insert(related_data_source_oracle_scripts)
+            .values(**msg)
+            .on_conflict_do_update(constraint="related_data_source_oracle_scripts_pkey", set_=msg)
+        )
+
     def handle_new_raw_request(self, msg):
+        self.handle_update_related_ds_os(
+            {
+                "oracle_script_id": self.conn.execute(
+                    select([requests.c.oracle_script_id]).where(accounts.c.id == msg["request_id"])
+                ).scalar(),
+                "data_source_id": msg["data_source_id"],
+            }
+        )
         self.conn.execute(raw_requests.insert(), msg)
 
     def handle_new_val_request(self, msg):
