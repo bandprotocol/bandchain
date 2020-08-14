@@ -142,30 +142,38 @@ let renderBody =
          }}
       </Col.Grid>
       <Col.Grid col=Col.Two>
-        {switch (oracleScriptSub) {
-         | Data({request, responseTime}) =>
-           <>
-             <div>
-               <Text
-                 value={request |> Format.iPretty}
-                 weight=Text.Medium
-                 block=true
-                 ellipsis=true
-                 align=Text.Right
-               />
-             </div>
-             <div>
-               <Text
-                 value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
-                 weight=Text.Medium
-                 block=true
-                 color=Colors.gray6
-                 align=Text.Right
-               />
-             </div>
-           </>
-         | _ => <LoadingCensorBar width=70 height=15 />
-         }}
+        <div
+          className={CssHelper.flexBox(
+            ~justify=`flexStart,
+            ~align=`flexEnd,
+            ~direction=`column,
+            (),
+          )}>
+          {switch (oracleScriptSub) {
+           | Data({request, responseTime}) =>
+             <>
+               <div>
+                 <Text
+                   value={request |> Format.iPretty}
+                   weight=Text.Medium
+                   block=true
+                   ellipsis=true
+                   align=Text.Right
+                 />
+               </div>
+               <div>
+                 <Text
+                   value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
+                   weight=Text.Medium
+                   block=true
+                   color=Colors.gray6
+                   align=Text.Right
+                 />
+               </div>
+             </>
+           | _ => <LoadingCensorBar width=70 height=15 />
+           }}
+        </div>
       </Col.Grid>
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
@@ -222,11 +230,13 @@ let make = () => {
   let (sortedBy, setSortedBy) = React.useState(_ => LatestUpdate);
 
   let pageSize = 10;
+  let mostRequestedPageSize = isMobile ? 3 : 6;
   let oracleScriptsCountSub = OracleScriptSub.count(~searchTerm, ());
   let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
 
   //TODO: we'll implement another subscribe function for getting the most requested oracle scripts
-  let oracleScriptTopPart = OracleScriptSub.getList(~pageSize=6, ~page=1, ~searchTerm="", ());
+  let oracleScriptTopPart =
+    OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
 
   let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
 
