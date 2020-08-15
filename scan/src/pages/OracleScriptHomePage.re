@@ -234,7 +234,7 @@ let make = () => {
   let oracleScriptsCountSub = OracleScriptSub.count(~searchTerm, ());
   let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
 
-  //TODO: we'll implement another subscribe function for getting the most requested oracle scripts
+  //TODO: we will implement another subscribe function for getting the most requested oracle scripts
   let oracleScriptTopPart =
     OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
 
