@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let pageWidth = style([maxWidth(`px(Config.pageWidth))]);
-
   let container =
     style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
@@ -46,11 +44,13 @@ let make = () => {
   let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
 
   <div className=Styles.container>
-    <TopBar />
-    <div className={Css.merge([Styles.innerContainer, Styles.pageWidth])}>
+    <Header />
+    <div className="container">
       {Media.isMobile()
-         ? <div className={Styles.bgSearch(currentRoute == HomePage)}> <SearchBar /> </div>
-         : <NavBar />}
+         ? <div className={Styles.bgSearch(currentRoute == HomePage)}>
+             <SearchBar />
+           </div>
+         : React.null}
       <div className=Styles.routeContainer>
         {switch (currentRoute) {
          | HomePage => <HomePage />

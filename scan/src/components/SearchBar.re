@@ -7,7 +7,6 @@ module Styles = {
       width(`percent(100.)),
       height(`percent(100.)),
       position(`relative),
-      marginLeft(Spacing.lg),
       marginTop(Spacing.xs),
       Media.mobile([
         margin(`zero),

@@ -1,16 +1,27 @@
 type position =
   | Title
   | Subtitle
-  | Text
-  | Nav;
+  | Text;
 
 module Styles = {
   open Css;
 
   let container = style([display(`flex), cursor(`pointer)]);
 
-  let clickable = active =>
-    active ? style([pointerEvents(`auto)]) : style([pointerEvents(`none)]);
+  let clickable = isActive =>
+    isActive
+      ? style([
+          pointerEvents(`auto),
+          color(Colors.bandBlue),
+          hover([color(Colors.bandBlue)]),
+          active([color(Colors.bandBlue)]),
+        ])
+      : style([
+          pointerEvents(`none),
+          color(Colors.gray7),
+          hover([color(Colors.gray7)]),
+          active([color(Colors.gray7)]),
+        ]);
 
   let prefix = style([fontWeight(`num(600))]);
 
@@ -29,19 +40,10 @@ module Styles = {
         letterSpacing(`em(0.02)),
         Media.mobile([fontSize(`px(12))]),
       ])
-    | Text => style([fontSize(`px(12)), lineHeight(`px(16))])
-    | Nav => style([fontSize(`px(10)), lineHeight(`px(14))]);
+    | Text => style([fontSize(`px(12)), lineHeight(`px(16))]);
 
   let base =
-    style([
-      overflow(`hidden),
-      textOverflow(`ellipsis),
-      whiteSpace(`nowrap),
-      display(`block),
-      color(Colors.bandBlue),
-      hover([color(Colors.bandBlue)]),
-      active([color(Colors.bandBlue)]),
-    ]);
+    style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap), display(`block)]);
 
   let wordBreak =
     style([Media.mobile([textOverflow(`unset), whiteSpace(`unset), wordBreak(`breakAll)])]);

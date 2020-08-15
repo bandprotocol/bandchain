@@ -2,43 +2,36 @@ module RenderDesktop = {
   module Styles = {
     open Css;
 
-    let navContainer =
-      style([
-        paddingTop(Spacing.md),
-        paddingBottom(Spacing.md),
-        maxWidth(`px(970)),
-        marginLeft(`auto),
-        marginRight(`auto),
-        minHeight(`px(70)),
-      ]);
+    let flexBox = style([display(`flex), justifyContent(`spaceBetween)]);
 
-    let nav =
+    let nav = isActive =>
       style([
-        paddingRight(Spacing.md),
+        padding2(~v=`px(16), ~h=`zero),
         cursor(`pointer),
-        color(Colors.blueGray4),
-        fontSize(`px(11)),
-        hover([color(Colors.blueGray4)]),
-        active([color(Colors.blueGray4)]),
+        fontSize(`px(12)),
+        hover([color(Colors.gray6)]),
+        active([color(Colors.gray6)]),
+        transition(~duration=400, "all"),
+        color(isActive ? Colors.gray7 : Colors.gray6),
+        borderBottom(`px(4), `solid, isActive ? Colors.bandBlue : Colors.white),
       ]);
   };
 
   [@react.component]
   let make = (~routes) => {
-    <div className=Styles.navContainer>
-      <Row justify=Row.Between alignItems=`flexStart>
-        <Col>
-          <Row>
-            {routes
-             ->Belt.List.map(((v, route)) =>
-                 <Col key=v> <Link className=Styles.nav route> {v |> React.string} </Link> </Col>
-               )
-             ->Array.of_list
-             ->React.array}
-          </Row>
-        </Col>
-        <Col> <UserAccount /> </Col>
-      </Row>
+    let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
+
+    <div className=Styles.flexBox>
+      {routes
+       ->Belt.List.map(((v, route)) =>
+           <div className=Styles.flexBox>
+             <Link className={Styles.nav(currentRoute == route)} route>
+               {v |> React.string}
+             </Link>
+           </div>
+         )
+       ->Array.of_list
+       ->React.array}
     </div>;
   };
 };
@@ -66,7 +59,8 @@ module RenderMobile = {
       ]);
 
     let nav = style([color(Colors.gray8), padding2(~v=`px(16), ~h=`zero)]);
-    let menuContainer = style([padding2(~v=`px(10), ~h=`px(5))]);
+    let menuContainer =
+      style([padding4(~top=`px(10), ~bottom=`px(10), ~left=`px(10), ~right=`px(5))]);
     let menu = style([width(`px(20))]);
     let twitterLogo = style([width(`px(19))]);
     let telegramLogo = style([width(`px(17))]);
