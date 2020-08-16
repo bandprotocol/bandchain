@@ -61,7 +61,8 @@ let make = () => {
   let lastest11BlocksSub = BlockSub.getList(~pageSize, ~page=1, ());
   let latestBlockSub = lastest11BlocksSub->Sub.map(blocks => blocks->Belt_Array.getExn(0));
 
-  <Section>
+  // TODO: fix it later
+  <Section ptSm=0>
     <div className=CssHelper.container>
       <div className=Styles.highlightsContainer>
         <ChainInfoHighlights latestBlockSub />

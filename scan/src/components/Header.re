@@ -6,7 +6,6 @@ module Styles = {
       paddingTop(Spacing.lg),
       backgroundColor(Colors.white),
       borderBottom(`px(2), `solid, Colors.blueGray1),
-      marginBottom(`px(24)),
       zIndex(3),
       Media.mobile([
         padding(Spacing.md),
@@ -23,14 +22,7 @@ module Styles = {
   let telegramLogo = style([width(`px(15))]);
   let cmcLogo = style([width(`px(17))]);
 
-  let socialLink =
-    style([
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(`center),
-      alignItems(`center),
-      marginLeft(`px(10)),
-    ]);
+  let socialLink = style([marginLeft(`px(10))]);
 
   let link = style([cursor(`pointer)]);
 };
@@ -78,24 +70,27 @@ module DesktopRender = {
                   </LinkToHome>
                   <HSpacing size=Spacing.xs />
                   <ChainIDBadge />
-                  <div className=Styles.socialLink>
-                    <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-                      <img src=Images.twitterLogo className=Styles.twitterLogo />
-                    </a>
-                  </div>
-                  <div className=Styles.socialLink>
-                    <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-                      <img src=Images.telegramLogo className=Styles.telegramLogo />
-                    </a>
-                  </div>
-                  <div className=Styles.socialLink>
-                    <a
-                      href="https://coinmarketcap.com/currencies/band-protocol/"
-                      target="_blank"
-                      rel="noopener">
-                      <img src=Images.cmcLogo className=Styles.telegramLogo />
-                    </a>
-                  </div>
+                  <a
+                    href="https://twitter.com/bandprotocol"
+                    target="_blank"
+                    rel="noopener"
+                    className=Styles.socialLink>
+                    <img src=Images.twitterLogo className=Styles.twitterLogo />
+                  </a>
+                  <a
+                    href="https://t.me/bandprotocol"
+                    target="_blank"
+                    rel="noopener"
+                    className=Styles.socialLink>
+                    <img src=Images.telegramLogo className=Styles.telegramLogo />
+                  </a>
+                  <a
+                    href="https://coinmarketcap.com/currencies/band-protocol/"
+                    target="_blank"
+                    rel="noopener"
+                    className=Styles.socialLink>
+                    <img src=Images.cmcLogo className=Styles.telegramLogo />
+                  </a>
                 </div>
               </div>
             </div>

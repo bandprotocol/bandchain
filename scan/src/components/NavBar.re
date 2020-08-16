@@ -2,8 +2,6 @@ module RenderDesktop = {
   module Styles = {
     open Css;
 
-    let flexBox = style([display(`flex), justifyContent(`spaceBetween)]);
-
     let nav = isActive =>
       style([
         padding2(~v=`px(16), ~h=`zero),
@@ -21,10 +19,10 @@ module RenderDesktop = {
   let make = (~routes) => {
     let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
 
-    <div className=Styles.flexBox>
+    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
       {routes
        ->Belt.List.map(((v, route)) =>
-           <div className=Styles.flexBox>
+           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
              <Link className={Styles.nav(currentRoute == route)} route>
                {v |> React.string}
              </Link>
