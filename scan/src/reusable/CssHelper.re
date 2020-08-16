@@ -48,3 +48,5 @@ let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ()) => {
 let mobileSpacing = style([Media.mobile([paddingBottom(`px(20))])]);
 
 let clickable = style([cursor(`pointer)]);
+
+let container = "container";
