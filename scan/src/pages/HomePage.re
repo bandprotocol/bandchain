@@ -61,25 +61,30 @@ let make = () => {
   let lastest11BlocksSub = BlockSub.getList(~pageSize, ~page=1, ());
   let latestBlockSub = lastest11BlocksSub->Sub.map(blocks => blocks->Belt_Array.getExn(0));
 
-  <div className=Styles.highlightsContainer>
-    <ChainInfoHighlights latestBlockSub />
-    <VSpacing size=Spacing.xl />
-    // TODO: for next version
-    // <div className=Styles.grayArea>
-    //   <div className=Styles.bg>
-    //     <img src=Images.bg />
-    //     <img src=Images.bg className=Styles.imgRight />
-    //   </div>
-    //   <div className=Styles.grayAreaInner> <DataScriptsHighlights /> </div>
-    // </div>
-    // <div className=Styles.skip />
-    <div className=Styles.section>
-      <Row alignItems=`initial wrap=true>
-        <Col size={Media.isMobile() ? 1. : 0.}>
-          <LatestBlocks blocksSub=lastest11BlocksSub />
-        </Col>
-        <Col size=1.> <LatestTxTable /> </Col>
-      </Row>
+  // TODO: fix it later
+  <Section ptSm=0>
+    <div className=CssHelper.container>
+      <div className=Styles.highlightsContainer>
+        <ChainInfoHighlights latestBlockSub />
+        <VSpacing size=Spacing.xl />
+        // TODO: for next version
+        // <div className=Styles.grayArea>
+        //   <div className=Styles.bg>
+        //     <img src=Images.bg />
+        //     <img src=Images.bg className=Styles.imgRight />
+        //   </div>
+        //   <div className=Styles.grayAreaInner> <DataScriptsHighlights /> </div>
+        // </div>
+        // <div className=Styles.skip />
+        <div className=Styles.section>
+          <Row alignItems=`initial wrap=true>
+            <Col size={Media.isMobile() ? 1. : 0.}>
+              <LatestBlocks blocksSub=lastest11BlocksSub />
+            </Col>
+            <Col size=1.> <LatestTxTable /> </Col>
+          </Row>
+        </div>
+      </div>
     </div>
-  </div>;
+  </Section>;
 };

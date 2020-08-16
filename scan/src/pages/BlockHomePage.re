@@ -126,96 +126,102 @@ let make = () => {
 
   let allSub = Sub.all2(BlockSub.getList(~pageSize, ~page, ()), BlockSub.count());
   let isMobile = Media.isMobile();
-  <div className=Styles.blockWrapper>
-    <Row>
-      <div className=Styles.header>
-        <img src=Images.blockLogo className=Styles.logo />
-        <Text
-          value="ALL BLOCKS"
-          weight=Text.Medium
-          size=Text.Md
-          spacing={Text.Em(0.06)}
-          height={Text.Px(15)}
-          nowrap=true
-          block=true
-          color=Colors.gray7
-        />
+
+  <Section>
+    <div className=CssHelper.container>
+      <div className=Styles.blockWrapper>
+        <Row>
+          <div className=Styles.header>
+            <img src=Images.blockLogo className=Styles.logo />
+            <Text
+              value="ALL BLOCKS"
+              weight=Text.Medium
+              size=Text.Md
+              spacing={Text.Em(0.06)}
+              height={Text.Px(15)}
+              nowrap=true
+              block=true
+              color=Colors.gray7
+            />
+            {switch (allSub) {
+             | Data((_, blocksCount)) =>
+               <>
+                 <div className=Styles.seperatedLine />
+                 <Text
+                   value={blocksCount->Format.iPretty ++ " in total"}
+                   size=Text.Md
+                   weight=Text.Thin
+                   spacing={Text.Em(0.06)}
+                   color=Colors.gray7
+                   nowrap=true
+                 />
+               </>
+             | _ => React.null
+             }}
+          </div>
+        </Row>
+        <VSpacing size=Spacing.xl />
+        {isMobile
+           ? React.null
+           : <THead>
+               <Row>
+                 <Col> <HSpacing size=Spacing.md /> </Col>
+                 {[
+                    ("BLOCK", 1.11, false),
+                    ("BLOCK HASH", 3.80, false),
+                    ("TIMESTAMP", 2.1, false),
+                    ("PROPOSER", 1.55, false),
+                    ("TXN", 1.05, true),
+                  ]
+                  ->Belt.List.map(((title, size, alignRight)) => {
+                      <Col size key=title justifyContent=Col.Start>
+                        <div className={Styles.vFlex(`flexEnd)}>
+                          {alignRight ? <div className=Styles.fillLeft /> : React.null}
+                          <Text
+                            value=title
+                            size=Text.Sm
+                            weight=Text.Semibold
+                            color=Colors.gray6
+                            spacing={Text.Em(0.1)}
+                          />
+                        </div>
+                      </Col>
+                    })
+                  ->Array.of_list
+                  ->React.array}
+                 <Col> <HSpacing size=Spacing.md /> </Col>
+               </Row>
+             </THead>}
         {switch (allSub) {
-         | Data((_, blocksCount)) =>
+         | Data((blocks, blocksCount)) =>
+           let pageCount = Page.getPageCount(blocksCount, pageSize);
            <>
-             <div className=Styles.seperatedLine />
-             <Text
-               value={blocksCount->Format.iPretty ++ " in total"}
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               color=Colors.gray7
-               nowrap=true
-             />
-           </>
-         | _ => React.null
+             {blocks
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array}
+             {isMobile
+                ? React.null
+                : <>
+                    <VSpacing size=Spacing.lg />
+                    <Pagination
+                      currentPage=page
+                      pageCount
+                      onPageChange={newPage => setPage(_ => newPage)}
+                    />
+                    <VSpacing size=Spacing.lg />
+                  </>}
+           </>;
+         | _ =>
+           Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+           ->Belt_Array.mapWithIndex((i, noData) =>
+               isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+             )
+           ->React.array
          }}
       </div>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    {isMobile
-       ? React.null
-       : <THead>
-           <Row>
-             <Col> <HSpacing size=Spacing.md /> </Col>
-             {[
-                ("BLOCK", 1.11, false),
-                ("BLOCK HASH", 3.80, false),
-                ("TIMESTAMP", 2.1, false),
-                ("PROPOSER", 1.55, false),
-                ("TXN", 1.05, true),
-              ]
-              ->Belt.List.map(((title, size, alignRight)) => {
-                  <Col size key=title justifyContent=Col.Start>
-                    <div className={Styles.vFlex(`flexEnd)}>
-                      {alignRight ? <div className=Styles.fillLeft /> : React.null}
-                      <Text
-                        value=title
-                        size=Text.Sm
-                        weight=Text.Semibold
-                        color=Colors.gray6
-                        spacing={Text.Em(0.1)}
-                      />
-                    </div>
-                  </Col>
-                })
-              ->Array.of_list
-              ->React.array}
-             <Col> <HSpacing size=Spacing.md /> </Col>
-           </Row>
-         </THead>}
-    {switch (allSub) {
-     | Data((blocks, blocksCount)) =>
-       let pageCount = Page.getPageCount(blocksCount, pageSize);
-       <>
-         {blocks
-          ->Belt_Array.mapWithIndex((i, e) =>
-              isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-            )
-          ->React.array}
-         {isMobile
-            ? React.null
-            : <>
-                <VSpacing size=Spacing.lg />
-                <Pagination
-                  currentPage=page
-                  pageCount
-                  onPageChange={newPage => setPage(_ => newPage)}
-                />
-                <VSpacing size=Spacing.lg />
-              </>}
-       </>;
-     | _ =>
-       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) =>
-           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
-         )
-       ->React.array
-     }}
-  </div>;
+    </div>
+  </Section>;
 };
