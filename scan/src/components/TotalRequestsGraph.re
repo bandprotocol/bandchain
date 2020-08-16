@@ -7,11 +7,12 @@ module Styles = {
       height(`percent(100.)),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      Media.mobile([height(`px(300))]),
+      Media.mobile([height(`px(300)), marginBottom(`px(24))]),
     ]);
 };
 
 [@react.component]
 let make = () => {
+  // TODO: implement it!
   <div className=Styles.card> <Text value="Total Requests" /> </div>;
 };
