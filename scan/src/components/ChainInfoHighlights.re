@@ -41,7 +41,7 @@ module Styles = {
 
 module HighlightCard = {
   [@react.component]
-  let make = (~label, ~valueAndExtraComponentSub: ApolloHooks.Subscription.variant(_), ~bgUrl=?) => {
+  let make = (~label, ~valueAndExtraComponentSub, ~bgUrl=?) => {
     <div className=Styles.card>
       {switch (bgUrl, valueAndExtraComponentSub) {
        | (Some(url), ApolloHooks.Subscription.Data(_)) => <div className={Styles.bgCard(url)} />
@@ -53,14 +53,18 @@ module HighlightCard = {
           CssHelper.flexBox(~direction=`column, ~justify=`spaceBetween, ~align=`flexStart, ()),
         ])}>
         {switch (valueAndExtraComponentSub) {
-         | Data(_) =>
-           <Text value=label size=Text.Lg color=Colors.gray7 weight=Text.Medium block=true />
-         | _ => <LoadingCensorBar width=90 height=18 />
-         }}
-        {switch (valueAndExtraComponentSub) {
-         | Data((valueComponent, extraComponent)) => <> valueComponent extraComponent </>
+         | Data((valueComponent, extraComponent)) =>
+           <>
+             <Text value=label size=Text.Lg color=Colors.gray7 weight=Text.Medium block=true />
+             valueComponent
+             extraComponent
+           </>
          | _ =>
-           <> <LoadingCensorBar width=120 height=20 /> <LoadingCensorBar width=75 height=15 /> </>
+           <>
+             <LoadingCensorBar width=90 height=18 />
+             <LoadingCensorBar width=120 height=20 />
+             <LoadingCensorBar width=75 height=15 />
+           </>
          }}
       </div>
     </div>;
