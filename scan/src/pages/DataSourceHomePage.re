@@ -1,94 +1,38 @@
-module Styles = {
-  open Css;
+type sort_by_t =
+  | MostRequested
+  | LatestUpdate;
 
-  let vFlex = justify =>
-    style([
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(justify),
-      alignItems(`center),
-    ]);
+let getName =
+  fun
+  | MostRequested => "Most Requested"
+  | LatestUpdate => "Latest Update";
 
-  let seperatedLine =
-    style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
-    ]);
-
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
-
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
-
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
-
-  // let feeContainer = style([display(`flex), justifyContent(`flexEnd), maxWidth(`px(150))]);
-  let loadingContainer =
-    style([
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(200)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(white),
-    ]);
-
-  // Sort Dropdown
-
-  let sortDrowdownContainer =
-    style([position(`relative), zIndex(2), flexBasis(`percent(40.))]);
-  let sortDrowdownPanel = show => {
-    style([
-      display(
-        {
-          show ? `block : `none;
-        },
-      ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      backgroundColor(Colors.white),
-      position(`absolute),
-      right(`zero),
-      top(`percent(100.)),
-      width(`px(165)),
-    ]);
+let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
+  if (a.timestamp != b.timestamp) {
+    let ID.DataSource.ID(a_) = a.id;
+    let ID.DataSource.ID(b_) = b.id;
+    compare(b_, a_);
+  } else {
+    compare(b.request, a.request);
   };
-  let sortDropdownItem = isActive => {
-    style([
-      backgroundColor(
-        {
-          isActive ? Colors.blue1 : Colors.white;
-        },
-      ),
-      cursor(`pointer),
-      display(`flex),
-      alignItems(`center),
-      padding2(~v=`px(8), ~h=`px(10)),
-      selector("> img", [marginRight(`px(5))]),
-    ]);
-  };
-  let sortDropdownTextItem = {
-    style([
-      paddingRight(`px(15)),
-      cursor(`pointer),
-      after([
-        contentRule(`text("")),
-        backgroundImage(`url(Images.sortDown)),
-        width(`px(8)),
-        height(`px(8)),
-        backgroundRepeat(`noRepeat),
-        backgroundSize(`contain),
-        display(`block),
-        position(`absolute),
-        top(`percent(50.)),
-        right(`zero),
-        transform(translateY(`percent(-50.))),
-      ]),
-    ]);
-  };
+
+let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
+  dataSources
+  ->Belt.List.fromArray
+  ->Belt.List.sort((a, b) => {
+      let result = {
+        switch (sortedBy) {
+        | MostRequested => compare(b.request, a.request)
+        | LatestUpdate => compare(b.timestamp, a.timestamp)
+        };
+      };
+      if (result != 0) {
+        result;
+      } else {
+        defaultCompare(a, b);
+      };
+    })
+  ->Belt.List.toArray;
 };
 
 let renderBody =
@@ -105,7 +49,7 @@ let renderBody =
       <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({id, name}) =>
-           <div className={Styles.vFlex(`flexStart)}>
+           <div className={CssHelper.flexBox()}>
              <TypeID.DataSource id />
              <HSpacing size=Spacing.sm />
              <Text value=name ellipsis=true />
@@ -129,7 +73,7 @@ let renderBody =
          }}
       </Col.Grid>
       <Col.Grid col=Col.Two>
-        <div className={Styles.vFlex(`flexEnd)}>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (dataSourcesSub) {
            | Data({timestamp}) =>
              <Timestamp.Grid
@@ -174,86 +118,6 @@ let renderBodyMobile =
   };
 };
 
-type sort_by_t =
-  | MostRequested
-  | LatestUpdate;
-
-let getName =
-  fun
-  | MostRequested => "Most Requested"
-  | LatestUpdate => "Latest Update";
-
-let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
-  if (a.timestamp != b.timestamp) {
-    let ID.DataSource.ID(a_) = a.id;
-    let ID.DataSource.ID(b_) = b.id;
-    compare(b_, a_);
-  } else {
-    compare(b.request, a.request);
-  };
-
-let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
-  dataSources
-  ->Belt.List.fromArray
-  ->Belt.List.sort((a, b) => {
-      let result = {
-        switch (sortedBy) {
-        | MostRequested => compare(b.request, a.request)
-        | LatestUpdate => compare(b.timestamp, a.timestamp)
-        };
-      };
-      if (result != 0) {
-        result;
-      } else {
-        defaultCompare(a, b);
-      };
-    })
-  ->Belt.List.toArray;
-};
-
-module SortableDropdown = {
-  [@react.component]
-  let make = (~sortedBy, ~setSortedBy) => {
-    let (show, setShow) = React.useState(_ => false);
-    let sortList = [MostRequested, LatestUpdate];
-    <div className=Styles.sortDrowdownContainer>
-      <div className=Styles.sortDropdownTextItem onClick={_ => setShow(prev => !prev)}>
-        <Text
-          block=true
-          value="Sort By"
-          size=Text.Md
-          weight=Text.Regular
-          color=Colors.gray6
-          align=Text.Right
-        />
-      </div>
-      <div className={Styles.sortDrowdownPanel(show)}>
-        {sortList
-         ->Belt.List.mapWithIndex((i, value) => {
-             let isActive = sortedBy == value;
-             <div
-               key={i |> string_of_int}
-               className={Styles.sortDropdownItem(isActive)}
-               onClick={_ => {
-                 setSortedBy(_ => value);
-                 setShow(_ => false);
-               }}>
-               <Text
-                 block=true
-                 value={getName(value)}
-                 size=Text.Md
-                 weight=Text.Regular
-                 color={isActive ? Colors.blue7 : Colors.gray6}
-               />
-             </div>;
-           })
-         ->Array.of_list
-         ->React.array}
-      </div>
-    </div>;
-  };
-};
-
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
@@ -268,9 +132,9 @@ let make = () => {
   let isMobile = Media.isMobile();
 
   <div className=CssHelper.mobileSpacing>
-    <Row.Grid alignItems=Row.Center marginBottom=40>
+    <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
       <Col.Grid col=Col.Twelve>
-        <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 />
+        <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
         {switch (allSub) {
          | Data((_, dataSourcesCount)) =>
            <Heading value={dataSourcesCount->string_of_int ++ " In total"} size=Heading.H3 />
@@ -283,7 +147,16 @@ let make = () => {
         <Col.Grid col=Col.Six colSm=Col.Eight>
           <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
         </Col.Grid>
-        <Col.Grid col=Col.Six colSm=Col.Four> <SortableDropdown sortedBy setSortedBy /> </Col.Grid>
+        <Col.Grid col=Col.Six colSm=Col.Four>
+          <SortableDropdown
+            sortedBy
+            setSortedBy
+            sortList=[
+              (MostRequested, getName(MostRequested)),
+              (LatestUpdate, getName(LatestUpdate)),
+            ]
+          />
+        </Col.Grid>
       </Row.Grid>
       {isMobile
          ? React.null
