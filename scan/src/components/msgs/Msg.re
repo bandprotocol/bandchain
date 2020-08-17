@@ -201,7 +201,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.orange1, 60)}>
           <Text
