@@ -18,6 +18,7 @@
 
 ### Scan
 
+- (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
 - (feat) [\#2482](https://github.com/bandprotocol/bandchain/pull/2482) Implemented latest requests.
 - (impv) [\#2481](https://github.com/bandprotocol/bandchain/pull/2481) Patched `ChainInfoHighlight` for revamp version.
 - (impv) [\#2478](https://github.com/bandprotocol/bandchain/pull/2478) Implemented New Header (aka TopBar), Navbar and Profile.
