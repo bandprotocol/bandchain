@@ -52,7 +52,7 @@ func TestExecuteSuccess(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL, 1*time.Second)
-	res, err := executor.Exec([]byte("executable"), "calldata")
+	res, err := executor.Exec([]byte("executable"), "calldata", nil)
 	require.NoError(t, err)
 	require.Equal(t, uint32(0), res.Code)
 	require.Equal(t, []byte("BEEB"), res.Output)
@@ -63,7 +63,7 @@ func TestExecuteBadUrlFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec("www.beeb.com", 1*time.Second) // bad url
-	_, err := executor.Exec([]byte("executable"), "calldata")
+	_, err := executor.Exec([]byte("executable"), "calldata", nil)
 	require.Error(t, err)
 }
 
@@ -72,7 +72,7 @@ func TestExecuteDecodeStructFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL, 1*time.Second)
-	_, err := executor.Exec([]byte("executable"), "calldata")
+	_, err := executor.Exec([]byte("executable"), "calldata", nil)
 	require.Error(t, err)
 }
 
@@ -90,7 +90,7 @@ func TestExecuteFail(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL, 1*time.Second)
-	res, err := executor.Exec([]byte("executable"), "calldata")
+	res, err := executor.Exec([]byte("executable"), "calldata", nil)
 	require.NoError(t, err)
 	require.Equal(t, uint32(1), res.Code)
 	require.Equal(t, []byte("Stderr"), res.Output)

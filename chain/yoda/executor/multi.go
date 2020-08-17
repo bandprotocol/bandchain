@@ -65,10 +65,10 @@ func (e *MultiExec) nextExecOrder() []Executor {
 }
 
 // Exec implements Executor interface for MultiExec.
-func (e *MultiExec) Exec(code []byte, arg string) (ExecResult, error) {
+func (e *MultiExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
 	errs := []error{}
 	for _, each := range e.nextExecOrder() {
-		res, err := each.Exec(code, arg)
+		res, err := each.Exec(code, arg, env)
 		if err == nil || err == ErrExecutionimeout {
 			return res, err
 		} else {

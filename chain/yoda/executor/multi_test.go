@@ -21,7 +21,7 @@ func newMockExec(output []byte, code uint32, err error) *mockExec {
 	}
 }
 
-func (e *mockExec) Exec(code []byte, arg string) (ExecResult, error) {
+func (e *mockExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
 	e.called++
 	return e.result, e.err
 }
@@ -32,13 +32,13 @@ func TestMultiExecOrderStrategy(t *testing.T) {
 	exec, err := NewMultiExec([]Executor{exec1, exec2}, "order")
 	require.NoError(t, err)
 	// Exec for the first time. Should go to exec1.
-	result, err := exec.Exec(nil, "")
+	result, err := exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, result, ExecResult{Output: []byte("output1"), Code: 1})
 	require.Equal(t, 1, exec1.called)
 	require.Equal(t, 0, exec2.called)
 	// Doing it again. Should still go to exec1.
-	result, err = exec.Exec(nil, "")
+	result, err = exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, result, ExecResult{Output: []byte("output1"), Code: 1})
 	require.Equal(t, 2, exec1.called)
@@ -51,19 +51,19 @@ func TestMultiExecRoundRobinStrategy(t *testing.T) {
 	exec, err := NewMultiExec([]Executor{exec1, exec2}, "round-robin")
 	require.NoError(t, err)
 	// Exec for the first time. Should go to exec1.
-	result, err := exec.Exec(nil, "")
+	result, err := exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, result, ExecResult{Output: []byte("output1"), Code: 1})
 	require.Equal(t, 1, exec1.called)
 	require.Equal(t, 0, exec2.called)
 	// Doing it again. Should go to exec2.
-	result, err = exec.Exec(nil, "")
+	result, err = exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, result, ExecResult{Output: []byte("output2"), Code: 2})
 	require.Equal(t, 1, exec1.called)
 	require.Equal(t, 1, exec2.called)
 	// Doing it again. Should go to exec1.
-	result, err = exec.Exec(nil, "")
+	result, err = exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, result, ExecResult{Output: []byte("output1"), Code: 1})
 	require.Equal(t, 2, exec1.called)
@@ -80,13 +80,13 @@ func TestMultiExecOneWorking(t *testing.T) {
 	exec2 := newMockExec([]byte("output"), 0, nil)
 	exec3 := newMockExec(nil, 0, errors.New("error3"))
 	exec, err := NewMultiExec([]Executor{exec1, exec2, exec3}, "round-robin")
-	result, err := exec.Exec(nil, "")
+	result, err := exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, ExecResult{Output: []byte("output"), Code: 0}, result)
-	result, err = exec.Exec(nil, "")
+	result, err = exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, ExecResult{Output: []byte("output"), Code: 0}, result)
-	result, err = exec.Exec(nil, "")
+	result, err = exec.Exec(nil, "", nil)
 	require.NoError(t, err)
 	require.Equal(t, ExecResult{Output: []byte("output"), Code: 0}, result)
 }

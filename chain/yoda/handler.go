@@ -5,10 +5,12 @@ import (
 	"strings"
 	"sync"
 
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -85,6 +87,11 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
 
+	key := <-c.keys
+	defer func() {
+		c.keys <- key
+	}()
+
 	reportsChan := make(chan otypes.RawReport, len(reqs))
 	var version sync.Map
 	for _, req := range reqs {
@@ -97,7 +104,23 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				)
 				return
 			}
-			result, err := c.executor.Exec(exec, req.calldata)
+
+			vmsg := NewVerificationMessage(cfg.ChainID, c.validator, types.RequestID(id), req.externalID)
+			sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
+			if err != nil {
+				l.Error(":skull: Failed to sign verify message: %s", err.Error())
+				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
+			}
+
+			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
+				"BAND_CHAIN_ID":    vmsg.ChainID,
+				"BAND_VALIDATOR":   vmsg.Validator.String(),
+				"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
+				"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
+				"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
+				"BAND_SIGNATURE":   sig,
+			})
+
 			if err != nil {
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
 				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
@@ -121,5 +144,5 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		execVersions = append(execVersions, key.(string))
 		return true
 	})
-	SubmitReport(c, l, otypes.RequestID(id), reports, strings.Join(execVersions, "+"))
+	SubmitReport(c, l, key, otypes.RequestID(id), reports, strings.Join(execVersions, "+"))
 }
