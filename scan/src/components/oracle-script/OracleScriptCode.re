@@ -29,7 +29,7 @@ module Styles = {
       position(`absolute),
       top(`px(10)),
       right(`px(10)),
-      zIndex(9),
+      zIndex(2),
       Media.mobile([right(`zero), top(`px(-38))]),
     ]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
@@ -89,8 +89,8 @@ let make = (~url: string) =>
         <Row.Grid marginBottom=24 marginBottomSm=12>
           <Col.Grid>
             <div className={CssHelper.flexBox()}>
-              <img src=Images.code className=Styles.codeImage />
-              <HSpacing size=Spacing.xs />
+              <Icon name="fal fa-file" size=16 />
+              <HSpacing size=Spacing.sm />
               <Text
                 value="src/logic.rs"
                 weight=Text.Semibold

@@ -79,8 +79,8 @@ class ResponsePacketData(object):
 
 @dataclass
 class Result(object):
-    RequestPacketData: RequestPacketData
-    ResponsePacketData: ResponsePacketData
+    request_packet_data: RequestPacketData
+    response_packet_data: ResponsePacketData
 
 
 @dataclass
