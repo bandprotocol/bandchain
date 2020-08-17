@@ -226,7 +226,6 @@ class Handler(object):
         self.conn.execute(proposals.update().where(condition).values(**msg))
 
     def handle_set_reporter(self, msg):
-        print(msg)
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
@@ -234,7 +233,6 @@ class Handler(object):
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
-        print(msg)
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
