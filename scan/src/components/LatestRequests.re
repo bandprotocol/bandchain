@@ -94,16 +94,9 @@ let make = () => {
          | ApolloHooks.Subscription.Data(requests) =>
            <Text
              value={
-               //  TODO: hack for request count, let's fix it later
                requests
                ->Belt.Array.get(0)
-               ->Belt.Option.mapWithDefault(
-                   0,
-                   ({id}) => {
-                     let ID.Request.ID(id_) = id;
-                     id_;
-                   },
-                 )
+               ->Belt.Option.mapWithDefault(0, ({id}) => id |> ID.Request.toInt)
                ->Format.iPretty
              }
              size=Text.Lg

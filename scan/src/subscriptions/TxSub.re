@@ -1423,11 +1423,16 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
 
 let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
-  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiByHeightConfig.definition,
-      ~variables=MultiByHeightConfig.makeVariables(~height=height_, ~limit=pageSize, ~offset, ()),
+      ~variables=
+        MultiByHeightConfig.makeVariables(
+          ~height=height |> ID.Block.toInt,
+          ~limit=pageSize,
+          ~offset,
+          (),
+        ),
     );
   result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };

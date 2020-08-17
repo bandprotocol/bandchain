@@ -99,11 +99,10 @@ module OracleScriptsCountConfig = [%graphql
 ];
 
 let get = id => {
-  let ID.OracleScript.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~id=id_, ()),
+      ~variables=SingleConfig.makeVariables(~id=id |> ID.OracleScript.toInt, ()),
     );
   let%Sub x = result;
   switch (x##oracle_scripts_by_pk) {
