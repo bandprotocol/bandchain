@@ -86,6 +86,13 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 	}
 }
 
+func (app *App) emitBondedTokenTrack() {
+	app.Write("NEW_BONDED_TOKEN_TRACK", JsDict{
+		"timestamp":     app.DeliverContext.BlockTime().UnixNano(),
+		"bonded_amount": app.StakingKeeper.TotalBondedTokens(app.DeliverContext),
+	})
+}
+
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(
 	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
@@ -111,6 +118,7 @@ func (app *App) handleMsgDelegate(
 	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	app.emitBondedTokenTrack()
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
@@ -119,6 +127,7 @@ func (app *App) handleMsgUndelegate(
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 	app.emitUnbondingDelegation(msg, evMap)
+	app.emitBondedTokenTrack()
 }
 
 func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) {

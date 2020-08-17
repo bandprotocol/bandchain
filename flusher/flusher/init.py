@@ -55,4 +55,3 @@ def init(chain_id, topic, db):
 			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
 			GROUP BY consensus_address, voted;"""
     )
-
