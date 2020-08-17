@@ -61,6 +61,6 @@ def init(chain_id, topic, db):
             FROM blocks
             JOIN transactions ON blocks.height = transactions.block_height
             JOIN requests ON requests.transaction_id = transactions.id
-            GROUP BY date_trunc('day',blocks.timestamp);
+            GROUP BY date;
             """
     )
