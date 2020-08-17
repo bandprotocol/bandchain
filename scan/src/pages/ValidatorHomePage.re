@@ -236,109 +236,111 @@ let make = () => {
 
   let allSub = Sub.all3(topPartAllSub, validatorsSub, votesBlockSub);
 
-  <>
-    <Row justify=Row.Between>
-      <div className=Styles.header>
-        <img src=Images.validators className=Styles.validatorsLogo />
-        <Text
-          value="ALL VALIDATORS"
-          weight=Text.Medium
-          size=Text.Md
-          nowrap=true
-          color=Colors.gray7
-          spacing={Text.Em(0.06)}
-        />
-        {switch (topPartAllSub) {
-         | Data((validatorCount, _, _, _, _)) =>
-           <>
-             <div className=Styles.seperatedLine />
-             <Text value={(validatorCount |> string_of_int) ++ " In total"} />
-           </>
-         | _ => React.null
-         }}
-      </div>
-    </Row>
-    <Row wrap=true style=Styles.highlight>
-      <Col size=0.7>
-        {switch (topPartAllSub) {
-         | Data((validatorCount, isActiveValidatorCount, _, _, _)) =>
-           <InfoHL
-             info={InfoHL.Fraction(isActiveValidatorCount, validatorCount, false)}
-             header="VALIDATORS"
-           />
-         | _ =>
-           <>
-             <LoadingCensorBar width=105 height=15 />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=45 height=15 />
-           </>
-         }}
-      </Col>
-      <Col size=1.1>
-        {switch (topPartAllSub) {
-         | Data((_, _, bondedTokenCount, _, _)) =>
-           <InfoHL
-             info={InfoHL.Currency(bondedTokenCount->Coin.getBandAmountFromCoin)}
-             header="BONDED TOKENS"
-           />
-         | _ =>
-           <>
-             <LoadingCensorBar width=105 height=15 />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=45 height=15 />
-           </>
-         }}
-      </Col>
-      <Col size=0.9>
-        {switch (topPartAllSub) {
-         | Data((_, _, _, _, {inflation})) =>
-           <InfoHL
-             info={InfoHL.FloatWithSuffix(inflation *. 100., "  %", 2)}
-             header="INFLATION RATE"
-           />
-         | _ =>
-           <>
-             <LoadingCensorBar width=105 height=15 />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=45 height=15 />
-           </>
-         }}
-      </Col>
-      <Col size=0.51>
-        {switch (topPartAllSub) {
-         | Data((_, _, _, avgBlockTime, _)) =>
-           <InfoHL
-             info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
-             header="24 HOUR AVG BLOCK TIME"
-           />
-         | _ =>
-           <>
-             <LoadingCensorBar width=105 height=15 />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=45 height=15 />
-           </>
-         }}
-      </Col>
-    </Row>
-    <div className=Styles.controlContainer>
-      <div className=Styles.featureContainer>
-        <div className=Styles.searchContainer>
-          <input
-            type_="text"
-            className=Styles.searchBar
-            placeholder="Search Validator"
-            onChange={event => {
-              let newVal = ReactEvent.Form.target(event)##value |> String.lowercase_ascii;
-              setSearchTerm(_ => newVal);
-            }}
+  <Section>
+    <div className=CssHelper.container>
+      <Row justify=Row.Between>
+        <div className=Styles.header>
+          <img src=Images.validators className=Styles.validatorsLogo />
+          <Text
+            value="ALL VALIDATORS"
+            weight=Text.Medium
+            size=Text.Md
+            nowrap=true
+            color=Colors.gray7
+            spacing={Text.Em(0.06)}
           />
+          {switch (topPartAllSub) {
+           | Data((validatorCount, _, _, _, _)) =>
+             <>
+               <div className=Styles.seperatedLine />
+               <Text value={(validatorCount |> string_of_int) ++ " In total"} />
+             </>
+           | _ => React.null
+           }}
         </div>
-        {Media.isMobile() ? <SortableDropdown sortedBy setSortedBy /> : React.null}
+      </Row>
+      <Row wrap=true style=Styles.highlight>
+        <Col size=0.7>
+          {switch (topPartAllSub) {
+           | Data((validatorCount, isActiveValidatorCount, _, _, _)) =>
+             <InfoHL
+               info={InfoHL.Fraction(isActiveValidatorCount, validatorCount, false)}
+               header="VALIDATORS"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+        <Col size=1.1>
+          {switch (topPartAllSub) {
+           | Data((_, _, bondedTokenCount, _, _)) =>
+             <InfoHL
+               info={InfoHL.Currency(bondedTokenCount->Coin.getBandAmountFromCoin)}
+               header="BONDED TOKENS"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+        <Col size=0.9>
+          {switch (topPartAllSub) {
+           | Data((_, _, _, _, {inflation})) =>
+             <InfoHL
+               info={InfoHL.FloatWithSuffix(inflation *. 100., "  %", 2)}
+               header="INFLATION RATE"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+        <Col size=0.51>
+          {switch (topPartAllSub) {
+           | Data((_, _, _, avgBlockTime, _)) =>
+             <InfoHL
+               info={InfoHL.FloatWithSuffix(avgBlockTime, "  secs", 2)}
+               header="24 HOUR AVG BLOCK TIME"
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=105 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=45 height=15 />
+             </>
+           }}
+        </Col>
+      </Row>
+      <div className=Styles.controlContainer>
+        <div className=Styles.featureContainer>
+          <div className=Styles.searchContainer>
+            <input
+              type_="text"
+              className=Styles.searchBar
+              placeholder="Search Validator"
+              onChange={event => {
+                let newVal = ReactEvent.Form.target(event)##value |> String.lowercase_ascii;
+                setSearchTerm(_ => newVal);
+              }}
+            />
+          </div>
+          {Media.isMobile() ? <SortableDropdown sortedBy setSortedBy /> : React.null}
+        </div>
+        <ToggleButton isActive setIsActive />
       </div>
-      <ToggleButton isActive setIsActive />
+      <VSpacing size=Spacing.md />
+      <ValidatorsTable allSub searchTerm sortedBy setSortedBy />
+      <VSpacing size=Spacing.lg />
     </div>
-    <VSpacing size=Spacing.md />
-    <ValidatorsTable allSub searchTerm sortedBy setSortedBy />
-    <VSpacing size=Spacing.lg />
-  </>;
+  </Section>;
 };

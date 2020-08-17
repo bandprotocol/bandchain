@@ -17,7 +17,7 @@ This repository is a [monorepo] containing the reference implementation of BandC
 
 ## Running with Docker
 
-There are 2 ways to run bandchian
+There are 2 ways to run bandchain
 
 #### Run on 4 validators
 

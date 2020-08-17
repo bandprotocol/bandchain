@@ -9,6 +9,11 @@ type request_count_t = {
   requestValidators: int,
 };
 
+type request_response_t = {
+  request: int,
+  responseTime: int,
+};
+
 type t =
   | Address(Address.t, int, [ | `account | `validator])
   | Height(ID.Block.t)
@@ -17,6 +22,7 @@ type t =
   | DataSource(ID.DataSource.t, string)
   | OracleScript(ID.OracleScript.t, string)
   | RequestID(ID.Request.t)
+  | RequestResponse(request_response_t)
   | ProgressBar(request_count_t)
   | Float(float, option(int))
   | KVTableReport(list(string), list(TxSub.RawDataReport.t))
@@ -82,6 +88,17 @@ let make = (~info) => {
       <Text value=name ellipsis=true />
     </div>
   | RequestID(id) => <TypeID.Request id />
+  | RequestResponse({request, responseTime}) =>
+    <div className={CssHelper.flexBox()}>
+      <Text value={request |> Format.iPretty} weight=Text.Regular block=true ellipsis=true />
+      <HSpacing size=Spacing.sm />
+      <Text
+        value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
+        weight=Text.Regular
+        block=true
+        color=Colors.gray6
+      />
+    </div>
   | ProgressBar({reportedValidators, minimumValidators, requestValidators}) =>
     <ProgressBar reportedValidators minimumValidators requestValidators />
   | Float(value, digits) =>

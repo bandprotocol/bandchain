@@ -11,7 +11,11 @@ module Styles = {
       height(`px(height_)),
     ]);
   let containerBase =
-    style([backgroundColor(Colors.blueGray1), padding2(~v=`px(18), ~h=`px(24))]);
+    style([
+      backgroundColor(Colors.blueGray1),
+      padding2(~v=`zero, ~h=`px(24)),
+      selector("> div", [height(`px(52))]),
+    ]);
 };
 
 [@react.component]

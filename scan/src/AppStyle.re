@@ -187,6 +187,13 @@ code {
   height: 100%;
 }
 
+.container {
+  width: 100%;
+  max-width: 984px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
 /* scrolling smooth on ios */
 * {
   -webkit-overflow-scrolling: touch;

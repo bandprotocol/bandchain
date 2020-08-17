@@ -45,8 +45,6 @@
 [@bs.module] external requestLogo: string = "./requestLogo.svg";
 [@bs.module] external showProofArrow: string = "./showProofArrow.svg";
 [@bs.module] external noReport: string = "./noReport.svg";
-[@bs.module] external connectIcon: string = "./connect-icon.svg";
-[@bs.module] external disconnectIcon: string = "./disconnect-icon.svg";
 [@bs.module] external ethereumIcon: string = "./ethereum.svg";
 [@bs.module] external cosmosIBCIcon: string = "./cosmosibc.svg";
 [@bs.module] external kadenaIcon: string = "./kadena.svg";
