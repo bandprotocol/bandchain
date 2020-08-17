@@ -59,7 +59,7 @@ module Styles = {
       top(`px(10)),
       right(`px(10)),
       zIndex(2),
-      Media.mobile([right(`zero), top(`px(-38))]),
+      Media.mobile([right(`zero), top(`px(-35))]),
     ]);
 };
 
