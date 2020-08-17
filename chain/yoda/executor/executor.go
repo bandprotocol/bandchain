@@ -27,7 +27,7 @@ type Executor interface {
 	Exec(exec []byte, arg string, env interface{}) (ExecResult, error)
 }
 
-var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
+var testProgram []byte = []byte("#!/usr/bin/env python3\nimport os\nimport sys\nprint(sys.argv[1], os.getenv('BAND_CHAIN_ID'))")
 
 // NewExecutor returns executor by name and executor URL
 func NewExecutor(executor string) (exec Executor, err error) {
@@ -60,7 +60,7 @@ func NewExecutor(executor string) (exec Executor, err error) {
 	if res.Code != 0 {
 		return nil, fmt.Errorf("test program returned nonzero code: %d", res.Code)
 	}
-	if string(res.Output) != "TEST_ARG\n" {
+	if string(res.Output) != "TEST_ARG test-chain-id\n" {
 		return nil, fmt.Errorf("test program returned wrong output: %s", res.Output)
 	}
 	return exec, nil

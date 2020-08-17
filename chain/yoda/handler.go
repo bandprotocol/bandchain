@@ -11,7 +11,6 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
@@ -34,13 +33,13 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 			continue
 		}
 
-		if messageType == (otypes.MsgRequestData{}).Type() {
+		if messageType == (types.MsgRequestData{}).Type() {
 			go handleRequestLog(c, l, log)
 		} else {
 			l.Debug(":ghost: Skipping non-{request/packet} type: %s", messageType)
 		} /*else if messageType == (ibc.MsgPacket{}).Type() {
 			// Try to get request id from packet. If not then return error.
-			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
+			_, err := GetEventValue(log, types.EventTypeRequest, types.AttributeKeyID)
 			if err != nil {
 				l.Debug(":ghost: Skipping non-request packet")
 				return
@@ -51,7 +50,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 }
 
 func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
-	idStr, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
+	idStr, err := GetEventValue(log, types.EventTypeRequest, types.AttributeKeyID)
 	if err != nil {
 		l.Error(":cold_sweat: Failed to parse request id with error: %s", err.Error())
 		return
@@ -66,7 +65,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	l = l.With("rid", id)
 
 	// Skip if not related to this validator
-	validators := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
+	validators := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyValidator)
 	hasMe := false
 	for _, validator := range validators {
 		if validator == c.validator.String() {
@@ -92,14 +91,14 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		c.keys <- key
 	}()
 
-	reportsChan := make(chan otypes.RawReport, len(reqs))
+	reportsChan := make(chan types.RawReport, len(reqs))
 	var version sync.Map
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, req.dataSourceHash)
 			if err != nil {
 				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(
+				reportsChan <- types.NewRawReport(
 					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
 				)
 				return
@@ -109,7 +108,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
 			if err != nil {
 				l.Error(":skull: Failed to sign verify message: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
+				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
 			}
 
 			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
@@ -123,19 +122,19 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 
 			if err != nil {
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
+				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
 			} else {
 				l.Debug(
 					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 					req.calldata, result.Output, result.Code,
 				)
 				version.Store(result.Version, true)
-				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
+				reportsChan <- types.NewRawReport(req.externalID, result.Code, result.Output)
 			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
-	reports := make([]otypes.RawReport, 0)
+	reports := make([]types.RawReport, 0)
 	execVersions := make([]string, 0)
 	for range reqs {
 		reports = append(reports, <-reportsChan)
@@ -144,5 +143,5 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		execVersions = append(execVersions, key.(string))
 		return true
 	})
-	SubmitReport(c, l, key, otypes.RequestID(id), reports, strings.Join(execVersions, "+"))
+	SubmitReport(c, l, key, types.RequestID(id), reports, strings.Join(execVersions, "+"))
 }
