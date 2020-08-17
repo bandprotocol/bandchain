@@ -231,7 +231,6 @@ class Handler(object):
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
-        print(msg)
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
@@ -240,7 +239,6 @@ class Handler(object):
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
-        print(msg)
         condition = True
         for col in reporters.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
