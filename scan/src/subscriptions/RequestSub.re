@@ -280,25 +280,33 @@ module Mini = {
   };
 
   let getListByDataSource = (id, ~page, ~pageSize, ()) => {
-    let ID.DataSource.ID(id_) = id;
     let offset = (page - 1) * pageSize;
     let (result, _) =
       ApolloHooks.useSubscription(
         MultiMiniByDataSourceConfig.definition,
         ~variables=
-          MultiMiniByDataSourceConfig.makeVariables(~id=id_, ~limit=pageSize, ~offset, ()),
+          MultiMiniByDataSourceConfig.makeVariables(
+            ~id=id |> ID.DataSource.toInt,
+            ~limit=pageSize,
+            ~offset,
+            (),
+          ),
       );
     result |> Sub.map(_, x => x##raw_requests->Belt_Array.map(y => y##request |> toExternal));
   };
 
   let getListByOracleScript = (id, ~page, ~pageSize, ()) => {
     let offset = (page - 1) * pageSize;
-    let ID.OracleScript.ID(id_) = id;
     let (result, _) =
       ApolloHooks.useSubscription(
         MultiMiniByOracleScriptConfig.definition,
         ~variables=
-          MultiMiniByOracleScriptConfig.makeVariables(~id=id_, ~limit=pageSize, ~offset, ()),
+          MultiMiniByOracleScriptConfig.makeVariables(
+            ~id=id |> ID.OracleScript.toInt,
+            ~limit=pageSize,
+            ~offset,
+            (),
+          ),
       );
     result
     |> Sub.map(_, x =>
@@ -550,11 +558,10 @@ module RequestCountConfig = [%graphql
 ];
 
 let get = id => {
-  let ID.Request.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleRequestConfig.definition,
-      ~variables=SingleRequestConfig.makeVariables(~id=id_, ()),
+      ~variables=SingleRequestConfig.makeVariables(~id=id |> ID.Request.toInt, ()),
     );
   switch (result) {
   | ApolloHooks.Subscription.Data(data) =>
@@ -585,11 +592,11 @@ let count = () => {
 };
 
 let countByOracleScript = id => {
-  let ID.OracleScript.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       RequestCountByOracleScriptConfig.definition,
-      ~variables=RequestCountByOracleScriptConfig.makeVariables(~id=id_, ()),
+      ~variables=
+        RequestCountByOracleScriptConfig.makeVariables(~id=id |> ID.OracleScript.toInt, ()),
     );
   result
   |> Sub.map(_, x => {
@@ -602,11 +609,10 @@ let countByOracleScript = id => {
 };
 
 let countByDataSource = id => {
-  let ID.DataSource.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       RequestCountByDataSourceConfig.definition,
-      ~variables=RequestCountByDataSourceConfig.makeVariables(~id=id_, ()),
+      ~variables=RequestCountByDataSourceConfig.makeVariables(~id=id |> ID.DataSource.toInt, ()),
     );
   result
   |> Sub.map(_, x => {

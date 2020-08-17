@@ -10,6 +10,14 @@ let make = () => {
     <Section bg=Colors.highlightBg ptSm=0>
       <div className=CssHelper.container> <ChainInfoHighlights latestBlockSub /> </div>
     </Section>
+    <Section pt=40 pb=40 ptSm=24 pbSm=24 bg=Colors.bg>
+      <div className=CssHelper.container>
+        <Row.Grid>
+          <Col.Grid col=Col.Six> <TotalRequestsGraph /> </Col.Grid>
+          <Col.Grid col=Col.Six> <LatestRequests /> </Col.Grid>
+        </Row.Grid>
+      </div>
+    </Section>
     <Section>
       <div className=CssHelper.container>
         <Row alignItems=`initial wrap=true>

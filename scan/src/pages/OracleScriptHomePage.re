@@ -25,9 +25,7 @@ let getName =
 
 let defaultCompare = (a: OracleScriptSub.t, b: OracleScriptSub.t) =>
   if (a.timestamp != b.timestamp) {
-    let ID.OracleScript.ID(a_) = a.id;
-    let ID.OracleScript.ID(b_) = b.id;
-    compare(b_, a_);
+    compare(b.id |> ID.OracleScript.toInt, a.id |> ID.OracleScript.toInt);
   } else {
     compare(b.request, a.request);
   };

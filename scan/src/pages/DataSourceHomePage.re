@@ -9,9 +9,7 @@ let getName =
 
 let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
   if (a.timestamp != b.timestamp) {
-    let ID.DataSource.ID(a_) = a.id;
-    let ID.DataSource.ID(b_) = b.id;
-    compare(b_, a_);
+    compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
   } else {
     compare(b.request, a.request);
   };
