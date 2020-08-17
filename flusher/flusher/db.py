@@ -234,6 +234,7 @@ validators = sa.Table(
     Column("status", sa.Boolean, default=False),
     Column("status_since", CustomDateTime, default=0),
     Column("accumulated_commission", sa.String),  # uband suffix
+    Column("last_update", CustomDateTime),
 )
 
 delegations = sa.Table(
@@ -320,9 +321,10 @@ votes = sa.Table(
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
 
-bonded_tokens_tracks = sa.Table(
-    "bonded_tokens_tracks",
+shares_tracks = sa.Table(
+    "shares_tracks",
     metadata,
-    Column("bonded_amount", sa.DECIMAL),
-    Column("timestamp", CustomDateTime, index=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("shares_amount", sa.DECIMAL),
+    Column("timestamp", CustomDateTime, primary_key=True),
 )

@@ -35,6 +35,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
+		"last_update":            app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -47,6 +48,7 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
+		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -56,6 +58,7 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 		"operator_address": addr.String(),
 		"status":           status.IsActive,
 		"status_since":     status.Since.UnixNano(),
+		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -84,14 +87,6 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 			"operator_address":  operatorAddress,
 		})
 	}
-	app.emitBondedTokenTrack()
-}
-
-func (app *App) emitBondedTokenTrack() {
-	app.Write("NEW_BONDED_TOKEN_TRACK", JsDict{
-		"timestamp":     app.DeliverContext.BlockTime().UnixNano(),
-		"bonded_amount": app.StakingKeeper.TotalBondedTokens(app.DeliverContext),
-	})
 }
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
@@ -163,5 +158,4 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
 	app.AddAccountsInBlock(acc)
-	app.emitBondedTokenTrack()
 }

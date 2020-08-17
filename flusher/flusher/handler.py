@@ -23,7 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
-    bonded_tokens_tracks,
+    shares_tracks,
 )
 
 
@@ -136,6 +136,13 @@ class Handler(object):
             for col in validators.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(validators.update().where(condition).values(**msg))
+        self.handle_new_bonded_token_track(
+            {
+                "validator_id": self.get_validator_id(msg["operator_address"]),
+                "shares_amount": msg["delegator_shares"],
+                "timestamp": msg["last_update"],
+            }
+        )
 
     def handle_update_validator(self, msg):
         self.conn.execute(
@@ -143,6 +150,14 @@ class Handler(object):
             .where(validators.c.operator_address == msg["operator_address"])
             .values(**msg)
         )
+        if "delegator_shares" in msg.keys():
+            self.handle_new_bonded_token_track(
+                {
+                    "validator_id": self.get_validator_id(msg["operator_address"]),
+                    "shares_amount": msg["delegator_shares"],
+                    "timestamp": msg["last_update"],
+                }
+            )
 
     def handle_set_delegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
@@ -226,4 +241,8 @@ class Handler(object):
         self.conn.execute(proposals.update().where(condition).values(**msg))
 
     def handle_new_bonded_token_track(self, msg):
-        self.conn.execute(bonded_tokens_tracks.insert(), msg)
+        self.conn.execute(
+            insert(shares_tracks)
+            .values(**msg)
+            .on_conflict_do_update(constraint="shares_tracks_pkey", set_=msg)
+        )
