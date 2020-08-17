@@ -154,7 +154,6 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		}
 	}
 
-	app.emitBondedTokenTrack()
 	// Oracle module
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)

@@ -84,6 +84,7 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 			"operator_address":  operatorAddress,
 		})
 	}
+	app.emitBondedTokenTrack()
 }
 
 func (app *App) emitBondedTokenTrack() {
@@ -118,7 +119,6 @@ func (app *App) handleMsgDelegate(
 	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
-	app.emitBondedTokenTrack()
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
@@ -127,7 +127,6 @@ func (app *App) handleMsgUndelegate(
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 	app.emitUnbondingDelegation(msg, evMap)
-	app.emitBondedTokenTrack()
 }
 
 func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) {
@@ -164,4 +163,5 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
 	app.AddAccountsInBlock(acc)
+	app.emitBondedTokenTrack()
 }
