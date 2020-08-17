@@ -274,7 +274,6 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
-
 	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
 	app.Write("COMMIT", JsDict{"height": req.Height})
 	return res
