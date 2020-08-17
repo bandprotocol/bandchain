@@ -16,7 +16,7 @@ module Styles = {
 [@react.component]
 let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
   let dataSourceSub = DataSourceSub.get(dataSourceID);
-  <Section>
+  <Section pbSm=0>
     <div className=CssHelper.container>
       <Row.Grid marginBottom=40 marginBottomSm=16>
         <Col.Grid>

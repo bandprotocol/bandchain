@@ -10,6 +10,7 @@ module Styles = {
   open Css;
   let tooltipContainer =
     style([
+      fontSize(`px(10)),
       cursor(`pointer),
       position(`relative),
       display(`block),
@@ -32,6 +33,7 @@ module Styles = {
       transition(~duration=200, "all"),
       before([
         contentRule(`text("")),
+        pointerEvents(`none),
         display(`block),
         position(`absolute),
         border(`px(5), `solid, Colors.transparent),
