@@ -51,8 +51,6 @@ module Styles = {
 
   let iconBody = style([width(`px(20)), height(`px(20))]);
 
-  let languageOption = style([display(`flex), flexDirection(`row), alignContent(`center)]);
-
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
 
   let copyContainer =
