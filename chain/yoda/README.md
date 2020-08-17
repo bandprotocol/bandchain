@@ -16,7 +16,7 @@
 
 1. Open first cmd tab for running the BandChain
 2. Open second cmd tab for running the Yoda
-3. Open third cmd tab for running the BandChian CLI
+3. Open third cmd tab for running the Bandchain CLI
 
 ### How to run BandChain on development mode
 
