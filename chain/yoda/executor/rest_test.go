@@ -81,7 +81,7 @@ func TestExecuteResponseNotOk(t *testing.T) {
 	defer func() { testServer.Close() }()
 
 	executor := NewRestExec(testServer.URL, 1*time.Second)
-	_, err := executor.Exec([]byte("executable"), "calldata")
+	_, err := executor.Exec([]byte("executable"), "calldata", nil)
 	require.Error(t, err)
 }
 

@@ -96,10 +96,10 @@ func TestMultiExecAllErrors(t *testing.T) {
 	exec2 := newMockExec(nil, 0, errors.New("error2"))
 	exec3 := newMockExec(nil, 0, errors.New("error3"))
 	exec, err := NewMultiExec([]Executor{exec1, exec2, exec3}, "round-robin")
-	_, err = exec.Exec(nil, "")
+	_, err = exec.Exec(nil, "", nil)
 	require.EqualError(t, err, "MultiError: error1, error2, error3")
-	_, err = exec.Exec(nil, "")
+	_, err = exec.Exec(nil, "", nil)
 	require.EqualError(t, err, "MultiError: error2, error3, error1")
-	_, err = exec.Exec(nil, "")
+	_, err = exec.Exec(nil, "", nil)
 	require.EqualError(t, err, "MultiError: error3, error1, error2")
 }
