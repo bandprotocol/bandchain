@@ -1,54 +1,42 @@
 module Styles = {
   open Css;
 
-  let container = style([padding2(~h=`px(20), ~v=`px(20))]);
+  let container =
+    style([
+      padding2(~v=`px(40), ~h=`px(45)),
+      Media.mobile([padding2(~v=`px(20), ~h=`zero)]),
+    ]);
+
+  let upperTextCotainer = style([marginBottom(`px(24))]);
 
   let paramsContainer = style([display(`flex), flexDirection(`column)]);
 
   let listContainer = style([marginBottom(`px(25))]);
 
-  let withPadding = (h, v) => style([padding2(~h=`px(h), ~v=`px(v))]);
-
   let input =
     style([
       width(`percent(100.)),
       background(white),
-      paddingLeft(`px(20)),
+      padding2(~v=`zero, ~h=`px(16)),
       fontSize(`px(12)),
       fontWeight(`num(500)),
       outline(`px(1), `none, white),
-      height(`px(40)),
+      height(`px(37)),
       borderRadius(`px(4)),
-      boxShadow(
-        Shadow.box(~inset=true, ~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
-      ),
+      border(`px(1), `solid, Colors.gray9),
+      placeholder([color(Colors.blueGray3)]),
     ]);
-
-  let buttonContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
 
   let button = isLoading =>
     style([
-      width(`px(isLoading ? 150 : 110)),
-      backgroundColor(isLoading ? Colors.blueGray3 : Colors.green2),
-      borderRadius(`px(6)),
-      fontSize(`px(12)),
+      backgroundColor(isLoading ? Colors.blueGray3 : Colors.bandBlue),
       fontWeight(`num(600)),
-      color(isLoading ? Colors.blueGray7 : Colors.green7),
+      color(isLoading ? Colors.blueGray7 : Colors.white),
       cursor(isLoading ? `auto : `pointer),
-      padding2(~v=Css.px(10), ~h=Css.px(10)),
-      whiteSpace(`nowrap),
       outline(`zero, `none, white),
-      boxShadow(
-        isLoading
-          ? `none : Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.1)),
-      ),
+      marginTop(`px(16)),
       border(`zero, `solid, Colors.white),
     ]);
-
-  let hFlex = h =>
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(h)]);
-
-  let vFlex = (w, h) => style([display(`flex), flexDirection(`column), width(w), height(h)]);
 
   let withWH = (w, h) =>
     style([
@@ -72,13 +60,72 @@ module Styles = {
       overflow(overflowChioce),
     ]);
 
-  let logo = style([width(`px(15))]);
+  let separatorLine =
+    style([
+      borderStyle(`none),
+      backgroundColor(Colors.gray9),
+      height(`px(1)),
+      margin3(~top=`px(10), ~h=`zero, ~bottom=`px(20)),
+    ]);
+  let titleSpacing = style([marginBottom(`px(8))]);
+  let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
+  let mobileBlockContainer = style([padding2(~v=`px(24), ~h=`zero)]);
+  let mobileBlock =
+    style([
+      backgroundColor(Colors.connectBG),
+      borderRadius(`px(4)),
+      minHeight(`px(164)),
+      selector("> i", [marginBottom(`px(16))]),
+    ]);
+};
+
+module ConnectPanel = {
+  module Styles = {
+    open Css;
+    let connectContainer =
+      style([backgroundColor(Colors.connectBG), borderRadius(`px(4)), padding(`px(24))]);
+    let connectInnerContainer = style([width(`percent(100.)), maxWidth(`px(370))]);
+  };
+  [@react.component]
+  let make = (~connect) => {
+    <div
+      className={Css.merge([Styles.connectContainer, CssHelper.flexBox(~justify=`center, ())])}>
+      <div
+        className={Css.merge([
+          Styles.connectInnerContainer,
+          CssHelper.flexBox(~justify=`spaceBetween, ()),
+        ])}>
+        <Icon name="fal fa-link" size=32 color=Colors.bandBlue />
+        <Text
+          value="Please connect to make request"
+          weight=Text.Regular
+          size=Text.Lg
+          nowrap=true
+          block=true
+        />
+        <div className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => {connect()}}>
+          <Text value="Connect" weight=Text.Medium nowrap=true block=true />
+        </div>
+      </div>
+    </div>;
+  };
 };
 
 let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
+  let fieldName = Js.String.replaceByRe([%re "/[_]/g"], " ", fieldName);
   <div className=Styles.listContainer key=fieldName>
-    <Text value={j|$fieldName ($fieldType)|j} size=Text.Md color=Colors.gray6 />
-    <VSpacing size=Spacing.xs />
+    <div className={CssHelper.flexBox()}>
+      <Text
+        value=fieldName
+        size=Text.Md
+        color=Colors.gray7
+        weight=Text.Semibold
+        transform=Text.Capitalize
+      />
+      <HSpacing size=Spacing.xs />
+      <Text value={j|($fieldType)|j} size=Text.Md color=Colors.gray7 weight=Text.Semibold />
+    </div>
+    <VSpacing size=Spacing.sm />
     <input
       className=Styles.input
       type_="text"
@@ -88,6 +135,97 @@ let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
           prev->Belt_Array.mapWithIndex((i, value) => {index == i ? newVal : value})
         });
       }}
+    />
+  </div>;
+};
+
+let countInputs = (askCount, setAskCount, setMinCount, validatorCount) => {
+  <Row.Grid marginBottom=24>
+    <Col.Grid col=Col.Two colSm=Col.Six>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+        <Text
+          value="Ask Count"
+          size=Text.Md
+          color=Colors.gray7
+          weight=Text.Semibold
+          transform=Text.Capitalize
+        />
+        <HSpacing size=Spacing.xs />
+        //TODO: remove mock message later
+        <CTooltip
+          tooltipPlacementSm=CTooltip.BottomLeft
+          tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+          <img className=Styles.infoIcon src=Images.infoIcon />
+        </CTooltip>
+      </div>
+      <select
+        className=Styles.input
+        onChange={event => {
+          let newVal = ReactEvent.Form.target(event)##value;
+          setAskCount(_ => newVal);
+        }}>
+        {Belt.Array.makeBy(validatorCount, i => i + 1)
+         |> Belt.Array.map(_, index =>
+              <option key={(index |> string_of_int) ++ "askCount"} value={index |> string_of_int}>
+                {index |> string_of_int |> React.string}
+              </option>
+            )
+         |> React.array}
+      </select>
+    </Col.Grid>
+    <Col.Grid col=Col.Two colSm=Col.Six>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+        <Text
+          value="Min Count"
+          size=Text.Md
+          color=Colors.gray7
+          weight=Text.Semibold
+          transform=Text.Capitalize
+        />
+        <HSpacing size=Spacing.xs />
+        //TODO: remove mock message later
+        <CTooltip
+          tooltipPlacementSm=CTooltip.BottomLeft
+          tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+          <img className=Styles.infoIcon src=Images.infoIcon />
+        </CTooltip>
+      </div>
+      <select
+        className=Styles.input
+        onChange={event => {
+          let newVal = ReactEvent.Form.target(event)##value;
+          setMinCount(_ => newVal);
+        }}>
+        {Belt.Array.makeBy(askCount |> int_of_string, i => i + 1)
+         |> Belt.Array.map(_, index =>
+              <option key={(index |> string_of_int) ++ "minCount"} value={index |> string_of_int}>
+                {index |> string_of_int |> React.string}
+              </option>
+            )
+         |> React.array}
+      </select>
+    </Col.Grid>
+  </Row.Grid>;
+};
+
+let clientIDInput = (clientID, setClientID) => {
+  <div className=Styles.listContainer>
+    <Text
+      value="Client ID"
+      size=Text.Md
+      color=Colors.gray7
+      weight=Text.Semibold
+      transform=Text.Capitalize
+    />
+    <VSpacing size=Spacing.sm />
+    <input
+      className=Styles.input
+      type_="text"
+      onChange={event => {
+        let newVal = ReactEvent.Form.target(event)##value;
+        setClientID(_ => newVal);
+      }}
+      value=clientID
     />
   </div>;
 };
@@ -127,11 +265,19 @@ let resultRender = (result, schema) => {
 module ExecutionPart = {
   [@react.component]
   let make = (~id: ID.OracleScript.t, ~schema: string, ~paramsInput: array(Obi.field_key_type_t)) => {
-    let (_, dispatch) = React.useContext(AccountContext.context);
-
+    let isMobile = Media.isMobile();
+    let (accountOpt, dispatch) = React.useContext(AccountContext.context);
+    let (_, dispatchModal) = React.useContext(ModalContext.context);
+    let trackingSub = TrackingSub.use();
+    let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
     let numParams = paramsInput->Belt_Array.size;
 
+    let validatorCount = ValidatorSub.countByActive(true);
+
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
+    let (clientID, setClientID) = React.useState(_ => "from_band");
+    let (askCount, setAskCount) = React.useState(_ => "1");
+    let (minCount, setMinCount) = React.useState(_ => "1");
     let (result, setResult) = React.useState(_ => Nothing);
 
     // TODO: Change when input can be empty
@@ -172,61 +318,131 @@ module ExecutionPart = {
         );
         ();
       });
-
-    <div className=Styles.container>
-      <div className={Styles.hFlex(`auto)}>
-        <Text value="Click" />
-        <HSpacing size=Spacing.sm />
-        <Text value=" Request" weight=Text.Bold />
-        <HSpacing size=Spacing.sm />
-        <Text value=" to execute the oracle script." />
-      </div>
-      <VSpacing size=Spacing.md />
-      {isUnused
-         ? React.null
-         : <div>
-             <div className={Styles.hFlex(`auto)}>
-               <Text value="This oracle script requires the following" color=Colors.gray7 />
-               <HSpacing size=Spacing.sm />
-               <Text value={numParams > 1 ? "parameters:" : "parameter:"} color=Colors.gray7 />
-             </div>
-             <VSpacing size=Spacing.lg />
-             <div className=Styles.paramsContainer>
-               {paramsInput
-                ->Belt_Array.mapWithIndex((i, param) => parameterInput(param, i, setCallDataArr))
-                ->React.array}
-             </div>
-           </div>}
-      <VSpacing size=Spacing.md />
-      <div className=Styles.buttonContainer>
-        <button
-          className={Styles.button(result == Loading)}
-          onClick={_ =>
-            if (result != Loading) {
-              switch (
-                Obi.encode(
-                  schema,
-                  "input",
-                  paramsInput
-                  ->Belt_Array.map(({fieldName}) => fieldName)
-                  ->Belt_Array.zip(callDataArr)
-                  ->Belt_Array.map(((fieldName, fieldValue)) => Obi.{fieldName, fieldValue}),
-                )
-              ) {
-              | Some(encoded) =>
-                setResult(_ => Loading);
-                dispatch(AccountContext.SendRequest(id, encoded, requestCallback));
-                ();
-              | None => setResult(_ => Error("Encoding fail, please check each parameter's type"))
-              };
-              ();
-            }
-          }>
-          {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
-        </button>
-      </div>
-      {resultRender(result, schema)}
-    </div>;
+    isMobile
+      ? <div className=Styles.mobileBlockContainer>
+          <div
+            className={Css.merge([
+              Styles.mobileBlock,
+              CssHelper.flexBox(~justify=`center, ~direction=`column, ()),
+            ])}>
+            <Icon name="fal fa-exclamation-circle" size=32 color=Colors.bandBlue />
+            <Text
+              value="Oracle request"
+              color=Colors.gray7
+              weight=Text.Regular
+              size=Text.Lg
+              align=Text.Center
+              block=true
+            />
+            <Text
+              value="not available on mobile"
+              color=Colors.gray7
+              weight=Text.Regular
+              size=Text.Lg
+              align=Text.Center
+              block=true
+            />
+          </div>
+        </div>
+      : <Row.Grid>
+          <Col.Grid>
+            <div className=Styles.container>
+              {isUnused
+                 ? React.null
+                 : <div>
+                     <div className={Css.merge([CssHelper.flexBox(), Styles.upperTextCotainer])}>
+                       <Text
+                         value="This oracle script requires the following"
+                         color=Colors.gray7
+                         size=Text.Lg
+                       />
+                       <HSpacing size=Spacing.sm />
+                       {numParams == 0
+                          ? React.null
+                          : <Text
+                              value={numParams > 1 ? "parameters" : "parameter"}
+                              color=Colors.gray7
+                              weight=Text.Bold
+                              size=Text.Lg
+                            />}
+                     </div>
+                     <VSpacing size=Spacing.lg />
+                     <div className=Styles.paramsContainer>
+                       {paramsInput
+                        ->Belt_Array.mapWithIndex((i, param) =>
+                            parameterInput(param, i, setCallDataArr)
+                          )
+                        ->React.array}
+                     </div>
+                   </div>}
+              <div> {clientIDInput(clientID, setClientID)} </div>
+              <hr className=Styles.separatorLine />
+              {switch (validatorCount) {
+               | Data(count) =>
+                 let limitCount = count > 16 ? 16 : count;
+                 countInputs(askCount, setAskCount, setMinCount, limitCount);
+               | _ => React.null
+               }}
+              {switch (accountOpt) {
+               | Some(_) =>
+                 <>
+                   <button
+                     className={Css.merge([
+                       CssHelper.btn(~fsize=14, ()),
+                       Styles.button(result == Loading),
+                     ])}
+                     onClick={_ =>
+                       if (result != Loading) {
+                         switch (
+                           Obi.encode(
+                             schema,
+                             "input",
+                             paramsInput
+                             ->Belt_Array.map(({fieldName}) => fieldName)
+                             ->Belt_Array.zip(callDataArr)
+                             ->Belt_Array.map(((fieldName, fieldValue)) =>
+                                 Obi.{fieldName, fieldValue}
+                               ),
+                           )
+                         ) {
+                         | Some(encoded) =>
+                           setResult(_ => Loading);
+                           dispatch(
+                             AccountContext.SendRequest(
+                               id,
+                               encoded,
+                               requestCallback,
+                               askCount,
+                               minCount,
+                               clientID,
+                             ),
+                           );
+                           ();
+                         | None =>
+                           setResult(_ =>
+                             Error("Encoding fail, please check each parameter's type")
+                           )
+                         };
+                         ();
+                       }
+                     }>
+                     {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
+                   </button>
+                   {resultRender(result, schema)}
+                 </>
+               | None =>
+                 switch (trackingSub) {
+                 | Data({chainID}) => <ConnectPanel connect={_ => connect(chainID)} />
+                 | Error(err) =>
+                   // log for err details
+                   Js.Console.log(err);
+                   <Text value="chain id not found" />;
+                 | _ => <LoadingCensorBar width=60 height=18 />
+                 }
+               }}
+            </div>
+          </Col.Grid>
+        </Row.Grid>;
   };
 };
 
@@ -238,7 +454,14 @@ let make = (~id: ID.OracleScript.t, ~schema: string) =>
   }
   |> Belt.Option.getWithDefault(
        _,
-       <div className={Styles.withPadding(20, 20)}>
-         <Text value="Schema not found" color=Colors.gray7 />
+       <div className=Styles.mobileBlockContainer>
+         <div
+           className={Css.merge([
+             Styles.mobileBlock,
+             CssHelper.flexBox(~justify=`center, ~direction=`column, ()),
+           ])}>
+           <Icon name="fal fa-exclamation-circle" size=32 color=Colors.bandBlue />
+           <Text value="Schema not found" color=Colors.gray7 />
+         </div>
        </div>,
      );

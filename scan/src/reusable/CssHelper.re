@@ -28,12 +28,7 @@ let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ()) => {
 
   let custom =
     switch (variant) {
-    | Primary =>
-      style([
-        backgroundColor(Colors.bandBlue),
-        color(Colors.white),
-        hover([backgroundColor(Colors.bandBlue)]),
-      ])
+    | Primary => style([backgroundColor(Colors.bandBlue), color(Colors.white)])
     | Secondary => style([]) // TODO: add later
     | Outline =>
       style([

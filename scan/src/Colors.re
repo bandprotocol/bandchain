@@ -91,5 +91,6 @@ let chartReward = Css.hex("000C5C");
 let highlightBg = Css.hex("EBF1FF");
 let bg = Css.hex("FCFCFC");
 let profileBG = Css.hex("F9FAFF");
+let connectBG = Css.hex("EFF2FF");
 
 let transparent = Css.rgba(0, 0, 0, 0.);
