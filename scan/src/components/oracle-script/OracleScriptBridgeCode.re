@@ -6,7 +6,6 @@ module Styles = {
     style([padding(`px(24)), Media.mobile([padding2(~v=`px(20), ~h=`zero)])]);
 
   let codeImage = style([width(`px(20)), marginRight(`px(10))]);
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
   let titleSpacing = style([marginBottom(`px(8))]);
   let scriptContainer =
     style([
@@ -49,8 +48,6 @@ module Styles = {
       width(`percent(100.)),
       outlineStyle(`none),
     ]);
-
-  let iconWrapper = style([display(`flex), alignItems(`center), justifyContent(`center)]);
 
   let iconBody = style([width(`px(20)), height(`px(20))]);
 
@@ -126,7 +123,7 @@ let getLanguagesByPlatform =
 module TargetPlatformIcon = {
   [@react.component]
   let make = (~icon) => {
-    <div className=Styles.iconWrapper>
+    <div className={CssHelper.flexBox(~justify=`center, ())}>
       <img
         className=Styles.iconBody
         src={
@@ -144,7 +141,7 @@ module TargetPlatformIcon = {
 module LanguageIcon = {
   [@react.component]
   let make = (~icon) => {
-    <div className=Styles.iconWrapper>
+    <div className={CssHelper.flexBox(~justify=`center, ())}>
       <img
         className=Styles.iconBody
         src={
@@ -254,25 +251,23 @@ let make = (~schema) => {
             <img className=Styles.infoIcon src=Images.infoIcon />
           </CTooltip>
         </div>
-        <div className=Styles.languageOption>
-          <div className=Styles.selectWrapper>
-            <LanguageIcon icon=language />
-            <select
-              className=Styles.selectContent
-              onChange={event => {
-                let newLanguage = ReactEvent.Form.target(event)##value |> toLanguageVariant;
-                setLanguage(_ => newLanguage);
-              }}>
-              {targetPlatform
-               |> getLanguagesByPlatform
-               |> Belt.Array.map(_, symbol =>
-                    <option value={symbol |> toLanguageString}>
-                      {symbol |> toLanguageString |> React.string}
-                    </option>
-                  )
-               |> React.array}
-            </select>
-          </div>
+        <div className=Styles.selectWrapper>
+          <LanguageIcon icon=language />
+          <select
+            className=Styles.selectContent
+            onChange={event => {
+              let newLanguage = ReactEvent.Form.target(event)##value |> toLanguageVariant;
+              setLanguage(_ => newLanguage);
+            }}>
+            {targetPlatform
+             |> getLanguagesByPlatform
+             |> Belt.Array.map(_, symbol =>
+                  <option value={symbol |> toLanguageString}>
+                    {symbol |> toLanguageString |> React.string}
+                  </option>
+                )
+             |> React.array}
+          </select>
         </div>
       </Col.Grid>
     </Row.Grid>
