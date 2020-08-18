@@ -10,7 +10,7 @@ from marshmallow import Schema, fields, ValidationError, validate
 # Set environment flag of MAX_EXECUTABLE, MAX_DATA_SIZE, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
 
 
-runtime_version = "google-cloud-function:1.0.3"
+runtime_version = "${RUNTIME_VERSION}"
 
 
 def get_env(env, flag):
