@@ -19,7 +19,7 @@ module RawOracleScriptID = {
   let prefix = "#O";
   let color = Colors.pink5;
   let route = (id, tab) => Route.OracleScriptIndexPage(id, tab);
-  let defaultTab = Route.OracleScriptExecute;
+  let defaultTab = Route.OracleScriptRequests;
 };
 
 module RawRequestID = {
