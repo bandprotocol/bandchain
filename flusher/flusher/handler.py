@@ -108,7 +108,7 @@ class Handler(object):
         self.conn.execute(
             insert(related_data_source_oracle_scripts)
             .values(**msg)
-            .on_conflict_do_update(constraint="related_data_source_oracle_scripts_pkey", set_=msg)
+            .on_conflict_do_nothing(constraint="related_data_source_oracle_scripts_pkey")
         )
 
     def handle_new_raw_request(self, msg):
