@@ -21,7 +21,8 @@ def init(chain_id, topic, db):
     """Initialize database with empty tables and tracking info."""
     engine = create_engine("postgresql+psycopg2://" + db, echo=True)
     metadata.create_all(engine)
-    engine.execute(tracking.insert(), {"chain_id": chain_id, "topic": topic, "kafka_offset": -1})
+    engine.execute(tracking.insert(), {
+                   "chain_id": chain_id, "topic": topic, "kafka_offset": -1})
     engine.execute(
         """CREATE VIEW delegations_view AS
             SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
@@ -65,7 +66,7 @@ def init(chain_id, topic, db):
             """
     )
     engine.execute(
-        """CREATE VIEW oracle_script_statistics AS
+        """CREATE VIEW oracle_script_statistic_last_1_day AS
             SELECT
             AVG(resolve_time-request_time) as response_time,
             COUNT(*) as count,
@@ -73,6 +74,35 @@ def init(chain_id, topic, db):
             resolve_status
             FROM oracle_scripts
             JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 day'::INTERVAL
+            GROUP BY oracle_scripts.id, requests.resolve_status;
+        """
+    )
+
+    engine.execute(
+        """CREATE VIEW oracle_script_statistic_last_1_week AS
+            SELECT
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
+            FROM oracle_scripts
+            JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 week'::INTERVAL
+            GROUP BY oracle_scripts.id, requests.resolve_status;
+        """
+    )
+
+    engine.execute(
+        """CREATE VIEW oracle_script_statistic_last_1_month AS
+            SELECT
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
+            FROM oracle_scripts
+            JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 month'::INTERVAL
             GROUP BY oracle_scripts.id, requests.resolve_status;
         """
     )
