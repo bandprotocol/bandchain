@@ -18,6 +18,7 @@
 
 ### Scan
 
+- (impv) [\#2492](https://github.com/bandprotocol/bandchain/pull/2492) Implemented OC index Top part, and patched padding bottom to section
 - (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
 - (feat) [\#2482](https://github.com/bandprotocol/bandchain/pull/2482) Implemented latest requests.
 - (impv) [\#2481](https://github.com/bandprotocol/bandchain/pull/2481) Patched `ChainInfoHighlight` for revamp version.

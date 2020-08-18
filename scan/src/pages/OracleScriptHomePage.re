@@ -199,7 +199,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
-        ("Requests&\nResponse time", RequestResponse({request, responseTime})),
+        ("Request&\nResponse time", RequestResponse({request, responseTime})),
         ("Timestamp", Timestamp(timestamp)),
       ]
       key={id |> ID.OracleScript.toString}
@@ -210,7 +210,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Oracle Script", Loading(200)),
         ("Description", Loading(200)),
-        ("Requests&\nResponse time", Loading(80)),
+        ("Request&\nResponse time", Loading(80)),
         ("Timestamp", Loading(180)),
       ]
       key={reserveIndex |> string_of_int}
@@ -297,12 +297,12 @@ let make = () => {
                    </div>
                  </Col.Grid>
                  <Col.Grid col=Col.Three>
-                   <Text block=true value="Descriptions" weight=Text.Semibold color=Colors.gray7 />
+                   <Text block=true value="Description" weight=Text.Semibold color=Colors.gray7 />
                  </Col.Grid>
                  <Col.Grid col=Col.Two>
                    <Text
                      block=true
-                     value="Requests"
+                     value="Request"
                      weight=Text.Semibold
                      color=Colors.gray7
                      align=Text.Right
