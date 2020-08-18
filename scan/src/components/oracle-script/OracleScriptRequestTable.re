@@ -41,7 +41,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       <Col.Grid col=Col.Four>
         {switch (requestsSub) {
          | Data({txHash}) => <TxLink txHash width=230 weight=Text.Medium />
-         | _ => <LoadingCensorBar width=270 height=15 />
+         | _ => <LoadingCensorBar width=230 height=15 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Three>
