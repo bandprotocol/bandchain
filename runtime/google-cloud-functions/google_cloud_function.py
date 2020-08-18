@@ -1,10 +1,8 @@
-from flask import Flask, jsonify, json
+from flask import jsonify
 import os
 import shlex
 import subprocess
 import base64
-import werkzeug
-from marshmallow import Schema, fields, ValidationError, validate
 
 # Copy and paste this file on Google Cloud function
 # Set environment flag of MAX_EXECUTABLE, MAX_DATA_SIZE, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
