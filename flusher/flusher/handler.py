@@ -132,7 +132,7 @@ class Handler(object):
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         self.conn.execute(validators.insert(), msg)
-        self.handle_new_bonded_token_track(
+        self.handle_new_historical_bonded_token_on_validator(
             {
                 "validator_id": self.get_validator_id(msg["operator_address"]),
                 "bonded_tokens": msg["tokens"],
@@ -142,7 +142,7 @@ class Handler(object):
 
     def handle_update_validator(self, msg):
         if "tokens" in msg.keys():
-            self.handle_new_bonded_token_track(
+            self.handle_new_historical_bonded_token_on_validator(
                 {
                     "validator_id": self.get_validator_id(msg["operator_address"]),
                     "bonded_tokens": msg["tokens"],
@@ -238,7 +238,7 @@ class Handler(object):
             condition = (col == msg[col.name]) & condition
         self.conn.execute(proposals.update().where(condition).values(**msg))
 
-    def handle_new_bonded_token_track(self, msg):
+    def handle_new_historical_bonded_token_on_validator(self, msg):
         self.conn.execute(
             insert(historical_bonded_token_on_validators)
             .values(**msg)
