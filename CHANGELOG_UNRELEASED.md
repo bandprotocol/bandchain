@@ -16,7 +16,7 @@
 
 ### Emitter & Flusher
 
-- (impv) [\#2482](https://github.com/bandprotocol/bandchain/pull/2482) Implemented reporters table.
+- (impv) [\#2486](https://github.com/bandprotocol/bandchain/pull/2486) Implemented reporters table.
 
 ### Scan
 
