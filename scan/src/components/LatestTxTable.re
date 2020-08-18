@@ -45,7 +45,7 @@ module Styles = {
   let logo = style([width(`px(20))]);
 };
 
-let renderTitle = allSub => {
+let renderTitle = (txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
   <div className=Styles.topicBar>
     <Text
       value="Latest Transactions"
@@ -56,10 +56,15 @@ let renderTitle = allSub => {
     />
     <Link className=Styles.seeAll route=Route.TxHomePage>
       <div className=Styles.cFlex>
-        {switch (allSub) {
-         | ApolloHooks.Subscription.Data((_, totalCount)) =>
+        {switch (txsSub) {
+         | ApolloHooks.Subscription.Data(txs) =>
            <Text
-             value={totalCount |> Format.iPretty}
+             value={
+               txs
+               ->Belt.Array.get(0)
+               ->Belt.Option.mapWithDefault(0, ({id}) => id)
+               ->Format.iPretty
+             }
              size=Text.Xxl
              color=Colors.gray8
              height={Text.Px(24)}
@@ -81,7 +86,7 @@ let renderTitle = allSub => {
   </div>;
 };
 
-let renderMobileTitle = allSub => {
+let renderMobileTitle = (txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
   <div className=Styles.topicBar>
     <div>
       <Text
@@ -92,10 +97,15 @@ let renderMobileTitle = allSub => {
         color=Colors.gray8
       />
       <div className=Styles.cFlex>
-        {switch (allSub) {
-         | ApolloHooks.Subscription.Data((_, totalCount)) =>
+        {switch (txsSub) {
+         | ApolloHooks.Subscription.Data(txs) =>
            <Text
-             value={totalCount |> Format.iPretty}
+             value={
+               txs
+               ->Belt.Array.get(0)
+               ->Belt.Option.mapWithDefault(0, ({id}) => id)
+               ->Format.iPretty
+             }
              size=Text.Xxl
              color=Colors.gray8
              height={Text.Px(18)}
@@ -203,9 +213,10 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
 let make = () => {
   let isMobile = Media.isMobile();
   let txCount = isMobile ? 5 : 10;
-  let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=txCount, ()), TxSub.count());
+  let txsSub = TxSub.getList(~page=1, ~pageSize=txCount, ());
+
   <>
-    {isMobile ? renderMobileTitle(allSub) : renderTitle(allSub)}
+    {isMobile ? renderMobileTitle(txsSub) : renderTitle(txsSub)}
     <VSpacing size=Spacing.lg />
     {isMobile
        ? React.null
@@ -259,8 +270,8 @@ let make = () => {
              <Col> <HSpacing size={`px(12)} /> </Col>
            </Row>
          </THead>}
-    {switch (allSub) {
-     | Data((txs, _)) =>
+    {switch (txsSub) {
+     | Data(txs) =>
        txs
        ->Belt_Array.mapWithIndex((i, e) =>
            isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
