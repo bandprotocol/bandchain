@@ -14,7 +14,6 @@ module Styles = {
       padding(`px(12)),
       width(`calc((`sub, `percent(50.), `px(4)))),
       height(`px(75)),
-      cursor(`pointer),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       opacity(i == 0 || i == 11 ? 0. : 1.),
