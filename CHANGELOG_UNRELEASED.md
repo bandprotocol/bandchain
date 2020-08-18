@@ -16,7 +16,7 @@
 
 ### Emitter & Flusher
 
-- (impv) [\#2450](https://github.com/bandprotocol/bandchain/pull/2450) Add commutative_requests view table.
+- (impv) [\#2450](https://github.com/bandprotocol/bandchain/pull/2450) Add request count 1day view table.
 
 ### Scan
 

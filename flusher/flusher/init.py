@@ -56,7 +56,7 @@ def init(chain_id, topic, db):
 			GROUP BY consensus_address, voted;"""
     )
     engine.execute(
-        """CREATE VIEW request_counts AS
+        """CREATE VIEW request_count_1day AS
             SELECT date_trunc('day', blocks.timestamp) as date, COUNT(*) as request_count
             FROM blocks
             JOIN transactions ON blocks.height = transactions.block_height
