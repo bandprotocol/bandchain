@@ -66,7 +66,6 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
              <Timestamp.Grid
                time={transaction.block.timestamp}
                size=Text.Md
-               weight=Text.Regular
                textAlign=Text.Right
              />
            | _ => <LoadingCensorBar width=100 height=15 />
@@ -150,41 +149,17 @@ let make = () => {
         </Col.Grid>
       </Row.Grid>
       {isMobile
-         ? <Row.Grid marginBottom=16>
-             <Col.Grid>
-               {switch (allSub) {
-                | Data((_, totalRequestCount)) =>
-                  <div className={CssHelper.flexBox()}>
-                    <Text
-                      block=true
-                      value={totalRequestCount |> string_of_int}
-                      weight=Text.Semibold
-                      color=Colors.gray7
-                    />
-                    <HSpacing size=Spacing.xs />
-                    <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
-                  </div>
-                | _ => <LoadingCensorBar width=100 height=15 />
-                }}
-             </Col.Grid>
-           </Row.Grid>
+         ? React.null
          : <THead.Grid>
              <Row.Grid alignItems=Row.Center>
                <Col.Grid col=Col.Two>
-                 {switch (allSub) {
-                  | Data((_, totalRequestCount)) =>
-                    <div className={CssHelper.flexBox()}>
-                      <Text
-                        block=true
-                        value={totalRequestCount |> string_of_int}
-                        weight=Text.Semibold
-                        color=Colors.gray7
-                      />
-                      <HSpacing size=Spacing.xs />
-                      <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
-                    </div>
-                  | _ => <LoadingCensorBar width=100 height=15 />
-                  }}
+                 <Text
+                   block=true
+                   value="Request ID"
+                   size=Text.Md
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                 />
                </Col.Grid>
                <Col.Grid col=Col.Four>
                  <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
