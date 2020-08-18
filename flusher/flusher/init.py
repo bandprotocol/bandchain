@@ -21,8 +21,7 @@ def init(chain_id, topic, db):
     """Initialize database with empty tables and tracking info."""
     engine = create_engine("postgresql+psycopg2://" + db, echo=True)
     metadata.create_all(engine)
-    engine.execute(tracking.insert(), {
-                   "chain_id": chain_id, "topic": topic, "kafka_offset": -1})
+    engine.execute(tracking.insert(), {"chain_id": chain_id, "topic": topic, "kafka_offset": -1})
     engine.execute(
         """CREATE VIEW delegations_view AS
             SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
@@ -68,11 +67,12 @@ def init(chain_id, topic, db):
     engine.execute(
         """CREATE VIEW oracle_script_statistics AS
             SELECT
-            (SELECT AVG(resolve_time-request_time) FROM requests WHERE requests.resolve_status = 'Success' AND requests.oracle_script_id=oracle_scripts.id) as response_time,
-            CAST((SELECT COUNT(*) FROM requests WHERE requests.resolve_status = 'Success' AND requests.oracle_script_id=oracle_scripts.id) as DECIMAL) / CAST((SELECT COUNT(*) FROM requests WHERE requests.oracle_script_id=oracle_scripts.id) as DECIMAL) *100 as success_rate,
-            oracle_scripts.id
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
             FROM oracle_scripts
             JOIN requests ON oracle_scripts.id=requests.oracle_script_id
-            GROUP BY oracle_scripts.id;
+            GROUP BY oracle_scripts.id, requests.resolve_status;
         """
     )
