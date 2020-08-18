@@ -36,14 +36,7 @@ let make = (~values, ~idx, ~status=?, ~requestStatus=?) => {
      | None => React.null
      }}
     {switch (requestStatus) {
-     | Some(resolveStatus) =>
-       switch (resolveStatus) {
-       | RequestSub.Success => <img src=Images.success className=Styles.logo />
-       | Failure => <img src=Images.fail className=Styles.logo />
-       | Pending => <img src=Images.pending className=Styles.logo />
-       | Expired => <img src=Images.expired className=Styles.logo />
-       | Unknown => <img src=Images.unknown className=Styles.logo />
-       }
+     | Some(resolveStatus) => <RequestStatus resolveStatus style=Styles.logo />
      | None => React.null
      }}
     {values

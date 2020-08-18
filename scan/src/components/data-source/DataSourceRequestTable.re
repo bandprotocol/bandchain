@@ -63,14 +63,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       <Col.Grid col=Col.One>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
-           | Data({resolveStatus}) =>
-             switch (resolveStatus) {
-             | RequestSub.Success => <img src=Images.success />
-             | Failure => <img src=Images.fail />
-             | Pending => <img src=Images.pending />
-             | Expired => <img src=Images.expired />
-             | Unknown => <img src=Images.unknown />
-             }
+           | Data({resolveStatus}) => <RequestStatus resolveStatus />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>

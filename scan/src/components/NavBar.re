@@ -22,7 +22,7 @@ module RenderDesktop = {
     <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
       {routes
        ->Belt.List.map(((v, route)) =>
-           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+           <div key=v className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
              <Link className={Styles.nav(currentRoute == route)} route>
                {v |> React.string}
              </Link>

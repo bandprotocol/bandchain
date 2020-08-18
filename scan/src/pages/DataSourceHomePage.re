@@ -9,9 +9,7 @@ let getName =
 
 let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
   if (a.timestamp != b.timestamp) {
-    let ID.DataSource.ID(a_) = a.id;
-    let ID.DataSource.ID(b_) = b.id;
-    compare(b_, a_);
+    compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
   } else {
     compare(b.request, a.request);
   };
@@ -96,7 +94,7 @@ let renderBodyMobile =
   | Data({id, timestamp, description, name, request}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sourse", DataSource(id, name)),
+        ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
         ("Requests", Count(request)),
         ("Timestamp", Timestamp(timestamp)),
@@ -107,7 +105,7 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sources", Loading(70)),
+        ("Data Source", Loading(70)),
         ("Description", Loading(136)),
         ("Requests", Loading(20)),
         ("Timestamp", Loading(166)),
@@ -168,7 +166,7 @@ let make = () => {
                      <div className=TElement.Styles.hashContainer>
                        <Text
                          block=true
-                         value="Data Sources"
+                         value="Data Source"
                          size=Text.Md
                          weight=Text.Semibold
                          color=Colors.gray7
@@ -178,7 +176,7 @@ let make = () => {
                    <Col.Grid col=Col.Four>
                      <Text
                        block=true
-                       value="Descriptions"
+                       value="Description"
                        size=Text.Md
                        weight=Text.Semibold
                        color=Colors.gray7

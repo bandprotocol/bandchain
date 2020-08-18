@@ -39,8 +39,8 @@ let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transact
     // TODO: Please revisit again.
     | _ => MomentRe.momentNow()
     },
-  relatedDataSources: [],
   // TODO: These will be removed after the data adding to schema
+  relatedDataSources: ID.DataSource.[ID(1), ID(2), ID(3)],
   request: Js.Math.random_int(300, 200000),
   responseTime: Js.Math.random_int(100, 999),
   //   related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
@@ -99,11 +99,10 @@ module OracleScriptsCountConfig = [%graphql
 ];
 
 let get = id => {
-  let ID.OracleScript.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~id=id_, ()),
+      ~variables=SingleConfig.makeVariables(~id=id |> ID.OracleScript.toInt, ()),
     );
   let%Sub x = result;
   switch (x##oracle_scripts_by_pk) {

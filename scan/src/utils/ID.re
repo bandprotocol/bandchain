@@ -19,7 +19,7 @@ module RawOracleScriptID = {
   let prefix = "#O";
   let color = Colors.pink5;
   let route = (id, tab) => Route.OracleScriptIndexPage(id, tab);
-  let defaultTab = Route.OracleScriptExecute;
+  let defaultTab = Route.OracleScriptRequests;
 };
 
 module RawRequestID = {
@@ -60,6 +60,10 @@ module IDCreator = (RawID: RawIDSig) => {
   let toString =
     fun
     | ID(id) => RawID.prefix ++ string_of_int(id);
+
+  let toInt =
+    fun
+    | ID(id) => id;
 
   let fromJson = json => ID(json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float);
 
