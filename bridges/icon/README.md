@@ -19,7 +19,7 @@ tbears test bridge
 #### Bridge
 
 ```
-tbears deploy bridge -k mumustorekey.key -c bridge/tbears_cli_config_testnet.json
+tbears deploy bridge -k mumustorekey.key -c bridge/deploy_config_testnet.json
 ```
 
 #### ReceiverMock
