@@ -21,8 +21,7 @@ def init(chain_id, topic, db):
     """Initialize database with empty tables and tracking info."""
     engine = create_engine("postgresql+psycopg2://" + db, echo=True)
     metadata.create_all(engine)
-    engine.execute(tracking.insert(), {
-                   "chain_id": chain_id, "topic": topic, "kafka_offset": -1})
+    engine.execute(tracking.insert(), {"chain_id": chain_id, "topic": topic, "kafka_offset": -1})
     engine.execute(
         """CREATE VIEW delegations_view AS
             SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
