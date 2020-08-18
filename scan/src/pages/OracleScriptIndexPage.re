@@ -127,6 +127,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                          <>
                            <div key={i |> string_of_int}>
                              <CTooltip
+                               mobile=false
                                tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
                                <TypeID.DataSource id position=TypeID.Subtitle />
                              </CTooltip>

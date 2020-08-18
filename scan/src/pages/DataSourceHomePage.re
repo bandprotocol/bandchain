@@ -94,7 +94,7 @@ let renderBodyMobile =
   | Data({id, timestamp, description, name, request}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sourse", DataSource(id, name)),
+        ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
         ("Requests", Count(request)),
         ("Timestamp", Timestamp(timestamp)),
@@ -105,7 +105,7 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sources", Loading(70)),
+        ("Data Source", Loading(70)),
         ("Description", Loading(136)),
         ("Requests", Loading(20)),
         ("Timestamp", Loading(166)),
@@ -166,7 +166,7 @@ let make = () => {
                      <div className=TElement.Styles.hashContainer>
                        <Text
                          block=true
-                         value="Data Sources"
+                         value="Data Source"
                          size=Text.Md
                          weight=Text.Semibold
                          color=Colors.gray7
@@ -176,7 +176,7 @@ let make = () => {
                    <Col.Grid col=Col.Four>
                      <Text
                        block=true
-                       value="Descriptions"
+                       value="Description"
                        size=Text.Md
                        weight=Text.Semibold
                        color=Colors.gray7
