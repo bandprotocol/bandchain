@@ -51,6 +51,7 @@ def test_error_executable_empty(mock_env):
     assert data["stdout"] == ""
     assert data["stderr"] == ""
     assert data["err"] == "Execution fail"
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_error_missing_calldata(mock_env):
@@ -83,6 +84,7 @@ print('hello')"""
     assert data["stdout"] == "hello\n"
     assert data["stderr"] == ""
     assert data["err"] == ""
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_error_missing_timeout(mock_env):
@@ -133,6 +135,7 @@ print('hello')"""
     assert data["stdout"] == "hello\n"
     assert data["stderr"] == ""
     assert data["err"] == ""
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_success_execution(mock_env):
@@ -152,6 +155,7 @@ print('hello')"""
     assert data["stdout"] == "hello\n"
     assert data["stderr"] == ""
     assert data["err"] == ""
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_error_execution_fail(mock_env):
@@ -171,6 +175,7 @@ print('hello')"""
     assert data["stdout"] == ""
     assert data["stderr"] == ""
     assert data["err"] == "Execution fail"
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_error_execution_timeout(mock_env):
@@ -194,6 +199,7 @@ time.sleep(1)"""
     assert data["stdout"] == ""
     assert data["stderr"] == ""
     assert data["err"] == "Execution time limit exceeded"
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_success_execution_timeout(mock_env):
@@ -218,6 +224,7 @@ print ("hello")"""
     assert data["stdout"] == "hello\n"
     assert data["stderr"] == ""
     assert data["err"] == ""
+    assert data["version"] == "${RUNTIME_VERSION}"
 
 
 def test_error_infinite_loop_execution(mock_env):
@@ -242,3 +249,4 @@ while True:
     assert data["stdout"] == ""
     assert data["stderr"] == ""
     assert data["err"] == "Execution time limit exceeded"
+    assert data["version"] == "${RUNTIME_VERSION}"
