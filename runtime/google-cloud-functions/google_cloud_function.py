@@ -7,7 +7,10 @@ import werkzeug
 from marshmallow import Schema, fields, ValidationError, validate
 
 # Copy and paste this file on Google Cloud function
-# Set environment flag of MAX_EXECUTABLE, MAX_CALLDATA, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
+# Set environment flag of MAX_EXECUTABLE, MAX_DATA_SIZE, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
+
+
+runtime_version = "google-cloud-function:1.0.3"
 
 
 def get_env(env, flag):
@@ -19,7 +22,13 @@ def get_env(env, flag):
 def success(returncode, stdout, stderr, err):
     return (
         jsonify(
-            {"returncode": returncode, "stdout": stdout, "stderr": stderr, "err": err}
+            {
+                "returncode": returncode,
+                "stdout": stdout,
+                "stderr": stderr,
+                "err": err,
+                "version": runtime_version,
+            }
         ),
         200,
     )
@@ -41,65 +50,43 @@ def execute(request):
     env = os.environ.copy()
 
     MAX_EXECUTABLE = get_env(env, "MAX_EXECUTABLE")
-    MAX_CALLDATA = get_env(env, "MAX_CALLDATA")
-    MAX_TIMEOUT = get_env(env, "MAX_TIMEOUT")
-    MAX_STDOUT = get_env(env, "MAX_STDOUT")
-    MAX_STDERR = get_env(env, "MAX_STDERR")
+    MAX_DATA_SIZE = get_env(env, "MAX_DATA_SIZE")
 
-    class Executable(fields.Field):
-        def _deserialize(self, value, attr, data, **kwargs):
-            try:
-                return base64.b64decode(value).decode()
-            except:
-                raise ValidationError("Can't decoded executable")
-
-    class RequestSchema(Schema):
-        executable = Executable(
-            required=True,
-            validate=validate.Length(max=MAX_EXECUTABLE),
-            error_messages={"required": "field is missing from JSON request"},
-        )
-        calldata = fields.Str(
-            required=True,
-            validate=validate.Length(max=MAX_CALLDATA),
-            error_messages={"required": "field is missing from JSON request"},
-        )
-        timeout = fields.Int(
-            required=True,
-            validate=validate.Range(min=0, max=MAX_TIMEOUT),
-            error_messages={"required": "field is missing from JSON request"},
-        )
-
+    request_json = request.get_json(force=True)
+    if "executable" not in request_json:
+        return bad_request("Missing executable value")
+    if len(request_json["executable"]) > MAX_EXECUTABLE:
+        return bad_request("Executable exceeds max size")
+    if "calldata" not in request_json:
+        return bad_request("Missing calldata value")
+    if len(request_json["calldata"]) > MAX_DATA_SIZE:
+        return bad_request("Calldata exceeds max size")
+    if "timeout" not in request_json:
+        return bad_request("Missing timeout value")
     try:
-        request_json = request.get_json(force=True)
-    except werkzeug.exceptions.BadRequest:
-        return bad_request("invalid JSON request format")
-
-    try:
-        loaded_request = RequestSchema().load(request_json)
-    except ValidationError as err:
-        return bad_request(err.messages)
+        timeout = int(request_json["timeout"])
+    except ValueError:
+        return bad_request("Timeout format invalid")
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(loaded_request["executable"])
+        f.write(base64.b64decode(request_json["executable"]).decode())
 
     os.chmod(path, 0o775)
-
     try:
-        timeout_millisec = loaded_request["timeout"]
-        timeout_sec = timeout_millisec / 1000
-
+        env = os.environ.copy()
+        env["PYTHONPATH"] = os.getcwd()
         proc = subprocess.Popen(
-            [path] + shlex.split(loaded_request["calldata"]),
+            [path] + shlex.split(request_json["calldata"]),
+            env=env,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
         )
 
-        proc.wait(timeout=timeout_sec)
+        proc.wait(timeout=(timeout / 1000))
         returncode = proc.returncode
-        stdout = proc.stdout.read(MAX_STDOUT).decode()
-        stderr = proc.stderr.read(MAX_STDERR).decode()
+        stdout = proc.stdout.read(MAX_DATA_SIZE).decode()
+        stderr = proc.stderr.read(MAX_DATA_SIZE).decode()
         return success(returncode, stdout, stderr, "")
     except OSError:
         return success(126, "", "", "Execution fail")

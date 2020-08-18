@@ -18,3 +18,11 @@ docker-build:
 
 docker-push: docker-build
 	docker push bandprotocol/runtime:$(VERSION)
+
+gcf:
+	cp $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.py $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.bak
+	RUNTIME_VERSION="google-cloud-function:$(VERSION)" envsubst < $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.bak > $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.py
+	cd google-cloud-functions && zip -g google_cloud_function.zip google_cloud_function.py requirements.txt & cd ..
+	mv $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.bak $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.py
+
+
