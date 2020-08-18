@@ -58,7 +58,6 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 		"operator_address": addr.String(),
 		"status":           status.IsActive,
 		"status_since":     status.Since.UnixNano(),
-		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 

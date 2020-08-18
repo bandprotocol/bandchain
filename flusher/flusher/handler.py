@@ -23,7 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
-    shares_tracks,
+    historical_bonded_token_on_validators,
 )
 
 
@@ -127,37 +127,35 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
+        last_update = msg["last_update"]
+        del msg["last_update"]
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
-        if self.get_validator_id(msg["operator_address"]) is None:
-            self.conn.execute(validators.insert(), msg)
-        else:
-            condition = True
-            for col in validators.primary_key.columns.values():
-                condition = (col == msg[col.name]) & condition
-            self.conn.execute(validators.update().where(condition).values(**msg))
+        self.conn.execute(validators.insert(), msg)
         self.handle_new_bonded_token_track(
             {
                 "validator_id": self.get_validator_id(msg["operator_address"]),
-                "shares_amount": msg["delegator_shares"],
-                "timestamp": msg["last_update"],
+                "bonded_tokens": msg["tokens"],
+                "timestamp": last_update,
             }
         )
 
     def handle_update_validator(self, msg):
+        if "tokens" in msg.keys():
+            self.handle_new_bonded_token_track(
+                {
+                    "validator_id": self.get_validator_id(msg["operator_address"]),
+                    "bonded_tokens": msg["tokens"],
+                    "timestamp": msg["last_update"],
+                }
+            )
+        if "last_update" in msg.keys():
+            del msg["last_update"]
         self.conn.execute(
             validators.update()
             .where(validators.c.operator_address == msg["operator_address"])
             .values(**msg)
         )
-        if "delegator_shares" in msg.keys():
-            self.handle_new_bonded_token_track(
-                {
-                    "validator_id": self.get_validator_id(msg["operator_address"]),
-                    "shares_amount": msg["delegator_shares"],
-                    "timestamp": msg["last_update"],
-                }
-            )
 
     def handle_set_delegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
@@ -242,7 +240,9 @@ class Handler(object):
 
     def handle_new_bonded_token_track(self, msg):
         self.conn.execute(
-            insert(shares_tracks)
+            insert(historical_bonded_token_on_validators)
             .values(**msg)
-            .on_conflict_do_update(constraint="shares_tracks_pkey", set_=msg)
+            .on_conflict_do_update(
+                constraint="historical_bonded_token_on_validators_pkey", set_=msg
+            )
         )

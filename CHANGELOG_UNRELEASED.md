@@ -16,7 +16,7 @@
 
 ### Emitter & Flusher
 
- - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented bonded tokens by timestamps table
+ - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
 
 ### Scan
 
