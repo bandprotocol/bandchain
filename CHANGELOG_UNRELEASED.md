@@ -25,6 +25,7 @@
 
 ### Scan
 
+- (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page
 - (impv) [\#2492](https://github.com/bandprotocol/bandchain/pull/2492) Implemented OC index Top part, and patched padding bottom to section
 - (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
