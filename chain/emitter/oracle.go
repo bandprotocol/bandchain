@@ -154,6 +154,10 @@ func (app *App) handleMsgAddReporter(
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.Validator)
 	extra["validator_moniker"] = val.GetMoniker()
 	app.AddAccountsInTx(msg.Reporter)
+	app.Write("SET_REPORTER", JsDict{
+		"reporter":  msg.Reporter,
+		"validator": msg.Validator,
+	})
 }
 
 // handleMsgRemoveReporter implements emitter handler for MsgRemoveReporter.
@@ -163,6 +167,10 @@ func (app *App) handleMsgRemoveReporter(
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.Validator)
 	extra["validator_moniker"] = val.GetMoniker()
 	app.AddAccountsInTx(msg.Reporter)
+	app.Write("REMOVE_REPORTER", JsDict{
+		"reporter":  msg.Reporter,
+		"validator": msg.Validator,
+	})
 }
 
 // handleMsgActivate implements emitter handler for handleMsgActivate.
