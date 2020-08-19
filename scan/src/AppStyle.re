@@ -171,7 +171,7 @@ body {
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -moz-osx-font-smoothing: grayscale;
-  background: #FCFCFC;
+  background: #FFFFFF;
 }
 
 code {

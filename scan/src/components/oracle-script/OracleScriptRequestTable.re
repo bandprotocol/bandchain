@@ -1,8 +1,7 @@
 module Styles = {
   open Css;
 
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-  let withWidth = w => style([width(`px(w))]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -11,125 +10,221 @@ module Styles = {
       flexDirection(`column),
       alignItems(`center),
     ]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
+    ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-type request_t = {
-  id: int,
-  requester: Address.t,
-  age: MomentRe.Moment.t,
-  blockHeight: int,
-  txHash: Hash.t,
+let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
+  <TBody.Grid
+    key={
+      switch (requestsSub) {
+      | Data({id}) => id |> ID.Request.toString
+      | _ => reserveIndex |> string_of_int
+      }
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+      <Col.Grid col=Col.Two>
+        {switch (requestsSub) {
+         | Data({id}) => <TypeID.Request id />
+         | _ => <LoadingCensorBar width=135 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Four>
+        {switch (requestsSub) {
+         | Data({txHash}) => <TxLink txHash width=230 weight=Text.Medium />
+         | _ => <LoadingCensorBar width=230 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        {switch (requestsSub) {
+         | Data({minCount, askCount, reportsCount}) =>
+           <ProgressBar
+             reportedValidators=reportsCount
+             minimumValidators=minCount
+             requestValidators=askCount
+           />
+         | _ => <LoadingCensorBar width=212 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.One>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (requestsSub) {
+           | Data({resolveStatus}) => <RequestStatus resolveStatus />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (requestsSub) {
+           | Data({txTimestamp}) =>
+             <Timestamp.Grid
+               time=txTimestamp
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
+             />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
+};
+
+let renderBodyMobile =
+    (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
+  switch (requestsSub) {
+  | Data({id, txTimestamp, txHash, minCount, askCount, reportsCount, resolveStatus}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Request ID", RequestID(id)),
+        ("Tx Hash", TxHash(txHash, 200)),
+        (
+          "Report Status",
+          ProgressBar({
+            reportedValidators: reportsCount,
+            minimumValidators: minCount,
+            requestValidators: askCount,
+          }),
+        ),
+        ("Timestamp", Timestamp(txTimestamp)),
+      ]
+      key={id |> ID.Request.toString}
+      idx={id |> ID.Request.toString}
+      requestStatus=resolveStatus
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Request ID", Loading(70)),
+        ("Tx Hash", Loading(136)),
+        ("Report Status", Loading(20)),
+        ("Timestamp", Loading(166)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = (~oracleScriptID: ID.OracleScript.t) =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 5;
+let make = (~oracleScriptID: ID.OracleScript.t) => {
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 5;
 
-    let requestsSub = RequestSub.Mini.getListByOracleScript(oracleScriptID, ~pageSize, ~page, ());
-    let totalRequestCountSub = RequestSub.countByOracleScript(oracleScriptID);
+  let requestsSub = RequestSub.Mini.getListByOracleScript(oracleScriptID, ~pageSize, ~page, ());
+  let totalRequestCountSub = RequestSub.countByOracleScript(oracleScriptID);
 
-    let%Sub requests = requestsSub;
-    let%Sub totalRequestCount = totalRequestCountSub;
+  let allSub = Sub.all2(requestsSub, totalRequestCountSub);
 
-    let pageCount = Page.getPageCount(totalRequestCount, pageSize);
+  let isMobile = Media.isMobile();
 
-    <div className=Styles.tableWrapper>
-      <Row>
-        <HSpacing size={`px(25)} />
-        <Text value={totalRequestCount |> string_of_int} weight=Text.Bold />
-        <HSpacing size={`px(5)} />
-        <Text value="Requests" />
-      </Row>
-      <VSpacing size=Spacing.lg />
-      {totalRequestCount > 0
-         ? <>
-             <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=1.>
-                   <div className=TElement.Styles.hashContainer>
-                     <Text
-                       block=true
-                       value="REQUEST"
-                       size=Text.Sm
-                       weight=Text.Semibold
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col size=2.64>
-                   <Text
-                     block=true
-                     value="REQUESTER"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=2.2>
-                   <Text
-                     block=true
-                     value="TIMESTAMP"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=1.26>
-                   <Text
-                     block=true
-                     value="BLOCK"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=2.8>
-                   <Text
-                     block=true
-                     value="TX HASH"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-               </Row>
-             </THead>
-             {requests
-              ->Belt_Array.map(({id, sender, txTimestamp, blockHeight, txHash}) => {
-                  <TBody key={txHash |> Hash.toHex(~upper=true)}>
-                    <Row>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                      <Col size=1.> <TypeID.Request id /> </Col>
-                      <Col size=2.64>
-                        <div className={Styles.withWidth(220)}>
-                          <AddressRender address=sender />
-                        </div>
-                      </Col>
-                      <Col size=2.2>
-                        <Timestamp time=txTimestamp size=Text.Md weight=Text.Regular code=true />
-                      </Col>
-                      <Col size=1.26> <TypeID.Block id=blockHeight /> </Col>
-                      <Col size=2.8> <TxLink txHash width=230 weight=Text.Medium /> </Col>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                    </Row>
-                  </TBody>
-                })
-              ->React.array}
-           </>
-         : <div className=Styles.iconWrapper>
-             <VSpacing size={`px(30)} />
-             <img src=Images.noRequestIcon className=Styles.icon />
-             <VSpacing size={`px(40)} />
-             <Text block=true value="NO REQUEST" weight=Text.Regular color=Colors.blue4 />
-             <VSpacing size={`px(15)} />
-           </div>}
-      <VSpacing size=Spacing.lg />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <div className=Styles.tableWrapper>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (allSub) {
+              | Data((_, totalRequestCount)) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={totalRequestCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Two>
+               {switch (allSub) {
+                | Data((_, totalRequestCount)) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={totalRequestCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Four>
+               <Text block=true value="Tx Hash" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+             <Col.Grid col=Col.Four>
+               <Text
+                 block=true
+                 value="Report Status"
+                 size=Text.Md
+                 weight=Text.Semibold
+                 color=Colors.gray7
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Two>
+               <Text
+                 block=true
+                 value="Timestamp"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (allSub) {
+     | Data((requests, requestsCount)) =>
+       let pageCount = Page.getPageCount(requestsCount, pageSize);
+       <>
+         {requestsCount > 0
+            ? requests
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array
+            : <div className=Styles.emptyContainer>
+                <img src=Images.noSource className=Styles.noDataImage />
+                <Heading
+                  size=Heading.H4
+                  value="No Request"
+                  align=Heading.Center
+                  weight=Heading.Regular
+                  color=Colors.bandBlue
+                />
+              </div>}
+         {isMobile
+            ? React.null
+            : <Pagination
+                currentPage=page
+                pageCount
+                onPageChange={newPage => setPage(_ => newPage)}
+              />}
+       </>;
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
+     }}
+  </div>;
+};
