@@ -289,8 +289,6 @@ class Handler(object):
         self.conn.execute(reporters.delete().where(condition))
 
     def handle_set_historical_validator_status(self, msg):
-        msg["validator_id"] = self.get_validator_id(msg["operator_address"])
-        del msg["operator_address"]
         self.conn.execute(
             insert(historical_oracle_statuses)
             .values(**msg)

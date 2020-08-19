@@ -344,7 +344,7 @@ related_data_source_oracle_scripts = sa.Table(
 historical_oracle_statuses = sa.Table(
     "historical_oracle_statuses",
     metadata,
-    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("operator_address", sa.String, primary_key=True),
     Column("status", sa.Boolean),
     Column("timestamp", CustomDateTime, primary_key=True),
 )

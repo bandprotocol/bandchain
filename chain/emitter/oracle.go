@@ -38,6 +38,15 @@ func (app *App) emitSetOracleScript(id types.OracleScriptID, os types.OracleScri
 	})
 }
 
+func (app *App) emitHistoricalValidatorStatus(operatorAddress sdk.ValAddress) {
+	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, operatorAddress).IsActive
+	app.Write("SET_HISTORICAL_VALIDATOR_STATUS", JsDict{
+		"operator_address": operatorAddress,
+		"status":           status,
+		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
+	})
+}
+
 // handleMsgRequestData implements emitter handler for MsgRequestData.
 func (app *App) handleMsgRequestData(
 	txHash []byte, msg oracle.MsgRequestData, evMap EvMap, extra JsDict,
@@ -178,10 +187,12 @@ func (app *App) handleMsgActivate(
 	txHash []byte, msg oracle.MsgActivate, evMap EvMap, extra JsDict,
 ) {
 	app.emitUpdateValidatorStatus(msg.Validator)
+	app.emitHistoricalValidatorStatus(msg.Validator)
 }
 
 // handleEventDeactivate implements emitter handler for EventDeactivate.
 func (app *App) handleEventDeactivate(evMap EvMap) {
 	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
 	app.emitUpdateValidatorStatus(addr)
+	app.emitHistoricalValidatorStatus(addr)
 }

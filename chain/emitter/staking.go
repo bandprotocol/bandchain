@@ -59,7 +59,6 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 		"status":           status.IsActive,
 		"status_since":     status.Since.UnixNano(),
 	})
-	app.emitHistoricalValidatorStatus(addr)
 }
 
 func (app *App) emitDelegationAfterWithdrawReward(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
@@ -89,22 +88,12 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 	}
 }
 
-func (app *App) emitHistoricalValidatorStatus(operatorAddress sdk.ValAddress) {
-	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, operatorAddress).IsActive
-	app.Write("SET_HISTORICAL_VALIDATOR_STATUS", JsDict{
-		"operator_address": operatorAddress,
-		"status":           status,
-		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
-	})
-}
-
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(
 	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
 ) {
 	app.emitSetValidator(msg.ValidatorAddress)
 	app.emitDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
-	app.emitHistoricalValidatorStatus(msg.ValidatorAddress)
 }
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
