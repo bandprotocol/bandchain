@@ -320,6 +320,12 @@ votes = sa.Table(
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
 
+reporters = sa.Table(
+    "reporters",
+    metadata,
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+)
 related_data_source_oracle_scripts = sa.Table(
     "related_data_source_oracle_scripts",
     metadata,

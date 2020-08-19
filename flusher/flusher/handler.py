@@ -23,6 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
+    reporters,
     related_data_source_oracle_scripts,
 )
 
@@ -239,3 +240,20 @@ class Handler(object):
         for col in proposals.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(proposals.update().where(condition).values(**msg))
+
+    def handle_set_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        self.conn.execute(reporters.insert(), msg)
+
+    def handle_remove_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        condition = True
+        for col in reporters.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(reporters.delete().where(condition))
