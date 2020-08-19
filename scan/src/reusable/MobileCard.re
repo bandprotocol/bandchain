@@ -36,14 +36,7 @@ let make = (~values, ~idx, ~status=?, ~requestStatus=?) => {
      | None => React.null
      }}
     {switch (requestStatus) {
-     | Some(resolveStatus) =>
-       switch (resolveStatus) {
-       | RequestSub.Success => <img src=Images.success className=Styles.logo />
-       | Failure => <img src=Images.fail className=Styles.logo />
-       | Pending => <img src=Images.pending className=Styles.logo />
-       | Expired => <img src=Images.expired className=Styles.logo />
-       | Unknown => <img src=Images.unknown className=Styles.logo />
-       }
+     | Some(resolveStatus) => <RequestStatus resolveStatus style=Styles.logo />
      | None => React.null
      }}
     {values
@@ -70,23 +63,15 @@ let make = (~values, ~idx, ~status=?, ~requestStatus=?) => {
                   switch (value) {
                   | InfoMobileCard.Nothing =>
                     <div className=Styles.cardItemHeadingLg>
-                      <Text
-                        key=each
-                        value=each
-                        size=Text.Sm
-                        weight=Text.Bold
-                        color=Colors.gray6
-                        spacing={Text.Em(0.1)}
-                      />
+                      <Text key=each value=each size=Text.Sm weight=Text.Bold color=Colors.gray6 />
                     </div>
                   | _ =>
                     <Text
                       key=each
                       value=each
-                      size=Text.Xs
+                      size=Text.Sm
                       weight=Text.Semibold
                       color=Colors.gray6
-                      spacing={Text.Em(0.1)}
                     />
                   }
                 })

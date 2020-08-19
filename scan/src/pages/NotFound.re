@@ -26,23 +26,25 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  <>
-    <VSpacing size=Spacing.xxl />
-    <div className=Styles.pageContainer>
-      <Col> <img src=Images.notFoundBg className=Styles.logo /> </Col>
+  <Section>
+    <div className=CssHelper.container>
       <VSpacing size=Spacing.xxl />
-      <Text
-        value="Oops! We cannot find the page you're looking for."
-        size=Text.Lg
-        color=Colors.blueGray6
-      />
-      <VSpacing size=Spacing.lg />
-      <Link className=Styles.linkToHome route=Route.HomePage>
-        <Text value="Back to Homepage" weight=Text.Bold size=Text.Md color=Colors.blueGray6 />
-        <HSpacing size=Spacing.md />
-        <img src=Images.rightArrow className=Styles.rightArrow />
-      </Link>
-      <VSpacing size=Spacing.xxl />
+      <div className=Styles.pageContainer>
+        <Col> <img src=Images.notFoundBg className=Styles.logo /> </Col>
+        <VSpacing size=Spacing.xxl />
+        <Text
+          value="Oops! We cannot find the page you're looking for."
+          size=Text.Lg
+          color=Colors.blueGray6
+        />
+        <VSpacing size=Spacing.lg />
+        <Link className=Styles.linkToHome route=Route.HomePage>
+          <Text value="Back to Homepage" weight=Text.Bold size=Text.Md color=Colors.blueGray6 />
+          <HSpacing size=Spacing.md />
+          <img src=Images.rightArrow className=Styles.rightArrow />
+        </Link>
+        <VSpacing size=Spacing.xxl />
+      </div>
     </div>
-  </>;
+  </Section>;
 };

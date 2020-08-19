@@ -239,158 +239,164 @@ let make = (~address, ~hashtag: Route.account_tab_t) =>
       };
     };
 
-    <>
-      <Row justify=Row.Between>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.accountLogo className=Styles.logo />
-            <Text
-              value="ACCOUNT DETAIL"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.sm />
-      <div className=Styles.addressContainer>
-        <AddressRender
-          address
-          position=AddressRender.Title
-          copy=true
-          clickable=false
-          wordBreak=true
-        />
-        {isMobile
-           ? React.null
-           : <>
-               <HSpacing size=Spacing.md />
-               <div className=Styles.button onClick={_ => {send()}}>
-                 <Text
-                   value="Send BAND"
-                   size=Text.Lg
-                   block=true
-                   color=Colors.blue7
-                   nowrap=true
-                   weight=Text.Medium
-                 />
-               </div>
-             </>}
-      </div>
-      <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
-      <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
-        <Col size=0.75>
-          <div className=Styles.innerCenter>
-            <PieChart
-              size={isMobile ? 160 : 187}
-              availableBalance
-              balanceAtStake=balanceAtStakeAmount
-              reward=rewardAmount
-              unbonding=unbondingAmount
-              commission=commissionAmount
-            />
-          </div>
-        </Col>
-        <Col size=1.>
-          <VSpacing size=Spacing.md />
-          {balanceDetail(
-             ~title="AVAILABLE BALANCE",
-             ~description="Balance available to send, delegate, etc",
-             ~amount=availableBalance,
-             ~usdPrice,
-             ~color=Colors.bandBlue,
-             (),
-           )}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {balanceDetail(
-             ~title="BALANCE AT STAKE",
-             ~description="Balance currently delegated to validators",
-             ~amount=balanceAtStakeAmount,
-             ~usdPrice,
-             ~color=Colors.chartBalanceAtStake,
-             (),
-           )}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {balanceDetail(
-             ~title="UNBONDING AMOUNT",
-             ~description="Amount undelegated from validators awaiting 21 days lockup period",
-             ~amount=unbondingAmount,
-             ~usdPrice,
-             ~color=Colors.blue4,
-             (),
-           )}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {balanceDetail(
-             ~title="REWARD",
-             ~description="Reward from staking to validators",
-             ~amount=rewardAmount,
-             ~usdPrice,
-             ~color=Colors.chartReward,
-             ~isCountup=true,
-             (),
-           )}
-          {commissionAmount == 0.
+    <Section>
+      <div className=CssHelper.container>
+        <Row justify=Row.Between>
+          <Col>
+            <div className=Styles.vFlex>
+              <img src=Images.accountLogo className=Styles.logo />
+              <Text
+                value="ACCOUNT DETAIL"
+                weight=Text.Medium
+                size=Text.Md
+                spacing={Text.Em(0.06)}
+                height={Text.Px(15)}
+                nowrap=true
+                color=Colors.gray7
+                block=true
+              />
+            </div>
+          </Col>
+        </Row>
+        <VSpacing size=Spacing.lg />
+        <VSpacing size=Spacing.sm />
+        <div className=Styles.addressContainer>
+          <AddressRender
+            address
+            position=AddressRender.Title
+            copy=true
+            clickable=false
+            wordBreak=true
+          />
+          {isMobile
              ? React.null
              : <>
-                 <VSpacing size=Spacing.lg />
-                 <VSpacing size=Spacing.md />
-                 {balanceDetail(
-                    ~title="COMMISSION",
-                    ~description="Reward commission from delegator's reward",
-                    ~amount=commissionAmount,
-                    ~usdPrice,
-                    ~color=Colors.gray6,
-                    ~isCountup=true,
-                    (),
-                  )}
-                 <VSpacing size=Spacing.lg />
+                 <HSpacing size=Spacing.md />
+                 <div className=Styles.button onClick={_ => {send()}}>
+                   <Text
+                     value="Send BAND"
+                     size=Text.Lg
+                     block=true
+                     color=Colors.blue7
+                     nowrap=true
+                     weight=Text.Medium
+                   />
+                 </div>
                </>}
-        </Col>
-        <div className=Styles.separatorLine />
-        <Col size=1. alignSelf=Col.Start>
-          <div className=Styles.totalContainer>
-            {totalBalanceRender(isMobile, "TOTAL BAND BALANCE", totalBalance, "BAND")}
-            {totalBalanceRender(
-               isMobile,
-               "TOTAL BAND IN USD \n($" ++ (usdPrice |> Format.fPretty(~digits=2)) ++ " / BAND)",
-               totalBalance *. usdPrice,
-               "USD",
+        </div>
+        <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
+        <Row
+          justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
+          <Col size=0.75>
+            <div className=Styles.innerCenter>
+              <PieChart
+                size={isMobile ? 160 : 187}
+                availableBalance
+                balanceAtStake=balanceAtStakeAmount
+                reward=rewardAmount
+                unbonding=unbondingAmount
+                commission=commissionAmount
+              />
+            </div>
+          </Col>
+          <Col size=1.>
+            <VSpacing size=Spacing.md />
+            {balanceDetail(
+               ~title="AVAILABLE BALANCE",
+               ~description="Balance available to send, delegate, etc",
+               ~amount=availableBalance,
+               ~usdPrice,
+               ~color=Colors.bandBlue,
+               (),
              )}
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.xl />
-      <Tab
-        tabs=[|
-          {
-            name: "TRANSACTIONS",
-            route: Route.AccountIndexPage(address, Route.AccountTransactions),
-          },
-          {
-            name: "DELEGATIONS",
-            route: Route.AccountIndexPage(address, Route.AccountDelegations),
-          },
-          {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
-          {name: "REDELEGATE", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
-        |]
-        currentRoute={Route.AccountIndexPage(address, hashtag)}>
-        {switch (hashtag) {
-         | AccountTransactions => <AccountIndexTransactions accountAddress=address />
-         | AccountDelegations => <AccountIndexDelegations address />
-         | AccountUnbonding => <AccountIndexUnbonding address />
-         | AccountRedelegate => <AccountIndexRedelegate address />
-         }}
-      </Tab>
-    </>
+            <VSpacing size=Spacing.lg />
+            <VSpacing size=Spacing.md />
+            {balanceDetail(
+               ~title="BALANCE AT STAKE",
+               ~description="Balance currently delegated to validators",
+               ~amount=balanceAtStakeAmount,
+               ~usdPrice,
+               ~color=Colors.chartBalanceAtStake,
+               (),
+             )}
+            <VSpacing size=Spacing.lg />
+            <VSpacing size=Spacing.md />
+            {balanceDetail(
+               ~title="UNBONDING AMOUNT",
+               ~description="Amount undelegated from validators awaiting 21 days lockup period",
+               ~amount=unbondingAmount,
+               ~usdPrice,
+               ~color=Colors.blue4,
+               (),
+             )}
+            <VSpacing size=Spacing.lg />
+            <VSpacing size=Spacing.md />
+            {balanceDetail(
+               ~title="REWARD",
+               ~description="Reward from staking to validators",
+               ~amount=rewardAmount,
+               ~usdPrice,
+               ~color=Colors.chartReward,
+               ~isCountup=true,
+               (),
+             )}
+            {commissionAmount == 0.
+               ? React.null
+               : <>
+                   <VSpacing size=Spacing.lg />
+                   <VSpacing size=Spacing.md />
+                   {balanceDetail(
+                      ~title="COMMISSION",
+                      ~description="Reward commission from delegator's reward",
+                      ~amount=commissionAmount,
+                      ~usdPrice,
+                      ~color=Colors.gray6,
+                      ~isCountup=true,
+                      (),
+                    )}
+                   <VSpacing size=Spacing.lg />
+                 </>}
+          </Col>
+          <div className=Styles.separatorLine />
+          <Col size=1. alignSelf=Col.Start>
+            <div className=Styles.totalContainer>
+              {totalBalanceRender(isMobile, "TOTAL BAND BALANCE", totalBalance, "BAND")}
+              {totalBalanceRender(
+                 isMobile,
+                 "TOTAL BAND IN USD \n($" ++ (usdPrice |> Format.fPretty(~digits=2)) ++ " / BAND)",
+                 totalBalance *. usdPrice,
+                 "USD",
+               )}
+            </div>
+          </Col>
+        </Row>
+        <VSpacing size=Spacing.xl />
+        <Tab
+          tabs=[|
+            {
+              name: "TRANSACTIONS",
+              route: Route.AccountIndexPage(address, Route.AccountTransactions),
+            },
+            {
+              name: "DELEGATIONS",
+              route: Route.AccountIndexPage(address, Route.AccountDelegations),
+            },
+            {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
+            {
+              name: "REDELEGATE",
+              route: Route.AccountIndexPage(address, Route.AccountRedelegate),
+            },
+          |]
+          currentRoute={Route.AccountIndexPage(address, hashtag)}>
+          {switch (hashtag) {
+           | AccountTransactions => <AccountIndexTransactions accountAddress=address />
+           | AccountDelegations => <AccountIndexDelegations address />
+           | AccountUnbonding => <AccountIndexUnbonding address />
+           | AccountRedelegate => <AccountIndexRedelegate address />
+           }}
+        </Tab>
+      </div>
+    </Section>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

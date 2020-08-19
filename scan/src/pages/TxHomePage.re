@@ -26,48 +26,54 @@ let make = () => {
   let txsSub = TxSub.getList(~pageSize, ~page, ());
   let txsCountSub = TxSub.count();
 
-  <>
-    <Row>
-      <div className=Styles.header>
-        <img src=Images.txLogo className=Styles.logo />
-        <Text
-          value="ALL TRANSACTIONS"
-          weight=Text.Medium
-          size=Text.Md
-          spacing={Text.Em(0.06)}
-          height={Text.Px(15)}
-          nowrap=true
-          block=true
-          color=Colors.gray7
-        />
-        {switch (txsCountSub) {
-         | Data(txsCount) =>
-           <>
-             <div className=Styles.seperatedLine />
-             <Text
-               value={txsCount->Format.iPretty ++ " in total"}
-               size=Text.Md
-               weight=Text.Thin
-               spacing={Text.Em(0.06)}
-               color=Colors.gray7
-               nowrap=true
-             />
-           </>
-         | _ => React.null
-         }}
-      </div>
-    </Row>
-    <VSpacing size=Spacing.xl />
-    <TxsTable txsSub />
-    {switch (txsCountSub) {
-     | Data(txsCount) =>
-       let pageCount = Page.getPageCount(txsCount, pageSize);
-       <>
-         <VSpacing size=Spacing.lg />
-         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-         <VSpacing size=Spacing.lg />
-       </>;
-     | _ => React.null
-     }}
-  </>;
+  <Section>
+    <div className=CssHelper.container>
+      <Row>
+        <div className=Styles.header>
+          <img src=Images.txLogo className=Styles.logo />
+          <Text
+            value="ALL TRANSACTIONS"
+            weight=Text.Medium
+            size=Text.Md
+            spacing={Text.Em(0.06)}
+            height={Text.Px(15)}
+            nowrap=true
+            block=true
+            color=Colors.gray7
+          />
+          {switch (txsCountSub) {
+           | Data(txsCount) =>
+             <>
+               <div className=Styles.seperatedLine />
+               <Text
+                 value={txsCount->Format.iPretty ++ " in total"}
+                 size=Text.Md
+                 weight=Text.Thin
+                 spacing={Text.Em(0.06)}
+                 color=Colors.gray7
+                 nowrap=true
+               />
+             </>
+           | _ => React.null
+           }}
+        </div>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <TxsTable txsSub />
+      {switch (txsCountSub) {
+       | Data(txsCount) =>
+         let pageCount = Page.getPageCount(txsCount, pageSize);
+         <>
+           <VSpacing size=Spacing.lg />
+           <Pagination
+             currentPage=page
+             pageCount
+             onPageChange={newPage => setPage(_ => newPage)}
+           />
+           <VSpacing size=Spacing.lg />
+         </>;
+       | _ => React.null
+       }}
+    </div>
+  </Section>;
 };

@@ -327,3 +327,16 @@ historical_bonded_token_on_validators = sa.Table(
     Column("bonded_tokens", sa.DECIMAL),
     Column("timestamp", CustomDateTime, primary_key=True),
 )
+reporters = sa.Table(
+    "reporters",
+    metadata,
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+)
+related_data_source_oracle_scripts = sa.Table(
+    "related_data_source_oracle_scripts",
+    metadata,
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
+)
+

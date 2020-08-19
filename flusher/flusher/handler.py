@@ -24,6 +24,8 @@ from .db import (
     deposits,
     votes,
     historical_bonded_token_on_validators,
+    reporters,
+    related_data_source_oracle_scripts,
 )
 
 
@@ -104,7 +106,22 @@ class Handler(object):
             condition = (col == msg[col.name]) & condition
         self.conn.execute(requests.update().where(condition).values(**msg))
 
+    def handle_update_related_ds_os(self, msg):
+        self.conn.execute(
+            insert(related_data_source_oracle_scripts)
+            .values(**msg)
+            .on_conflict_do_nothing(constraint="related_data_source_oracle_scripts_pkey")
+        )
+
     def handle_new_raw_request(self, msg):
+        self.handle_update_related_ds_os(
+            {
+                "oracle_script_id": self.conn.execute(
+                    select([requests.c.oracle_script_id]).where(accounts.c.id == msg["request_id"])
+                ).scalar(),
+                "data_source_id": msg["data_source_id"],
+            }
+        )
         self.conn.execute(raw_requests.insert(), msg)
 
     def handle_new_val_request(self, msg):
@@ -252,3 +269,20 @@ class Handler(object):
                 constraint="historical_bonded_token_on_validators_pkey", set_=msg
             )
         )
+
+    def handle_set_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        self.conn.execute(reporters.insert(), msg)
+
+    def handle_remove_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        condition = True
+        for col in reporters.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(reporters.delete().where(condition))

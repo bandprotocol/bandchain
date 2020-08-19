@@ -1,177 +1,225 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let seperatedLine =
+  let emptyContainer =
     style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
     ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
+};
 
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
+let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {
+  <TBody.Grid
+    key={
+      switch (requestsSub) {
+      | Data({id}) => id |> ID.Request.toString
+      | _ => reserveIndex |> string_of_int
+      }
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+      <Col.Grid col=Col.Two>
+        {switch (requestsSub) {
+         | Data({id}) => <TypeID.Request id />
+         | _ => <LoadingCensorBar width=135 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Four>
+        {switch (requestsSub) {
+         | Data({oracleScript: {oracleScriptID, name}}) =>
+           <div className={CssHelper.flexBox()}>
+             <TypeID.OracleScript id=oracleScriptID />
+             <HSpacing size=Spacing.sm />
+             <Text value=name ellipsis=true />
+           </div>
+         | _ => <LoadingCensorBar width=270 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        {switch (requestsSub) {
+         | Data({requestedValidators, minCount, reports}) =>
+           <ProgressBar
+             reportedValidators={reports |> Belt.Array.size}
+             minimumValidators=minCount
+             requestValidators={requestedValidators |> Belt.Array.size}
+           />
+         | _ => <LoadingCensorBar width=212 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.One>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (requestsSub) {
+           | Data({resolveStatus}) => <RequestStatus resolveStatus />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (requestsSub) {
+           | Data({transaction}) =>
+             <Timestamp.Grid
+               time={transaction.block.timestamp}
+               size=Text.Md
+               textAlign=Text.Right
+             />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
+};
 
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
-
-  let progressBarContainer = style([maxWidth(`px(300))]);
-
-  let resolveStatusContainer = style([justifyContent(`center)]);
+let renderBodyMobile =
+    (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {
+  switch (requestsSub) {
+  | Data({
+      id,
+      transaction,
+      oracleScript: {oracleScriptID, name},
+      requestedValidators,
+      minCount,
+      reports,
+      resolveStatus,
+    }) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Request ID", RequestID(id)),
+        ("Oracle Script", OracleScript(oracleScriptID, name)),
+        (
+          "Report Status",
+          ProgressBar({
+            reportedValidators: {
+              reports |> Belt_Array.size;
+            },
+            minimumValidators: minCount,
+            requestValidators: {
+              requestedValidators |> Belt_Array.size;
+            },
+          }),
+        ),
+        ("Timestamp", Timestamp(transaction.block.timestamp)),
+      ]
+      key={id |> ID.Request.toString}
+      idx={id |> ID.Request.toString}
+      requestStatus=resolveStatus
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Request ID", Loading(70)),
+        ("Oracle Script", Loading(136)),
+        ("Report Status", Loading(20)),
+        ("Timestamp", Loading(166)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = () =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
+let make = () => {
+  let isMobile = Media.isMobile();
 
-    let requestCountSub = RequestSub.count();
-    let requestsSub = RequestSub.getList(~pageSize, ~page, ());
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
 
-    let%Sub requestCount = requestCountSub;
-    let%Sub requests = requestsSub;
+  let totalRequestCountSub = RequestSub.count();
+  let requestsSub = RequestSub.getList(~pageSize, ~page, ());
 
-    let pageCount = Page.getPageCount(requestCount, pageSize);
+  let allSub = Sub.all2(requestsSub, totalRequestCountSub);
 
-    <>
-      <Row>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.requestLogo className=Styles.logo />
-            <Text
-              value="ALL REQUESTS"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-            <div className=Styles.seperatedLine />
-            <Text
-              value={requestCount->string_of_int ++ " In total"}
-              size=Text.Md
-              weight=Text.Thin
-              spacing={Text.Em(0.06)}
-              color=Colors.gray7
-              nowrap=true
-            />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.xl />
-      <>
-        <THead>
-          <Row>
-            <Col> <HSpacing size=Spacing.lg /> </Col>
-            <Col size=0.5>
-              <Text
-                block=true
-                value="REQUEST ID"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            <Col size=1.0>
-              <Text
-                block=true
-                value="TIMESTAMP"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            <Col size=1.15>
-              <Text
-                block=true
-                value="ORACLE SCRIPTS"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            <Col size=1.9>
-              <Text
-                block=true
-                value="REPORT STATUS"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            <Col size=0.72 justifyContent=Col.End>
-              <Text
-                block=true
-                value="RESOLVE STATUS"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                align=Text.Right
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            <Col> <HSpacing size=Spacing.xl /> </Col>
-          </Row>
-        </THead>
-        {requests
-         ->Belt_Array.map(
-             (
-               {
-                 id,
-                 transaction,
-                 oracleScript,
-                 requestedValidators,
-                 minCount,
-                 reports,
-                 resolveStatus,
-               },
-             ) => {
-             <TBody key={id |> ID.Request.toString}>
-               <div className=Styles.fullWidth>
-                 <Row minHeight={`px(35)}>
-                   <Col> <HSpacing size=Spacing.lg /> </Col>
-                   <Col size=0.5> <TElement elementType={TElement.Request(id)} /> </Col>
-                   <Col size=1.0>
-                     <TElement elementType={transaction.block.timestamp->TElement.Timestamp} />
-                   </Col>
-                   <Col size=1.15>
-                     <TElement
-                       elementType={
-                         TElement.OracleScript(oracleScript.oracleScriptID, oracleScript.name)
-                       }
-                     />
-                   </Col>
-                   <Col size=1.9>
-                     <div className=Styles.progressBarContainer>
-                       <ProgressBar
-                         reportedValidators={reports |> Belt_Array.size}
-                         minimumValidators=minCount
-                         requestValidators={requestedValidators |> Belt_Array.size}
-                       />
-                     </div>
-                   </Col>
-                   <Col size=0.72 justifyContent=Col.End>
-                     <TElement elementType={resolveStatus->TElement.RequestStatus} />
-                   </Col>
-                   <Col> <HSpacing size=Spacing.xl /> </Col>
-                 </Row>
-               </div>
-             </TBody>
-           })
-         ->React.array}
-      </>
-      <VSpacing size=Spacing.lg />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      <VSpacing size=Spacing.lg />
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <Section>
+    <div className=CssHelper.container>
+      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Col.Grid col=Col.Twelve>
+          <Heading value="All Requests" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+          {switch (allSub) {
+           | Data((_, totalRequestCount)) =>
+             <Heading value={totalRequestCount->string_of_int ++ " In total"} size=Heading.H3 />
+           | _ => <LoadingCensorBar width=65 height=21 />
+           }}
+        </Col.Grid>
+      </Row.Grid>
+      {isMobile
+         ? React.null
+         : <THead.Grid>
+             <Row.Grid alignItems=Row.Center>
+               <Col.Grid col=Col.Two>
+                 <Text
+                   block=true
+                   value="Request ID"
+                   size=Text.Md
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                 />
+               </Col.Grid>
+               <Col.Grid col=Col.Four>
+                 <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
+               </Col.Grid>
+               <Col.Grid col=Col.Four>
+                 <Text
+                   block=true
+                   value="Report Status"
+                   size=Text.Md
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                 />
+               </Col.Grid>
+               <Col.Grid col=Col.Two>
+                 <Text
+                   block=true
+                   value="Timestamp"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Right
+                 />
+               </Col.Grid>
+             </Row.Grid>
+           </THead.Grid>}
+      {switch (allSub) {
+       | Data((requests, requestsCount)) =>
+         let pageCount = Page.getPageCount(requestsCount, pageSize);
+         <>
+           {requestsCount > 0
+              ? requests
+                ->Belt_Array.mapWithIndex((i, e) =>
+                    isMobile
+                      ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                  )
+                ->React.array
+              : <div className=Styles.emptyContainer>
+                  <img src=Images.noSource className=Styles.noDataImage />
+                  <Heading
+                    size=Heading.H4
+                    value="No Request"
+                    align=Heading.Center
+                    weight=Heading.Regular
+                    color=Colors.bandBlue
+                  />
+                </div>}
+           {isMobile
+              ? React.null
+              : <Pagination
+                  currentPage=page
+                  pageCount
+                  onPageChange={newPage => setPage(_ => newPage)}
+                />}
+         </>;
+       | _ =>
+         Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+         ->Belt_Array.mapWithIndex((i, noData) =>
+             isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+           )
+         ->React.array
+       }}
+    </div>
+  </Section>;
+};

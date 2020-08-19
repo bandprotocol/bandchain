@@ -167,7 +167,7 @@ module Reports = {
             <Col size=1.>
               {reportDetails
                ->Belt_Array.map(reportDetail => {
-                   <div key={reportDetail.externalID |> string_of_int}>
+                   <div key={reportDetail.externalID}>
                      // TODO: let's investigate later why raw_request is optional.
 
                        <Row>
@@ -187,11 +187,11 @@ module Reports = {
             <Col size=0.9>
               {reportDetails
                ->Belt_Array.map(({externalID}) => {
-                   <div key={externalID |> string_of_int}>
+                   <div key=externalID>
                      <div className={Styles.vFlex(`flexEnd)}>
                        <Row>
                          <div className=Styles.fillLeft />
-                         <Text value={externalID |> string_of_int} block=true code=true />
+                         <Text value=externalID block=true code=true />
                        </Row>
                      </div>
                      <VSpacing size=Spacing.md />
@@ -203,11 +203,11 @@ module Reports = {
             <Col size=0.7>
               {reportDetails
                ->Belt_Array.map(({exitCode, externalID}) => {
-                   <div key={externalID |> string_of_int}>
+                   <div key=externalID>
                      <div className={Styles.vFlex(`flexEnd)}>
                        <Row>
                          <div className=Styles.fillLeft />
-                         <Text value={exitCode |> string_of_int} block=true code=true />
+                         <Text value=exitCode block=true code=true />
                        </Row>
                      </div>
                      <VSpacing size=Spacing.md />
@@ -218,7 +218,7 @@ module Reports = {
             <Col size=2.>
               {reportDetails
                ->Belt_Array.map(({data, externalID}) => {
-                   <div key={externalID |> string_of_int}>
+                   <div key=externalID>
                      <div className=Styles.valueContainer>
                        <div className=Styles.fillLeft />
                        <Text
