@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2450](https://github.com/bandprotocol/bandchain/pull/2450) Add request count 1day view table.
+
 ### Scan
 
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page
