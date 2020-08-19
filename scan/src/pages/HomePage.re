@@ -18,14 +18,12 @@ let make = () => {
         </Row.Grid>
       </div>
     </Section>
-    <Section>
+    <Section pt=40 pb=80 pbSm=40>
       <div className=CssHelper.container>
-        <Row alignItems=`initial wrap=true>
-          <Col size={Media.isMobile() ? 1. : 0.}>
-            <LatestBlocks blocksSub=lastest11BlocksSub />
-          </Col>
-          <Col size=1.> <LatestTxTable /> </Col>
-        </Row>
+        <Row.Grid>
+          <Col.Grid col=Col.Four> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col.Grid>
+          <Col.Grid col=Col.Eight> <LatestTxTable /> </Col.Grid>
+        </Row.Grid>
       </div>
     </Section>
   </>;

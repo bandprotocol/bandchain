@@ -59,9 +59,9 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       fun
       | "code" => OracleScriptCode
       | "bridge" => OracleScriptBridgeCode
-      | "requests" => OracleScriptRequests
+      | "execute" => OracleScriptExecute
       | "revisions" => OracleScriptRequests
-      | _ => OracleScriptExecute
+      | _ => OracleScriptRequests
     );
     OracleScriptIndexPage(oracleScriptID |> int_of_string, urlHash(hash));
   | (["txs"], _) => TxHomePage
@@ -109,10 +109,10 @@ let toString =
   | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID#execute|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
   | OracleScriptHomePage => "/oracle-scripts"
-  | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/oracle-script/$oracleScriptID#code|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptBridgeCode) => {j|/oracle-script/$oracleScriptID#bridge|j}
-  | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID#requests|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID#execute|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptRevisions) => {j|/oracle-script/$oracleScriptID#revisions|j}
   | TxHomePage => "/txs"
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}
