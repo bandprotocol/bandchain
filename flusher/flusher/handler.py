@@ -131,7 +131,13 @@ class Handler(object):
         del msg["last_update"]
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
-        self.conn.execute(validators.insert(), msg)
+        if self.get_validator_id(msg["operator_address"]) is None:
+            self.conn.execute(validators.insert(), msg)
+        else:
+            condition = True
+            for col in validators.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(validators.update().where(condition).values(**msg))
         self.handle_new_historical_bonded_token_on_validator(
             {
                 "validator_id": self.get_validator_id(msg["operator_address"]),
@@ -141,7 +147,7 @@ class Handler(object):
         )
 
     def handle_update_validator(self, msg):
-        if "tokens" in msg.keys():
+        if "tokens" in msg:
             self.handle_new_historical_bonded_token_on_validator(
                 {
                     "validator_id": self.get_validator_id(msg["operator_address"]),
@@ -149,7 +155,7 @@ class Handler(object):
                     "timestamp": msg["last_update"],
                 }
             )
-        if "last_update" in msg.keys():
+        if "last_update" in msg:
             del msg["last_update"]
         self.conn.execute(
             validators.update()
