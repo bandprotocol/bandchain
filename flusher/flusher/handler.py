@@ -26,6 +26,7 @@ from .db import (
     historical_bonded_token_on_validators,
     reporters,
     related_data_source_oracle_scripts,
+    historical_oracle_statuses,
 )
 
 
@@ -286,3 +287,12 @@ class Handler(object):
         for col in reporters.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(reporters.delete().where(condition))
+
+    def handle_set_historical_validator_status(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["operator_address"])
+        del msg["operator_address"]
+        self.conn.execute(
+            insert(historical_oracle_statuses)
+            .values(**msg)
+            .on_conflict_do_update(constraint="historical_oracle_statuses_pkey", set_=msg)
+        )
