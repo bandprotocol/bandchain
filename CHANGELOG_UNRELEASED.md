@@ -16,6 +16,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2452](https://github.com/bandprotocol/bandchain/pull/2452) Implemented view table to calculate oracle script response time
 - (impv) [\#2486](https://github.com/bandprotocol/bandchain/pull/2486) Implemented reporters table.
 - (impv) [\#2475](https://github.com/bandprotocol/bandchain/pull/2475) Add related data source and oracle script table.
 - (impv) [\#2450](https://github.com/bandprotocol/bandchain/pull/2450) Add request count 1day view table.
