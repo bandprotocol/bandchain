@@ -17,7 +17,7 @@ class BRIDGE(IconScoreBase):
         # block_number:int => oracle_state_hash:bytes
         self.oracle_state = DictDB("oracle_state", db, value_type=bytes)
 
-	# encoded_request:bytes => encoded_response:bytes
+        # encoded_request:bytes => encoded_response:bytes
         self.requests_cache = DictDB("requests_cache", db, value_type=bytes)
 
     # For unit tests
@@ -33,7 +33,7 @@ class BRIDGE(IconScoreBase):
             pubkey = vp["pubkey"]
             power = vp["power"]
             if len(pubkey) != 64:
-                revert(f"PUBKEY_SHOULD_BE_64_BYTES_BUT_GOT_{len(pubkey)}_BYTES")
+                self.revert(f"PUBKEY_SHOULD_BE_64_BYTES_BUT_GOT_{len(pubkey)}_BYTES")
 
             self.validator_powers[pubkey] = power
             sum_power += power
@@ -65,7 +65,7 @@ class BRIDGE(IconScoreBase):
     @external
     def update_validator_powers(self, validators_bytes: bytes):
         if self.msg.sender != self.owner:
-            revert("NOT_AUTHORIZED")
+            self.revert("NOT_AUTHORIZED")
 
         obi = PyObi("""[{pubkey:bytes, power:u64}]""")
         total_validator_power = self.total_validator_power.get()
@@ -73,7 +73,7 @@ class BRIDGE(IconScoreBase):
             pubkey = vp["pubkey"]
             power = vp["power"]
             if len(pubkey) != 64:
-                revert(f"PUBKEY_SHOULD_BE_64_BYTES_BUT_GOT_{len(pubkey)}_BYTES")
+                self.revert(f"PUBKEY_SHOULD_BE_64_BYTES_BUT_GOT_{len(pubkey)}_BYTES")
 
             total_validator_power -= self.validator_powers[pubkey]
             total_validator_power += power
@@ -102,13 +102,13 @@ class BRIDGE(IconScoreBase):
         signers_checking = set()
         for signer in recover_signers:
             if signer in signers_checking:
-                revert(f"REPEATED_PUBKEY_FOUND: {signer.hex()}")
+                self.revert(f"REPEATED_PUBKEY_FOUND: {signer.hex()}")
 
             signers_checking.add(signer)
             sum_voting_power += self.validator_powers[signer]
 
         if sum_voting_power * 3 <= self.total_validator_power.get() * 2:
-            revert("INSUFFICIENT_VALIDATOR_SIGNATURES")
+            self.revert("INSUFFICIENT_VALIDATOR_SIGNATURES")
 
         self.oracle_state[block_height] = multi_store_bytes[64:96]
 
@@ -123,7 +123,7 @@ class BRIDGE(IconScoreBase):
     ) -> dict:
         oracle_state_root = self.oracle_state[block_height]
         if oracle_state_root == None:
-            revert("NO_ORACLE_ROOT_STATE_DATA")
+            self.revert("NO_ORACLE_ROOT_STATE_DATA")
 
         packet = PyObi(
             """
@@ -191,7 +191,7 @@ class BRIDGE(IconScoreBase):
 
         # Verifies that the computed Merkle root matches what currently exists.
         if current_merkle_hash != oracle_state_root:
-            revert("INVALID_ORACLE_DATA_PROOF")
+            self.revert("INVALID_ORACLE_DATA_PROOF")
 
         return packet
 
@@ -282,10 +282,10 @@ class BRIDGE(IconScoreBase):
         )
 
         if prev_resolve_time >= res["resolve_time"]:
-            revert("FAIL_LATEST_REQUEST_SHOULD_BE_NEWEST")
+            self.revert("FAIL_LATEST_REQUEST_SHOULD_BE_NEWEST")
 
         if res["resolve_status"] != 1:
-            revert("FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED")
+            self.revert("FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED")
 
         self.requests_cache[req_key] = PyObi(
             """

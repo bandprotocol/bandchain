@@ -68,7 +68,7 @@ class CACHE_CONSUMER_MOCK(IconScoreBase):
         bridge = self.create_interface_score(self.bridge_address.get(), IBRIDGECACHE)
         res = bridge.get_latest_response(self.req_key_template.get())
         if not isinstance(res, dict):
-            revert("RESPONSE_MUST_BE_DICT_BUT_GOT_{}".format(type(res)))
+            self.revert("RESPONSE_MUST_BE_DICT_BUT_GOT_{}".format(type(res)))
         self.res.set(
             PyObi(
                 """
