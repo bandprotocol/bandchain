@@ -43,6 +43,7 @@ type t = {
   completedRequestCount: int,
   missedRequestCount: int,
   uptime: option(float),
+  oracleReports: int,
 };
 
 let toExternal =
@@ -84,6 +85,24 @@ let toExternal =
   completedRequestCount: 23459,
   missedRequestCount: 20,
   uptime: None,
+  oracleReports: 3000,
+};
+
+type validator_voted_status_t =
+  | Missed
+  | Signed
+  | Proposed;
+
+type validator_single_uptime_t = {
+  blockHeight: ID.Block.t,
+  status: validator_voted_status_t,
+};
+
+type validator_single_uptime_status_t = {
+  validatorVotes: array(validator_single_uptime_t),
+  proposedCount: int,
+  missedCount: int,
+  signedCount: int,
 };
 
 type validator_vote_t = {
@@ -197,6 +216,21 @@ module MultiLast250VotedConfig = [%graphql
 |}
 ];
 
+module SingleLast100VotedConfig = [%graphql
+  {|
+  subscription SingleLast100Voted($consensusAddress: String!) {
+    validator_votes(limit: 100, where: {validator: {consensus_address: {_eq: $consensusAddress}}}, order_by: {block_height: desc}) {
+    block_height
+    consensus_address
+    voted
+    block {
+      proposer
+    }
+    }
+  }
+|}
+];
+
 let get = operator_address => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -298,4 +332,39 @@ let getListVotesBlock = () => {
         }
       );
   Sub.resolve(validatorVotes);
+};
+
+let getBlockUptimeByValidator = consensusAddress => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      SingleLast100VotedConfig.definition,
+      ~variables=
+        SingleLast100VotedConfig.makeVariables(
+          ~consensusAddress=consensusAddress |> Address.toHex,
+          (),
+        ),
+    );
+  let%Sub x = result;
+  let validatorVotes =
+    x##validator_votes
+    ->Belt.Array.map(each =>
+        {
+          blockHeight: each##block_height |> ID.Block.fromInt,
+          status:
+            switch (each##voted, each##block##proposer == consensusAddress->Address.toHex) {
+            | (false, _) => Missed
+            | (true, false) => Signed
+            | (true, true) => Proposed
+            },
+        }
+      );
+  Sub.resolve({
+    validatorVotes,
+    proposedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Proposed)->Belt.Array.size,
+    signedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Signed)->Belt.Array.size,
+    missedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Missed)->Belt.Array.size,
+  });
 };

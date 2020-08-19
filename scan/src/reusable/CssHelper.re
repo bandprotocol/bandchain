@@ -8,6 +8,16 @@ let flexBox = (~align=`center, ~justify=`flexStart, ~wrap=`wrap, ~direction=`row
     flexDirection(direction),
     flexWrap(wrap),
   ]);
+let flexBoxSm = (~align=`center, ~justify=`flexStart, ~wrap=`wrap, ~direction=`row, ()) =>
+  style([
+    Media.mobile([
+      display(`flex),
+      alignItems(align),
+      justifyContent(justify),
+      flexDirection(direction),
+      flexWrap(wrap),
+    ]),
+  ]);
 
 // TODO: abstract later
 type btn_style_t =
@@ -50,3 +60,10 @@ let mobileSpacing = style([Media.mobile([paddingBottom(`px(20))])]);
 let clickable = style([cursor(`pointer)]);
 
 let container = "container";
+
+let mb = (~size=8, ()) => {
+  style([marginBottom(`px(size))]);
+};
+let mbSm = (~size=8, ()) => {
+  style([Media.mobile([marginBottom(`px(size))])]);
+};
