@@ -16,7 +16,8 @@
 
 ### Emitter & Flusher
 
- - (impv) [\#2475](https://github.com/bandprotocol/bandchain/pull/2475) Add related data source and oracle script table.
+- (impv) [\#2475](https://github.com/bandprotocol/bandchain/pull/2475) Add related data source and oracle script table.
+- (impv) [\#2450](https://github.com/bandprotocol/bandchain/pull/2450) Add request count 1day view table.
 
 ### Scan
 
