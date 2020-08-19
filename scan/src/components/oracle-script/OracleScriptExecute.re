@@ -96,13 +96,7 @@ module ConnectPanel = {
           CssHelper.flexBox(~justify=`spaceBetween, ()),
         ])}>
         <Icon name="fal fa-link" size=32 color=Colors.bandBlue />
-        <Text
-          value="Please connect to make request"
-          weight=Text.Regular
-          size=Text.Lg
-          nowrap=true
-          block=true
-        />
+        <Text value="Please connect to make request" size=Text.Lg nowrap=true block=true />
         <div className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => {connect()}}>
           <Text value="Connect" weight=Text.Medium nowrap=true block=true />
         </div>
@@ -115,15 +109,9 @@ let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
   let fieldName = Js.String.replaceByRe([%re "/[_]/g"], " ", fieldName);
   <div className=Styles.listContainer key=fieldName>
     <div className={CssHelper.flexBox()}>
-      <Text
-        value=fieldName
-        size=Text.Md
-        color=Colors.gray7
-        weight=Text.Semibold
-        transform=Text.Capitalize
-      />
+      <Text value=fieldName color=Colors.gray7 weight=Text.Semibold transform=Text.Capitalize />
       <HSpacing size=Spacing.xs />
-      <Text value={j|($fieldType)|j} size=Text.Md color=Colors.gray7 weight=Text.Semibold />
+      <Text value={j|($fieldType)|j} color=Colors.gray7 weight=Text.Semibold />
     </div>
     <VSpacing size=Spacing.sm />
     <input
@@ -139,84 +127,85 @@ let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
   </div>;
 };
 
-let countInputs = (askCount, setAskCount, setMinCount, validatorCount) => {
-  <Row.Grid marginBottom=24>
-    <Col.Grid col=Col.Two colSm=Col.Six>
-      <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
-        <Text
-          value="Ask Count"
-          size=Text.Md
-          color=Colors.gray7
-          weight=Text.Semibold
-          transform=Text.Capitalize
-        />
-        <HSpacing size=Spacing.xs />
-        //TODO: remove mock message later
-        <CTooltip
-          tooltipPlacementSm=CTooltip.BottomLeft
-          tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-          <img className=Styles.infoIcon src=Images.infoIcon />
-        </CTooltip>
-      </div>
-      <select
-        className=Styles.input
-        onChange={event => {
-          let newVal = ReactEvent.Form.target(event)##value;
-          setAskCount(_ => newVal);
-        }}>
-        {Belt.Array.makeBy(validatorCount, i => i + 1)
-         |> Belt.Array.map(_, index =>
-              <option key={(index |> string_of_int) ++ "askCount"} value={index |> string_of_int}>
-                {index |> string_of_int |> React.string}
-              </option>
-            )
-         |> React.array}
-      </select>
-    </Col.Grid>
-    <Col.Grid col=Col.Two colSm=Col.Six>
-      <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
-        <Text
-          value="Min Count"
-          size=Text.Md
-          color=Colors.gray7
-          weight=Text.Semibold
-          transform=Text.Capitalize
-        />
-        <HSpacing size=Spacing.xs />
-        //TODO: remove mock message later
-        <CTooltip
-          tooltipPlacementSm=CTooltip.BottomLeft
-          tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-          <img className=Styles.infoIcon src=Images.infoIcon />
-        </CTooltip>
-      </div>
-      <select
-        className=Styles.input
-        onChange={event => {
-          let newVal = ReactEvent.Form.target(event)##value;
-          setMinCount(_ => newVal);
-        }}>
-        {Belt.Array.makeBy(askCount |> int_of_string, i => i + 1)
-         |> Belt.Array.map(_, index =>
-              <option key={(index |> string_of_int) ++ "minCount"} value={index |> string_of_int}>
-                {index |> string_of_int |> React.string}
-              </option>
-            )
-         |> React.array}
-      </select>
-    </Col.Grid>
-  </Row.Grid>;
+module CountInputs = {
+  [@react.component]
+  let make = (~askCount, ~setAskCount, ~setMinCount, ~validatorCount) => {
+    <Row.Grid marginBottom=24>
+      <Col.Grid col=Col.Two colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Text
+            value="Ask Count"
+            color=Colors.gray7
+            weight=Text.Semibold
+            transform=Text.Capitalize
+          />
+          <HSpacing size=Spacing.xs />
+          //TODO: remove mock message later
+          <CTooltip
+            tooltipPlacementSm=CTooltip.BottomLeft
+            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+            <img className=Styles.infoIcon src=Images.infoIcon />
+          </CTooltip>
+        </div>
+        <select
+          className=Styles.input
+          onChange={event => {
+            let newVal = ReactEvent.Form.target(event)##value;
+            setAskCount(_ => newVal);
+          }}>
+          {Belt.Array.makeBy(validatorCount, i => i + 1)
+           |> Belt.Array.map(_, index =>
+                <option
+                  key={(index |> string_of_int) ++ "askCount"} value={index |> string_of_int}>
+                  {index |> string_of_int |> React.string}
+                </option>
+              )
+           |> React.array}
+        </select>
+      </Col.Grid>
+      <Col.Grid col=Col.Two colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Text
+            value="Min Count"
+            color=Colors.gray7
+            weight=Text.Semibold
+            transform=Text.Capitalize
+          />
+          <HSpacing size=Spacing.xs />
+          //TODO: remove mock message later
+          <CTooltip
+            tooltipPlacementSm=CTooltip.BottomLeft
+            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+            <img className=Styles.infoIcon src=Images.infoIcon />
+          </CTooltip>
+        </div>
+        <select
+          className=Styles.input
+          onChange={event => {
+            let newVal = ReactEvent.Form.target(event)##value;
+            setMinCount(_ => newVal);
+          }}>
+          {Belt.Array.makeBy(askCount |> int_of_string, i => i + 1)
+           |> Belt.Array.map(_, index =>
+                <option
+                  key={(index |> string_of_int) ++ "minCount"} value={index |> string_of_int}>
+                  {index |> string_of_int |> React.string}
+                </option>
+              )
+           |> React.array}
+        </select>
+      </Col.Grid>
+    </Row.Grid>;
+  };
 };
 
 let clientIDInput = (clientID, setClientID) => {
   <div className=Styles.listContainer>
-    <Text
-      value="Client ID"
-      size=Text.Md
-      color=Colors.gray7
-      weight=Text.Semibold
-      transform=Text.Capitalize
-    />
+    <div className={CssHelper.flexBox()}>
+      <Text value="Client ID" color=Colors.gray7 weight=Text.Semibold transform=Text.Capitalize />
+      <HSpacing size=Spacing.xs />
+      <Text value="(default value is from_scan)" color=Colors.gray7 weight=Text.Semibold />
+    </div>
     <VSpacing size=Spacing.sm />
     <input
       className=Styles.input
@@ -275,7 +264,7 @@ module ExecutionPart = {
     let validatorCount = ValidatorSub.countByActive(true);
 
     let (callDataArr, setCallDataArr) = React.useState(_ => Belt_Array.make(numParams, ""));
-    let (clientID, setClientID) = React.useState(_ => "from_band");
+    let (clientID, setClientID) = React.useState(_ => "from_scan");
     let (askCount, setAskCount) = React.useState(_ => "1");
     let (minCount, setMinCount) = React.useState(_ => "1");
     let (result, setResult) = React.useState(_ => Nothing);
@@ -329,7 +318,6 @@ module ExecutionPart = {
             <Text
               value="Oracle request"
               color=Colors.gray7
-              weight=Text.Regular
               size=Text.Lg
               align=Text.Center
               block=true
@@ -337,7 +325,6 @@ module ExecutionPart = {
             <Text
               value="not available on mobile"
               color=Colors.gray7
-              weight=Text.Regular
               size=Text.Lg
               align=Text.Center
               block=true
@@ -380,7 +367,7 @@ module ExecutionPart = {
               {switch (validatorCount) {
                | Data(count) =>
                  let limitCount = count > 16 ? 16 : count;
-                 countInputs(askCount, setAskCount, setMinCount, limitCount);
+                 <CountInputs askCount setAskCount setMinCount validatorCount=limitCount />;
                | _ => React.null
                }}
               {switch (accountOpt) {
@@ -408,14 +395,19 @@ module ExecutionPart = {
                          | Some(encoded) =>
                            setResult(_ => Loading);
                            dispatch(
-                             AccountContext.SendRequest(
-                               id,
-                               encoded,
-                               requestCallback,
+                             AccountContext.SendRequest({
+                               oracleScriptID: id,
+                               calldata: encoded,
+                               callback: requestCallback,
                                askCount,
                                minCount,
-                               clientID,
-                             ),
+                               clientID: {
+                                 switch (clientID |> String.trim == "") {
+                                 | false => clientID |> String.trim
+                                 | true => "from_scan"
+                                 };
+                               },
+                             }),
                            );
                            ();
                          | None =>

@@ -5,17 +5,19 @@ type t = {
   chainID: string,
 };
 
+type send_request_t = {
+  oracleScriptID: ID.OracleScript.t,
+  calldata: JsBuffer.t,
+  callback: Js.Promise.t(TxCreator.response_t) => unit,
+  askCount: string,
+  minCount: string,
+  clientID: string,
+};
+
 type a =
   | Connect(Wallet.t, Address.t, PubKey.t, string)
   | Disconnect
-  | SendRequest(
-      ID.OracleScript.t,
-      JsBuffer.t,
-      Js.Promise.t(TxCreator.response_t) => unit,
-      string,
-      string,
-      string,
-    );
+  | SendRequest(send_request_t);
 
 let reducer = state =>
   fun
@@ -27,7 +29,7 @@ let reducer = state =>
       };
       None;
     }
-  | SendRequest(oracleScriptID, calldata, callback, askCount, minCount, clientID) =>
+  | SendRequest({oracleScriptID, calldata, callback, askCount, minCount, clientID}) =>
     switch (state) {
     | Some({address, wallet, pubKey, chainID}) =>
       callback(
