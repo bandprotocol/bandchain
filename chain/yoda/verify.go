@@ -1,8 +1,9 @@
 package yoda
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type VerificationMessage struct {
