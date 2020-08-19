@@ -1180,6 +1180,7 @@ module Msg = {
 type block_t = {timestamp: MomentRe.Moment.t};
 
 type t = {
+  id: int,
   txHash: Hash.t,
   blockHeight: ID.Block.t,
   success: bool,
@@ -1194,6 +1195,7 @@ type t = {
 };
 
 type internal_t = {
+  id: int,
   txHash: Hash.t,
   blockHeight: ID.Block.t,
   success: bool,
@@ -1221,6 +1223,7 @@ module Mini = {
 let toExternal =
     (
       {
+        id,
         txHash,
         blockHeight,
         success,
@@ -1234,6 +1237,7 @@ let toExternal =
         errMsg,
       },
     ) => {
+  id,
   txHash,
   blockHeight,
   success,
@@ -1256,6 +1260,7 @@ module SingleConfig = [%graphql
   {|
   subscription Transaction($tx_hash: bytea!) {
     transactions_by_pk(hash: $tx_hash) @bsRecord {
+      id
       txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
@@ -1278,6 +1283,7 @@ module MultiConfig = [%graphql
   {|
   subscription Transactions($limit: Int!, $offset: Int!) {
     transactions(offset: $offset, limit: $limit, order_by: {id: desc}) @bsRecord {
+      id
       txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
@@ -1300,6 +1306,7 @@ module MultiByHeightConfig = [%graphql
   {|
   subscription TransactionsByHeight($height: Int!, $limit: Int!, $offset: Int!) {
     transactions(where: {block_height: {_eq: $height}}, offset: $offset, limit: $limit, order_by: {id: desc}) @bsRecord {
+      id
       txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
       success
@@ -1324,6 +1331,7 @@ module MultiBySenderConfig = [%graphql
     accounts_by_pk(address: $sender) {
       account_transactions(offset: $offset, limit: $limit, order_by: {transaction_id: desc}) @bsRecord{
         transaction @bsRecord {
+          id
           txHash: hash @bsDecoder(fn: "GraphQLParser.hash")
           blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
           success
@@ -1423,11 +1431,16 @@ let getListBySender = (sender, ~page, ~pageSize, ()) => {
 
 let getListByBlockHeight = (height, ~page, ~pageSize, ()) => {
   let offset = (page - 1) * pageSize;
-  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiByHeightConfig.definition,
-      ~variables=MultiByHeightConfig.makeVariables(~height=height_, ~limit=pageSize, ~offset, ()),
+      ~variables=
+        MultiByHeightConfig.makeVariables(
+          ~height=height |> ID.Block.toInt,
+          ~limit=pageSize,
+          ~offset,
+          (),
+        ),
     );
   result |> Sub.map(_, x => x##transactions->Belt_Array.map(toExternal));
 };

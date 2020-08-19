@@ -25,9 +25,7 @@ let getName =
 
 let defaultCompare = (a: OracleScriptSub.t, b: OracleScriptSub.t) =>
   if (a.timestamp != b.timestamp) {
-    let ID.OracleScript.ID(a_) = a.id;
-    let ID.OracleScript.ID(b_) = b.id;
-    compare(b_, a_);
+    compare(b.id |> ID.OracleScript.toInt, a.id |> ID.OracleScript.toInt);
   } else {
     compare(b.request, a.request);
   };
@@ -201,7 +199,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
-        ("Requests&\nResponse time", RequestResponse({request, responseTime})),
+        ("Request&\nResponse time", RequestResponse({request, responseTime})),
         ("Timestamp", Timestamp(timestamp)),
       ]
       key={id |> ID.OracleScript.toString}
@@ -212,7 +210,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Oracle Script", Loading(200)),
         ("Description", Loading(200)),
-        ("Requests&\nResponse time", Loading(80)),
+        ("Request&\nResponse time", Loading(80)),
         ("Timestamp", Loading(180)),
       ]
       key={reserveIndex |> string_of_int}
@@ -240,113 +238,123 @@ let make = () => {
 
   let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
 
-  <div className=CssHelper.mobileSpacing>
-    <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-    <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-    <Row.Grid>
-      {switch (oracleScriptTopPart) {
-       | Data(oracleScripts) =>
-         <>
-           {oracleScripts
-            ->sorting(MostRequested)
-            ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, Sub.resolve(e)))
-            ->React.array}
-         </>
-       | _ =>
-         Belt_Array.make(6, ApolloHooks.Subscription.NoData)
-         ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
-         ->React.array
-       }}
-    </Row.Grid>
-    <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-      <Col.Grid>
+  <Section>
+    <div className=CssHelper.container>
+      <div className=CssHelper.mobileSpacing>
+        <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+        <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
+        <Row.Grid>
+          {switch (oracleScriptTopPart) {
+           | Data(oracleScripts) =>
+             <>
+               {oracleScripts
+                ->sorting(MostRequested)
+                ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, Sub.resolve(e)))
+                ->React.array}
+             </>
+           | _ =>
+             Belt_Array.make(6, ApolloHooks.Subscription.NoData)
+             ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
+             ->React.array
+           }}
+        </Row.Grid>
+        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col.Grid>
+            {switch (allSub) {
+             | Data((_, oracleScriptsCount)) =>
+               <Heading value={oracleScriptsCount->string_of_int ++ " In total"} size=Heading.H3 />
+             | _ => <LoadingCensorBar width=65 height=21 />
+             }}
+          </Col.Grid>
+        </Row.Grid>
+        <Row.Grid alignItems=Row.Center marginBottom=16>
+          <Col.Grid col=Col.Six colSm=Col.Eight>
+            <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
+          </Col.Grid>
+          <Col.Grid col=Col.Six colSm=Col.Four>
+            <SortableDropdown
+              sortedBy
+              setSortedBy
+              sortList=[
+                (MostRequested, getName(MostRequested)),
+                (LatestUpdate, getName(LatestUpdate)),
+              ]
+            />
+          </Col.Grid>
+        </Row.Grid>
+        {isMobile
+           ? React.null
+           : <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Five>
+                   <div className=TElement.Styles.hashContainer>
+                     <Text
+                       block=true
+                       value="Oracle Script"
+                       weight=Text.Semibold
+                       color=Colors.gray7
+                     />
+                   </div>
+                 </Col.Grid>
+                 <Col.Grid col=Col.Three>
+                   <Text block=true value="Description" weight=Text.Semibold color=Colors.gray7 />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Request"
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                   <Text
+                     block=true
+                     value="& Response time"
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Timestamp"
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>}
         {switch (allSub) {
-         | Data((_, oracleScriptsCount)) =>
-           <Heading value={oracleScriptsCount->string_of_int ++ " In total"} size=Heading.H3 />
-         | _ => <LoadingCensorBar width=65 height=21 />
+         | Data((oracleScripts, oracleScriptsCount)) =>
+           let pageCount = Page.getPageCount(oracleScriptsCount, pageSize);
+           <div className=Styles.tbodyContainer>
+             {oracleScripts
+              ->sorting(sortedBy)
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array}
+             {isMobile
+                ? React.null
+                : <Pagination
+                    currentPage=page
+                    pageCount
+                    onPageChange={newPage => setPage(_ => newPage)}
+                  />}
+           </div>;
+         | _ =>
+           <div className=Styles.tbodyContainer>
+             {Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+              ->Belt_Array.mapWithIndex((i, noData) =>
+                  isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+                )
+              ->React.array}
+           </div>
          }}
-      </Col.Grid>
-    </Row.Grid>
-    <Row.Grid alignItems=Row.Center marginBottom=16>
-      <Col.Grid col=Col.Six colSm=Col.Eight>
-        <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
-      </Col.Grid>
-      <Col.Grid col=Col.Six colSm=Col.Four>
-        <SortableDropdown
-          sortedBy
-          setSortedBy
-          sortList=[
-            (MostRequested, getName(MostRequested)),
-            (LatestUpdate, getName(LatestUpdate)),
-          ]
-        />
-      </Col.Grid>
-    </Row.Grid>
-    {isMobile
-       ? React.null
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Five>
-               <div className=TElement.Styles.hashContainer>
-                 <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
-               </div>
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
-               <Text block=true value="Descriptions" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
-               <Text
-                 block=true
-                 value="Requests"
-                 weight=Text.Semibold
-                 color=Colors.gray7
-                 align=Text.Right
-               />
-               <Text
-                 block=true
-                 value="& Response time"
-                 weight=Text.Semibold
-                 color=Colors.gray7
-                 align=Text.Right
-               />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
-               <Text
-                 block=true
-                 value="Timestamp"
-                 weight=Text.Semibold
-                 color=Colors.gray7
-                 align=Text.Right
-               />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
-    {switch (allSub) {
-     | Data((oracleScripts, oracleScriptsCount)) =>
-       let pageCount = Page.getPageCount(oracleScriptsCount, pageSize);
-       <div className=Styles.tbodyContainer>
-         {oracleScripts
-          ->sorting(sortedBy)
-          ->Belt_Array.mapWithIndex((i, e) =>
-              isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-            )
-          ->React.array}
-         {isMobile
-            ? React.null
-            : <Pagination
-                currentPage=page
-                pageCount
-                onPageChange={newPage => setPage(_ => newPage)}
-              />}
-       </div>;
-     | _ =>
-       <div className=Styles.tbodyContainer>
-         {Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-          ->Belt_Array.mapWithIndex((i, noData) =>
-              isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
-            )
-          ->React.array}
-       </div>
-     }}
-  </div>;
+      </div>
+    </div>
+  </Section>;
 };

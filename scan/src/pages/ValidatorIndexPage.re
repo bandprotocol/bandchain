@@ -269,220 +269,223 @@ module RenderDesktop = {
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let allSub = Sub.all2(validatorSub, bondedTokenCountSub);
 
-    <>
-      <ValidatorDetails allSub />
-      <VSpacing size=Spacing.xl />
-      <div className=Styles.vFlex>
-        {switch (allSub) {
-         | Data(({moniker, identity, oracleStatus}, _)) =>
-           <>
-             <Avatar moniker identity width=40 />
-             <HSpacing size=Spacing.md />
-             <div className=Styles.hFlex>
-               <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
-               <VSpacing size=Spacing.sm />
-               <div className={Styles.oracleBadge(oracleStatus)}>
-                 <Text
-                   value="ORACLE"
-                   color=Colors.white
-                   weight=Text.Medium
-                   height={Text.Px(11)}
-                 />
-                 <HSpacing size=Spacing.sm />
-                 <img
-                   src={oracleStatus ? Images.whiteCheck : Images.whiteClose}
-                   className=Styles.oracleStatusLogo
-                 />
+    <Section>
+      <div className=CssHelper.container>
+        <ValidatorDetails allSub />
+        <VSpacing size=Spacing.xl />
+        <div className=Styles.vFlex>
+          {switch (allSub) {
+           | Data(({moniker, identity, oracleStatus}, _)) =>
+             <>
+               <Avatar moniker identity width=40 />
+               <HSpacing size=Spacing.md />
+               <div className=Styles.hFlex>
+                 <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
+                 <VSpacing size=Spacing.sm />
+                 <div className={Styles.oracleBadge(oracleStatus)}>
+                   <Text
+                     value="ORACLE"
+                     color=Colors.white
+                     weight=Text.Medium
+                     height={Text.Px(11)}
+                   />
+                   <HSpacing size=Spacing.sm />
+                   <img
+                     src={oracleStatus ? Images.whiteCheck : Images.whiteClose}
+                     className=Styles.oracleStatusLogo
+                   />
+                 </div>
                </div>
-             </div>
-           </>
-         | _ => <LoadingCensorBar width=150 height=30 />
-         }}
-      </div>
-      <VSpacing size=Spacing.xl />
-      <ValidatorStakingInfo validatorAddress=address />
-      <VSpacing size=Spacing.md />
-      <div className=Styles.topPartWrapper>
-        <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "OPERATOR ADDRESS",
-           {
-             "The address used to show the entity's validator status" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data(_) => ValidatorAddress(address)
-             | _ => Loading(360, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "ADDRESS",
-           {
-             "The entity's unique address" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data(_) => VAddress(address)
-             | _ => Loading(310, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "VOTING POWER",
-           {
-             "Sum of self-bonded and delegated tokens" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, bondedTokenCount)) =>
-               VCode(
-                 (
-                   bondedTokenCount.amount > 0.
-                     ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
-                 )
-                 ->Format.fPretty
-                 ++ "% ("
-                 ++ (validator.votingPower /. 1e6 |> Format.fPretty)
-                 ++ " BAND)",
-               )
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "COMMISSION",
-           {
-             "Validator service fees charged to delegators" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, _)) => VCode(validator.commission |> Format.fPercent(~digits=2))
-             | _ => Loading(50, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "COMMISSION MAX CHANGE",
-           {
-             "Maximum increment in which the validator can change their commission rate at a time"
-             |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, _)) =>
-               VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2))
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "COMMISSION MAX RATE",
-           {
-             "The highest possible commission rate the validator can set" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, _)) =>
-               VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {switch (allSub) {
-         | Data((validator, _)) => <Uptime consensusAddress={validator.consensusAddress} />
-
-         | _ =>
-           kvRow(
-             "UPTIME",
+             </>
+           | _ => <LoadingCensorBar width=150 height=30 />
+           }}
+        </div>
+        <VSpacing size=Spacing.xl />
+        <ValidatorStakingInfo validatorAddress=address />
+        <VSpacing size=Spacing.md />
+        <div className=Styles.topPartWrapper>
+          <Text value="INFORMATION" size=Text.Lg weight=Text.Semibold />
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "OPERATOR ADDRESS",
              {
-               "Percentage of the blocks that the validator is active for out of the last 250"
+               "The address used to show the entity's validator status" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data(_) => ValidatorAddress(address)
+               | _ => Loading(360, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "ADDRESS",
+             {
+               "The entity's unique address" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data(_) => VAddress(address)
+               | _ => Loading(310, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "VOTING POWER",
+             {
+               "Sum of self-bonded and delegated tokens" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data((validator, bondedTokenCount)) =>
+                 VCode(
+                   (
+                     bondedTokenCount.amount > 0.
+                       ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
+                   )
+                   ->Format.fPretty
+                   ++ "% ("
+                   ++ (validator.votingPower /. 1e6 |> Format.fPretty)
+                   ++ " BAND)",
+                 )
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "COMMISSION",
+             {
+               "Validator service fees charged to delegators" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data((validator, _)) =>
+                 VCode(validator.commission |> Format.fPercent(~digits=2))
+               | _ => Loading(50, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "COMMISSION MAX CHANGE",
+             {
+               "Maximum increment in which the validator can change their commission rate at a time"
                |> React.string;
              },
-             Loading(100, 16),
-           )
-         }}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "WEBSITE",
-           {
-             "The validator's website" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, _)) => VExtLink(validator.website)
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRow(
-           "DETAILS",
-           {
-             "Extra self-added detail about the validator" |> React.string;
-           },
-           {
-             switch (allSub) {
-             | Data((validator, _)) => VDetail(validator.details)
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
+             {
+               switch (allSub) {
+               | Data((validator, _)) =>
+                 VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2))
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "COMMISSION MAX RATE",
+             {
+               "The highest possible commission rate the validator can set" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data((validator, _)) =>
+                 VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {switch (allSub) {
+           | Data((validator, _)) => <Uptime consensusAddress={validator.consensusAddress} />
+
+           | _ =>
+             kvRow(
+               "UPTIME",
+               {
+                 "Percentage of the blocks that the validator is active for out of the last 250"
+                 |> React.string;
+               },
+               Loading(100, 16),
+             )
+           }}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "WEBSITE",
+             {
+               "The validator's website" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data((validator, _)) => VExtLink(validator.website)
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRow(
+             "DETAILS",
+             {
+               "Extra self-added detail about the validator" |> React.string;
+             },
+             {
+               switch (allSub) {
+               | Data((validator, _)) => VDetail(validator.details)
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+        </div>
+        // <div className=Styles.longLine />
+        // <div className={Styles.fullWidth(`row)}>
+        //   <Col size=1.>
+        //     <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
+        //     <VSpacing size=Spacing.lg />
+        //     {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
+        //     <VSpacing size=Spacing.lg />
+        //     {kvRow(
+        //        "AVG. RESPONSE TIME",
+        //        VCode(
+        //          validator.avgResponseTime->Format.iPretty
+        //          ++ (validator.avgResponseTime <= 1 ? " block" : " blocks"),
+        //        ),
+        //      )}
+        //   </Col>
+        //   <HSpacing size=Spacing.lg />
+        //   <Col size=1.>
+        //     <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
+        //     <VSpacing size=Spacing.lg />
+        //     {kvRow("COMPLETED REQUESTS", VCode(validator.completedRequestCount->Format.iPretty))}
+        //     <VSpacing size=Spacing.lg />
+        //     {kvRow("MISSED REQUESTS", VCode(validator.missedRequestCount->Format.iPretty))}
+        //   </Col>
+        // </div>
+        <VSpacing size=Spacing.md />
+        <Tab
+          tabs=[|
+            {
+              name: "PROPOSED BLOCKS",
+              route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+            },
+            {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+            {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+          |]
+          currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+          {switch (hashtag) {
+           | ProposedBlocks =>
+             switch (validatorSub) {
+             | Data(validator) =>
+               <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
+             | _ => <ProposedBlocksTable.LoadingWithHeader />
+             }
+           | Delegators => <DelegatorsTable address isMobile=false />
+           | Reports => <ReportsTable address />
+           }}
+        </Tab>
       </div>
-      // <div className=Styles.longLine />
-      // <div className={Styles.fullWidth(`row)}>
-      //   <Col size=1.>
-      //     <Text value="NODE STATUS" size=Text.Lg weight=Text.Semibold />
-      //     <VSpacing size=Spacing.lg />
-      //     {kvRow("UPTIME", VCode(validator.nodeStatus.uptime->Format.fPretty ++ "%"))}
-      //     <VSpacing size=Spacing.lg />
-      //     {kvRow(
-      //        "AVG. RESPONSE TIME",
-      //        VCode(
-      //          validator.avgResponseTime->Format.iPretty
-      //          ++ (validator.avgResponseTime <= 1 ? " block" : " blocks"),
-      //        ),
-      //      )}
-      //   </Col>
-      //   <HSpacing size=Spacing.lg />
-      //   <Col size=1.>
-      //     <Text value="REQUEST RESPONSE" size=Text.Lg weight=Text.Semibold />
-      //     <VSpacing size=Spacing.lg />
-      //     {kvRow("COMPLETED REQUESTS", VCode(validator.completedRequestCount->Format.iPretty))}
-      //     <VSpacing size=Spacing.lg />
-      //     {kvRow("MISSED REQUESTS", VCode(validator.missedRequestCount->Format.iPretty))}
-      //   </Col>
-      // </div>
-      <VSpacing size=Spacing.md />
-      <Tab
-        tabs=[|
-          {
-            name: "PROPOSED BLOCKS",
-            route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
-          },
-          {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
-          {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
-        |]
-        currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
-        {switch (hashtag) {
-         | ProposedBlocks =>
-           switch (validatorSub) {
-           | Data(validator) =>
-             <ProposedBlocksTable consensusAddress={validator.consensusAddress} />
-           | _ => <ProposedBlocksTable.LoadingWithHeader />
-           }
-         | Delegators => <DelegatorsTable address isMobile=false />
-         | Reports => <ReportsTable address />
-         }}
-      </Tab>
-    </>;
+    </Section>;
   };
 };
 
@@ -492,202 +495,204 @@ module RenderMobile = {
     let validatorSub = ValidatorSub.get(address);
     let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
     let allSub = Sub.all2(validatorSub, bondedTokenCountSub);
-    <>
-      // TODO: Remove once searchbar is part of header
-      <VSpacing size=Spacing.md />
-      <ValidatorDetails allSub />
-      <VSpacing size=Spacing.md />
-      <VSpacing size=Spacing.sm />
-      <div className=Styles.validatorBoxMobile>
-        <div className=Styles.monikerContainer>
-          {switch (allSub) {
-           | Data(({moniker, identity, _}, _)) =>
-             <>
-               <Avatar moniker identity width=40 />
-               <HSpacing size=Spacing.md />
-               <div className=Styles.hFlex>
-                 <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
-               </div>
-             </>
-           | _ => <LoadingCensorBar width=150 height=30 />
-           }}
-        </div>
+
+    <Section>
+      <div className=CssHelper.container>
+        <VSpacing size=Spacing.md />
+        <ValidatorDetails allSub />
         <VSpacing size=Spacing.md />
         <VSpacing size=Spacing.sm />
-        <Row alignItems=Css.stretch style=Styles.validatorDetailsTopPart>
-          <Col size=1.>
-            {kvRowMobile(
-               "VOTING POWER",
-               {
-                 switch (allSub) {
-                 | Data((validator, bondedTokenCount)) =>
-                   VReactElement(
-                     <div className=Styles.votingPowerMobile>
-                       <Text
-                         value={validator.votingPower /. 1e6 |> Format.fPretty}
-                         size=Text.Md
-                         weight=Text.Bold
-                         code=true
-                       />
-                       <VSpacing size=Spacing.xs />
-                       <Text
-                         value={
-                           "("
-                           ++ (
-                                bondedTokenCount.amount > 0.
-                                  ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
-                              )
-                              ->Format.fPretty(_, ~digits=2)
-                           ++ "%)"
-                         }
-                         size=Text.Md
-                         weight=Text.Thin
-                         color=Colors.gray6
-                         code=true
-                       />
-                     </div>,
-                   )
-                 | _ =>
-                   VReactElement(
-                     <div className=Styles.votingPowerMobile>
-                       <LoadingCensorBar width=70 height=16 />
-                       <VSpacing size=Spacing.xs />
-                       <LoadingCensorBar width=60 height=16 />
-                     </div>,
-                   )
-                 };
-               },
-             )}
-          </Col>
-          <Col size=1.>
-            {kvRowMobile(
-               "COMMISSION",
-               {
-                 switch (allSub) {
-                 | Data((validator, _)) =>
-                   VReactElement(
-                     <div className=Styles.headerMobile>
-                       <Text
-                         value={validator.commission |> Format.fPretty(~digits=2)}
-                         weight=Text.Bold
-                         code=true
-                       />
-                     </div>,
-                   )
-                 | _ =>
-                   VReactElement(
-                     <div className=Styles.headerMobile>
-                       <LoadingCensorBar width=60 height=16 />
-                     </div>,
-                   )
-                 };
-               },
-             )}
-          </Col>
-          <Col size=1.>
+        <div className=Styles.validatorBoxMobile>
+          <div className=Styles.monikerContainer>
             {switch (allSub) {
-             | Data((validator, _)) =>
-               <UptimeMobile consensusAddress={validator.consensusAddress} />
-             | _ =>
-               kvRowMobile(
-                 "UPTIME",
-                 VReactElement(
-                   <div className=Styles.headerMobile>
-                     <LoadingCensorBar width=70 height=16 />
-                   </div>,
-                 ),
-               )
+             | Data(({moniker, identity, _}, _)) =>
+               <>
+                 <Avatar moniker identity width=40 />
+                 <HSpacing size=Spacing.md />
+                 <div className=Styles.hFlex>
+                   <Text value=moniker size=Text.Xxl weight=Text.Bold nowrap=true />
+                 </div>
+               </>
+             | _ => <LoadingCensorBar width=150 height=30 />
              }}
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.lg />
-        <VSpacing size=Spacing.sm />
-        {kvRowMobile(
-           "OPERATOR ADDRESS",
-           {
-             switch (allSub) {
-             | Data(_) => ValidatorAddress(address)
-             | _ => Loading(360, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRowMobile(
-           "ADDRESS",
-           {
-             switch (allSub) {
-             | Data(_) => VAddress(address)
-             | _ => Loading(360, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRowMobile(
-           "COMMISSION MAX CHANGE",
-           {
-             switch (allSub) {
-             | Data((validator, _)) =>
-               VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2))
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRowMobile(
-           "COMMISSION MAX RATE",
-           {
-             switch (allSub) {
-             | Data((validator, _)) =>
-               VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRowMobile(
-           "WEBSITE",
-           {
-             switch (allSub) {
-             | Data((validator, _)) => VExtLink(validator.website)
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
-        {kvRowMobile(
-           "DETAILS",
-           {
-             switch (allSub) {
-             | Data((validator, _)) => VDetail(validator.details)
-             | _ => Loading(100, 16)
-             };
-           },
-         )}
-        <VSpacing size=Spacing.lg />
+          </div>
+          <VSpacing size=Spacing.md />
+          <VSpacing size=Spacing.sm />
+          <Row alignItems=Css.stretch style=Styles.validatorDetailsTopPart>
+            <Col size=1.>
+              {kvRowMobile(
+                 "VOTING POWER",
+                 {
+                   switch (allSub) {
+                   | Data((validator, bondedTokenCount)) =>
+                     VReactElement(
+                       <div className=Styles.votingPowerMobile>
+                         <Text
+                           value={validator.votingPower /. 1e6 |> Format.fPretty}
+                           size=Text.Md
+                           weight=Text.Bold
+                           code=true
+                         />
+                         <VSpacing size=Spacing.xs />
+                         <Text
+                           value={
+                             "("
+                             ++ (
+                                  bondedTokenCount.amount > 0.
+                                    ? validator.votingPower *. 100. /. bondedTokenCount.amount : 0.
+                                )
+                                ->Format.fPretty(_, ~digits=2)
+                             ++ "%)"
+                           }
+                           size=Text.Md
+                           weight=Text.Thin
+                           color=Colors.gray6
+                           code=true
+                         />
+                       </div>,
+                     )
+                   | _ =>
+                     VReactElement(
+                       <div className=Styles.votingPowerMobile>
+                         <LoadingCensorBar width=70 height=16 />
+                         <VSpacing size=Spacing.xs />
+                         <LoadingCensorBar width=60 height=16 />
+                       </div>,
+                     )
+                   };
+                 },
+               )}
+            </Col>
+            <Col size=1.>
+              {kvRowMobile(
+                 "COMMISSION",
+                 {
+                   switch (allSub) {
+                   | Data((validator, _)) =>
+                     VReactElement(
+                       <div className=Styles.headerMobile>
+                         <Text
+                           value={validator.commission |> Format.fPretty(~digits=2)}
+                           weight=Text.Bold
+                           code=true
+                         />
+                       </div>,
+                     )
+                   | _ =>
+                     VReactElement(
+                       <div className=Styles.headerMobile>
+                         <LoadingCensorBar width=60 height=16 />
+                       </div>,
+                     )
+                   };
+                 },
+               )}
+            </Col>
+            <Col size=1.>
+              {switch (allSub) {
+               | Data((validator, _)) =>
+                 <UptimeMobile consensusAddress={validator.consensusAddress} />
+               | _ =>
+                 kvRowMobile(
+                   "UPTIME",
+                   VReactElement(
+                     <div className=Styles.headerMobile>
+                       <LoadingCensorBar width=70 height=16 />
+                     </div>,
+                   ),
+                 )
+               }}
+            </Col>
+          </Row>
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.sm />
+          {kvRowMobile(
+             "OPERATOR ADDRESS",
+             {
+               switch (allSub) {
+               | Data(_) => ValidatorAddress(address)
+               | _ => Loading(360, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRowMobile(
+             "ADDRESS",
+             {
+               switch (allSub) {
+               | Data(_) => VAddress(address)
+               | _ => Loading(360, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRowMobile(
+             "COMMISSION MAX CHANGE",
+             {
+               switch (allSub) {
+               | Data((validator, _)) =>
+                 VCode(validator.commissionMaxChange |> Format.fPercent(~digits=2))
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRowMobile(
+             "COMMISSION MAX RATE",
+             {
+               switch (allSub) {
+               | Data((validator, _)) =>
+                 VCode(validator.commissionMaxRate |> Format.fPercent(~digits=2))
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRowMobile(
+             "WEBSITE",
+             {
+               switch (allSub) {
+               | Data((validator, _)) => VExtLink(validator.website)
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+          {kvRowMobile(
+             "DETAILS",
+             {
+               switch (allSub) {
+               | Data((validator, _)) => VDetail(validator.details)
+               | _ => Loading(100, 16)
+               };
+             },
+           )}
+          <VSpacing size=Spacing.lg />
+        </div>
+        <VSpacing size=Spacing.md />
+        <Tab
+          tabs=[|
+            {
+              name: "PROPOSED BLOCKS",
+              route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
+            },
+            {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
+            {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
+          |]
+          currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
+          {switch (hashtag) {
+           | ProposedBlocks =>
+             switch (validatorSub) {
+             | Data(validator) =>
+               <ProposedBlocksTableMobile consensusAddress={validator.consensusAddress} />
+             | _ => <ProposedBlocksTableMobile.Loading />
+             }
+           | Delegators => <DelegatorsTable address isMobile=true />
+           | Reports => <ReportsTable address />
+           }}
+        </Tab>
       </div>
-      <VSpacing size=Spacing.md />
-      <Tab
-        tabs=[|
-          {
-            name: "PROPOSED BLOCKS",
-            route: Route.ValidatorIndexPage(address, Route.ProposedBlocks),
-          },
-          {name: "DELEGATORS", route: Route.ValidatorIndexPage(address, Route.Delegators)},
-          {name: "REPORTS", route: Route.ValidatorIndexPage(address, Route.Reports)},
-        |]
-        currentRoute={Route.ValidatorIndexPage(address, hashtag)}>
-        {switch (hashtag) {
-         | ProposedBlocks =>
-           switch (validatorSub) {
-           | Data(validator) =>
-             <ProposedBlocksTableMobile consensusAddress={validator.consensusAddress} />
-           | _ => <ProposedBlocksTableMobile.Loading />
-           }
-         | Delegators => <DelegatorsTable address isMobile=true />
-         | Reports => <ReportsTable address />
-         }}
-      </Tab>
-    </>;
+    </Section>;
   };
 };
 

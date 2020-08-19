@@ -9,9 +9,7 @@ let getName =
 
 let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
   if (a.timestamp != b.timestamp) {
-    let ID.DataSource.ID(a_) = a.id;
-    let ID.DataSource.ID(b_) = b.id;
-    compare(b_, a_);
+    compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
   } else {
     compare(b.request, a.request);
   };
@@ -96,7 +94,7 @@ let renderBodyMobile =
   | Data({id, timestamp, description, name, request}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sourse", DataSource(id, name)),
+        ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
         ("Requests", Count(request)),
         ("Timestamp", Timestamp(timestamp)),
@@ -107,7 +105,7 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Data Sources", Loading(70)),
+        ("Data Source", Loading(70)),
         ("Description", Loading(136)),
         ("Requests", Loading(20)),
         ("Timestamp", Loading(166)),
@@ -131,107 +129,112 @@ let make = () => {
   let allSub = Sub.all2(dataSourcesSub, dataSourcesCountSub);
   let isMobile = Media.isMobile();
 
-  <div className=CssHelper.mobileSpacing>
-    <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-      <Col.Grid col=Col.Twelve>
-        <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+  <Section>
+    <div className=CssHelper.container>
+      <div className=CssHelper.mobileSpacing>
+        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col.Grid col=Col.Twelve>
+            <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+            {switch (allSub) {
+             | Data((_, dataSourcesCount)) =>
+               <Heading value={dataSourcesCount->string_of_int ++ " In total"} size=Heading.H3 />
+             | _ => <LoadingCensorBar width=65 height=21 />
+             }}
+          </Col.Grid>
+        </Row.Grid>
+        <>
+          <Row.Grid alignItems=Row.Center marginBottom=16>
+            <Col.Grid col=Col.Six colSm=Col.Eight>
+              <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
+            </Col.Grid>
+            <Col.Grid col=Col.Six colSm=Col.Four>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
+              />
+            </Col.Grid>
+          </Row.Grid>
+          {isMobile
+             ? React.null
+             : <THead.Grid>
+                 <Row.Grid alignItems=Row.Center>
+                   <Col.Grid col=Col.Five>
+                     <div className=TElement.Styles.hashContainer>
+                       <Text
+                         block=true
+                         value="Data Source"
+                         size=Text.Md
+                         weight=Text.Semibold
+                         color=Colors.gray7
+                       />
+                     </div>
+                   </Col.Grid>
+                   <Col.Grid col=Col.Four>
+                     <Text
+                       block=true
+                       value="Description"
+                       size=Text.Md
+                       weight=Text.Semibold
+                       color=Colors.gray7
+                     />
+                   </Col.Grid>
+                   <Col.Grid col=Col.One>
+                     <Text
+                       block=true
+                       value="Requests"
+                       size=Text.Md
+                       weight=Text.Semibold
+                       color=Colors.gray7
+                     />
+                   </Col.Grid>
+                   <Col.Grid col=Col.Two>
+                     <Text
+                       block=true
+                       value="Timestamp"
+                       size=Text.Md
+                       weight=Text.Semibold
+                       color=Colors.gray7
+                       align=Text.Right
+                     />
+                   </Col.Grid>
+                 </Row.Grid>
+               </THead.Grid>}
+        </>
         {switch (allSub) {
-         | Data((_, dataSourcesCount)) =>
-           <Heading value={dataSourcesCount->string_of_int ++ " In total"} size=Heading.H3 />
-         | _ => <LoadingCensorBar width=65 height=21 />
+         | Data((dataSources, dataSourcesCount)) =>
+           let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
+           <>
+             {dataSources
+              ->sorting(sortedBy)
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array}
+             {isMobile
+                ? React.null
+                : <>
+                    <VSpacing size=Spacing.lg />
+                    <Pagination
+                      currentPage=page
+                      pageCount
+                      onPageChange={newPage => setPage(_ => newPage)}
+                    />
+                    <VSpacing size=Spacing.lg />
+                  </>}
+           </>;
+         | _ =>
+           Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+           ->Belt_Array.mapWithIndex((i, noData) =>
+               isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+             )
+           ->React.array
          }}
-      </Col.Grid>
-    </Row.Grid>
-    <>
-      <Row.Grid alignItems=Row.Center marginBottom=16>
-        <Col.Grid col=Col.Six colSm=Col.Eight>
-          <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
-        </Col.Grid>
-        <Col.Grid col=Col.Six colSm=Col.Four>
-          <SortableDropdown
-            sortedBy
-            setSortedBy
-            sortList=[
-              (MostRequested, getName(MostRequested)),
-              (LatestUpdate, getName(LatestUpdate)),
-            ]
-          />
-        </Col.Grid>
-      </Row.Grid>
-      {isMobile
-         ? React.null
-         : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Five>
-                 <div className=TElement.Styles.hashContainer>
-                   <Text
-                     block=true
-                     value="Data Sources"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                   />
-                 </div>
-               </Col.Grid>
-               <Col.Grid col=Col.Four>
-                 <Text
-                   block=true
-                   value="Descriptions"
-                   size=Text.Md
-                   weight=Text.Semibold
-                   color=Colors.gray7
-                 />
-               </Col.Grid>
-               <Col.Grid col=Col.One>
-                 <Text
-                   block=true
-                   value="Requests"
-                   size=Text.Md
-                   weight=Text.Semibold
-                   color=Colors.gray7
-                 />
-               </Col.Grid>
-               <Col.Grid col=Col.Two>
-                 <Text
-                   block=true
-                   value="Timestamp"
-                   size=Text.Md
-                   weight=Text.Semibold
-                   color=Colors.gray7
-                   align=Text.Right
-                 />
-               </Col.Grid>
-             </Row.Grid>
-           </THead.Grid>}
-    </>
-    {switch (allSub) {
-     | Data((dataSources, dataSourcesCount)) =>
-       let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
-       <>
-         {dataSources
-          ->sorting(sortedBy)
-          ->Belt_Array.mapWithIndex((i, e) =>
-              isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-            )
-          ->React.array}
-         {isMobile
-            ? React.null
-            : <>
-                <VSpacing size=Spacing.lg />
-                <Pagination
-                  currentPage=page
-                  pageCount
-                  onPageChange={newPage => setPage(_ => newPage)}
-                />
-                <VSpacing size=Spacing.lg />
-              </>}
-       </>;
-     | _ =>
-       Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-       ->Belt_Array.mapWithIndex((i, noData) =>
-           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
-         )
-       ->React.array
-     }}
-  </div>;
+      </div>
+    </div>
+  </Section>;
 };

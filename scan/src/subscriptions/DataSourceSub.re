@@ -86,11 +86,10 @@ module DataSourcesCountConfig = [%graphql
 ];
 
 let get = id => {
-  let ID.DataSource.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~id=id_, ()),
+      ~variables=SingleConfig.makeVariables(~id=id |> ID.DataSource.toInt, ()),
     );
   let%Sub x = result;
   switch (x##data_sources_by_pk) {

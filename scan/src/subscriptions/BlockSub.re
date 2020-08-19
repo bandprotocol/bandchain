@@ -144,11 +144,10 @@ module BlockCountConsensusAddressConfig = [%graphql
 ];
 
 let get = height => {
-  let ID.Block.ID(height_) = height;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~height=height_, ()),
+      ~variables=SingleConfig.makeVariables(~height=height |> ID.Block.toInt, ()),
     );
   let%Sub x = result;
   switch (x##blocks_by_pk) {

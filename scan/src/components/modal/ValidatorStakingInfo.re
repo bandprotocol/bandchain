@@ -322,7 +322,8 @@ module ConnectBtn = {
         block=true
       />
       <HSpacing size=Spacing.sm />
-      <img src=Images.connectIcon className=Styles.logo />
+      // TODO: change it later
+      <Icon name="fal fa-link" color=Colors.gray1 />
     </div>;
   };
 };

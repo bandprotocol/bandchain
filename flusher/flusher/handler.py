@@ -23,6 +23,10 @@ from .db import (
     proposals,
     deposits,
     votes,
+    historical_bonded_token_on_validators,
+    reporters,
+    related_data_source_oracle_scripts,
+    historical_oracle_statuses,
 )
 
 
@@ -103,7 +107,22 @@ class Handler(object):
             condition = (col == msg[col.name]) & condition
         self.conn.execute(requests.update().where(condition).values(**msg))
 
+    def handle_update_related_ds_os(self, msg):
+        self.conn.execute(
+            insert(related_data_source_oracle_scripts)
+            .values(**msg)
+            .on_conflict_do_nothing(constraint="related_data_source_oracle_scripts_pkey")
+        )
+
     def handle_new_raw_request(self, msg):
+        self.handle_update_related_ds_os(
+            {
+                "oracle_script_id": self.conn.execute(
+                    select([requests.c.oracle_script_id]).where(accounts.c.id == msg["request_id"])
+                ).scalar(),
+                "data_source_id": msg["data_source_id"],
+            }
+        )
         self.conn.execute(raw_requests.insert(), msg)
 
     def handle_new_val_request(self, msg):
@@ -126,6 +145,8 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
+        last_update = msg["last_update"]
+        del msg["last_update"]
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         if self.get_validator_id(msg["operator_address"]) is None:
@@ -135,8 +156,25 @@ class Handler(object):
             for col in validators.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(validators.update().where(condition).values(**msg))
+        self.handle_new_historical_bonded_token_on_validator(
+            {
+                "validator_id": self.get_validator_id(msg["operator_address"]),
+                "bonded_tokens": msg["tokens"],
+                "timestamp": last_update,
+            }
+        )
 
     def handle_update_validator(self, msg):
+        if "tokens" in msg:
+            self.handle_new_historical_bonded_token_on_validator(
+                {
+                    "validator_id": self.get_validator_id(msg["operator_address"]),
+                    "bonded_tokens": msg["tokens"],
+                    "timestamp": msg["last_update"],
+                }
+            )
+        if "last_update" in msg:
+            del msg["last_update"]
         self.conn.execute(
             validators.update()
             .where(validators.c.operator_address == msg["operator_address"])
@@ -223,3 +261,36 @@ class Handler(object):
         for col in proposals.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(proposals.update().where(condition).values(**msg))
+
+    def handle_new_historical_bonded_token_on_validator(self, msg):
+        self.conn.execute(
+            insert(historical_bonded_token_on_validators)
+            .values(**msg)
+            .on_conflict_do_update(
+                constraint="historical_bonded_token_on_validators_pkey", set_=msg
+            )
+        )
+
+    def handle_set_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        self.conn.execute(reporters.insert(), msg)
+
+    def handle_remove_reporter(self, msg):
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        condition = True
+        for col in reporters.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(reporters.delete().where(condition))
+
+    def handle_set_historical_validator_status(self, msg):
+        self.conn.execute(
+            insert(historical_oracle_statuses)
+            .values(**msg)
+            .on_conflict_do_update(constraint="historical_oracle_statuses_pkey", set_=msg)
+        )

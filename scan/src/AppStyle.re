@@ -171,7 +171,7 @@ body {
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -moz-osx-font-smoothing: grayscale;
-  background: #FCFCFC;
+  background: #FFFFFF;
 }
 
 code {
@@ -185,6 +185,13 @@ code {
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: 984px;
+  margin: 0 auto;
+  padding: 0 12px;
 }
 
 /* scrolling smooth on ios */

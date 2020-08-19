@@ -31,7 +31,7 @@ module Styles = {
       position(`absolute),
       top(`px(30)),
       right(`px(30)),
-      zIndex(9),
+      zIndex(2),
       Media.mobile([
         position(`static),
         display(`flex),

@@ -10,6 +10,7 @@ module Styles = {
   open Css;
   let tooltipContainer =
     style([
+      fontSize(`px(10)),
       cursor(`pointer),
       position(`relative),
       display(`block),
@@ -17,6 +18,9 @@ module Styles = {
         selector("> div:nth-child(1)", [opacity(1.), zIndex(99), pointerEvents(`unset)]),
       ]),
     ]);
+
+  let hiddenTooltipSm =
+    style([Media.mobile([hover([selector("> div:nth-child(1)", [opacity(1.)])])])]);
   let tooltipItem = width_ =>
     style([
       position(`absolute),
@@ -32,6 +36,7 @@ module Styles = {
       transition(~duration=200, "all"),
       before([
         contentRule(`text("")),
+        pointerEvents(`none),
         display(`block),
         position(`absolute),
         border(`px(5), `solid, Colors.transparent),
@@ -204,13 +209,21 @@ module Styles = {
 
 [@react.component]
 let make =
-    (~width=150, ~tooltipText="", ~tooltipPlacement=Bottom, ~tooltipPlacementSm=Bottom, ~children) => {
+    (
+      ~width=150,
+      ~tooltipText="",
+      ~tooltipPlacement=Bottom,
+      ~tooltipPlacementSm=Bottom,
+      ~mobile=true,
+      ~children,
+    ) => {
   <div className=Styles.tooltipContainer>
     <div
       className={Css.merge([
         Styles.tooltipItem(width),
         Styles.placement(tooltipPlacement),
         Styles.placementSm(tooltipPlacementSm),
+        mobile ? "" : Styles.hiddenTooltipSm,
       ])}>
       {tooltipText |> React.string}
     </div>
