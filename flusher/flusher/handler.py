@@ -23,6 +23,7 @@ from .db import (
     proposals,
     deposits,
     votes,
+    historical_bonded_token_on_validators,
     reporters,
     related_data_source_oracle_scripts,
 )
@@ -143,6 +144,8 @@ class Handler(object):
         self.conn.execute(raw_reports.insert(), msg)
 
     def handle_set_validator(self, msg):
+        last_update = msg["last_update"]
+        del msg["last_update"]
         msg["account_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
         if self.get_validator_id(msg["operator_address"]) is None:
@@ -152,8 +155,25 @@ class Handler(object):
             for col in validators.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(validators.update().where(condition).values(**msg))
+        self.handle_new_historical_bonded_token_on_validator(
+            {
+                "validator_id": self.get_validator_id(msg["operator_address"]),
+                "bonded_tokens": msg["tokens"],
+                "timestamp": last_update,
+            }
+        )
 
     def handle_update_validator(self, msg):
+        if "tokens" in msg:
+            self.handle_new_historical_bonded_token_on_validator(
+                {
+                    "validator_id": self.get_validator_id(msg["operator_address"]),
+                    "bonded_tokens": msg["tokens"],
+                    "timestamp": msg["last_update"],
+                }
+            )
+        if "last_update" in msg:
+            del msg["last_update"]
         self.conn.execute(
             validators.update()
             .where(validators.c.operator_address == msg["operator_address"])
@@ -240,6 +260,15 @@ class Handler(object):
         for col in proposals.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(proposals.update().where(condition).values(**msg))
+
+    def handle_new_historical_bonded_token_on_validator(self, msg):
+        self.conn.execute(
+            insert(historical_bonded_token_on_validators)
+            .values(**msg)
+            .on_conflict_do_update(
+                constraint="historical_bonded_token_on_validators_pkey", set_=msg
+            )
+        )
 
     def handle_set_reporter(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["validator"])

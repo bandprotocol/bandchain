@@ -320,6 +320,13 @@ votes = sa.Table(
     Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
 )
 
+historical_bonded_token_on_validators = sa.Table(
+    "historical_bonded_token_on_validators",
+    metadata,
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("bonded_tokens", sa.DECIMAL),
+    Column("timestamp", CustomDateTime, primary_key=True),
+)
 reporters = sa.Table(
     "reporters",
     metadata,
@@ -332,3 +339,4 @@ related_data_source_oracle_scripts = sa.Table(
     Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
     Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
 )
+
