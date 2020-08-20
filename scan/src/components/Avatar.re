@@ -2,6 +2,7 @@ module Styles = {
   open Css;
 
   let avatar = width_ => style([width(`px(width_)), borderRadius(`percent(50.))]);
+  let avatarSm = width_ => style([Media.mobile([width(`px(width_))])]);
 };
 
 let decodeThem = json =>
@@ -14,16 +15,16 @@ let decode = json =>
 
 module Placeholder = {
   [@react.component]
-  let make = (~moniker, ~width) =>
+  let make = (~moniker, ~width, ~widthSm) =>
     <img
       src={j|https://ui-avatars.com/api/?rounded=true&size=128&name=$moniker&color=9714B8&background=F3CEFD|j}
-      className={Styles.avatar(width)}
+      className={Css.merge([Styles.avatar(width), Styles.avatarSm(widthSm)])}
     />;
 };
 
 module Keybase = {
   [@react.component]
-  let make = (~identity, ~moniker, ~width) =>
+  let make = (~identity, ~moniker, ~width, ~widthSm) =>
     {
       let resOpt =
         AxiosHooks.use(
@@ -32,23 +33,31 @@ module Keybase = {
       let%Opt res = resOpt;
 
       switch (res |> decode) {
-      | Some(url) => Some(<img src=url className={Styles.avatar(width)} />)
+      | Some(url) =>
+        Some(
+          <img
+            src=url
+            className={Css.merge([Styles.avatar(width), Styles.avatarSm(widthSm)])}
+          />,
+        )
       | None =>
         // Log for debug
         Js.Console.log3("none", identity, res);
-        Some(<Placeholder moniker width />);
+        Some(<Placeholder moniker width widthSm />);
       | exception err =>
         // Log for debug
         Js.Console.log3(identity, res, err);
-        Some(<Placeholder moniker width />);
+        Some(<Placeholder moniker width widthSm />);
       };
     }
     |> Belt.Option.getWithDefault(_, <LoadingCensorBar width height={width - 4} radius=100 />);
 };
 
 [@react.component]
-let make = (~moniker, ~identity, ~width=25) =>
+let make = (~moniker, ~identity, ~width=25, ~widthSm=width) =>
   React.useMemo1(
-    () => identity != "" ? <Keybase identity moniker width /> : <Placeholder moniker width />,
+    () =>
+      identity != ""
+        ? <Keybase identity moniker width widthSm /> : <Placeholder moniker width widthSm />,
     [|identity|],
   );

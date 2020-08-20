@@ -6,6 +6,7 @@ import (
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
@@ -20,12 +21,7 @@ var (
 	cdc = app.MakeCodec()
 )
 
-func SubmitReport(c *Context, l *Logger, id otypes.RequestID, reps []otypes.RawReport, execVersion string) {
-	key := <-c.keys
-	defer func() {
-		c.keys <- key
-	}()
-
+func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, reps []otypes.RawReport, execVersion string) {
 	msg := otypes.NewMsgReportData(otypes.RequestID(id), reps, c.validator, key.GetAddress())
 	if err := msg.ValidateBasic(); err != nil {
 		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())

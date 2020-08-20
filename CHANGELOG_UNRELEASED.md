@@ -14,8 +14,12 @@
 
 ### Yoda
 
+- (feat) [\#2484](https://github.com/bandprotocol/bandchain/pull/2484) yoda/runtime: Add verification environment variables
+
 ### Emitter & Flusher
 
+- (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
+- (impv) [\#2495](https://github.com/bandprotocol/bandchain/pull/2495) Implemented `historical_oracle_statuses` table
 - (impv) [\#2452](https://github.com/bandprotocol/bandchain/pull/2452) Implemented view table to calculate oracle script response time
 - (impv) [\#2486](https://github.com/bandprotocol/bandchain/pull/2486) Implemented reporters table.
 - (impv) [\#2475](https://github.com/bandprotocol/bandchain/pull/2475) Add related data source and oracle script table.
@@ -23,6 +27,8 @@
 
 ### Scan
 
+- (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
+- (impv) [\#2497](https://github.com/bandprotocol/bandchain/pull/2497) Implemented validator index top part and uptimechart
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page
 - (impv) [\#2492](https://github.com/bandprotocol/bandchain/pull/2492) Implemented OC index Top part, and patched padding bottom to section
 - (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
@@ -42,6 +48,8 @@
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
+
+- (impv) [\#2410](https://github.com/bandprotocol/bandchain/pull/2410) Improve code structure, Add PyObiBool and add more tests
 
 ### Helpers
 
