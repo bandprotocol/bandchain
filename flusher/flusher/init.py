@@ -55,4 +55,53 @@ def init(chain_id, topic, db):
 			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
 			GROUP BY consensus_address, voted;"""
     )
+    engine.execute(
+        """CREATE VIEW request_count_1day AS
+            SELECT date_trunc('day', blocks.timestamp) as date, COUNT(*) as request_count
+            FROM blocks
+            JOIN transactions ON blocks.height = transactions.block_height
+            JOIN requests ON requests.transaction_id = transactions.id
+            GROUP BY date;
+            """
+    )
+    engine.execute(
+        """CREATE VIEW oracle_script_statistic_last_1_day AS
+            SELECT
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
+            FROM oracle_scripts
+            JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 day'::INTERVAL
+            GROUP BY oracle_scripts.id, requests.resolve_status;
+        """
+    )
 
+    engine.execute(
+        """CREATE VIEW oracle_script_statistic_last_1_week AS
+            SELECT
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
+            FROM oracle_scripts
+            JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 week'::INTERVAL
+            GROUP BY oracle_scripts.id, requests.resolve_status;
+        """
+    )
+
+    engine.execute(
+        """CREATE VIEW oracle_script_statistic_last_1_month AS
+            SELECT
+            AVG(resolve_time-request_time) as response_time,
+            COUNT(*) as count,
+            oracle_scripts.id,
+            resolve_status
+            FROM oracle_scripts
+            JOIN requests ON oracle_scripts.id=requests.oracle_script_id
+            WHERE to_timestamp(requests.request_time) >= NOW() - '1 month'::INTERVAL
+            GROUP BY oracle_scripts.id, requests.resolve_status;
+        """
+    )

@@ -49,7 +49,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   switch (msg) {
   | SendMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=fromAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=fromAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 40)}>
           <Text
@@ -69,7 +69,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ReceiveMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=toAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=toAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.green1, 50)}>
           <Text
@@ -89,7 +89,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.yellow1, 110)}>
           <Text
@@ -114,7 +114,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | EditDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.yellow1, 100)}>
           <Text
@@ -143,7 +143,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | CreateOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.pink1, 120)}>
           <Text
@@ -170,7 +170,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | EditOracleScriptMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.pink1, 110)}>
           <Text
@@ -201,7 +201,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.orange1, 60)}>
           <Text
@@ -230,7 +230,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ReportMsg({requestID, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(140)}> <AddressRender address=reporter /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.orange1, 50)}>
           <Text
@@ -248,7 +248,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | AddReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=validator /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 80)}>
           <Text
@@ -265,7 +265,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | RemoveReporterMsg({validator, reporter}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=validator /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=validator /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 100)}>
           <Text
@@ -282,7 +282,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | CreateValidatorMsg({delegatorAddress, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 97)}>
           <Text
@@ -309,7 +309,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | EditValidatorMsg({sender, moniker}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 85)}>
           <Text
@@ -338,7 +338,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | CreateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 85)}>
           <Text
@@ -373,7 +373,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | UpdateClientMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 85)}>
           <Text
@@ -408,7 +408,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | SubmitClientMisbehaviourMsg({address, clientID, chainID}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 85)}>
           <Text
@@ -443,7 +443,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ConnectionOpenInitMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 140)}>
           <Text
@@ -478,7 +478,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ConnectionOpenTryMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 120)}>
           <Text
@@ -513,7 +513,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ConnectionOpenAckMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 130)}>
           <Text
@@ -548,7 +548,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ConnectionOpenConfirmMsg({signer, common: {connectionID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 140)}>
           <Text
@@ -583,7 +583,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelOpenInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 100)}>
           <Text
@@ -618,7 +618,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelOpenTryMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 100)}>
           <Text
@@ -653,7 +653,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelOpenAckMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 100)}>
           <Text
@@ -688,7 +688,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelOpenConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 130)}>
           <Text
@@ -723,7 +723,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelCloseInitMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 85)}>
           <Text
@@ -758,7 +758,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | ChannelCloseConfirmMsg({signer, common: {channelID, chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=signer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=signer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 100)}>
           <Text
@@ -793,7 +793,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | PacketMsg({sender, data, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 50)}>
           <Text
@@ -832,7 +832,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | TimeoutMsg({sender, common: {chainID}}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 85)}>
           <Text
@@ -867,7 +867,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | DelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 60)}>
           <Text
@@ -883,7 +883,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | UndelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 73)}>
           <Text
@@ -899,7 +899,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | RedelegateMsg({amount, delegatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 73)}>
           <Text
@@ -915,7 +915,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | WithdrawRewardMsg({delegatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 100)}>
           <Text
@@ -931,7 +931,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | UnjailMsg({address}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 50)}>
           <Text
@@ -949,7 +949,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=delegatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 130)}>
           <Text
@@ -967,7 +967,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | SubmitProposalMsg({proposer, title}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=proposer /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=proposer /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 100)}>
           <Text
@@ -985,7 +985,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | DepositMsg({depositor, amount, proposalID}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=depositor /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=depositor /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 50)}>
           <Text
@@ -1013,7 +1013,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | VoteMsg({voterAddress, proposalID, option}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=voterAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=voterAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 40)}>
           <Text
@@ -1041,7 +1041,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>
   | WithdrawCommissionMsg({validatorAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=validatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.purple1, 130)}>
           <Text
@@ -1059,7 +1059,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     let firstInput = inputs |> Belt_List.getExn(_, 0);
     let firstSender = firstInput.address;
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=firstSender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=firstSender /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 70)}>
           <Text
@@ -1085,7 +1085,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
     </div>;
   | ActivateMsg({validatorAddress}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=validatorAddress /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=validatorAddress /> </div>
       <div className="labelContainer">
         <div className={Styles.withBg(Colors.blue1, 65)}>
           <Text
@@ -1101,7 +1101,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
   | UnknownMsg => makeBadge("UNKNOWN", 70, Colors.gray1, Colors.gray6)
   | FailMsg({sender, message}) =>
     <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(130)}> <AddressRender address=sender /> </div>
+      <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
       {switch (message) {
        | SendBadge => makeBadge("SEND", 40, Colors.blue1, Colors.blue7)
        | ReceiveBadge => makeBadge("RECEIVE", 50, Colors.green1, Colors.green7)

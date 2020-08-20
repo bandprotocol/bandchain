@@ -2,7 +2,6 @@ type alignment =
   | Start
   | Center
   | End;
-
 type column =
   | One
   | Two
@@ -16,10 +15,8 @@ type column =
   | Ten
   | Eleven
   | Twelve;
-
 module Styles = {
   open Css;
-
   let col = style([margin4(~top=`zero, ~right=Spacing.xs, ~left=Spacing.xs, ~bottom=`zero)]);
   let colSize = sz => style([flex(`num(sz))]);
   let alignSelf =
@@ -31,7 +28,6 @@ module Styles = {
       | Center => style([alignSelf(`center)])
       | End => style([alignSelf(`flexEnd)]),
     );
-
   let justifyContent =
     Belt.Option.mapWithDefault(
       _,
@@ -50,7 +46,6 @@ module Styles = {
       | Center => style([alignItems(`center)])
       | End => style([alignItems(`flexEnd)]),
     );
-
   let colGridBase =
     style([
       flexGrow(0.),
@@ -59,7 +54,6 @@ module Styles = {
       padding2(~v=`zero, ~h=`px(12)),
       width(`percent(100.)),
     ]);
-
   let colGrid =
     fun
     | One => style([maxWidth(`percent(8.333333)), flexBasis(`percent(8.333333))])
@@ -74,7 +68,6 @@ module Styles = {
     | Ten => style([maxWidth(`percent(83.333333)), flexBasis(`percent(83.333333))])
     | Eleven => style([maxWidth(`percent(91.666667)), flexBasis(`percent(91.666667))])
     | Twelve => style([maxWidth(`percent(100.)), flexBasis(`percent(100.))]);
-
   let colSmGrid =
     fun
     | One =>
@@ -97,7 +90,6 @@ module Styles = {
     | Eleven =>
       style([Media.mobile([maxWidth(`percent(91.666667)), flexBasis(`percent(91.666667))])])
     | Twelve => style([Media.mobile([maxWidth(`percent(100.)), flexBasis(`percent(100.))])]);
-
   let colOffset =
     fun
     | One => style([marginLeft(`percent(8.333333))])
@@ -112,8 +104,9 @@ module Styles = {
     | Ten => style([marginLeft(`percent(83.333333))])
     | Eleven => style([marginLeft(`percent(91.666667))])
     | Twelve => style([]);
+  let marginBottom = (~mb, ~mbSm, ()) =>
+    style([marginBottom(`px(mb)), Media.mobile([marginBottom(`px(mbSm))])]);
 };
-
 [@react.component]
 let make = (~size=?, ~alignSelf=?, ~alignItems=?, ~justifyContent=?, ~children) => {
   <div
@@ -127,16 +120,16 @@ let make = (~size=?, ~alignSelf=?, ~alignItems=?, ~justifyContent=?, ~children) 
     children
   </div>;
 };
-
 module Grid = {
   [@react.component]
-  let make = (~col=Twelve, ~colSm=Twelve, ~offset=Twelve, ~children) => {
+  let make = (~col=Twelve, ~colSm=Twelve, ~offset=Twelve, ~mb=0, ~mbSm=0, ~children) => {
     <div
       className={Css.merge([
         Styles.colGridBase,
         Styles.colGrid(col),
         Styles.colOffset(offset),
         Styles.colSmGrid(colSm),
+        Styles.marginBottom(~mb, ~mbSm, ()),
       ])}>
       children
     </div>;

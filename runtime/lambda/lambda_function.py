@@ -82,6 +82,9 @@ def lambda_handler(event, context):
     try:
         env = os.environ.copy()
         env["PYTHONPATH"] = os.getcwd()
+        for key, value in body.get("env", {}).items():
+            env[key] = value
+
         proc = subprocess.Popen(
             [path] + shlex.split(body["calldata"]),
             env=env,
