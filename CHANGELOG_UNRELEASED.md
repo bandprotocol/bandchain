@@ -45,4 +45,6 @@
 
 ### Helpers
 
+- (feat) [\#2498](https://github.com/bandprotocol/bandchain/pull/2498) Implement wallet module
+
 ### MISC
