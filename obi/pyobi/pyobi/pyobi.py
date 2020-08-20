@@ -46,7 +46,7 @@ class PyObiInteger(PyObiSpec):
 
 
 class PyObiBool(PyObiSpec):
-    def __init__(self, spec=""):
+    def __init__(self, spec="bool"):
         pass
 
     @classmethod
@@ -126,7 +126,7 @@ class PyObiStruct(PyObiSpec):
 
 
 class PyObiString(PyObiSpec):
-    def __init__(self, spec=""):
+    def __init__(self, spec="string"):
         pass
 
     @classmethod
@@ -142,7 +142,7 @@ class PyObiString(PyObiSpec):
 
 
 class PyObiBytes(PyObiSpec):
-    def __init__(self, spec=""):
+    def __init__(self, spec="bytes"):
         pass
 
     @classmethod
