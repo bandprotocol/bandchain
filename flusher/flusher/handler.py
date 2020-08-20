@@ -118,7 +118,7 @@ class Handler(object):
         self.handle_update_related_ds_os(
             {
                 "oracle_script_id": self.conn.execute(
-                    select([requests.c.oracle_script_id]).where(accounts.c.id == msg["request_id"])
+                    select([requests.c.oracle_script_id]).where(requests.c.id == msg["request_id"])
                 ).scalar(),
                 "data_source_id": msg["data_source_id"],
             }
