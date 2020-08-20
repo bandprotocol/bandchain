@@ -19,6 +19,7 @@
 ### Scan
 
 - (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
+- (impv) [\#2499](https://github.com/bandprotocol/bandchain/pull/2499) Implemented Total request chart
 
 ### Bridges
 
