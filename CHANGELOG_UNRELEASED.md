@@ -18,6 +18,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2505](https://github.com/bandprotocol/bandchain/pull/2505) fix bug related ds os table.
 - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
 - (impv) [\#2495](https://github.com/bandprotocol/bandchain/pull/2495) Implemented `historical_oracle_statuses` table
 - (impv) [\#2452](https://github.com/bandprotocol/bandchain/pull/2452) Implemented view table to calculate oracle script response time
