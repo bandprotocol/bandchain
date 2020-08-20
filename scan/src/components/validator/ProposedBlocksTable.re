@@ -131,11 +131,10 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
 
 [@react.component]
 let make = (~consensusAddress) => {
-  let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
   let blocksSub =
-    BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page, ());
+    BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page=1, ());
   let blocksCountSub = BlockSub.countByConsensusAddress(~address=consensusAddress, ());
 
   let allSub = Sub.all2(blocksSub, blocksCountSub);
@@ -204,7 +203,6 @@ let make = (~consensusAddress) => {
          </THead.Grid>}
     {switch (allSub) {
      | Data((blocks, blockCount)) =>
-       let pageCount = Page.getPageCount(blockCount, pageSize);
        <>
          {blockCount > 0
             ? blocks
@@ -223,14 +221,7 @@ let make = (~consensusAddress) => {
                   color=Colors.bandBlue
                 />
               </div>}
-         {isMobile
-            ? React.null
-            : <Pagination
-                currentPage=page
-                pageCount
-                onPageChange={newPage => setPage(_ => newPage)}
-              />}
-       </>;
+       </>
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
