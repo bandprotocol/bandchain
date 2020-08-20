@@ -223,9 +223,9 @@ module SingleLast100VotedConfig = [%graphql
     block_height
     consensus_address
     voted
-    block {
-      proposer
-    }
+      block {
+        proposer
+      }
     }
   }
 |}
