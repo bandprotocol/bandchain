@@ -61,6 +61,33 @@ module Styles = {
       border(`px(1), `solid, Colors.yellow6),
       borderRadius(`px(4)),
     ]);
+
+  let connectContainer =
+    style([
+      height(`px(200)),
+      display(`flex),
+      flexDirection(`column),
+      justifyContent(`center),
+      alignItems(`center),
+      backgroundColor(Colors.profileBG),
+    ]);
+
+  let infoContainer =
+    style([
+      backgroundColor(Colors.white),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      padding(`px(24)),
+      Media.mobile([padding(`px(16))]),
+    ]);
+  let infoHeader =
+    style([
+      borderBottom(`px(1), `solid, Colors.gray9),
+      paddingBottom(`px(16)),
+      marginBottom(`px(16)),
+    ]);
+  let loadingBox = style([width(`percent(100.))]);
+  let rewardContainer =
+    style([backgroundColor(Colors.profileBG), padding2(~v=`px(16), ~h=`px(24))]);
 };
 
 let stakingBalanceDetail = (~title, ~amount, ~usdPrice, ~tooltipItem, ~isCountup=false, ()) => {
@@ -136,7 +163,122 @@ let stakingBalanceDetail = (~title, ~amount, ~usdPrice, ~tooltipItem, ~isCountup
   </Row>;
 };
 
+module ButtonSection = {
+  [@react.component]
+  let make = (~validatorAddress) => {
+    let (_, dispatchModal) = React.useContext(ModalContext.context);
+    let validatorInfoSub = ValidatorSub.get(validatorAddress);
+
+    let delegate = () =>
+      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
+    let undelegate = () =>
+      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+    let redelegate = () =>
+      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Redelegate(validatorAddress))));
+
+    switch (validatorInfoSub) {
+    | Data(validatorInfo) =>
+      <div className={CssHelper.flexBox()}>
+        <button
+          className={CssHelper.btn(~px=20, ~py=5, ())}
+          onClick={_ => {
+            validatorInfo.commission == 100.
+              ? Window.alert("Delegation to foundation validator nodes is not advised.")
+              : delegate()
+          }}>
+          <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
+        </button>
+        <HSpacing size=Spacing.md />
+        <button
+          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
+          onClick={_ => {undelegate()}}>
+          <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
+        </button>
+        <HSpacing size=Spacing.md />
+        <button
+          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
+          onClick={_ => {redelegate()}}>
+          <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
+        </button>
+      </div>
+    | _ => React.null
+    };
+  };
+};
+
 module StakingInfo = {
+  [@react.component]
+  let make = (~delegatorAddress, ~validatorAddress) => {
+    let currentTime =
+      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+    let (_, dispatchModal) = React.useContext(ModalContext.context);
+
+    let infoSub = React.useContext(GlobalContext.context);
+    let validatorInfoSub = ValidatorSub.get(validatorAddress);
+    let balanceAtStakeSub = DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
+    let unbondingSub =
+      UnbondingSub.getUnbondingBalanceByValidator(
+        delegatorAddress,
+        validatorAddress,
+        currentTime,
+      );
+
+    let withdrawReward = () =>
+      dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
+
+    <>
+      <Row.Grid marginBottom=24>
+        <Col.Grid>
+          <Text
+            value="Note: You have non-zero pending reward on this validator. Any additional staking actions will automatically withdraw that reward your balance."
+            color=Colors.gray6
+            weight=Text.Thin
+          />
+        </Col.Grid>
+      </Row.Grid>
+      <Row.Grid marginBottom=24>
+        <Col.Grid col=Col.Six>
+          <div>
+            <Heading value="Balance at stake" size=Heading.H5 />
+            <VSpacing size={`px(8)} />
+            <Text value="0.500000 BAND" size=Text.Lg color=Colors.gray7 weight=Text.Thin />
+          </div>
+        </Col.Grid>
+        <Col.Grid col=Col.Six>
+          <div>
+            <div className={CssHelper.flexBox()}>
+              <Heading value="Unbonding Amount" size=Heading.H5 />
+              <HSpacing size=Spacing.sm />
+              <Link
+                className={CssHelper.flexBox()}
+                route={Route.AccountIndexPage(delegatorAddress, Route.AccountUnbonding)}>
+                <Text value="View Entries" color=Colors.bandBlue weight=Text.Medium />
+              </Link>
+            </div>
+            <VSpacing size={`px(8)} />
+            <Text value="0.500000 BAND" size=Text.Lg color=Colors.gray7 weight=Text.Thin />
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
+        <Col.Grid>
+          <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+            <div>
+              <Heading value="Reward" size=Heading.H5 />
+              <VSpacing size={`px(8)} />
+              <Text value="0.500000 BAND" size=Text.Lg color=Colors.gray7 weight=Text.Thin />
+            </div>
+            <button className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => withdrawReward()}>
+              <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
+            </button>
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+    </>;
+  };
+};
+
+module StakingInfo23 = {
   [@react.component]
   let make = (~delegatorAddress, ~validatorAddress) =>
     {
@@ -213,7 +355,6 @@ module StakingInfo = {
           </Col>
           <HSpacing size=Spacing.md />
           <button
-            className={Styles.button(100)}
             onClick={_ => {
               validatorInfo.commission == 100.
                 ? Window.alert("Delegation to foundation validator nodes is not advised.")
@@ -223,23 +364,16 @@ module StakingInfo = {
           </button>
           <HSpacing size=Spacing.md />
           <button
-            className={Styles.button(100)}
             onClick={_ => {undelegate()}}
             disabled={balanceAtStakeAmount.amount == 0. || isReachUnbondingLimit}>
             <Text value="Undelegate" />
           </button>
           <HSpacing size=Spacing.md />
-          <button
-            className={Styles.button(100)}
-            onClick={_ => {redelegate()}}
-            disabled={balanceAtStakeAmount.amount == 0.}>
+          <button onClick={_ => {redelegate()}} disabled={balanceAtStakeAmount.amount == 0.}>
             <Text value="Redelegate" />
           </button>
           <HSpacing size=Spacing.md />
-          <button
-            className={Styles.button(150)}
-            onClick={_ => {withdrawReward()}}
-            disabled={rewardAmount.amount < 1.}>
+          <button onClick={_ => {withdrawReward()}} disabled={rewardAmount.amount < 1.}>
             <Text value="Withdraw Reward" />
           </button>
         </Row>
@@ -336,25 +470,41 @@ let make = (~validatorAddress) => {
 
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
 
-  <div className=Styles.topPartWrapper>
-    <Text value="DELEGATION INFO" size=Text.Lg weight=Text.Semibold />
-    <VSpacing size=Spacing.md />
+  <div className=Styles.infoContainer>
+    <div
+      className={Css.merge([CssHelper.flexBox(~justify=`spaceBetween, ()), Styles.infoHeader])}>
+      <div className={CssHelper.flexBox()}>
+        <Heading value="Your Delegation Info" size=Heading.H4 />
+        <HSpacing size=Spacing.xs />
+        //TODO: remove mock message later
+        <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+          <Icon name="fal fa-info-circle" size=10 />
+        </CTooltip>
+      </div>
+      {switch (accountOpt) {
+       | Some(_) => <ButtonSection validatorAddress />
+       | None => React.null
+       }}
+    </div>
     {switch (accountOpt) {
      | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
      | None =>
        switch (trackingSub) {
        | Data({chainID}) =>
-         <div>
-           <Row>
-             <Col> <Text value="Please connect to see delegation info." /> </Col>
-             <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
-           </Row>
+         <div className=Styles.connectContainer>
+           <Icon name="fal fa-link" size=32 color=Colors.bandBlue />
+           <VSpacing size={`px(16)} />
+           <Text value="Please connect to make request" size=Text.Lg nowrap=true block=true />
+           <VSpacing size={`px(16)} />
+           <button className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => connect(chainID)}>
+             <Text value="Connect" weight=Text.Medium nowrap=true block=true />
+           </button>
          </div>
        | Error(err) =>
          // log for err details
          Js.Console.log(err);
          <Text value="chain id not found" />;
-       | _ => <LoadingCensorBar width=300 height=18 />
+       | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
        }
      }}
   </div>;
