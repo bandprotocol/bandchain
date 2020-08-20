@@ -9,7 +9,7 @@ yoda config chain-id bandchain
 yoda config validator $(bandcli keys show $1 -a --bech val --keyring-backend test)
 
 # setup execution endpoint
-yoda config executor "rest:https://3hdt5gnbr6.execute-api.ap-southeast-1.amazonaws.com/live/py-execution?timeout=10s"
+yoda config executor "rest:https://iv3lgtv11a.execute-api.ap-southeast-1.amazonaws.com/live/master?timeout=10s"
 
 # setup broadcast-timeout to yoda config
 yoda config broadcast-timeout "30s"
