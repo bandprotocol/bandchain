@@ -7,30 +7,48 @@ module Styles = {
       height(`percent(100.)),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      padding(`px(24)),
+      padding(`px(13)),
       Media.mobile([padding(`px(10))]),
     ]);
 
   let innerCard =
-    style([width(`percent(100.)), maxWidth(`px(420)), margin2(~v=`zero, ~h=`auto)]);
+    style([width(`percent(100.)), height(`px(200)), margin2(~v=`zero, ~h=`auto)]);
 
   let infoHeader =
-    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
+    style([
+      borderBottom(`px(1), `solid, Colors.gray9),
+      padding2(~h=`px(11), ~v=`zero),
+      paddingBottom(`px(16)),
+    ]);
+
+  let emptyContainer = show =>
+    style([
+      height(`percent(100.)),
+      flexDirection(`column),
+      justifyContent(`center),
+      alignItems(`center),
+      backgroundColor(white),
+      display(show ? `flex : `none),
+    ]);
+
+  let loadingBox = style([width(`percent(100.))]);
+
+  let chart = show => style([important(display(show ? `block : `none))]);
 };
 
-let renderGraph: unit => unit = [%bs.raw
+let renderGraph: array(HistoricalTotalRequestSub.t) => unit = [%bs.raw
   {|
-function() {
+function(data) {
   var Chart = require('chart.js');
   var ctx = document.getElementById('historicalRequest').getContext('2d');
 
-  // mock data
-  let data = [];
-  let x = 0;
-  for (let i = 100; i > 0; i--) {
-    x += Math.floor(Math.random() * 10000);
-    data.push({t: Date.now() - (i * 86400000), y: x});
-  }
+  // change seconds to milliseconds
+  data = data.map(({y, t}) => {
+    return {
+      y: y,
+      t: t * 1000,
+    }
+  });
 
   var chart = new Chart(ctx, {
       // The type of chart we want to create
@@ -50,6 +68,7 @@ function() {
 
       // Configuration options go here
       options: {
+        maintainAspectRatio: false,
         legend: {
           display: false,
         },
@@ -67,7 +86,7 @@ function() {
                 fontColor: '#888888',
                 fontSize: 10,
                 autoSkip: true,
-                maxTicksLimit: 15,
+                maxTicksLimit: 5,
               }
             },
           ],
@@ -77,7 +96,7 @@ function() {
                 fontFamily: 'Inter',
                 fontColor: '#888888',
                 fontSize: 10,
-                stepSize: 100000,
+                stepSize: 30000,
                 callback: function(value) {
                   var ranges = [
                       { divider: 1e6, suffix: 'M' },
@@ -136,13 +155,61 @@ function() {
 
 [@react.component]
 let make = () => {
-  React.useEffect0(() => {
-    renderGraph();
-    None;
-  });
+  let dataSub = HistoricalTotalRequestSub.get();
+  let (lastCount, setLastCount) = React.useState(_ => 0);
+
+  React.useEffect1(
+    () => {
+      switch (dataSub) {
+      | Data(data) =>
+        if (data->Belt.Array.size != 0) {
+          // check the incoming data is a new data.
+          let last = data->Belt.List.fromArray->Belt.List.tailExn->Belt.List.getExn(0);
+          if (last.y != lastCount) {
+            setLastCount(_ => last.y);
+            renderGraph(data);
+          };
+        }
+      | _ => ()
+      };
+      None;
+    },
+    [|dataSub|],
+  );
 
   <div className=Styles.card>
-    <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
-    <div className=Styles.innerCard> <canvas id="historicalRequest" /> </div>
+    <div
+      className={Css.merge([
+        CssHelper.flexBox(),
+        Styles.infoHeader,
+        CssHelper.mb(~size=40, ()),
+        CssHelper.mbSm(~size=16, ()),
+      ])}>
+      <Heading value="Total Requests" size=Heading.H4 />
+      <HSpacing size=Spacing.xs />
+      //TODO: remove mock message later
+      <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+        <Icon name="fal fa-info-circle" size=10 />
+      </CTooltip>
+    </div>
+    {switch (dataSub) {
+     | Data(data) =>
+       let show = data->Belt.Array.size > 5;
+       <div className=Styles.innerCard>
+         <canvas id="historicalRequest" className={Styles.chart(show)} />
+         <div className={Styles.emptyContainer(!show)}>
+           <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
+           <VSpacing size={`px(16)} />
+           <Heading
+             size=Heading.H4
+             value="Insufficient data to visualize"
+             align=Heading.Center
+             weight=Heading.Regular
+             color=Colors.bandBlue
+           />
+         </div>
+       </div>;
+     | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
+     }}
   </div>;
 };
