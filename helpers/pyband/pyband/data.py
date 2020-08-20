@@ -11,70 +11,70 @@ DACITE_CONFIG = Config(type_hooks={int: int, bytes: base64.b64decode})
 @dataclass
 class DataSource(object):
     owner: str
-    name: str
-    description: str
-    filename: str
+    name: str = ""
+    description: str = ""
+    filename: str = ""
 
 
 @dataclass
 class OracleScript(object):
     owner: str
-    name: str
-    description: str
-    filename: str
-    schema: str
-    source_code_url: str
+    name: str = ""
+    description: str = ""
+    filename: str = ""
+    schema: str = ""
+    source_code_url: str = ""
 
 
 @dataclass
 class RawRequest(object):
-    external_id: int
     data_source_id: int
-    calldata: bytes
+    external_id: int = 0
+    calldata: bytes = b""
 
 
 @dataclass
 class Request(object):
     oracle_script_id: int
-    calldata: bytes
     requested_validators: List[str]
     min_count: int
     request_height: int
-    client_id: str
     raw_requests: List[RawRequest]
+    client_id: str = ""
+    calldata: bytes = b""
 
 
 @dataclass
 class RawReport(object):
-    external_id: int
-    data: bytes
+    external_id: int = 0
+    data: bytes = b""
 
 
 @dataclass
 class Report(object):
     validator: str
-    in_before_resolve: bool
     raw_reports: List[RawReport]
+    in_before_resolve: bool = False
 
 
 @dataclass
 class RequestPacketData:
-    client_id: str
     oracle_script_id: int
-    calldata: bytes
     ask_count: int
     min_count: int
+    client_id: str = ""
+    calldata: bytes = b""
 
 
 @dataclass
 class ResponsePacketData(object):
-    client_id: str
     request_id: int
-    ans_count: int
     request_time: int
     resolve_time: int
     resolve_status: int
-    result: bytes
+    ans_count: int = 0
+    client_id: str = ""
+    result: bytes = b""
 
 
 @dataclass
