@@ -30,7 +30,9 @@ module LoadingWithHeader = {
     <div className=Styles.tableWrapper>
       <THead.Grid>
         <Row.Grid alignItems=Row.Center>
-          <Col.Grid col=Col.Two> <div /> </Col.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
           <Col.Grid col=Col.Seven>
             <Text block=true value="Block Hash" weight=Text.Semibold color=Colors.gray7 />
           </Col.Grid>
@@ -135,48 +137,15 @@ let make = (~consensusAddress) => {
 
   let blocksSub =
     BlockSub.getListByConsensusAddress(~address=consensusAddress, ~pageSize, ~page=1, ());
-  let blocksCountSub = BlockSub.countByConsensusAddress(~address=consensusAddress, ());
-
-  let allSub = Sub.all2(blocksSub, blocksCountSub);
 
   let isMobile = Media.isMobile();
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
-             {switch (allSub) {
-              | Data((_, blocksCount)) =>
-                <div className={CssHelper.flexBox()}>
-                  <Text
-                    block=true
-                    value={blocksCount |> string_of_int}
-                    weight=Text.Semibold
-                    color=Colors.gray7
-                  />
-                  <HSpacing size=Spacing.xs />
-                  <Text block=true value="Blocks" weight=Text.Semibold color=Colors.gray7 />
-                </div>
-              | _ => <LoadingCensorBar width=100 height=15 />
-              }}
-           </Col.Grid>
-         </Row.Grid>
+       ? React.null
        : <THead.Grid>
            <Row.Grid alignItems=Row.Center>
              <Col.Grid col=Col.Two>
-               {switch (allSub) {
-                | Data((_, blocksCount)) =>
-                  <div className={CssHelper.flexBox()}>
-                    <Text
-                      block=true
-                      value={blocksCount |> string_of_int}
-                      weight=Text.Semibold
-                      color=Colors.gray7
-                    />
-                    <HSpacing size=Spacing.xs />
-                    <Text block=true value="Blocks" weight=Text.Semibold color=Colors.gray7 />
-                  </div>
-                | _ => <LoadingCensorBar width=100 height=15 />
-                }}
+               <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
              <Col.Grid col=Col.Seven>
                <Text block=true value="Block Hash" weight=Text.Semibold color=Colors.gray7 />
@@ -201,26 +170,14 @@ let make = (~consensusAddress) => {
              </Col.Grid>
            </Row.Grid>
          </THead.Grid>}
-    {switch (allSub) {
-     | Data((blocks, blockCount)) =>
+    {switch (blocksSub) {
+     | Data(blocks) =>
        <>
-         {blockCount > 0
-            ? blocks
-              ->Belt_Array.mapWithIndex((i, e) =>
-                  isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-                )
-              ->React.array
-            : <div className=Styles.emptyContainer>
-                <img src=Images.noAccount className=Styles.noDataImage />
-                <Heading
-                  size=Heading.H4
-                  value="No Delegator"
-                  align=Heading.Center
-                  weight=Heading.Regular
-                  color=Colors.bandBlue
-                />
-              </div>}
+         {blocks
+          ->Belt_Array.mapWithIndex((i, e) =>
+              isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+            )
+          ->React.array}
        </>
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
