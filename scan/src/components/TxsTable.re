@@ -72,7 +72,6 @@ let renderBody =
                value={gasFee->Coin.getBandAmountFromCoins->Format.fPretty}
                weight=Text.Medium
              />
-
            | _ => <LoadingCensorBar width=65 height=15 isRight=true />
            }}
           <HSpacing size={`px(20)} />

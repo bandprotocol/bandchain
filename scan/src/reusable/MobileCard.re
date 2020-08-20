@@ -102,7 +102,7 @@ module InnerPanel = {
 };
 
 [@react.component]
-let make = (~values, ~idx, ~status=?, ~requestStatus=?, ~panels=[]) => {
+let make = (~values, ~idx, ~status=?, ~requestStatus=?, ~styles="", ~panels=[]) => {
   let (show, setShow) = React.useState(_ => false);
   <div className=Styles.cardContainer>
     {switch (status) {

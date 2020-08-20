@@ -103,7 +103,7 @@ let make = (~url: string) =>
         </Row.Grid>
         <div className=Styles.tableLowerContainer>
           <div className=Styles.copyContainer>
-            <CopyButton.Code data=code title="Copy Code" />
+            <CopyButton.Modern data=code title="Copy Code" />
           </div>
           {code |> renderCode}
         </div>

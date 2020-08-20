@@ -53,7 +53,7 @@ let make = (~executable) => {
   React.useMemo1(
     () =>
       <div className=Styles.tableLowerContainer>
-        <div className=Styles.copyContainer> <CopyButton.Code data=code title="Copy Code" /> </div>
+        <div className=Styles.copyContainer> <CopyButton.Modern data=code title="Copy Code" /> </div>
         {code |> renderCode}
       </div>,
     [||],
