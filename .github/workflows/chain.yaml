@@ -14,7 +14,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v2-beta
         with:
-          go-version: "^1.14.4"
+          go-version: "1.14.7"
 
       - name: Install Wabt (wat2wasm)
         run: |
