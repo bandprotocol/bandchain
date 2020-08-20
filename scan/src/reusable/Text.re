@@ -70,7 +70,11 @@ module Styles = {
   let fontSize =
     mapWithDefault(
       _,
-      style([fontSize(`px(12)), lineHeight(`px(16))]),
+      style([
+        fontSize(`px(12)),
+        lineHeight(`px(16)),
+        Media.smallMobile([fontSize(`px(10))]),
+      ]),
       fun
       | Xs =>
         style([
