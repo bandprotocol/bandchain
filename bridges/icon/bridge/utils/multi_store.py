@@ -26,24 +26,20 @@ def get_app_hash(multi_store: bytes) -> bytes:
     oracle_iavl_state_hash = multi_store[64:96]  # [6]
     params_stores_merkle_hash = multi_store[96:128]  # [7]
     slashing_to_upgrade_stores_merkle_hash = multi_store[128:160]  # [I10]
-    return (
-        utils.merkle_inner_hash(  # [AppHash]
-            utils.merkle_inner_hash(  # [I9]
-                acc_to_gov_stores_merkle_hash,  # [I5]
-                utils.merkle_inner_hash(  # [I6]
-                    main_and_mint_stores_merkle_hash,  # [I3]
-                    utils.merkle_inner_hash(
-                        utils.merkle_leaf_hash(  # [I4]
-                            # [6]
-                            # oracle prefix (uint8(6) + "oracle" + uint8(32))
-                            bytes.fromhex("066f7261636c6520") +
-                            sha256.digest(sha256.digest(
-                                oracle_iavl_state_hash))
-                        ),
-                        params_stores_merkle_hash  # [7]
-                    )
-                )
+    return utils.merkle_inner_hash(  # [AppHash]
+        utils.merkle_inner_hash(  # [I9]
+            acc_to_gov_stores_merkle_hash,  # [I5]
+            utils.merkle_inner_hash(  # [I6]
+                main_and_mint_stores_merkle_hash,  # [I3]
+                utils.merkle_inner_hash(
+                    utils.merkle_leaf_hash(  # [I4]
+                        # oracle prefix (uint8(6) + "oracle" + uint8(32))
+                        bytes.fromhex("066f7261636c6520")
+                        + sha256.digest(sha256.digest(oracle_iavl_state_hash))
+                    ),  # [6]
+                    params_stores_merkle_hash,  # [7]
+                ),
             ),
-            slashing_to_upgrade_stores_merkle_hash  # [I10]
-        )
+        ),
+        slashing_to_upgrade_stores_merkle_hash,  # [I10]
     )

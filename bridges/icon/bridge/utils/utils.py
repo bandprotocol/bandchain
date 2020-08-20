@@ -11,19 +11,12 @@ def merkle_inner_hash(left: bytes, right: bytes) -> bytes:
 
 
 def encode_varint_unsigned(value: int) -> bytes:
-    temp_value = value
-    size = 0
-    while temp_value > 0:
-        size += 1
-        temp_value >>= 7
+    result = b""
+    while value > 0:
+        result += bytes([128 | (value & 127)])
+        value >>= 7
 
-    result = b''
-    temp_value = value
-    for i in range(size):
-        result += bytes([128 | (temp_value & 127)])
-        temp_value >>= 7
-
-    return result[:size - 1] + bytes([result[size - 1] & 127])
+    return result[: len(result) - 1] + bytes([result[len(result) - 1] & 127])
 
 
 def encode_varint_signed(value: int) -> bytes:

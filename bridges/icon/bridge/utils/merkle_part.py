@@ -28,7 +28,7 @@ from . import utils
 # [1A], [3], [2B], [1E], [B], and [2D] are needed in order to compute [BlockHeader].
 
 
-def get_block_header(data: bytes, app_hash: bytes, block_height: int):
+def get_block_header(data: bytes, app_hash: bytes, block_height: int) -> bytes:
     return utils.merkle_inner_hash(  # [BlockHeader]
         utils.merkle_inner_hash(  # [3A]
             utils.merkle_inner_hash(  # [2A]
@@ -44,7 +44,7 @@ def get_block_header(data: bytes, app_hash: bytes, block_height: int):
             utils.merkle_inner_hash(  # [2C]
                 data[96:128],  # [1E]
                 utils.merkle_inner_hash(  # [1F]
-                    utils.merkle_leaf_hash(bytes([32]) + app_hash), data[128:160]  # [A]  # [B]
+                    utils.merkle_leaf_hash(bytes([32]) + app_hash), data[128:160]  # [A], [B]
                 ),
             ),
             data[160:192],  # [2D]
