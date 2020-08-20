@@ -1,25 +1,20 @@
 module Styles = {
   open Css;
 
-  let resultWrapper = (w, h, paddingV, overflowChioce) =>
+  let resultContainer =
     style([
-      width(w),
-      height(h),
-      display(`flex),
-      flexDirection(`column),
-      padding2(~v=paddingV, ~h=`zero),
-      justifyContent(`center),
       backgroundColor(Colors.white),
-      borderRadius(`px(4)),
-      overflow(overflowChioce),
+      margin2(~v=`px(20), ~h=`zero),
+      selector("> div + div", [borderTop(`px(1), `solid, Colors.gray9)]),
     ]);
-
-  let hFlex = h =>
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(h)]);
-
-  let vFlex = (w, h) => style([display(`flex), flexDirection(`column), width(w), height(h)]);
-
-  let pr = size => style([paddingRight(`px(size))]);
+  let resultBox = style([padding(`px(20))]);
+  let labelWrapper = style([flexShrink(0.), flexGrow(0.), flexBasis(`px(220))]);
+  let resultWrapper =
+    style([
+      flexShrink(0.),
+      flexGrow(0.),
+      flexBasis(`calc((`sub, `percent(100.), `px(220)))),
+    ]);
 };
 
 [@react.component]
@@ -30,102 +25,73 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
     let requestOpt = requestsByTxHash->Belt_Array.get(0);
 
     <>
-      <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `auto, `px(30), `auto)}>
-        <div className={Styles.hFlex(`auto)}>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-            <Text value="EXIT STATUS" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
+      <div className=Styles.resultContainer>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+          <div className=Styles.labelWrapper>
+            <Text value="Exit Status" color=Colors.gray6 weight=Text.Regular />
           </div>
           <Text value={txResponse.success ? "0" : "1"} />
         </div>
         {switch (requestOpt) {
          | Some({id}) =>
-           <>
-             <VSpacing size=Spacing.lg />
-             <div className={Styles.hFlex(`auto)}>
-               <HSpacing size=Spacing.lg />
-               <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-                 <Text value="REQUEST ID" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
-               </div>
-               <TypeID.Request id />
+           <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+             <div className=Styles.labelWrapper>
+               <Text value="Request ID" color=Colors.gray6 weight=Text.Regular />
              </div>
-           </>
+             <TypeID.Request id />
+           </div>
+
          | None => React.null
          }}
-        <VSpacing size=Spacing.lg />
-        <div className={Styles.hFlex(`auto)}>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
-            <Text value="TX HASH" size=Text.Sm color=Colors.gray6 weight=Text.Semibold />
+        <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+          <div className=Styles.labelWrapper>
+            <Text value="Tx Hash" color=Colors.gray6 weight=Text.Regular />
           </div>
           <TxLink txHash={txResponse.txHash} width=500 />
         </div>
-        <VSpacing size=Spacing.lg />
         {switch (requestOpt) {
          | Some({result: Some(result), id}) =>
            let outputKVsOpt = Obi.decode(schema, "output", result);
            <>
-             <div className={Styles.hFlex(`auto)}>
-               <HSpacing size=Spacing.lg />
-               <div
-                 className={Styles.vFlex(
-                   `px(220),
-                   `px(
-                     20
-                     * (
-                       switch (outputKVsOpt) {
-                       | Some(outputKVs) => outputKVs |> Belt_Array.size
-                       | None => 1
-                       }
-                     ),
-                   ),
-                 )}>
+             <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+               <div className=Styles.labelWrapper>
                  <Text
-                   value="OUTPUT"
-                   size=Text.Sm
+                   value="Output"
                    color=Colors.gray6
-                   weight=Text.Semibold
+                   weight=Text.Regular
                    height={Text.Px(20)}
                  />
                </div>
-               <div className={Styles.vFlex(`auto, `auto)}>
+               <div className=Styles.resultWrapper>
                  {switch (outputKVsOpt) {
                   | Some(outputKVs) =>
-                    outputKVs->Belt_Array.map(({fieldName, fieldValue}) =>
-                      <div key=fieldName className={Styles.hFlex(`px(20))}>
-                        <div className={Styles.vFlex(`px(220), `auto)}>
-                          <Text value=fieldName color=Colors.gray8 />
-                        </div>
-                        <div className={Styles.vFlex(`px(440), `auto)}>
-                          <Text value=fieldValue code=true color=Colors.gray8 weight=Text.Bold />
-                        </div>
-                      </div>
-                    )
-                    |> React.array
+                    <KVTable
+                      tableWidth=500
+                      theme=KVTable.RequestMiniTable
+                      rows={
+                        outputKVs
+                        ->Belt_Array.map(({fieldName, fieldValue}) =>
+                            [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
+                          )
+                        ->Belt_List.fromArray
+                      }
+                    />
                   | None => React.null
                   }}
                </div>
              </div>
-             <VSpacing size=Spacing.lg />
              <OracleScriptExecuteProof id requestOpt />
            </>;
          | Some(request) =>
-           <div className={Styles.hFlex(`auto)}>
-             <HSpacing size=Spacing.lg />
-             <div className={Styles.resultWrapper(`px(220), `px(12), `zero, `auto)}>
+           <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+             <div className=Styles.labelWrapper>
                <Text
-                 value="WAITING FOR OUTPUT AND `PROOF`"
-                 size=Text.Sm
+                 value="Waiting for output and `proof`"
                  color=Colors.gray6
-                 weight=Text.Semibold
+                 weight=Text.Regular
                />
              </div>
-             <div
-               className={Css.merge([
-                 Styles.resultWrapper(`px(660), `px(40), `zero, `auto),
-                 Styles.pr(40),
-               ])}>
+             <div className=Styles.resultWrapper>
                <ProgressBar
                  reportedValidators={request.reportsCount}
                  minimumValidators={request.minCount}
