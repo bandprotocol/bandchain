@@ -73,6 +73,16 @@ class CustomBase64(sa.types.TypeDecorator):
         return b64.decodestring(value.encode())
 
 
+class CustomDate(sa.types.TypeDecorator):
+    """Custom DateTime type that accepts Python nanosecond epoch int."""
+
+    impl = sa.DateTime
+
+    def process_bind_param(self, value, dialect):
+        dt = datetime.fromtimestamp(value / 1e9)
+        return datetime(dt.year, dt.month, dt.day)
+
+
 def Column(*args, **kwargs):
     """Forward into SQLAlchemy's Column construct, but with 'nullable' default to False."""
     if "nullable" not in kwargs:
@@ -327,6 +337,7 @@ historical_bonded_token_on_validators = sa.Table(
     Column("bonded_tokens", sa.DECIMAL),
     Column("timestamp", CustomDateTime, primary_key=True),
 )
+
 reporters = sa.Table(
     "reporters",
     metadata,
@@ -356,3 +367,9 @@ oracle_script_requests = sa.Table(
     Column("count", sa.Integer),
 )
 
+request_count_per_days = sa.Table(
+    "request_count_per_days",
+    metadata,
+    Column("timestamp", CustomDate, primary_key=True),
+    Column("count", sa.Integer),
+)

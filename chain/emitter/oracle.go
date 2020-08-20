@@ -76,6 +76,7 @@ func (app *App) handleMsgRequestData(
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
 		"resolve_status":   types.ResolveStatus_Open,
+		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
 	})
 	for _, raw := range req.RawRequests {
 		app.Write("NEW_RAW_REQUEST", JsDict{
