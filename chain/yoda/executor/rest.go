@@ -23,7 +23,7 @@ type externalExecutionResponse struct {
 	Version    string `json:"version"`
 }
 
-func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
+func (e *RestExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
 	executable := base64.StdEncoding.EncodeToString(code)
 	resp, err := grequests.Post(
 		e.url,
@@ -35,6 +35,7 @@ func (e *RestExec) Exec(code []byte, arg string) (ExecResult, error) {
 				"executable": executable,
 				"calldata":   arg,
 				"timeout":    e.timeout.Milliseconds(),
+				"env":        env,
 			},
 		},
 	)

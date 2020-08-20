@@ -23,7 +23,8 @@ func NewDockerExec(image string, timeout time.Duration) *DockerExec {
 	return &DockerExec{image: image, timeout: timeout}
 }
 
-func (e *DockerExec) Exec(code []byte, arg string) (ExecResult, error) {
+func (e *DockerExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
+	// TODO: Handle env if we are to revive Docker
 	dir, err := ioutil.TempDir("/tmp", "executor")
 	if err != nil {
 		return ExecResult{}, err

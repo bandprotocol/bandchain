@@ -14,6 +14,8 @@
 
 ### Yoda
 
+- (feat) [\#2484](https://github.com/bandprotocol/bandchain/pull/2484) yoda/runtime: Add verification environment variables
+
 ### Emitter & Flusher
 
 - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
@@ -25,6 +27,8 @@
 
 ### Scan
 
+- (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
+- (impv) [\#2497](https://github.com/bandprotocol/bandchain/pull/2497) Implemented validator index top part and uptimechart
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page
 - (impv) [\#2492](https://github.com/bandprotocol/bandchain/pull/2492) Implemented OC index Top part, and patched padding bottom to section
 - (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
@@ -46,6 +50,10 @@
 
 ### Oracle Binary Encoding (OBI)
 
+- (impv) [\#2410](https://github.com/bandprotocol/bandchain/pull/2410) Improve code structure, Add PyObiBool and add more tests
+
 ### Helpers
+
+- (feat) [\#2498](https://github.com/bandprotocol/bandchain/pull/2498) Implement wallet module
 
 ### MISC
