@@ -18,6 +18,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2505](https://github.com/bandprotocol/bandchain/pull/2505) fix bug related ds os table.
 - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
 - (impv) [\#2495](https://github.com/bandprotocol/bandchain/pull/2495) Implemented `historical_oracle_statuses` table
 - (impv) [\#2452](https://github.com/bandprotocol/bandchain/pull/2452) Implemented view table to calculate oracle script response time
@@ -34,6 +35,7 @@
 - (impv) [\#2492](https://github.com/bandprotocol/bandchain/pull/2492) Implemented OC index Top part, and patched padding bottom to section
 - (impv) [\#2491](https://github.com/bandprotocol/bandchain/pull/2491) Patched latest Txs and Blocks.
 - (impv) [\#2487](https://github.com/bandprotocol/bandchain/pull/2487) Updated OC requests tab on OC index page
+- (impv) [\#2485](https://github.com/bandprotocol/bandchain/pull/2485) Implemented make a request tab on OC index
 - (feat) [\#2482](https://github.com/bandprotocol/bandchain/pull/2482) Implemented latest requests.
 - (impv) [\#2481](https://github.com/bandprotocol/bandchain/pull/2481) Patched `ChainInfoHighlight` for revamp version.
 - (impv) [\#2478](https://github.com/bandprotocol/bandchain/pull/2478) Implemented New Header (aka TopBar), Navbar and Profile.
