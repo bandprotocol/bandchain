@@ -4,7 +4,7 @@ from .pyobi import *
 TAG = "CACHE_CONSUMER_MOCK"
 
 
-class IBRIDGECACHE(InterfaceScore):
+class IBridgeCache(InterfaceScore):
     @interface
     def get_latest_response(self, encoded_request: bytes) -> dict:
         pass
@@ -65,7 +65,7 @@ class CACHE_CONSUMER_MOCK(IconScoreBase):
 
     @external
     def consume_cache(self) -> None:
-        bridge = self.create_interface_score(self.bridge_address.get(), IBRIDGECACHE)
+        bridge = self.create_interface_score(self.bridge_address.get(), IBridgeCache)
         res = bridge.get_latest_response(self.req_key_template.get())
         if not isinstance(res, dict):
             self.revert("RESPONSE_MUST_BE_DICT_BUT_GOT_{}".format(type(res)))

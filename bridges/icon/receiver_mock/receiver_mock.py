@@ -4,7 +4,7 @@ from .pyobi import *
 TAG = "RECEIVER_MOCK"
 
 
-class IBRIDGE(InterfaceScore):
+class IBridge(InterfaceScore):
     @interface
     def relay_and_verify(self, proof: bytes) -> dict:
         pass
@@ -64,7 +64,7 @@ class RECEIVER_MOCK(IconScoreBase):
 
     @external
     def relay_and_safe(self, proof: bytes) -> None:
-        bridge = self.create_interface_score(self.bridge_address.get(), IBRIDGE)
+        bridge = self.create_interface_score(self.bridge_address.get(), IBridge)
         packet = bridge.relay_and_verify(proof)
         self.req.set(
             PyObi(

@@ -2,10 +2,10 @@ from iconservice import *
 from .utils import *
 from .pyobi import *
 
-TAG = "BRIDGE"
+TAG = "Bridge"
 
 
-class BRIDGE(IconScoreBase):
+class Bridge(IconScoreBase):
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
         # a single integer
@@ -151,17 +151,15 @@ class BRIDGE(IconScoreBase):
         current_merkle_hash = sha256.digest(
             # Height of tree (only leaf node) is 0 (signed-varint encode)
             bytes([0])
-            + bytes([2])
-            + utils.encode_varint_signed(version)  # Size of subtree is 1 (signed-varint encode)
+            + bytes([2])  # Size of subtree is 1 (signed-varint encode)
+            + utils.encode_varint_signed(version)
             +
             # Size of data key (1-byte constant 0x01 + 8-byte request ID)
             bytes([9])
-            + b"\xff"
-            + packet["res"][  # Constant 0xff prefix data request info storage key
-                "request_id"
-            ].to_bytes(8, "big")
-            + bytes([32])
-            + sha256.digest(encode_packet)  # Size of data hash
+            + b"\xff"  # Constant 0xff prefix data request info storage key
+            + packet["res"]["request_id"].to_bytes(8, "big")
+            + bytes([32])  # Size of data hash
+            + sha256.digest(encode_packet)
         )
 
         len_merkle_paths = PyObi(
@@ -282,7 +280,7 @@ class BRIDGE(IconScoreBase):
         )
 
         if prev_resolve_time >= res["resolve_time"]:
-            self.revert("FAIL_LATEST_REQUEST_SHOULD_BE_NEWEST")
+            self.revert("REQUEST_HAS_OUTDATED")
 
         if res["resolve_status"] != 1:
             self.revert("FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED")

@@ -1,14 +1,14 @@
-from ..bridge import BRIDGE
+from ..bridge import Bridge
 from ..utils import *
 from tbears.libs.scoretest.score_test_case import ScoreTestCase
 from iconservice.base.exception import IconScoreException
 
 
-class TestBRIDGE(ScoreTestCase):
+class TestBridge(ScoreTestCase):
     def setUp(self):
         super().setUp()
         self.bridge = self.get_score_instance(
-            BRIDGE,
+            Bridge,
             self.test_account1,
             on_install_params={
                 "validators_bytes": bytes.fromhex(

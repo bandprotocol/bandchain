@@ -11,7 +11,7 @@ from ..pyobi import *
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-class TestIntegrationBRIDGE(IconIntegrateTestBase):
+class TestIntegrationBridge(IconIntegrateTestBase):
     TEST_HTTP_ENDPOINT_URI_V3 = "http://127.0.0.1:9000/api/v3"
     BRIDGE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, ".."))
     RECEIVER_MOCK_PROJECT = os.path.abspath(os.path.join(DIR_PATH, "../../receiver_mock"))
