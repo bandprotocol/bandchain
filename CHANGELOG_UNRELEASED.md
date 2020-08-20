@@ -14,6 +14,8 @@
 
 ### Yoda
 
+- (feat) [\#2484](https://github.com/bandprotocol/bandchain/pull/2484) yoda/runtime: Add verification environment variables
+
 ### Emitter & Flusher
 
 - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
