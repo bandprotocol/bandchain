@@ -20,7 +20,7 @@ class PrivateKey:
     :vartype signing_key: ecdsa.SigningKey
     """
 
-    def __init__(self) -> None:
+    def __init__(self, _error__please_use_generate=None) -> None:
         """Unsupported, please use from_mnemonic to initialise."""
         if not _error__please_use_generate:
             raise TypeError("Please use SigningKey.from_mnemonic() to construct me")
