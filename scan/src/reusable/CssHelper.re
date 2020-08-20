@@ -67,3 +67,11 @@ let mb = (~size=8, ()) => {
 let mbSm = (~size=8, ()) => {
   style([Media.mobile([marginBottom(`px(size))])]);
 };
+
+let px = (~size=0, ()) => {
+  style([paddingLeft(`px(size)), paddingRight(`px(size))]);
+};
+
+let pxSm = (~size=0, ()) => {
+  style([Media.mobile([paddingLeft(`px(size)), paddingRight(`px(size))])]);
+};
