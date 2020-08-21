@@ -9,7 +9,7 @@ module type RawIDSig = {
 module RawDataSourceID = {
   type tab_t = Route.data_source_tab_t;
   let prefix = "#D";
-  let color = Colors.yellow5;
+  let color = Colors.bandBlue;
   let route = (id, tab) => Route.DataSourceIndexPage(id, tab);
   let defaultTab = Route.DataSourceRequests;
 };
@@ -17,7 +17,7 @@ module RawDataSourceID = {
 module RawOracleScriptID = {
   type tab_t = Route.oracle_script_tab_t;
   let prefix = "#O";
-  let color = Colors.pink5;
+  let color = Colors.bandBlue;
   let route = (id, tab) => Route.OracleScriptIndexPage(id, tab);
   let defaultTab = Route.OracleScriptRequests;
 };
@@ -25,7 +25,7 @@ module RawOracleScriptID = {
 module RawRequestID = {
   type tab_t = unit;
   let prefix = "#R";
-  let color = Colors.orange5;
+  let color = Colors.bandBlue;
   let route = (id, _) => Route.RequestIndexPage(id);
   let defaultTab = ();
 };

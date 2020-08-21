@@ -6,7 +6,6 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
       marginBottom(`px(1)),
-      hover([backgroundColor(Colors.blueGray1)]),
       display(`flex),
       alignItems(`center),
       padding2(~v=pv, ~h=ph),
@@ -17,7 +16,6 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
       backgroundColor(white),
       marginBottom(`px(1)),
-      hover([backgroundColor(Colors.blueGray1)]),
       padding2(~v=pv, ~h=ph),
       overflow(`hidden),
     ]);

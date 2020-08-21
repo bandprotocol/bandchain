@@ -61,7 +61,7 @@ let renderBodyMobile =
     (operatorAddress |> Address.toBech32)
     ++ (completionTime |> MomentRe.Moment.toISOString)
     ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString);
-    
+
   <MobileCard
     values=InfoMobileCard.[
       ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
@@ -149,7 +149,6 @@ let make = (~address) =>
              isMobile ? renderBodyMobile(unbondingEntry) : renderBody(unbondingEntry)
            )
          ->React.array}
-        <VSpacing size=Spacing.lg />
         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       </>
     </div>
