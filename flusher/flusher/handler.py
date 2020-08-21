@@ -28,6 +28,7 @@ from .db import (
     related_data_source_oracle_scripts,
     historical_oracle_statuses,
     oracle_script_requests,
+    request_count_per_days,
 )
 
 
@@ -48,6 +49,11 @@ class Handler(object):
     def get_account_id(self, address):
         return self.conn.execute(
             select([accounts.c.id]).where(accounts.c.address == address)
+        ).scalar()
+
+    def get_request_count(self, date):
+        return self.conn.execute(
+            select([request_count_per_days.c.count]).where(request_count_per_days.c.date == date)
         ).scalar()
 
     def handle_new_block(self, msg):
@@ -104,6 +110,8 @@ class Handler(object):
     def handle_new_request(self, msg):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
+        self.handle_set_request_count_per_days({"date": msg["timestamp"]})
+        del msg["timestamp"]
         self.conn.execute(requests.insert(), msg)
         self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
 
@@ -313,3 +321,17 @@ class Handler(object):
                 count=oracle_script_requests.c.count + 1
             )
         )
+
+    def handle_set_request_count_per_days(self, msg):
+        if self.get_request_count(msg["date"]) is None:
+            msg["count"] = 1
+            self.conn.execute(request_count_per_days.insert(), msg)
+        else:
+            condition = True
+            for col in request_count_per_days.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(
+                request_count_per_days.update(condition).values(
+                    count=request_count_per_days.c.count + 1
+                )
+            )
