@@ -72,7 +72,7 @@ func NewFeelessReportsAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keep
 						nextVal = val.(int) + 1
 					}
 					repTxCount.Add(key, nextVal)
-					if nextVal > 5 {
+					if nextVal > 20 {
 						nextRepOnlyBlock = ctx.BlockHeight() + 1
 					}
 				}
