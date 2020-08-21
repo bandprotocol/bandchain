@@ -25,6 +25,19 @@ func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, tx
 	})
 }
 
+func (app *App) emitNewOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
+	app.Write("NEW_ORACLE_SCRIPT", JsDict{
+		"id":              id,
+		"name":            os.Name,
+		"description":     os.Description,
+		"owner":           os.Owner.String(),
+		"schema":          os.Schema,
+		"codehash":        os.Filename,
+		"source_code_url": os.SourceCodeURL,
+		"tx_hash":         txHash,
+	})
+}
+
 func (app *App) emitSetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
 	app.Write("SET_ORACLE_SCRIPT", JsDict{
 		"id":              id,
@@ -121,7 +134,7 @@ func (app *App) handleMsgCreateOracleScript(
 ) {
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
-	app.emitSetOracleScript(id, os, txHash)
+	app.emitNewOracleScript(id, os, txHash)
 	extra["id"] = id
 }
 
