@@ -1,15 +1,7 @@
 module Styles = {
   open Css;
 
-  let connectContainer =
-    style([
-      height(`px(200)),
-      display(`flex),
-      flexDirection(`column),
-      justifyContent(`center),
-      alignItems(`center),
-      backgroundColor(Colors.profileBG),
-    ]);
+  let connectContainer = style([height(`px(200)), backgroundColor(Colors.profileBG)]);
 
   let infoContainer =
     style([
@@ -92,38 +84,37 @@ module DisplayBalance = {
            ? <NumberCountup
                value={amount->Coin.getBandAmountFromCoin}
                size=Text.Lg
-               weight=Text.Thin
+               weight=Text.Regular
                spacing={Text.Em(0.)}
+               code=false
              />
            : <Text
                value={amount->Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
                size=Text.Lg
-               code=true
                color=Colors.gray7
-               weight=Text.Thin
                block=true
              />}
         <HSpacing size=Spacing.sm />
-        <Text value="BAND" size=Text.Lg color=Colors.gray7 weight=Text.Thin block=true />
+        <Text value="BAND" size=Text.Lg color=Colors.gray7 block=true />
       </div>
       <div className={CssHelper.flexBox()}>
         {isCountup
            ? <NumberCountup
                value={amount->Coin.getBandAmountFromCoin *. usdPrice}
                size=Text.Md
-               weight=Text.Thin
+               weight=Text.Regular
+               color=Colors.gray6
+               code=false
                spacing={Text.Em(0.)}
              />
            : <Text
                value={amount->Coin.getBandAmountFromCoin *. usdPrice |> Format.fPretty(~digits=6)}
                size=Text.Md
-               code=true
-               color=Colors.gray7
-               weight=Text.Thin
+               color=Colors.gray6
                block=true
              />}
         <HSpacing size=Spacing.sm />
-        <Text value="USD" size=Text.Lg color=Colors.gray7 weight=Text.Thin block=true />
+        <Text value="USD" size=Text.Md color=Colors.gray6 block=true />
       </div>
     </>;
   };
@@ -243,7 +234,11 @@ let make = (~validatorAddress) => {
      | None =>
        switch (trackingSub) {
        | Data({chainID}) =>
-         <div className=Styles.connectContainer>
+         <div
+           className={Css.merge([
+             CssHelper.flexBox(~direction=`column, ~justify=`center, ()),
+             Styles.connectContainer,
+           ])}>
            <Icon name="fal fa-link" size=32 color=Colors.bandBlue />
            <VSpacing size={`px(16)} />
            <Text value="Please connect to make request" size=Text.Lg nowrap=true block=true />

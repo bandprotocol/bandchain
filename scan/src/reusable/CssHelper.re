@@ -34,8 +34,8 @@ let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ()) => {
       borderRadius(`px(4)),
       fontSize(`px(fsize)),
       cursor(`pointer),
-      outline(`zero, `none, white),
-      border(`zero, `solid, Colors.white),
+      outlineStyle(`none),
+      borderStyle(`none),
     ]);
 
   let custom =
