@@ -1,0 +1,18 @@
+{
+  "name": "harmony-bridge",
+  "version": "1.0.0",
+  "description": "## Directory Breakdown",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@harmony-js/core": "^0.1.49",
+    "dotenv": "^8.2.0",
+    "tslib": "^1.11.1",
+    "truffle": "^5.1.4"
+  },
+  "devDependencies": {}
+}

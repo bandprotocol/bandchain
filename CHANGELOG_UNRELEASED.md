@@ -54,6 +54,7 @@
 ### Bridges
 
 - (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
+- (feat) [\#2529](https://github.com/bandprotocol/bandchain/pull/2529) Add harmony to bridge evm
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
 
 ### Runtime

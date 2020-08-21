@@ -41,3 +41,19 @@
 - We have deployed our Bridge contract ([0x0A2acDeA5d23e45d2b5919d5aBdF7CA1088d907b](https://baklava-blockscout.celo-testnet.org/address/0x0a2acdea5d23e45d2b5919d5abdf7ca1088d907b/transactions)) on the Celo Baklava test network.
 
 - Please see this [`example`](integration_examples/celo) for more details about Bridge contract deployment and interaction on the Baklava test network .
+
+### [Avalanche](https://www.avalabs.org/)
+
+- The reason we support Avalanche is that Avalanche is an open-source platform for launching highly decentralized applications, new financial primitives, and new interoperable blockchains.
+
+- We have deployed our Bridge contract (0xE2f7Cf77DF70af8e92FF69B8Ffc92585C307a358) on the Avalanche c-chain test network.
+
+- Please see this [`blogpost`](https://medium.com/avalabs/deploy-a-smart-contract-on-ava-using-remix-and-metamask-98933a93f436) for more details about Bridge contract deployment and interaction on the Avalanche test network .
+
+### [Harmony](https://www.harmony.one/)
+
+- The reason we support Harmony is that Harmony is a fast and secure blockchain for decentralized applications.
+
+- We have deployed our Bridge contract (0x176fb19ddAf98f639C55A2008623B581821E7B42) on the Harmony test network.
+
+- Please see this [`example`](integration_examples/harmony) for more details about Bridge contract deployment and interaction on the Harmony test network .
