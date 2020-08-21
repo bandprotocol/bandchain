@@ -9,7 +9,15 @@ module ValidatorReport = {
     oracleScript: oracle_script_t,
   };
 
-  type raw_request_t = {dataSourceID: ID.DataSource.t};
+  type data_source_t = {
+    dataSourceID: ID.DataSource.t,
+    dataSourceName: string,
+  };
+
+  type raw_request_t = {
+    calldata: JsBuffer.t,
+    dataSource: data_source_t,
+  };
 
   type report_details_t = {
     externalID: string,
@@ -58,7 +66,11 @@ module ValidatorReport = {
                 exitCode: exit_code  @bsDecoder (fn:"GraphQLParser.string")
                 data @bsDecoder (fn: "GraphQLParser.buffer")
                 rawRequest: raw_request @bsRecord {
-                  dataSourceID: data_source_id @bsDecoder (fn: "ID.DataSource.fromInt")
+                  calldata @bsDecoder(fn: "GraphQLParser.buffer")
+                  dataSource: data_source @bsRecord {
+                    dataSourceID: id @bsDecoder (fn: "ID.DataSource.fromInt")
+                    dataSourceName: name
+                  }
                 }
               }
             }

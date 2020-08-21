@@ -2,17 +2,12 @@ module Styles = {
   open Css;
   let loadingBox = style([width(`percent(100.))]);
   let chartContainer =
-    style([
-      width(`percent(100.)),
-      minHeight(`px(90)),
-      margin2(~v=`zero, ~h=`px(-2)),
-      Media.smallMobile([maxWidth(`px(260))]),
-    ]);
+    style([width(`percent(100.)), minHeight(`px(90)), margin2(~v=`zero, ~h=`px(-2))]);
   let blockContainer =
     style([
       flexGrow(0.),
       flexShrink(0.),
-      flexBasis(`calc((`sub, `percent(1.11), `px(2)))),
+      flexBasis(`calc((`sub, `percent(2.22), `px(2)))),
       margin(`px(1)),
       height(`px(40)),
       display(`block),
@@ -69,6 +64,7 @@ let make = (~oracleStatus, ~operatorAddress) => {
     let timeOutID = Js.Global.setInterval(() => {setPrevDate(_ => getDayAgo(90))}, 60_000);
     Some(() => {Js.Global.clearInterval(timeOutID)});
   });
+
   let historicalOracleStatusSub =
     ValidatorSub.getHistoricalOracleStatus(operatorAddress, prevDate, oracleStatus);
   <>

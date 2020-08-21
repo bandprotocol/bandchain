@@ -25,12 +25,7 @@ module Styles = {
 
   let dataSourceTable = show => {
     style([
-      padding2(
-        ~v={
-          show ? `px(16) : `zero;
-        },
-        ~h=`px(24),
-      ),
+      padding2(~v=show ? `px(16) : `zero, ~h=`px(24)),
       marginTop(show ? `px(24) : `zero),
       backgroundColor(Colors.profileBG),
       transition(~duration=200, "all"),
@@ -49,15 +44,34 @@ module DataSourceItem = {
       <Col.Grid col=Col.Two>
         <Text block=true value={dataSource.externalID} color=Colors.gray7 />
       </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
+          <TypeID.DataSource
+            id={
+                 let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                 rawRequest.dataSource.dataSourceID;
+               }
+          />
+          <HSpacing size=Spacing.sm />
+          <Text
+            value={
+                    let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                    rawRequest.dataSource.dataSourceName;
+                  }
+            ellipsis=true
+          />
+        </div>
+      </Col.Grid>
       <Col.Grid col=Col.Two>
-        <TypeID.DataSource
-          id={
-               let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
-               rawRequest.dataSourceID;
-             }
+        <Text
+          block=true
+          value={
+                  let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                  rawRequest.calldata |> JsBuffer.toUTF8;
+                }
+          color=Colors.gray7
         />
       </Col.Grid>
-      <Col.Grid col=Col.Three> <Text block=true value="Param" color=Colors.gray7 /> </Col.Grid>
       <Col.Grid col=Col.Two>
         <Text block=true value={dataSource.exitCode} color=Colors.gray7 />
       </Col.Grid>
@@ -74,122 +88,149 @@ module DataSourceItem = {
   };
 };
 
-let renderBody =
-    (reserveIndex, reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
-  let (show, setShow) = React.useState(_ => false);
-  <TBody.Grid
-    key={
-      switch (reportsSub) {
-      | Data({txHash}) => txHash |> Hash.toHex
-      | _ => reserveIndex |> string_of_int
+module RenderBody = {
+  [@react.component]
+  let make =
+      (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
+    let (show, setShow) = React.useState(_ => false);
+    <TBody.Grid
+      key={
+        switch (reportsSub) {
+        | Data({txHash}) => txHash |> Hash.toHex
+        | _ => reserveIndex |> string_of_int
+        }
       }
-    }
-    paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Three>
-        {switch (reportsSub) {
-         | Data({request: {id}}) => <TypeID.Request id />
-         | _ => <LoadingCensorBar width=135 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
-        {switch (reportsSub) {
-         | Data({request: {oracleScript: {oracleScriptID, name}}}) =>
-           <div className={CssHelper.flexBox()}>
-             <TypeID.OracleScript id=oracleScriptID />
-             <HSpacing size=Spacing.sm />
-             <Text value=name ellipsis=true />
-           </div>
-         | _ => <LoadingCensorBar width=270 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
-        {switch (reportsSub) {
-         | Data({txHash}) => <TxLink txHash width=140 />
-         | _ => <LoadingCensorBar width=170 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        <div
-          onClick={_ => setShow(prev => !prev)}
-          className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.toggle])}>
+      paddingH={`px(24)}>
+      <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+        <Col.Grid col=Col.Three>
           {switch (reportsSub) {
-           | Data(_) =>
-             <>
-               <Text
-                 block=true
-                 value={show ? "Hide Report" : "Show Report"}
-                 weight=Text.Semibold
-                 color=Colors.bandBlue
-               />
-               <HSpacing size=Spacing.xs />
-               <Icon name={show ? "fas fa-caret-up" : "fas fa-caret-down"} color=Colors.bandBlue />
-             </>
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | Data({request: {id}}) => <TypeID.Request id />
+           | _ => <LoadingCensorBar width=135 height=15 />
            }}
-        </div>
-      </Col.Grid>
-    </Row.Grid>
-    <div className={Styles.dataSourceTable(show)}>
-      <Row.Grid>
-        <Col.Grid col=Col.Two>
-          <Text block=true value="External ID" weight=Text.Semibold color=Colors.gray7 />
         </Col.Grid>
-        <Col.Grid col=Col.Two>
-          <Text block=true value="Data Source" weight=Text.Semibold color=Colors.gray7 />
-        </Col.Grid>
-        <Col.Grid col=Col.Three>
-          <Text block=true value="Param" weight=Text.Semibold color=Colors.gray7 />
-        </Col.Grid>
-        <Col.Grid col=Col.Two>
-          <Text block=true value="Exit Code" weight=Text.Semibold color=Colors.gray7 />
+        <Col.Grid col=Col.Four>
+          {switch (reportsSub) {
+           | Data({request: {oracleScript: {oracleScriptID, name}}}) =>
+             <div className={CssHelper.flexBox()}>
+               <TypeID.OracleScript id=oracleScriptID />
+               <HSpacing size=Spacing.sm />
+               <Text value=name ellipsis=true />
+             </div>
+           | _ => <LoadingCensorBar width=270 height=15 />
+           }}
         </Col.Grid>
         <Col.Grid col=Col.Three>
-          <Text
-            block=true
-            value="Value"
-            weight=Text.Semibold
-            align=Text.Right
-            color=Colors.gray7
-          />
+          {switch (reportsSub) {
+           | Data({txHash}) => <TxLink txHash width=140 />
+           | _ => <LoadingCensorBar width=170 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Two>
+          <div
+            onClick={_ => setShow(prev => !prev)}
+            className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.toggle])}>
+            {switch (reportsSub) {
+             | Data(_) =>
+               <>
+                 <Text
+                   block=true
+                   value={show ? "Hide Report" : "Show Report"}
+                   weight=Text.Semibold
+                   color=Colors.bandBlue
+                 />
+                 <HSpacing size=Spacing.xs />
+                 <Icon
+                   name={show ? "fas fa-caret-up" : "fas fa-caret-down"}
+                   color=Colors.bandBlue
+                 />
+               </>
+             | _ => <LoadingCensorBar width=100 height=15 />
+             }}
+          </div>
         </Col.Grid>
       </Row.Grid>
-      {switch (reportsSub) {
-       | Data({reportDetails}) =>
-         reportDetails
-         ->Belt_Array.mapWithIndex((i, dataSource) =>
-             <DataSourceItem key={i |> string_of_int} dataSource />
-           )
-         ->React.array
-       | _ => <LoadingCensorBar width=170 height=50 />
-       }}
-    </div>
-  </TBody.Grid>;
+      <div className={Styles.dataSourceTable(show)}>
+        <Row.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="External ID" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Three>
+            <Text block=true value="Data Source" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="Param" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="Exit Code" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Three>
+            <Text
+              block=true
+              value="Value"
+              weight=Text.Semibold
+              align=Text.Right
+              color=Colors.gray7
+            />
+          </Col.Grid>
+        </Row.Grid>
+        {switch (reportsSub) {
+         | Data({reportDetails}) =>
+           reportDetails
+           ->Belt_Array.mapWithIndex((i, reportDetail) =>
+               <DataSourceItem key={i |> string_of_int} dataSource=reportDetail />
+             )
+           ->React.array
+         | _ => <LoadingCensorBar width=170 height=50 />
+         }}
+      </div>
+    </TBody.Grid>;
+  };
 };
 
-let renderBodyMobile =
-    (reserveIndex, reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
-  switch (reportsSub) {
-  | Data({txHash, request: {id, oracleScript: {oracleScriptID, name}}, reportDetails}) =>
-    <MobileCard
-      values=InfoMobileCard.[
-        ("Request ID", RequestID(id)),
-        ("Oracle Script", OracleScript(oracleScriptID, name)),
-        ("TX Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
-      ]
-      key={id |> ID.Request.toString}
-      idx={id |> ID.Request.toString}
-    />
-  | _ =>
-    <MobileCard
-      values=InfoMobileCard.[
-        ("Request ID", Loading(70)),
-        ("Oracle Script", Loading(136)),
-        ("TX Hash", Loading(Media.isSmallMobile() ? 170 : 200)),
-      ]
-      key={reserveIndex |> string_of_int}
-      idx={reserveIndex |> string_of_int}
-    />
+module RenderBodyMobile = {
+  [@react.component]
+  let make =
+      (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
+    switch (reportsSub) {
+    | Data({txHash, request: {id, oracleScript: {oracleScriptID, name}}, reportDetails}) =>
+      <MobileCard
+        values=InfoMobileCard.[
+          ("Request ID", RequestID(id)),
+          ("Oracle Script", OracleScript(oracleScriptID, name)),
+          ("TX Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
+        ]
+        key={id |> ID.Request.toString}
+        idx={id |> ID.Request.toString}
+        panels={
+          reportDetails
+          ->Belt_Array.map(({externalID, exitCode, data, rawRequest: rawRequestOpt}) => {
+              let ReportSub.ValidatorReport.{
+                    dataSource: {dataSourceID, dataSourceName},
+                    calldata,
+                  } =
+                rawRequestOpt->Belt.Option.getExn;
+              InfoMobileCard.[
+                ("External ID", Text(externalID)),
+                ("Data Source", DataSource(dataSourceID, dataSourceName)),
+                ("Param", Text(calldata |> JsBuffer.toUTF8)),
+                ("Exit Code", Text(exitCode)),
+                ("Value", Text(data |> JsBuffer.toUTF8)),
+              ];
+            })
+          ->Belt.List.fromArray
+        }
+      />
+    | _ =>
+      <MobileCard
+        values=InfoMobileCard.[
+          ("Request ID", Loading(70)),
+          ("Oracle Script", Loading(136)),
+          ("TX Hash", Loading(Media.isSmallMobile() ? 170 : 200)),
+        ]
+        key={reserveIndex |> string_of_int}
+        idx={reserveIndex |> string_of_int}
+      />
+    };
   };
 };
 
@@ -206,8 +247,7 @@ let make = (~address) => {
         address |> Address.toOperatorBech32;
       },
     );
-  // let reportsCountSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
-  let reportsCountSub = ApolloHooks.Subscription.Data(10);
+  let reportsCountSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
 
   let allSub = Sub.all2(reportsSub, reportsCountSub);
 
@@ -272,7 +312,8 @@ let make = (~address) => {
             ? reports
               ->Belt_Array.mapWithIndex((i, e) =>
                   isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                    ? <RenderBodyMobile reserveIndex=i reportsSub={Sub.resolve(e)} />
+                    : <RenderBody reserveIndex=i reportsSub={Sub.resolve(e)} />
                 )
               ->React.array
             : <div className=Styles.emptyContainer>
@@ -296,7 +337,9 @@ let make = (~address) => {
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
-           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+           isMobile
+             ? <RenderBodyMobile reserveIndex=i reportsSub=noData />
+             : <RenderBody reserveIndex=i reportsSub=noData />
          )
        ->React.array
      }}

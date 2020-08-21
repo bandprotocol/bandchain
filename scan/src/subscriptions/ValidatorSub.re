@@ -411,7 +411,7 @@ let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
             {status: each##status, timestamp: each##timestamp |> GraphQLParser.timestamp}
           )
         ->Belt.List.fromArray
-      : [{timestamp: greater |> MomentRe.Moment.startOf(`day), status: !oracleStatus}];
+      : [{timestamp: greater |> MomentRe.Moment.startOf(`day), status: oracleStatus}];
 
   let normalizedDate =
     oracleStatusReports->Belt_List.map(({timestamp, status}) =>
