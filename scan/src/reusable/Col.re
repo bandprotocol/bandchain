@@ -104,6 +104,7 @@ module Styles = {
     | Ten => style([marginLeft(`percent(83.333333))])
     | Eleven => style([marginLeft(`percent(91.666667))])
     | Twelve => style([]);
+
   let marginBottom = (~mb, ~mbSm, ()) =>
     style([marginBottom(`px(mb)), Media.mobile([marginBottom(`px(mbSm))])]);
 };

@@ -34,6 +34,7 @@
 - (impv) [\#2511](https://github.com/bandprotocol/bandchain/pull/2511) Implemented report chart and oracle data reports tab
 - (impv) [\#2508](https://github.com/bandprotocol/bandchain/pull/2508) Implemented Your delegation info
 - (impv) [\#2503](https://github.com/bandprotocol/bandchain/pull/2503) Implemented Bonded Token Chart on Validator Index Page
+- (impv) [\#2501](https://github.com/bandprotocol/bandchain/pull/2501) Implemented Request Index Page
 - (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
 - (impv) [\#2497](https://github.com/bandprotocol/bandchain/pull/2497) Implemented validator index top part and uptimechart
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page

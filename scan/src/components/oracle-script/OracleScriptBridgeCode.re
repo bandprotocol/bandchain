@@ -196,7 +196,7 @@ module GenerateDecodeCode = {
         </Col.Grid>
       </Row.Grid>
       <div className=Styles.tableLowerContainer>
-        <div className=Styles.copyContainer> <CopyButton.Code data=code title="Copy Code" /> </div>
+        <div className=Styles.copyContainer> <CopyButton.Modern data=code title="Copy Code" /> </div>
         {code |> renderCode}
       </div>
     </>;
@@ -285,7 +285,7 @@ let make = (~schema) => {
       </Col.Grid>
     </Row.Grid>
     <div className=Styles.tableLowerContainer>
-      <div className=Styles.copyContainer> <CopyButton.Code data=schema title="Copy Code" /> </div>
+      <div className=Styles.copyContainer> <CopyButton.Modern data=schema title="Copy Code" /> </div>
       {schema |> renderCode}
     </div>
     <GenerateDecodeCode language schema dataType=Obi.Params />

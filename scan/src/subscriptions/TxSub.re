@@ -1217,6 +1217,7 @@ module Mini = {
     hash: Hash.t,
     blockHeight: ID.Block.t,
     block: block_t,
+    gasFee: list(Coin.t),
   };
 };
 
