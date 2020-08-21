@@ -20,7 +20,8 @@ type account_tab_t =
 type validator_tab_t =
   | ProposedBlocks
   | Delegators
-  | Reports;
+  | Reports
+  | Reporters;
 
 type t =
   | NotFound
@@ -70,7 +71,11 @@ let fromUrl = (url: ReasonReactRouter.url) =>
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
-    BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
+    switch (blockHeightIntOpt) {
+    | Some(block) => BlockIndexPage(block)
+    | None => NotFound
+    };
+
   | (["requests"], _) => RequestHomePage
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
   | (["account", address], hash) =>
@@ -89,8 +94,9 @@ let fromUrl = (url: ReasonReactRouter.url) =>
     let urlHash = (
       fun
       | "delegators" => Delegators
-      | "reports" => Reports
-      | _ => ProposedBlocks
+      | "reporters" => Reporters
+      | "proposed-blocks" => ProposedBlocks
+      | _ => Reports
     );
     switch (address |> Address.fromBech32Opt) {
     | Some(address) => ValidatorIndexPage(address, urlHash(hash))
@@ -144,6 +150,10 @@ let toString =
   | ValidatorIndexPage(validatorAddress, Reports) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#reports|j};
+    }
+  | ValidatorIndexPage(validatorAddress, Reporters) => {
+      let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
+      {j|/validator/$validatorAddressBech32#reporters|j};
     }
   | ValidatorIndexPage(validatorAddress, ProposedBlocks) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;

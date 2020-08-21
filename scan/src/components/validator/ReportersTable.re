@@ -22,67 +22,37 @@ module Styles = {
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-let renderBody =
-    (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {
   <TBody.Grid
     key={
-      switch (delegatorSub) {
-      | Data({delegatorAddress}) => delegatorAddress |> Address.toBech32
+      switch (reporterSub) {
+      | Data(address) => address |> Address.toBech32
       | _ => reserveIndex |> string_of_int
       }
     }
     paddingH={`px(24)}>
     <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Six>
-        {switch (delegatorSub) {
-         | Data({delegatorAddress}) => <AddressRender address=delegatorAddress />
+      <Col.Grid>
+        {switch (reporterSub) {
+         | Data(address) => <AddressRender address />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
-        {switch (delegatorSub) {
-         | Data({sharePercentage}) =>
-           <Text block=true value={sharePercentage |> Format.fPretty} color=Colors.gray7 />
-         | _ => <LoadingCensorBar width=100 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
-          {switch (delegatorSub) {
-           | Data({amount}) =>
-             <Text
-               block=true
-               value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
-               color=Colors.gray7
-             />
-           | _ => <LoadingCensorBar width=100 height=15 />
-           }}
-        </div>
       </Col.Grid>
     </Row.Grid>
   </TBody.Grid>;
 };
 
-let renderBodyMobile =
-    (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
-  switch (delegatorSub) {
-  | Data({amount, sharePercentage, delegatorAddress}) =>
+let renderBodyMobile = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {
+  switch (reporterSub) {
+  | Data(address) =>
     <MobileCard
-      values=InfoMobileCard.[
-        ("Delegator", Address(delegatorAddress, 149, `account)),
-        ("Shares (%)", Float(sharePercentage, Some(4))),
-        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
-      ]
-      key={delegatorAddress |> Address.toBech32}
-      idx={delegatorAddress |> Address.toBech32}
+      values=InfoMobileCard.[("Reporter", Address(address, 200, `account))]
+      key={address |> Address.toBech32}
+      idx={address |> Address.toBech32}
     />
   | _ =>
     <MobileCard
-      values=InfoMobileCard.[
-        ("Delegator", Loading(150)),
-        ("Shares (%)", Loading(60)),
-        ("Amount\n(BAND)", Loading(80)),
-      ]
+      values=InfoMobileCard.[("Reporter", Loading(150))]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
     />
@@ -92,30 +62,28 @@ let renderBodyMobile =
 [@react.component]
 let make = (~address) => {
   let (page, setPage) = React.useState(_ => 1);
-  let pageSize = 10;
-
-  let delegatorsSub = DelegationSub.getDelegatorsByValidator(address, ~pageSize, ~page, ());
-  let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
-
-  let allSub = Sub.all2(delegatorsSub, delegatorCountSub);
-
+  let pageSize = 5;
   let isMobile = Media.isMobile();
+
+  let reportersSub = ReporterSub.getList(~operatorAddress=address, ~pageSize, ~page, ());
+  let reporterCountSub = ReporterSub.count(address);
+  let allSub = Sub.all2(reportersSub, reporterCountSub);
 
   <div className=Styles.tableWrapper>
     {isMobile
        ? <Row.Grid marginBottom=16>
            <Col.Grid>
              {switch (allSub) {
-              | Data((_, delegatorCount)) =>
+              | Data((_, reporterCount)) =>
                 <div className={CssHelper.flexBox()}>
                   <Text
                     block=true
-                    value={delegatorCount |> string_of_int}
+                    value={reporterCount |> string_of_int}
                     weight=Text.Semibold
                     color=Colors.gray7
                   />
                   <HSpacing size=Spacing.xs />
-                  <Text block=true value="Delegators" weight=Text.Semibold color=Colors.gray7 />
+                  <Text block=true value="Reporters" weight=Text.Semibold color=Colors.gray7 />
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
@@ -123,42 +91,30 @@ let make = (~address) => {
          </Row.Grid>
        : <THead.Grid>
            <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Six>
+             <Col.Grid>
                {switch (allSub) {
-                | Data((_, delegatorCount)) =>
+                | Data((_, reporterCount)) =>
                   <div className={CssHelper.flexBox()}>
                     <Text
                       block=true
-                      value={delegatorCount |> string_of_int}
+                      value={reporterCount |> string_of_int}
                       weight=Text.Semibold
                       color=Colors.gray7
                     />
                     <HSpacing size=Spacing.xs />
-                    <Text block=true value="Delegators" weight=Text.Semibold color=Colors.gray7 />
+                    <Text block=true value="Reporters" weight=Text.Semibold color=Colors.gray7 />
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
              </Col.Grid>
-             <Col.Grid col=Col.Four>
-               <Text block=true value="Share(%)" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
-               <Text
-                 block=true
-                 value="Amount"
-                 weight=Text.Semibold
-                 color=Colors.gray7
-                 align=Text.Right
-               />
-             </Col.Grid>
            </Row.Grid>
          </THead.Grid>}
     {switch (allSub) {
-     | Data((delegators, delegatorCount)) =>
-       let pageCount = Page.getPageCount(delegatorCount, pageSize);
+     | Data((reporters, reporterCount)) =>
+       let pageCount = Page.getPageCount(reporterCount, pageSize);
        <>
-         {delegatorCount > 0
-            ? delegators
+         {reporterCount > 0
+            ? reporters
               ->Belt_Array.mapWithIndex((i, e) =>
                   isMobile
                     ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
@@ -168,7 +124,7 @@ let make = (~address) => {
                 <img src=Images.noBlock className=Styles.noDataImage />
                 <Heading
                   size=Heading.H4
-                  value="No Delegators"
+                  value="No Reporter"
                   align=Heading.Center
                   weight=Heading.Regular
                   color=Colors.bandBlue
