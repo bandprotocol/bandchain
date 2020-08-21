@@ -28,6 +28,7 @@
 
 ### Scan
 
+- (impv) [\#2513](https://github.com/bandprotocol/bandchain/pull/2513) Implemented reporters table
 - (impv) [\#2511](https://github.com/bandprotocol/bandchain/pull/2511) Implemented report chart and oracle data reports tab
 - (impv) [\#2508](https://github.com/bandprotocol/bandchain/pull/2508) Implemented Your delegation info
 - (impv) [\#2503](https://github.com/bandprotocol/bandchain/pull/2503) Implemented Bonded Token Chart on Validator Index Page
