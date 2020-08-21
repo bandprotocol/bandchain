@@ -405,18 +405,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             </div>
           </div>
         </Col.Grid>
-        <Col.Grid col=Col.Eight>
-          <div className={Css.merge([Styles.mockup, Styles.infoContainer])}>
-            <div className={Css.merge([CssHelper.flexBox(), Styles.infoHeader])}>
-              <Heading value="Your Delegation Info" size=Heading.H5 />
-              <HSpacing size=Spacing.xs />
-              //TODO: remove mock message later
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                <Icon name="fal fa-info-circle" size=10 />
-              </CTooltip>
-            </div>
-          </div>
-        </Col.Grid>
         {isMobile
            ? React.null
            : <Col.Grid col=Col.Eight> <ValidatorStakingInfo validatorAddress=address /> </Col.Grid>}
