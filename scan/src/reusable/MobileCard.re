@@ -119,8 +119,8 @@ let make = (~values, ~idx, ~status=?, ~requestStatus=?, ~panels=[]) => {
            <div className={Styles.infoCardContainerWrapper(show)}>
              {panels
               ->Belt.List.mapWithIndex((i, e) =>
-                  <div className=Styles.infoCardContainer>
-                    <InnerPanel key={i |> string_of_int} values=e idx />
+                  <div key={(i |> string_of_int) ++ idx} className=Styles.infoCardContainer>
+                    <InnerPanel values=e idx />
                   </div>
                 )
               ->Belt.List.toArray

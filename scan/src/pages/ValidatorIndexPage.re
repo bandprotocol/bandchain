@@ -102,17 +102,19 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               Styles.idContainer,
             ])}>
             <div className=Styles.avatarContainer>
+            //TODO: Will get rank later
               {switch (allSub) {
                | Data(({identity, rank, moniker}, _, _)) =>
                  <>
                    <Avatar moniker identity width=100 widthSm=80 />
-                   <div
-                     className={Css.merge([
-                       Styles.rankContainer,
-                       CssHelper.flexBox(~justify=`center, ()),
-                     ])}>
-                     //TODO: Will get rank later
-                      <Text value={rank |> string_of_int} color=Colors.white /> </div>
+                  //  <div
+                  //    className={Css.merge([
+                  //      Styles.rankContainer,
+                  //      CssHelper.flexBox(~justify=`center, ()),
+                  //    ])}>
+                     
+                  //     <Text value={rank |> string_of_int} color=Colors.white /> 
+                  //     </div>
                  </>
                | _ => <LoadingCensorBar width=100 height=100 radius=100 />
                }}
@@ -288,6 +290,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      position=AddressRender.Subtitle
                      accountType=`validator
                      clickable=false
+                     wordBreak=true
                    />
                  | _ => <LoadingCensorBar width=284 height=15 />
                  }}
@@ -395,7 +398,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             </div>
             <div className={CssHelper.flexBox()}>
               {switch (allSub) {
-               | Data(({operatorAddress}, _)) => <HistoricalBondedGraph operatorAddress />
+               | Data(({operatorAddress}, _, _)) => <HistoricalBondedGraph operatorAddress />
                | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
                }}
             </div>

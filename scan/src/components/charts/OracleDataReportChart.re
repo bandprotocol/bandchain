@@ -28,10 +28,7 @@ module Styles = {
       ),
     ]);
   let statusLabel = style([height(`px(8)), width(`px(8))]);
-  let status =
-    fun
-    | true => style([backgroundColor(Colors.bandBlue)])
-    | false => style([backgroundColor(Colors.blue10)]);
+  let status = status => style([backgroundColor(status ? Colors.bandBlue : Colors.blue10)]);
 };
 
 let getDayAgo = days => {
@@ -75,7 +72,14 @@ let make = (~oracleStatus, ~operatorAddress) => {
            | Data({oracleStatusReports}) =>
              oracleStatusReports
              ->Belt.Array.mapWithIndex((i, {timestamp, status}) =>
-                 <Item key={i |> string_of_int} status timestamp />
+                 <Item
+                   key={
+                     (i |> string_of_int)
+                     ++ (timestamp |> MomentRe.Moment.format("YYYY-MM-DD HH:mm:ss.SSS"))
+                   }
+                   status
+                   timestamp
+                 />
                )
              ->React.array
            | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />

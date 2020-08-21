@@ -177,7 +177,10 @@ module RenderBody = {
          | Data({reportDetails}) =>
            reportDetails
            ->Belt_Array.mapWithIndex((i, reportDetail) =>
-               <DataSourceItem key={i |> string_of_int} dataSource=reportDetail />
+               <DataSourceItem
+                 key={(i |> string_of_int) ++ reportDetail.externalID}
+                 dataSource=reportDetail
+               />
              )
            ->React.array
          | _ => <LoadingCensorBar width=170 height=50 />
@@ -312,8 +315,16 @@ let make = (~address) => {
             ? reports
               ->Belt_Array.mapWithIndex((i, e) =>
                   isMobile
-                    ? <RenderBodyMobile reserveIndex=i reportsSub={Sub.resolve(e)} />
-                    : <RenderBody reserveIndex=i reportsSub={Sub.resolve(e)} />
+                    ? <RenderBodyMobile
+                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        reserveIndex=i
+                        reportsSub={Sub.resolve(e)}
+                      />
+                    : <RenderBody
+                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        reserveIndex=i
+                        reportsSub={Sub.resolve(e)}
+                      />
                 )
               ->React.array
             : <div className=Styles.emptyContainer>
@@ -338,8 +349,8 @@ let make = (~address) => {
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
            isMobile
-             ? <RenderBodyMobile reserveIndex=i reportsSub=noData />
-             : <RenderBody reserveIndex=i reportsSub=noData />
+             ? <RenderBodyMobile key={i |> string_of_int} reserveIndex=i reportsSub=noData />
+             : <RenderBody key={i |> string_of_int} reserveIndex=i reportsSub=noData />
          )
        ->React.array
      }}
