@@ -36,7 +36,7 @@ module Styles = {
   let chart = show => style([important(display(show ? `block : `none))]);
 };
 
-let renderGraph: array(HistoricalTotalRequestSub.t) => unit = [%bs.raw
+let renderGraph: array(HistoricalTotalRequestQuery.t) => unit = [%bs.raw
   {|
 function(data) {
   var Chart = require('chart.js');
@@ -56,14 +56,14 @@ function(data) {
 
       // The data for our dataset
       data: {
-          datasets: [{
-              type: 'line',
-              pointRadius: 0,
-              fill: false,
-              borderColor: '#5269ff',
-              data: data,
-              borderWidth: 2,
-          }]
+        datasets: [{
+            type: 'line',
+            pointRadius: 0,
+            fill: false,
+            borderColor: '#5269ff',
+            data: data,
+            borderWidth: 2,
+        }]
       },
 
       // Configuration options go here
@@ -81,12 +81,19 @@ function(data) {
                 display: false,
                 drawBorder: false,
               },
+              time: {
+                unit: 'day',
+                unitStepSize: 1,
+                displayFormats: {
+                  'day': 'MMM DD',
+                },
+              },
               ticks: {
                 fontFamily: 'Inter',
                 fontColor: '#888888',
                 fontSize: 10,
                 autoSkip: true,
-                maxTicksLimit: 5,
+                maxTicksLimit: 10,
               }
             },
           ],
@@ -96,7 +103,6 @@ function(data) {
                 fontFamily: 'Inter',
                 fontColor: '#888888',
                 fontSize: 10,
-                stepSize: 30000,
                 callback: function(value) {
                   var ranges = [
                       { divider: 1e6, suffix: 'M' },
@@ -155,16 +161,16 @@ function(data) {
 
 [@react.component]
 let make = () => {
-  let dataSub = HistoricalTotalRequestSub.get();
+  let dataQuery = HistoricalTotalRequestQuery.get();
   let (lastCount, setLastCount) = React.useState(_ => 0);
 
   React.useEffect1(
     () => {
-      switch (dataSub) {
+      switch (dataQuery) {
       | Data(data) =>
-        if (data->Belt.Array.size != 0) {
+        if (data->Belt.Array.size > 0) {
           // check the incoming data is a new data.
-          let last = data->Belt.List.fromArray->Belt.List.tailExn->Belt.List.getExn(0);
+          let last = data->Belt.Array.get(data->Belt.Array.size - 1)->Belt.Option.getExn;
           if (last.y != lastCount) {
             setLastCount(_ => last.y);
             renderGraph(data);
@@ -174,7 +180,7 @@ let make = () => {
       };
       None;
     },
-    [|dataSub|],
+    [|dataQuery|],
   );
 
   <div className=Styles.card>
@@ -192,7 +198,7 @@ let make = () => {
         <Icon name="fal fa-info-circle" size=10 />
       </CTooltip>
     </div>
-    {switch (dataSub) {
+    {switch (dataQuery) {
      | Data(data) =>
        let show = data->Belt.Array.size > 5;
        <div className=Styles.innerCard>
