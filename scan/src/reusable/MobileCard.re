@@ -104,7 +104,7 @@ module InnerPanel = {
 [@react.component]
 let make = (~values, ~idx, ~status=?, ~requestStatus=?, ~styles="", ~panels=[]) => {
   let (show, setShow) = React.useState(_ => false);
-  <div className=Styles.cardContainer>
+  <div className={Css.merge([Styles.cardContainer, styles])}>
     {switch (status) {
      | Some(success) => <img src={success ? Images.success : Images.fail} className=Styles.logo />
      | None => React.null
