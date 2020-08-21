@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2517](https://github.com/bandprotocol/bandchain/pull/2387) Switch to report only block if notice pending report for too long.
 - (impv) [\#2387](https://github.com/bandprotocol/bandchain/pull/2387) Implementation of allow free report transaction.
 
 ### Yoda
