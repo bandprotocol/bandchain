@@ -1073,14 +1073,26 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
       </Row.Grid>
       <Row.Grid marginBottom=24>
         <Col.Grid col=Col.Four mbSm=24>
-          <div className={Css.merge([Styles.mockup, Styles.infoContainer])}>
-            <div className={Css.merge([CssHelper.flexBox(), Styles.infoHeader])}>
+          <div className={Css.merge([Styles.infoContainer, CssHelper.px(~size=12, ())])}>
+            <div
+              className={Css.merge([
+                CssHelper.flexBox(),
+                Styles.infoHeader,
+                CssHelper.px(~size=12, ()),
+                CssHelper.mb(~size=14, ()),
+              ])}>
               <Heading value="Bonded Token" size=Heading.H5 />
               <HSpacing size=Spacing.xs />
               //TODO: remove mock message later
               <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
                 <Icon name="fal fa-info-circle" size=10 />
               </CTooltip>
+            </div>
+            <div className={CssHelper.flexBox()}>
+              {switch (allSub) {
+               | Data(({operatorAddress}, _)) => <HistoricalBondedGraph operatorAddress />
+               | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
+               }}
             </div>
           </div>
         </Col.Grid>

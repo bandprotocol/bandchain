@@ -28,6 +28,7 @@
 
 ### Scan
 
+- (impv) [\#2503](https://github.com/bandprotocol/bandchain/pull/2503) Implemented Bonded Token Chart on Validator Index Page
 - (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
 - (impv) [\#2497](https://github.com/bandprotocol/bandchain/pull/2497) Implemented validator index top part and uptimechart
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page
