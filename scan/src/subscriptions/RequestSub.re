@@ -430,7 +430,7 @@ module SingleRequestConfig = [%graphql
           schema
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
-        reports @bsRecord {
+        reports(order_by: {validator_id: asc}) @bsRecord {
           transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
