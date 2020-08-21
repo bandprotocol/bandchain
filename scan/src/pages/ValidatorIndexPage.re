@@ -6,6 +6,7 @@ module Styles = {
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       padding(`px(24)),
+      height(`percent(100.)),
       Media.mobile([padding(`px(16))]),
     ]);
   let infoHeader =
@@ -14,6 +15,7 @@ module Styles = {
   let idContainer = style([marginBottom(`px(16)), Media.mobile([marginBottom(`px(8))])]);
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 
+  let infoHeaderCustom = style([margin3(~top=`px(8), ~h=`px(12), ~bottom=`px(20))]);
   // Avatar Box
 
   let avatarContainer =
@@ -386,11 +388,12 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             <div
               className={Css.merge([
                 CssHelper.flexBox(),
+                // CssHelper.mb(~size=24, ()),
+                // CssHelper.px(~size=12, ()),
                 Styles.infoHeader,
-                CssHelper.px(~size=12, ()),
-                CssHelper.mb(~size=14, ()),
+                Styles.infoHeaderCustom,
               ])}>
-              <Heading value="Bonded Token" size=Heading.H5 />
+              <Heading value="Bonded Token" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
               //TODO: remove mock message later
               <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
@@ -439,7 +442,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 CssHelper.mb(~size=24, ()),
                 Styles.infoHeader,
               ])}>
-              <Heading value="Oracle Data Report" size=Heading.H5 />
+              <Heading value="Oracle Data Report" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
               <CTooltip
                 tooltipText="Last 90 days of Report" align=`center tooltipPlacement=CTooltip.Top>

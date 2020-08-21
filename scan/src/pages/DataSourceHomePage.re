@@ -217,15 +217,11 @@ let make = () => {
               ->React.array}
              {isMobile
                 ? React.null
-                : <>
-                    <VSpacing size=Spacing.lg />
-                    <Pagination
-                      currentPage=page
-                      pageCount
-                      onPageChange={newPage => setPage(_ => newPage)}
-                    />
-                    <VSpacing size=Spacing.lg />
-                  </>}
+                : <Pagination
+                    currentPage=page
+                    pageCount
+                    onPageChange={newPage => setPage(_ => newPage)}
+                  />}
            </>;
          | _ =>
            Belt_Array.make(10, ApolloHooks.Subscription.NoData)

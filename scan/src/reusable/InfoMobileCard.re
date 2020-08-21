@@ -67,14 +67,7 @@ let make = (~info) => {
     <div className=Styles.vFlex> <TypeID.Block id=height position=TypeID.Subtitle /> </div>
   | Coin({value, hasDenom}) =>
     <AmountRender coins=value pos={hasDenom ? AmountRender.TxIndex : Fee} />
-  | Count(value) =>
-    <Text
-      value={value |> Format.iPretty}
-      size=Text.Md
-      weight=Text.Semibold
-      spacing={Text.Em(0.02)}
-      code=true
-    />
+  | Count(value) => <Text value={value |> Format.iPretty} size=Text.Md />
   | DataSource(id, name) =>
     <div className=Styles.vFlex>
       <TypeID.DataSource id />
@@ -90,11 +83,10 @@ let make = (~info) => {
   | RequestID(id) => <TypeID.Request id />
   | RequestResponse({request, responseTime}) =>
     <div className={CssHelper.flexBox()}>
-      <Text value={request |> Format.iPretty} weight=Text.Regular block=true ellipsis=true />
+      <Text value={request |> Format.iPretty} block=true ellipsis=true />
       <HSpacing size=Spacing.sm />
       <Text
         value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
-        weight=Text.Regular
         block=true
         color=Colors.gray6
       />
@@ -102,12 +94,7 @@ let make = (~info) => {
   | ProgressBar({reportedValidators, minimumValidators, requestValidators}) =>
     <ProgressBar reportedValidators minimumValidators requestValidators />
   | Float(value, digits) =>
-    <Text
-      value={value |> Format.fPretty(~digits?)}
-      size=Text.Md
-      spacing={Text.Em(0.02)}
-      code=true
-    />
+    <Text value={value |> Format.fPretty(~digits?)} size=Text.Md spacing={Text.Em(0.02)} />
   | KVTableReport(heading, rawReports) =>
     <KVTable
       tableWidth=480
@@ -142,21 +129,14 @@ let make = (~info) => {
         spacing={Text.Em(0.02)}
         nowrap=true
         ellipsis=true
-        code=true
         block=true
       />
     }
   | CopyButton(calldata) => <CopyButton data=calldata title="Copy as bytes" />
-  | Percentage(value, digits) =>
-    <Text
-      value={value |> Format.fPercent(~digits?)}
-      size=Text.Md
-      spacing={Text.Em(0.02)}
-      code=true
-    />
+  | Percentage(value, digits) => <Text value={value |> Format.fPercent(~digits?)} />
   | Text(text) =>
-    <Text value=text spacing={Text.Em(0.02)} nowrap=true ellipsis=true code=true block=true />
-  | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular code=true />
+    <Text value=text spacing={Text.Em(0.02)} nowrap=true ellipsis=true block=true />
+  | Timestamp(time) => <Timestamp time size=Text.Md weight=Text.Regular />
   | Validator(address, moniker, identity) =>
     <ValidatorMonikerLink
       validatorAddress=address
@@ -178,18 +158,13 @@ let make = (~info) => {
       <Text
         value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
         color=Colors.gray7
-        code=true
-        weight=Text.Regular
-        spacing={Text.Em(0.02)}
         block=true
       />
       <HSpacing size=Spacing.sm />
       <Text
         value={"(" ++ (votingPercent |> Format.fPercent(~digits=2)) ++ ")"}
         color=Colors.gray6
-        code=true
         weight=Text.Thin
-        spacing={Text.Em(0.02)}
         block=true
       />
     </div>
@@ -198,16 +173,11 @@ let make = (~info) => {
     switch (uptimeOpt) {
     | Some(uptime) =>
       <div className=Styles.vFlex>
-        <Text
-          value={uptime |> Format.fPercent(~digits=2)}
-          spacing={Text.Em(0.02)}
-          code=true
-          nowrap=true
-        />
+        <Text value={uptime |> Format.fPercent(~digits=2)} spacing={Text.Em(0.02)} nowrap=true />
         <HSpacing size=Spacing.lg />
         <UptimeBar percent=uptime />
       </div>
-    | None => <Text value="N/A" spacing={Text.Em(0.02)} code=true nowrap=true />
+    | None => <Text value="N/A" nowrap=true />
     }
   | Loading(width) => <LoadingCensorBar width height=21 />
   | Nothing => React.null
