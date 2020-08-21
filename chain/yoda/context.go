@@ -20,5 +20,5 @@ type Context struct {
 	fileCache        filecache.Cache
 	broadcastTimeout time.Duration
 	maxTry           uint64
-	rpcPollIntervall time.Duration
+	rpcPollInterval  time.Duration
 }
