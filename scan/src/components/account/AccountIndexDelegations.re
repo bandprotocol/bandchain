@@ -127,7 +127,6 @@ let make = (~address) =>
              isMobile ? renderBodyMobile(delegation) : renderBody(delegation)
            })
          ->React.array}
-        <VSpacing size=Spacing.lg />
         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
       </>
     </div>

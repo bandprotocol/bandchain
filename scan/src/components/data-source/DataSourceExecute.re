@@ -36,8 +36,6 @@ module Styles = {
       border(`zero, `solid, Colors.white),
     ]);
 
-  let hFlex = style([display(`flex), flexDirection(`row)]);
-
   let withWH = (w, h) =>
     style([
       width(w),
@@ -47,16 +45,26 @@ module Styles = {
       alignItems(`center),
     ]);
 
-  let resultWrapper = (w, h, overflowChioce) =>
+  let resultContainer =
     style([
-      width(w),
-      height(h),
-      display(`flex),
-      flexDirection(`column),
-      justifyContent(`center),
       backgroundColor(Colors.white),
-      borderRadius(`px(4)),
-      overflow(overflowChioce),
+      margin2(~v=`px(20), ~h=`zero),
+      selector("> div + div", [borderTop(`px(1), `solid, Colors.gray9)]),
+    ]);
+  let resultBox = style([padding(`px(20))]);
+  let labelWrapper =
+    style([
+      flexShrink(0.),
+      flexGrow(0.),
+      flexBasis(`px(220)),
+      Media.mobile([flexBasis(`px(100))]),
+    ]);
+  let resultWrapper =
+    style([
+      flexShrink(0.),
+      flexGrow(0.),
+      flexBasis(`calc((`sub, `percent(100.), `px(220)))),
+      Media.mobile([flexBasis(`calc((`sub, `percent(100.), `px(100))))]),
     ]);
 };
 
@@ -74,7 +82,8 @@ let parameterInput = (name, index, setCalldataList) => {
     <input
       className=Styles.input
       type_="text"
-      placeholder="Value"
+      // TODO: Think about placeholder later
+      // placeholder="Value"
       onChange={event => {
         let newVal = ReactEvent.Form.target(event)##value;
         setCalldataList(prev => {
@@ -115,39 +124,31 @@ let resultRender = result => {
   | Error(err) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `px(90), `scroll)}>
-        <Text value=err />
-      </div>
+      <div className=Styles.resultWrapper> <Text value=err /> </div>
     </>
   | Success({returncode, stdout, stderr}) =>
-    <>
-      <VSpacing size=Spacing.lg />
-      <div className={Styles.resultWrapper(`percent(100.), `px(95), `auto)}>
-        <div className=Styles.hFlex>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Exit Status" color=Colors.gray6 weight=Text.Semibold />
-          </div>
-          <Text value={returncode |> string_of_int} />
+    <div className=Styles.resultContainer>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+        <div className=Styles.labelWrapper>
+          <Text value="Exit Status" color=Colors.gray6 weight=Text.Semibold />
         </div>
-        <VSpacing size=Spacing.md />
-        <div className=Styles.hFlex>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
-          </div>
-          <Text value=stdout code=true weight=Text.Semibold />
+        <div className=Styles.resultWrapper> <Text value={returncode |> string_of_int} /> </div>
+      </div>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+        <div className=Styles.labelWrapper>
+          <Text value="Output" color=Colors.gray6 weight=Text.Semibold />
         </div>
-        <VSpacing size=Spacing.md />
-        <div className=Styles.hFlex>
-          <HSpacing size=Spacing.lg />
-          <div className={Styles.resultWrapper(`px(120), `px(12), `auto)}>
-            <Text value="Error" color=Colors.gray6 weight=Text.Semibold />
-          </div>
+        <div className=Styles.resultWrapper> <Text value=stdout /> </div>
+      </div>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.resultBox])}>
+        <div className=Styles.labelWrapper>
+          <Text value="Error" color=Colors.gray6 weight=Text.Semibold />
+        </div>
+        <div className=Styles.resultWrapper>
           <Text value=stderr code=true weight=Text.Semibold />
         </div>
       </div>
-    </>
+    </div>
   };
 };
 

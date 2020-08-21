@@ -16,7 +16,7 @@ module Styles = {
       zIndex(2),
       height(`px(130)),
       padding2(~v=`px(16), ~h=`px(24)),
-      Media.mobile([padding2(~v=`px(16), ~h=`px(12))]),
+      Media.mobile([padding2(~v=`px(10), ~h=`px(12)), height(`px(120))]),
     ]);
 
   let bgCard = (url: string) =>
@@ -119,7 +119,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         }
       />
       <div className={Css.merge([CssHelper.flexBox(), Styles.creditContaier])}>
-        <Text value="Empowered by" size=Text.Sm color=Colors.gray7 />
+        <Text value="Powered by" size=Text.Sm color=Colors.gray7 />
         <HSpacing size=Spacing.xs />
         // TODO: make it to link later
         <Text value="Band Oracle" size=Text.Sm color=Colors.bandBlue weight=Text.Medium />

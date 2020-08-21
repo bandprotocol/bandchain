@@ -79,7 +79,7 @@ module InnerPanel = {
                  switch (value) {
                  | InfoMobileCard.Nothing =>
                    <div className=Styles.cardItemHeadingLg>
-                     <Text key=each value=each size=Text.Sm weight=Text.Bold color=Colors.gray6 />
+                     <Text key=each value=each size=Text.Sm weight=Text.Bold color=Colors.gray7 />
                    </div>
                  | _ =>
                    <Text
@@ -87,7 +87,7 @@ module InnerPanel = {
                      value=each
                      size=Text.Sm
                      weight=Text.Semibold
-                     color=Colors.gray6
+                     color=Colors.gray7
                    />
                  }
                })

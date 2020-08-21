@@ -132,15 +132,8 @@ let make = (~height) => {
       {switch (blockSub) {
        | Data({txn}) =>
          let pageCount = Page.getPageCount(txn, pageSize);
-         <>
-           <VSpacing size=Spacing.lg />
-           <Pagination
-             currentPage=page
-             pageCount
-             onPageChange={newPage => setPage(_ => newPage)}
-           />
-           <VSpacing size=Spacing.lg />
-         </>;
+
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
        | _ => React.null
        }}
     </div>
