@@ -90,8 +90,7 @@ let renderBodyMobile =
 };
 
 [@react.component]
-//TODO: Will remove isMobile after finishing the validator index page
-let make = (~address, ~isMobile) => {
+let make = (~address) => {
   let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
 
