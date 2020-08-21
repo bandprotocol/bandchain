@@ -13,7 +13,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~id: ID.Request.t, ~requestOpt: option(RequestSub.Mini.t)) => {
+let make = (~id: ID.Request.t) => {
   let (proofOpt, reload) = ProofHook.get(id);
 
   React.useEffect1(
@@ -40,13 +40,13 @@ let make = (~id: ID.Request.t, ~requestOpt: option(RequestSub.Mini.t)) => {
         height={Text.Px(15)}
       />
     </div>
-    {switch (proofOpt, requestOpt) {
-     | (Some(proof), Some({result: Some(_)})) =>
+    {switch (proofOpt) {
+     | Some(proof) =>
        <div className={CssHelper.flexBox()}>
          <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
          <HSpacing size=Spacing.md />
          <CopyButton
-           data={NonEVMProof.RequestMini(requestOpt->Belt_Option.getExn)->NonEVMProof.createProof}
+           data={proof.jsonProof->NonEVMProof.createProofFromJson}
            title="Copy non-EVM proof"
            width=130
          />
