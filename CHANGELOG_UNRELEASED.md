@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2387](https://github.com/bandprotocol/bandchain/pull/2387) Implementation of allow free report transaction.
+
 ### Yoda
 
 - (feat) [\#2484](https://github.com/bandprotocol/bandchain/pull/2484) yoda/runtime: Add verification environment variables
