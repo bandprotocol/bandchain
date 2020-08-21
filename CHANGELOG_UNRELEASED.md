@@ -18,6 +18,8 @@
 
 ### Scan
 
+- (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
+
 ### Bridges
 
 ### Runtime
