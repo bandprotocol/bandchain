@@ -388,8 +388,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             <div
               className={Css.merge([
                 CssHelper.flexBox(),
-                // CssHelper.mb(~size=24, ()),
-                // CssHelper.px(~size=12, ()),
                 Styles.infoHeader,
                 Styles.infoHeaderCustom,
               ])}>

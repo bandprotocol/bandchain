@@ -93,8 +93,7 @@ let make = (~info) => {
     </div>
   | ProgressBar({reportedValidators, minimumValidators, requestValidators}) =>
     <ProgressBar reportedValidators minimumValidators requestValidators />
-  | Float(value, digits) =>
-    <Text value={value |> Format.fPretty(~digits?)} size=Text.Md spacing={Text.Em(0.02)} />
+  | Float(value, digits) => <Text value={value |> Format.fPretty(~digits?)} />
   | KVTableReport(heading, rawReports) =>
     <KVTable
       tableWidth=480
