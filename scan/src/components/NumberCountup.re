@@ -1,5 +1,5 @@
 [@react.component]
-let make = (~value, ~size, ~weight, ~spacing) => {
+let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true) => {
   let countup =
     Countup.context(
       Countup.props(
@@ -22,5 +22,5 @@ let make = (~value, ~size, ~weight, ~spacing) => {
   );
 
   let newVal = Countup.countUpGet(countup);
-  <Text value={newVal} size weight spacing code=true nowrap=true />;
+  <Text value=newVal size weight spacing code nowrap=true color />;
 };

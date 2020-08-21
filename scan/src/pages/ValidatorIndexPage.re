@@ -89,6 +89,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
   let oracleReportsCountSub =
     ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
   let allSub = Sub.all3(validatorSub, bondedTokenCountSub, oracleReportsCountSub);
+  let isMobile = Media.isMobile();
 
   <Section pbSm=0>
     <div className=CssHelper.container>
@@ -102,23 +103,23 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               Styles.idContainer,
             ])}>
             <div className=Styles.avatarContainer>
-            //TODO: Will get rank later
-              {switch (allSub) {
-               | Data(({identity, rank, moniker}, _, _)) =>
-                 <>
-                   <Avatar moniker identity width=100 widthSm=80 />
-                  //  <div
-                  //    className={Css.merge([
-                  //      Styles.rankContainer,
-                  //      CssHelper.flexBox(~justify=`center, ()),
-                  //    ])}>
-                     
-                  //     <Text value={rank |> string_of_int} color=Colors.white /> 
-                  //     </div>
-                 </>
-               | _ => <LoadingCensorBar width=100 height=100 radius=100 />
-               }}
-            </div>
+              //TODO: Will get rank later
+
+                {switch (allSub) {
+                 | Data(({identity, rank, moniker}, _, _)) =>
+                   <>
+                     <Avatar moniker identity width=100 widthSm=80 />
+                     //  <div
+                     //    className={Css.merge([
+                     //      Styles.rankContainer,
+                     //      CssHelper.flexBox(~justify=`center, ()),
+                     //    ])}>
+                     //     <Text value={rank |> string_of_int} color=Colors.white />
+                     //     </div>
+                   </>
+                 | _ => <LoadingCensorBar width=100 height=100 radius=100 />
+                 }}
+              </div>
             {switch (allSub) {
              | Data(({moniker}, _, _)) => <Heading size=Heading.H3 value=moniker />
              | _ => <LoadingCensorBar width=270 height=20 />
@@ -404,18 +405,9 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             </div>
           </div>
         </Col.Grid>
-        <Col.Grid col=Col.Eight>
-          <div className={Css.merge([Styles.mockup, Styles.infoContainer])}>
-            <div className={Css.merge([CssHelper.flexBox(), Styles.infoHeader])}>
-              <Heading value="Your Delegation Info" size=Heading.H5 />
-              <HSpacing size=Spacing.xs />
-              //TODO: remove mock message later
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                <Icon name="fal fa-info-circle" size=10 />
-              </CTooltip>
-            </div>
-          </div>
-        </Col.Grid>
+        {isMobile
+           ? React.null
+           : <Col.Grid col=Col.Eight> <ValidatorStakingInfo validatorAddress=address /> </Col.Grid>}
       </Row.Grid>
       <Row.Grid marginBottom=24>
         <Col.Grid col=Col.Six mbSm=24>
@@ -426,7 +418,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 CssHelper.mb(~size=24, ()),
                 Styles.infoHeader,
               ])}>
-              <Heading value="Block Uptime" size=Heading.H5 />
+              <Heading value="Block Uptime" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
               //TODO: remove mock message later
               <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
