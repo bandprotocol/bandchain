@@ -348,3 +348,11 @@ historical_oracle_statuses = sa.Table(
     Column("status", sa.Boolean),
     Column("timestamp", CustomDateTime, primary_key=True),
 )
+
+oracle_script_requests = sa.Table(
+    "oracle_script_requests",
+    metadata,
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
+    Column("count", sa.Integer),
+)
+

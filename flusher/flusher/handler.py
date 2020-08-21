@@ -27,6 +27,7 @@ from .db import (
     reporters,
     related_data_source_oracle_scripts,
     historical_oracle_statuses,
+    oracle_script_requests,
 )
 
 
@@ -84,6 +85,10 @@ class Handler(object):
             .on_conflict_do_update(constraint="data_sources_pkey", set_=msg)
         )
 
+    def handle_new_oracle_script(self, msg):
+        self.handle_set_oracle_script(msg)
+        self.handle_new_oracle_script_request({"oracle_script_id": msg["id"], "count": 0})
+
     def handle_set_oracle_script(self, msg):
         if msg["tx_hash"] is not None:
             msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
@@ -100,6 +105,7 @@ class Handler(object):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(requests.insert(), msg)
+        self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
 
     def handle_update_request(self, msg):
         condition = True
@@ -293,4 +299,17 @@ class Handler(object):
             insert(historical_oracle_statuses)
             .values(**msg)
             .on_conflict_do_update(constraint="historical_oracle_statuses_pkey", set_=msg)
+        )
+
+    def handle_new_oracle_script_request(self, msg):
+        self.conn.execute(oracle_script_requests.insert(), msg)
+
+    def handle_set_oracle_script_request(self, msg):
+        condition = True
+        for col in oracle_script_requests.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(
+            oracle_script_requests.update(condition).values(
+                count=oracle_script_requests.c.count + 1
+            )
         )
