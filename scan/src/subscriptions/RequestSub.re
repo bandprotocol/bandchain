@@ -92,6 +92,7 @@ module Mini = {
                  block @bsRecord {
                    timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
                  }
+                 gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
                }
                reportsAggregate: reports_aggregate @bsRecord {
                  aggregate @bsRecord {
@@ -133,12 +134,13 @@ module Mini = {
             schema
           }
           transaction @bsRecord {
-                 hash @bsDecoder(fn: "GraphQLParser.hash")
-                 blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
-                 block @bsRecord {
-                   timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
-                 }
-               }
+            hash @bsDecoder(fn: "GraphQLParser.hash")
+            blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+            block @bsRecord {
+              timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+            }
+            gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+          }
           reportsAggregate: reports_aggregate @bsRecord {
             aggregate @bsRecord {
               count @bsDecoder(fn: "Belt_Option.getExn")
@@ -173,12 +175,13 @@ module Mini = {
             schema
           }
           transaction @bsRecord {
-                 hash @bsDecoder(fn: "GraphQLParser.hash")
-                 blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
-                 block @bsRecord {
-                   timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
-                 }
-               }
+            hash @bsDecoder(fn: "GraphQLParser.hash")
+            blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+            block @bsRecord {
+              timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+            }
+            gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
+          }
           reportsAggregate: reports_aggregate @bsRecord {
             aggregate @bsRecord {
               count @bsDecoder(fn: "Belt_Option.getExn")
@@ -427,13 +430,14 @@ module SingleRequestConfig = [%graphql
           schema
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
-        reports @bsRecord {
+        reports(order_by: {validator_id: asc}) @bsRecord {
           transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
             block @bsRecord {
               timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
             }
+            gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
           }
           reportDetails: raw_reports @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
@@ -447,7 +451,7 @@ module SingleRequestConfig = [%graphql
             identity
           }
         }
-        requestedValidators: val_requests @bsRecord {
+        requestedValidators: val_requests(order_by: {validator_id: asc}) @bsRecord {
           validator @bsRecord {
             consensusAddress: consensus_address
             operatorAddress: operator_address @bsDecoder(fn: "Address.fromBech32")
@@ -464,6 +468,7 @@ module SingleRequestConfig = [%graphql
           block @bsRecord {
             timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
           }
+          gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
         }
         rawDataRequests: raw_requests @bsRecord {
           externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
@@ -500,6 +505,7 @@ module MultiRequestConfig = [%graphql
             block @bsRecord {
               timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
             }
+            gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
           }
           reportDetails: raw_reports @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
@@ -530,6 +536,7 @@ module MultiRequestConfig = [%graphql
           block @bsRecord {
             timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
           }
+          gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
         }
         rawDataRequests: raw_requests @bsRecord {
           externalID: external_id @bsDecoder (fn: "GraphQLParser.string")

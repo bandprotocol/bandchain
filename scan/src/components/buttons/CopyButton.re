@@ -16,13 +16,13 @@ module Styles = {
 
   // Code
 
-  let buttonCode = w =>
+  let buttonCode = (~w, ~py, ~px, ()) =>
     style([
       backgroundColor(Colors.white),
       border(`px(1), `solid, Colors.bandBlue),
       borderRadius(`px(4)),
       cursor(`pointer),
-      padding2(~v=`px(5), ~h=`px(10)),
+      padding2(~v=`px(py), ~h=`px(px)),
       width(`px(w)),
     ]);
 };
@@ -38,13 +38,13 @@ let make = (~data, ~title, ~width=105) => {
   </div>;
 };
 
-module Code = {
+module Modern = {
   [@react.component]
-  let make = (~data, ~title, ~width=105) => {
+  let make = (~data, ~title, ~width=105, ~py=5, ~px=10) => {
     let (copied, setCopy) = React.useState(_ => false);
     <a
       className={Css.merge([
-        Styles.buttonCode(width),
+        Styles.buttonCode(~w=width, ~px, ~py, ()),
         CssHelper.flexBox(~align=`center, ~justify=`center, ()),
       ])}
       onClick={_ => {

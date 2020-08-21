@@ -1,10 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
-
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -13,288 +10,230 @@ module Styles = {
       flexDirection(`column),
       alignItems(`center),
     ]);
-
-  let withWidth = w => style([width(`px(w))]);
-
-  let fillLeft = style([marginLeft(`auto)]);
-
-  let valueContainer =
+  let emptyContainer =
     style([
+      height(`px(300)),
       display(`flex),
-      flexDirection(`row),
-      alignItems(`flexEnd),
-      paddingLeft(`px(20)),
-      width(`percent(100.)),
-      maxWidth(`px(170)),
-      marginLeft(`auto),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
     ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 
-  let pagination = style([height(`px(30))]);
+  // DataSource Table
+
+  let dataSourceTable = show => {
+    style([
+      padding2(~v=show ? `px(16) : `zero, ~h=`px(24)),
+      marginTop(show ? `px(24) : `zero),
+      backgroundColor(Colors.profileBG),
+      transition(~duration=200, "all"),
+      height(show ? `auto : `zero),
+      opacity(show ? 1. : 0.),
+      selector("> div + div", [paddingTop(`px(16))]),
+    ]);
+  };
+  let toggle = style([cursor(`pointer)]);
 };
 
-module TableHeader = {
+module DataSourceItem = {
   [@react.component]
-  let make = () => {
-    <THead>
-      <Row>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-        <Col size=1.>
-          <Text
-            block=true
-            value="REQUEST"
-            size=Text.Sm
-            weight=Text.Semibold
-            color=Colors.gray6
-            spacing={Text.Em(0.05)}
+  let make = (~dataSource: ReportSub.ValidatorReport.report_details_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Two>
+        <Text block=true value={dataSource.externalID} color=Colors.gray7 />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
+          <TypeID.DataSource
+            id={
+                 let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                 rawRequest.dataSource.dataSourceID;
+               }
           />
-        </Col>
-        <Col size=2.>
+          <HSpacing size=Spacing.sm />
           <Text
-            block=true
-            value="TX HASH"
-            size=Text.Sm
-            weight=Text.Semibold
-            color=Colors.gray6
-            spacing={Text.Em(0.05)}
+            value={
+                    let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                    rawRequest.dataSource.dataSourceName;
+                  }
+            ellipsis=true
           />
-        </Col>
-        <Col size=2.3>
-          <Text
-            block=true
-            value="ORACLE SCRIPT"
-            size=Text.Sm
-            weight=Text.Semibold
-            color=Colors.gray6
-            spacing={Text.Em(0.05)}
-          />
-        </Col>
-        <Col size=1.>
-          <Text
-            block=true
-            value="DATA SOURCE"
-            size=Text.Sm
-            weight=Text.Semibold
-            color=Colors.gray6
-            spacing={Text.Em(0.05)}
-          />
-        </Col>
-        <Col size=0.9>
-          <div className={Styles.vFlex(`flexEnd)}>
-            <div className=Styles.fillLeft />
-            <Text
-              block=true
-              value="EXTERNAL ID"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
-        <Col size=0.7>
-          <div className={Styles.vFlex(`flexEnd)}>
-            <div className=Styles.fillLeft />
-            <Text
-              block=true
-              value="EXIT CODE"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=2.>
-          <div className={Styles.vFlex(`flexEnd)}>
-            <div className=Styles.fillLeft />
-            <Text
-              block=true
-              value="VALUE"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col> <HSpacing size=Spacing.lg /> </Col>
-      </Row>
-    </THead>;
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <Text
+          block=true
+          value={
+                  let rawRequest = dataSource.rawRequest |> Belt_Option.getExn;
+                  rawRequest.calldata |> JsBuffer.toUTF8;
+                }
+          color=Colors.gray7
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <Text block=true value={dataSource.exitCode} color=Colors.gray7 />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <Text
+          block=true
+          value={dataSource.data |> JsBuffer.toUTF8}
+          align=Text.Right
+          color=Colors.gray7
+          ellipsis=true
+        />
+      </Col.Grid>
+    </Row.Grid>;
   };
 };
 
-module ReportCount = {
+module RenderBody = {
   [@react.component]
-  let make = (~reportsCountSub: ApolloHooks.Subscription.variant(int)) => {
-    <Row>
-      {switch (reportsCountSub) {
-       | Data(totalReports) =>
-         <>
-           <HSpacing size={`px(25)} />
-           <Text value={totalReports |> string_of_int} weight=Text.Bold />
-           <HSpacing size={`px(5)} />
-           <Text value="Reports" />
-         </>
-       | _ => <LoadingCensorBar width=100 height=15 />
-       }}
-    </Row>;
+  let make =
+      (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
+    let (show, setShow) = React.useState(_ => false);
+    <TBody.Grid
+      key={
+        switch (reportsSub) {
+        | Data({txHash}) => txHash |> Hash.toHex
+        | _ => reserveIndex |> string_of_int
+        }
+      }
+      paddingH={`px(24)}>
+      <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+        <Col.Grid col=Col.Three>
+          {switch (reportsSub) {
+           | Data({request: {id}}) => <TypeID.Request id />
+           | _ => <LoadingCensorBar width=135 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Four>
+          {switch (reportsSub) {
+           | Data({request: {oracleScript: {oracleScriptID, name}}}) =>
+             <div className={CssHelper.flexBox()}>
+               <TypeID.OracleScript id=oracleScriptID />
+               <HSpacing size=Spacing.sm />
+               <Text value=name ellipsis=true />
+             </div>
+           | _ => <LoadingCensorBar width=270 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Three>
+          {switch (reportsSub) {
+           | Data({txHash}) => <TxLink txHash width=140 />
+           | _ => <LoadingCensorBar width=170 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Two>
+          <div
+            onClick={_ => setShow(prev => !prev)}
+            className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.toggle])}>
+            {switch (reportsSub) {
+             | Data(_) =>
+               <>
+                 <Text
+                   block=true
+                   value={show ? "Hide Report" : "Show Report"}
+                   weight=Text.Semibold
+                   color=Colors.bandBlue
+                 />
+                 <HSpacing size=Spacing.xs />
+                 <Icon
+                   name={show ? "fas fa-caret-up" : "fas fa-caret-down"}
+                   color=Colors.bandBlue
+                 />
+               </>
+             | _ => <LoadingCensorBar width=100 height=15 />
+             }}
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <div className={Styles.dataSourceTable(show)}>
+        <Row.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="External ID" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Three>
+            <Text block=true value="Data Source" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="Param" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Two>
+            <Text block=true value="Exit Code" weight=Text.Semibold color=Colors.gray7 />
+          </Col.Grid>
+          <Col.Grid col=Col.Three>
+            <Text
+              block=true
+              value="Value"
+              weight=Text.Semibold
+              align=Text.Right
+              color=Colors.gray7
+            />
+          </Col.Grid>
+        </Row.Grid>
+        {switch (reportsSub) {
+         | Data({reportDetails}) =>
+           reportDetails
+           ->Belt_Array.mapWithIndex((i, reportDetail) =>
+               <DataSourceItem
+                 key={(i |> string_of_int) ++ reportDetail.externalID}
+                 dataSource=reportDetail
+               />
+             )
+           ->React.array
+         | _ => <LoadingCensorBar width=170 height=50 />
+         }}
+      </div>
+    </TBody.Grid>;
   };
 };
 
-module Reports = {
+module RenderBodyMobile = {
   [@react.component]
-  let make = (~reports: array(ReportSub.ValidatorReport.t)) => {
-    reports
-    ->Belt.Array.map(({txHash, request, reportDetails}) => {
-        <TBody key={txHash |> Hash.toBase64}>
-          <Row alignItems=`flexStart>
-            <Col> <HSpacing size=Spacing.md /> </Col>
-            <Col size=1. alignSelf=Col.Start> <TypeID.Request id={request.id} /> </Col>
-            <Col size=2. alignSelf=Col.Start>
-              <TxLink txHash width=150 weight=Text.Regular />
-            </Col>
-            <Col size=2.3 alignSelf=Col.Start>
-              <Row>
-                <TypeID.OracleScript id={request.oracleScript.oracleScriptID} />
-                <HSpacing size=Spacing.sm />
-                <HSpacing size=Spacing.xs />
-                <div className={Styles.withWidth(140)}>
-                  <Text value={request.oracleScript.name} block=true code=true ellipsis=true />
-                </div>
-              </Row>
-            </Col>
-            <Col size=1.>
-              {reportDetails
-               ->Belt_Array.map(reportDetail => {
-                   <div key={reportDetail.externalID}>
-                     // TODO: let's investigate later why raw_request is optional.
-
-                       <Row>
-                         <TypeID.DataSource
-                           id={
-                                let rawRequest = reportDetail.rawRequest |> Belt_Option.getExn;
-                                rawRequest.dataSourceID;
-                              }
-                         />
-                       </Row>
-                       <VSpacing size=Spacing.sm />
-                       <VSpacing size=Spacing.xs />
-                     </div>
-                 })
-               ->React.array}
-            </Col>
-            <Col size=0.9>
-              {reportDetails
-               ->Belt_Array.map(({externalID}) => {
-                   <div key=externalID>
-                     <div className={Styles.vFlex(`flexEnd)}>
-                       <Row>
-                         <div className=Styles.fillLeft />
-                         <Text value=externalID block=true code=true />
-                       </Row>
-                     </div>
-                     <VSpacing size=Spacing.md />
-                   </div>
-                 })
-               ->React.array}
-            </Col>
-            <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
-            <Col size=0.7>
-              {reportDetails
-               ->Belt_Array.map(({exitCode, externalID}) => {
-                   <div key=externalID>
-                     <div className={Styles.vFlex(`flexEnd)}>
-                       <Row>
-                         <div className=Styles.fillLeft />
-                         <Text value=exitCode block=true code=true />
-                       </Row>
-                     </div>
-                     <VSpacing size=Spacing.md />
-                   </div>
-                 })
-               ->React.array}
-            </Col>
-            <Col size=2.>
-              {reportDetails
-               ->Belt_Array.map(({data, externalID}) => {
-                   <div key=externalID>
-                     <div className=Styles.valueContainer>
-                       <div className=Styles.fillLeft />
-                       <Text
-                         value={data |> JsBuffer.toUTF8}
-                         block=true
-                         code=true
-                         ellipsis=true
-                         align=Text.Right
-                       />
-                     </div>
-                     <VSpacing size=Spacing.md />
-                   </div>
-                 })
-               ->React.array}
-            </Col>
-            <Col> <HSpacing size=Spacing.lg /> </Col>
-          </Row>
-        </TBody>
-      })
-    ->React.array;
-  };
-};
-
-module Loading = {
-  [@react.component]
-  let make = () => {
-    <>
-      {Belt_Array.make(
-         5,
-         <Row alignItems=`flexStart>
-           <Col> <HSpacing size=Spacing.md /> </Col>
-           <Col size=1. alignSelf=Col.Start> <LoadingCensorBar width=50 height=20 /> </Col>
-           <Col size=2. alignSelf=Col.Start> <LoadingCensorBar width=100 height=20 /> </Col>
-           <Col size=2.3 alignSelf=Col.Start>
-             <Row> <LoadingCensorBar width=180 height=20 /> </Row>
-           </Col>
-           <Col size=1.> <div> <LoadingCensorBar width=50 height=20 /> </div> </Col>
-           <Col size=0.9>
-             <div>
-               <div className={Styles.vFlex(`flexEnd)}>
-                 <Row>
-                   <div className=Styles.fillLeft />
-                   <LoadingCensorBar width=30 height=20 />
-                 </Row>
-               </div>
-               <VSpacing size=Spacing.md />
-             </div>
-           </Col>
-           <Col size=0.2> <HSpacing size=Spacing.sm /> </Col>
-           <Col size=0.7>
-             <div>
-               <div className={Styles.vFlex(`flexEnd)}>
-                 <Row>
-                   <div className=Styles.fillLeft />
-                   <LoadingCensorBar width=30 height=20 />
-                 </Row>
-               </div>
-               <VSpacing size=Spacing.md />
-             </div>
-           </Col>
-           <Col size=2.>
-             <div>
-               <div className=Styles.valueContainer>
-                 <div className=Styles.fillLeft />
-                 <LoadingCensorBar width=50 height=20 />
-               </div>
-               <VSpacing size=Spacing.md />
-             </div>
-           </Col>
-           <Col> <HSpacing size=Spacing.lg /> </Col>
-         </Row>,
-       )
-       ->Belt.Array.mapWithIndex((i, e) => {<TBody key={i |> string_of_int}> e </TBody>})
-       ->React.array}
-      <VSpacing size=Spacing.lg />
-    </>;
+  let make =
+      (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
+    switch (reportsSub) {
+    | Data({txHash, request: {id, oracleScript: {oracleScriptID, name}}, reportDetails}) =>
+      <MobileCard
+        values=InfoMobileCard.[
+          ("Request ID", RequestID(id)),
+          ("Oracle Script", OracleScript(oracleScriptID, name)),
+          ("TX Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
+        ]
+        key={id |> ID.Request.toString}
+        idx={id |> ID.Request.toString}
+        panels={
+          reportDetails
+          ->Belt_Array.map(({externalID, exitCode, data, rawRequest: rawRequestOpt}) => {
+              let ReportSub.ValidatorReport.{
+                    dataSource: {dataSourceID, dataSourceName},
+                    calldata,
+                  } =
+                rawRequestOpt->Belt.Option.getExn;
+              InfoMobileCard.[
+                ("External ID", Text(externalID)),
+                ("Data Source", DataSource(dataSourceID, dataSourceName)),
+                ("Param", Text(calldata |> JsBuffer.toUTF8)),
+                ("Exit Code", Text(exitCode)),
+                ("Value", Text(data |> JsBuffer.toUTF8)),
+              ];
+            })
+          ->Belt.List.fromArray
+        }
+      />
+    | _ =>
+      <MobileCard
+        values=InfoMobileCard.[
+          ("Request ID", Loading(70)),
+          ("Oracle Script", Loading(136)),
+          ("TX Hash", Loading(Media.isSmallMobile() ? 170 : 200)),
+        ]
+        key={reserveIndex |> string_of_int}
+        idx={reserveIndex |> string_of_int}
+      />
+    };
   };
 };
 
@@ -313,33 +252,107 @@ let make = (~address) => {
     );
   let reportsCountSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
 
-  let allSub = Sub.all2(reportsCountSub, reportsSub);
+  let allSub = Sub.all2(reportsSub, reportsCountSub);
+
+  let isMobile = Media.isMobile();
 
   <div className=Styles.tableWrapper>
-    <ReportCount reportsCountSub />
-    <VSpacing size=Spacing.lg />
-    <TableHeader />
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (allSub) {
+              | Data((_, reportsCount)) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={reportsCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Three>
+               {switch (allSub) {
+                | Data((_, reportsCount)) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={reportsCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Oracle Reports"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Four>
+               <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+             <Col.Grid col=Col.Five>
+               <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
     {switch (allSub) {
-     | Data((reportsCount, reports)) =>
+     | Data((reports, reportsCount)) =>
        let pageCount = Page.getPageCount(reportsCount, pageSize);
-       reports->Belt_Array.length > 0
-         ? <>
-             <Reports reports />
-             <VSpacing size=Spacing.lg />
-             <Pagination
-               currentPage=page
-               pageCount
-               onPageChange={newPage => setPage(_ => newPage)}
-             />
-           </>
-         : <div className=Styles.iconWrapper>
-             <VSpacing size={`px(30)} />
-             <img src=Images.noRequestIcon className=Styles.icon />
-             <VSpacing size={`px(40)} />
-             <Text block=true value="NO REPORTS" weight=Text.Regular color=Colors.blue4 />
-             <VSpacing size={`px(15)} />
-           </div>;
-     | _ => <Loading />
+       <>
+         {reportsCount > 0
+            ? reports
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? <RenderBodyMobile
+                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        reserveIndex=i
+                        reportsSub={Sub.resolve(e)}
+                      />
+                    : <RenderBody
+                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        reserveIndex=i
+                        reportsSub={Sub.resolve(e)}
+                      />
+                )
+              ->React.array
+            : <div className=Styles.emptyContainer>
+                <img src=Images.noSource className=Styles.noDataImage />
+                <Heading
+                  size=Heading.H4
+                  value="No Report"
+                  align=Heading.Center
+                  weight=Heading.Regular
+                  color=Colors.bandBlue
+                />
+              </div>}
+         {isMobile
+            ? React.null
+            : <Pagination
+                currentPage=page
+                pageCount
+                onPageChange={newPage => setPage(_ => newPage)}
+              />}
+       </>;
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile
+             ? <RenderBodyMobile key={i |> string_of_int} reserveIndex=i reportsSub=noData />
+             : <RenderBody key={i |> string_of_int} reserveIndex=i reportsSub=noData />
+         )
+       ->React.array
      }}
   </div>;
 };

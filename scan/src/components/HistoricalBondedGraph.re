@@ -155,20 +155,24 @@ let make = (~operatorAddress) => {
 
   switch (dataSub) {
   | Data(data) =>
+    let show = data->Belt.Array.size > 5;
+
     <div className=Styles.container>
-      <canvas id="historicalBonded" className={Styles.chart(data->Belt.Array.size > 5)} />
-      <div className=Styles.emptyContainer>
-        <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
-        <VSpacing size={`px(16)} />
-        <Heading
-          size=Heading.H4
-          value="Insufficient data to visualize"
-          align=Heading.Center
-          weight=Heading.Regular
-          color=Colors.bandBlue
-        />
-      </div>
-    </div>
+      <canvas id="historicalBonded" className={Styles.chart(show)} />
+      {!show
+         ? <div className=Styles.emptyContainer>
+             <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
+             <VSpacing size={`px(16)} />
+             <Heading
+               size=Heading.H4
+               value="Insufficient data to visualize"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </div>
+         : React.null}
+    </div>;
   | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
   };
 };

@@ -19,8 +19,7 @@ module Styles = {
       ]),
     ]);
 
-  let hiddenTooltipSm =
-    style([Media.mobile([hover([selector("> div:nth-child(1)", [opacity(1.)])])])]);
+  let hiddenTooltipSm = style([Media.mobile([display(`none)])]);
   let tooltipItem = (width_, padding_, align_, fsize_) =>
     style([
       position(`absolute),
