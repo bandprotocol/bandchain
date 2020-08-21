@@ -51,11 +51,9 @@ class Handler(object):
             select([accounts.c.id]).where(accounts.c.address == address)
         ).scalar()
 
-    def get_request_count(self, timestamp):
+    def get_request_count(self, date):
         return self.conn.execute(
-            select([request_count_per_days.c.count]).where(
-                request_count_per_days.c.timestamp == timestamp
-            )
+            select([request_count_per_days.c.count]).where(request_count_per_days.c.date == date)
         ).scalar()
 
     def handle_new_block(self, msg):
@@ -112,7 +110,7 @@ class Handler(object):
     def handle_new_request(self, msg):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        self.handle_set_request_count_per_days({"timestamp": msg["timestamp"]})
+        self.handle_set_request_count_per_days({"date": msg["timestamp"]})
         del msg["timestamp"]
         self.conn.execute(requests.insert(), msg)
         self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
@@ -325,7 +323,7 @@ class Handler(object):
         )
 
     def handle_set_request_count_per_days(self, msg):
-        if self.get_request_count(msg["timestamp"]) is None:
+        if self.get_request_count(msg["date"]) is None:
             msg["count"] = 1
             self.conn.execute(request_count_per_days.insert(), msg)
         else:

@@ -1,5 +1,5 @@
 import base64 as b64
-from datetime import datetime
+from datetime import datetime, date
 import sqlalchemy as sa
 import enum
 
@@ -76,11 +76,11 @@ class CustomBase64(sa.types.TypeDecorator):
 class CustomDate(sa.types.TypeDecorator):
     """Custom DateTime type that accepts Python nanosecond epoch int."""
 
-    impl = sa.DateTime
+    impl = sa.Date
 
     def process_bind_param(self, value, dialect):
         dt = datetime.fromtimestamp(value / 1e9)
-        return datetime(dt.year, dt.month, dt.day)
+        return date(dt.year, dt.month, dt.day)
 
 
 def Column(*args, **kwargs):
@@ -370,6 +370,6 @@ oracle_script_requests = sa.Table(
 request_count_per_days = sa.Table(
     "request_count_per_days",
     metadata,
-    Column("timestamp", CustomDate, primary_key=True),
+    Column("date", CustomDate, primary_key=True),
     Column("count", sa.Integer),
 )
