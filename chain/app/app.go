@@ -35,6 +35,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	bandante "github.com/bandprotocol/bandchain/chain/x/oracle/ante"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
 )
 
@@ -135,7 +136,7 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
 ) *BandApp {
 	cdc := MakeCodec()
 	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -237,7 +238,11 @@ func NewBandApp(
 	// initialize BaseApp.
 	app.SetInitChainer(app.InitChainer)
 	app.SetBeginBlocker(app.BeginBlocker)
-	app.SetAnteHandler(ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, ante.DefaultSigVerificationGasConsumer))
+	anteHandler := ante.NewAnteHandler(app.AccountKeeper, app.SupplyKeeper, auth.DefaultSigVerificationGasConsumer)
+	if !disableFeelessReports {
+		anteHandler = bandante.NewFeelessReportsAnteHandler(anteHandler, app.OracleKeeper)
+	}
+	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 	if loadLatest {
 		err := app.LoadLatestVersion(app.keys[bam.MainStoreKey])
