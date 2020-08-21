@@ -41,11 +41,11 @@ type App struct {
 func NewBandAppWithEmitter(
 	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
 ) *App {
 	app := bandapp.NewBandApp(
 		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-		home, baseAppOptions...,
+		home, disableFeelessReports, baseAppOptions...,
 	)
 	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &App{
