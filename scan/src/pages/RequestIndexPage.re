@@ -190,10 +190,7 @@ let make = (~reqID) => {
         <Col.Grid>
           <Heading value="Data Request" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
           {switch (requestSub) {
-           | Data({id}) =>
-             <div className={CssHelper.flexBox()}>
-               <TypeID.Request id position=TypeID.Title />
-             </div>
+           | Data({id}) => <TypeID.Request id position=TypeID.Title />
            | _ => <LoadingCensorBar width=150 height=23 />
            }}
         </Col.Grid>
@@ -243,9 +240,7 @@ let make = (~reqID) => {
                 <VSpacing size=Spacing.sm />
                 {switch (requestSub) {
                  | Data({transaction: {hash}}) =>
-                   <div className={CssHelper.flexBox()}>
-                     <TxLink txHash=hash width={isMobile ? 260 : 360} />
-                   </div>
+                   <TxLink txHash=hash width={isMobile ? 260 : 360} />
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
@@ -254,17 +249,15 @@ let make = (~reqID) => {
                 <VSpacing size=Spacing.sm />
                 {switch (requestSub) {
                  | Data({transaction: {gasFee}}) =>
-                   <div className={CssHelper.flexBox()}>
-                     <Text
-                       block=true
-                       value={
-                         (gasFee |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=2))
-                         ++ " BAND"
-                       }
-                       size=Text.Lg
-                       color=Colors.gray7
-                     />
-                   </div>
+                   <Text
+                     block=true
+                     value={
+                       (gasFee |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=2))
+                       ++ " BAND"
+                     }
+                     size=Text.Lg
+                     color=Colors.gray7
+                   />
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
@@ -298,19 +291,14 @@ let make = (~reqID) => {
                 <VSpacing size={`px(8)} />
                 {switch (requestSub) {
                  | Data({resolveStatus}) =>
-                   <div className={CssHelper.flexBox()}>
-                     <RequestStatus resolveStatus display=RequestStatus.Full />
-                     <HSpacing size=Spacing.sm />
-                   </div>
+                   <RequestStatus resolveStatus display=RequestStatus.Full />
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
             <Row.Grid>
               <Col.Grid>
-                <div className={CssHelper.flexBox()}>
-                  <Heading value="Request to" size=Heading.H5 />
-                </div>
+                <Heading value="Request to" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 <Row.Grid wrap=true>
                   {switch (requestSub) {
