@@ -4,8 +4,7 @@ import shlex
 import subprocess
 import base64
 
-# Copy and paste this file on Google Cloud function
-# Set environment flag of MAX_EXECUTABLE, MAX_DATA_SIZE, MAX_TIMEOUT, MAX_STDOUT, MAX_STDERR
+# Set environment flag of MAX_EXECUTABLE, MAX_DATA_SIZE
 
 
 runtime_version = "${RUNTIME_VERSION}"
@@ -73,7 +72,9 @@ def execute(request):
     os.chmod(path, 0o775)
     try:
         env = os.environ.copy()
-        env["PYTHONPATH"] = os.getcwd()
+        for key, value in request_json.get("env", {}).items():
+            env[key] = value
+
         proc = subprocess.Popen(
             [path] + shlex.split(request_json["calldata"]),
             env=env,
