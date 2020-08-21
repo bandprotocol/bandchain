@@ -74,7 +74,7 @@ class CustomBase64(sa.types.TypeDecorator):
 
 
 class CustomDate(sa.types.TypeDecorator):
-    """Custom DateTime type that accepts Python nanosecond epoch int."""
+    """Custom Date type that accepts Python nanosecond epoch int."""
 
     impl = sa.Date
 
