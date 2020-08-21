@@ -149,19 +149,10 @@ let make = () =>
   }
   |> Sub.default(
        _,
-       <div className=Styles.versionLoading>
-         {Media.isMobile()
-            ? <LoadingCensorBar
-                width=110
-                height=20
-                colorBase=Colors.blue1
-                colorLighter=Colors.white
-              />
-            : <LoadingCensorBar
-                width=120
-                height=16
-                colorBase=Colors.blue1
-                colorLighter=Colors.white
-              />}
-       </div>,
+       {
+         let width = Media.isSmallMobile() ? 80 : 110;
+         <div className=Styles.versionLoading>
+           <LoadingCensorBar width height=20 colorBase=Colors.blue1 colorLighter=Colors.white />
+         </div>;
+       },
      );

@@ -178,12 +178,11 @@ let make = () => {
     <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
       {switch (trackingSub) {
        | Data({chainID}) => <ConnectBtn connect={_ => connect(chainID)} />
-
        | Error(err) =>
          // log for err details
          Js.Console.log(err);
          <Text value="chain id not found" />;
-       | _ => <LoadingCensorBar width=60 height=18 />
+       | _ => <LoadingCensorBar width=80 height=18 />
        }}
     </div>
   };
