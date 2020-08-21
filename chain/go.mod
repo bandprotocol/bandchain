@@ -12,6 +12,7 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/gorilla/mux v1.7.4
+	github.com/hashicorp/golang-lru v0.5.4
 	github.com/kyokomi/emoji v2.2.4+incompatible
 	github.com/levigross/grequests v0.0.0-20190908174114-253788527a1a
 	github.com/oasisprotocol/oasis-core/go v0.0.0-20200730171716-3be2b460b3ac
