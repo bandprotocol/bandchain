@@ -21,6 +21,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2504](https://github.com/bandprotocol/bandchain/pull/2504) Change request-count-per-days from view to table
 - (bugs) [\#2505](https://github.com/bandprotocol/bandchain/pull/2505) fix bug related ds os table.
 - (feat) [\#2476](https://github.com/bandprotocol/bandchain/pull/2476) Implemented `historical_bonded_token_on_validators` table
 - (impv) [\#2495](https://github.com/bandprotocol/bandchain/pull/2495) Implemented `historical_oracle_statuses` table
@@ -35,6 +36,7 @@
 - (impv) [\#2511](https://github.com/bandprotocol/bandchain/pull/2511) Implemented report chart and oracle data reports tab
 - (impv) [\#2508](https://github.com/bandprotocol/bandchain/pull/2508) Implemented Your delegation info
 - (impv) [\#2503](https://github.com/bandprotocol/bandchain/pull/2503) Implemented Bonded Token Chart on Validator Index Page
+- (impv) [\#2501](https://github.com/bandprotocol/bandchain/pull/2501) Implemented Request Index Page
 - (impv) [\#2500](https://github.com/bandprotocol/bandchain/pull/2500) Implemented Delegators and ProposedBlock tabs
 - (impv) [\#2497](https://github.com/bandprotocol/bandchain/pull/2497) Implemented validator index top part and uptimechart
 - (impv) [\#2493](https://github.com/bandprotocol/bandchain/pull/2493) Implemented requests table for all requests page

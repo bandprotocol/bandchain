@@ -44,6 +44,7 @@ let yellow7 = Css.hex("B87D14");
 let yellow8 = Css.hex("8E5F0B");
 
 let yellowAccent1 = Css.hex("FEF5CD");
+let yellowAccent2 = Css.hex("F4D23E");
 let yellowAccent7 = Css.hex("937906");
 
 let orange1 = Css.hex("FFF1EB");

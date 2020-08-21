@@ -1,5 +1,5 @@
 import base64 as b64
-from datetime import datetime
+from datetime import datetime, date
 import sqlalchemy as sa
 import enum
 
@@ -71,6 +71,16 @@ class CustomBase64(sa.types.TypeDecorator):
         if value is None:
             return value
         return b64.decodestring(value.encode())
+
+
+class CustomDate(sa.types.TypeDecorator):
+    """Custom Date type that accepts Python nanosecond epoch int."""
+
+    impl = sa.Date
+
+    def process_bind_param(self, value, dialect):
+        dt = datetime.fromtimestamp(value / 1e9)
+        return date(dt.year, dt.month, dt.day)
 
 
 def Column(*args, **kwargs):
@@ -327,6 +337,7 @@ historical_bonded_token_on_validators = sa.Table(
     Column("bonded_tokens", sa.DECIMAL),
     Column("timestamp", CustomDateTime, primary_key=True),
 )
+
 reporters = sa.Table(
     "reporters",
     metadata,
@@ -347,4 +358,18 @@ historical_oracle_statuses = sa.Table(
     Column("operator_address", sa.String, primary_key=True),
     Column("status", sa.Boolean),
     Column("timestamp", CustomDateTime, primary_key=True),
+)
+
+oracle_script_requests = sa.Table(
+    "oracle_script_requests",
+    metadata,
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
+    Column("count", sa.Integer),
+)
+
+request_count_per_days = sa.Table(
+    "request_count_per_days",
+    metadata,
+    Column("date", CustomDate, primary_key=True),
+    Column("count", sa.Integer),
 )

@@ -40,6 +40,7 @@ module Styles = {
 
   let blocksWrapper =
     style([
+      overflow(`hidden),
       minWidth(`px(245)),
       minHeight(`px(500)),
       position(`relative),
