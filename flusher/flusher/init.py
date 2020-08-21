@@ -56,15 +56,6 @@ def init(chain_id, topic, db):
 			GROUP BY consensus_address, voted;"""
     )
     engine.execute(
-        """CREATE VIEW request_count_1day AS
-            SELECT date_trunc('day', blocks.timestamp) as date, COUNT(*) as request_count
-            FROM blocks
-            JOIN transactions ON blocks.height = transactions.block_height
-            JOIN requests ON requests.transaction_id = transactions.id
-            GROUP BY date;
-            """
-    )
-    engine.execute(
         """CREATE VIEW oracle_script_statistic_last_1_day AS
             SELECT
             AVG(resolve_time-request_time) as response_time,
@@ -77,7 +68,6 @@ def init(chain_id, topic, db):
             GROUP BY oracle_scripts.id, requests.resolve_status;
         """
     )
-
     engine.execute(
         """CREATE VIEW oracle_script_statistic_last_1_week AS
             SELECT
@@ -91,7 +81,6 @@ def init(chain_id, topic, db):
             GROUP BY oracle_scripts.id, requests.resolve_status;
         """
     )
-
     engine.execute(
         """CREATE VIEW oracle_script_statistic_last_1_month AS
             SELECT
