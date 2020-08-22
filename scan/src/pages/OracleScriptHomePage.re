@@ -222,10 +222,19 @@ let renderBodyMobile =
 [@react.component]
 let make = () => {
   let isMobile = Media.isMobile();
-
   let (page, setPage) = React.useState(_ => 1);
   let (searchTerm, setSearchTerm) = React.useState(_ => "");
   let (sortedBy, setSortedBy) = React.useState(_ => LatestUpdate);
+
+  React.useEffect1(
+    () => {
+      if (searchTerm != "") {
+        setPage(_ => 1);
+      };
+      None;
+    },
+    [|searchTerm|],
+  );
 
   let pageSize = 10;
   let mostRequestedPageSize = isMobile ? 3 : 6;

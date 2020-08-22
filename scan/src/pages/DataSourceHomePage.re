@@ -129,6 +129,16 @@ let make = () => {
   let allSub = Sub.all2(dataSourcesSub, dataSourcesCountSub);
   let isMobile = Media.isMobile();
 
+  React.useEffect1(
+    () => {
+      if (searchTerm != "") {
+        setPage(_ => 1);
+      };
+      None;
+    },
+    [|searchTerm|],
+  );
+
   <Section>
     <div className=CssHelper.container>
       <div className=CssHelper.mobileSpacing>

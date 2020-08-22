@@ -18,6 +18,7 @@
 
 ### Scan
 
+- (bugs) [\#2527](https://github.com/bandprotocol/bandchain/pull/2527) Fix serach bugs on ds & os home page
 - (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
 - (impv) [\#2455](https://github.com/bandprotocol/bandchain/pull/2455) Implement full copy non evm proof
 
