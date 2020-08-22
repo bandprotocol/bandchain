@@ -74,10 +74,7 @@ let make = (~request: RequestSub.t) => {
         />
         <HSpacing size={`px(24)} />
         <CopyButton.Modern
-          data={
-            NonEVMProof.Request(request)->NonEVMProof.createProof
-            |> JsBuffer.toHex(~with0x=false)
-          }
+          data={proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)}
           title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
           width=180
           py=12
