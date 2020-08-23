@@ -34,7 +34,7 @@ func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, rep
 		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
 		if err != nil {
 			l.Info(":warning: Failed to retreive account with error: %s", err.Error())
-			time.Sleep(c.rpcPollIntervall)
+			time.Sleep(c.rpcPollInterval)
 			continue
 		}
 
@@ -50,7 +50,7 @@ func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, rep
 		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
 		if err != nil {
 			l.Info(":warning: Failed to build tx with error: %s", err.Error())
-			time.Sleep(c.rpcPollIntervall)
+			time.Sleep(c.rpcPollInterval)
 			continue
 		}
 		res, err := cliCtx.BroadcastTxSync(out)
@@ -59,14 +59,14 @@ func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, rep
 			break
 		}
 		l.Info(":warning: Failed to broadcast tx with error: %s", err.Error())
-		time.Sleep(c.rpcPollIntervall)
+		time.Sleep(c.rpcPollInterval)
 	}
 	if txHash == "" {
 		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
 		return
 	}
 	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
-		time.Sleep(c.rpcPollIntervall)
+		time.Sleep(c.rpcPollInterval)
 		txRes, err := utils.QueryTx(cliCtx, txHash)
 		if err != nil {
 			l.Debug(":warning: Failed to query tx with error: %s", err.Error())

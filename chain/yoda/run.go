@@ -103,7 +103,7 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			c.maxTry = cfg.MaxTry
-			c.rpcPollIntervall, err = time.ParseDuration(cfg.RPCPollInterval)
+			c.rpcPollInterval, err = time.ParseDuration(cfg.RPCPollInterval)
 			if err != nil {
 				return err
 			}
@@ -116,7 +116,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagExecutor, "", "executor name and url for executing the data source script")
 	cmd.Flags().String(flags.FlagGasPrices, "", "gas prices for report transaction")
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
-	cmd.Flags().String(flagBroadcastTimeout, "30s", "The time that Yoda will wait for tx commit")
+	cmd.Flags().String(flagBroadcastTimeout, "5m", "The time that Yoda will wait for tx commit")
 	cmd.Flags().String(flagRPCPollInterval, "1s", "The duration of rpc poll interval")
 	cmd.Flags().Uint64(flagMaxTry, 5, "The maximum number of tries to submit a report transaction")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
