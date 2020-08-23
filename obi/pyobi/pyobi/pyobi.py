@@ -65,6 +65,47 @@ class PyObiBool(PyObiSpec):
         raise ValueError("Boolean value must be 1 or 0 but got {}".format(u8))
 
 
+class PyObiArray(PyObiSpec):
+    def __init__(self, _spec):
+        [spec, size] = _spec[1:-1].rsplit(";", 1)
+        self.size = int(size, 10)
+        self.intl_obi = self.from_spec(spec)
+
+    @classmethod
+    def match_schema(cls, schema):
+        if not (schema[0] == "[" and schema[-1] == "]"):
+            return False
+        try:
+            [spec, size] = schema[1:-1].rsplit(";", 1)
+        except:
+            return False
+
+        if not size.isdigit():
+            return False
+
+        for impl in cls.impls:
+            if impl.match_schema(spec):
+                return True
+
+        return False
+
+    def encode(self, value):
+        if len(value) != self.size:
+            raise ValueError("array size should be {} but got {}".format(self.size, len(value)))
+        result = b""
+        for each in value:
+            result = result + self.intl_obi.encode(each)
+        return result
+
+    def decode(self, data):
+        remaining = data[:]
+        result = []
+        for _ in range(self.size):
+            each, remaining = self.intl_obi.decode(remaining)
+            result.append(each)
+        return result, remaining
+
+
 class PyObiVector(PyObiSpec):
     def __init__(self, spec):
         self.intl_obi = self.from_spec(spec[1:-1])
@@ -91,16 +132,16 @@ class PyObiVector(PyObiSpec):
 class PyObiStruct(PyObiSpec):
     def __init__(self, spec):
         self.intl_obi_kvs = []
-        fields = ['']
+        fields = [""]
         curly_count = 0
         for c in spec[1:-1]:
-            if c == ',' and curly_count == 0:
-                fields.append('')
+            if c == "," and curly_count == 0:
+                fields.append("")
             else:
                 fields[-1] = fields[-1] + c
-                if c == '{':
+                if c == "{":
                     curly_count += 1
-                if c == '}':
+                if c == "}":
                     curly_count -= 1
         for each in fields:
             tokens = each.split(":", 1)
