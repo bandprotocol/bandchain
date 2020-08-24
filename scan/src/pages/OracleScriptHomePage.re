@@ -27,7 +27,7 @@ let defaultCompare = (a: OracleScriptSub.t, b: OracleScriptSub.t) =>
   if (a.timestamp != b.timestamp) {
     compare(b.id |> ID.OracleScript.toInt, a.id |> ID.OracleScript.toInt);
   } else {
-    compare(b.request, a.request);
+    compare(b.requestCount, a.requestCount);
   };
 
 let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
@@ -36,7 +36,7 @@ let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | MostRequested => compare(b.request, a.request)
+        | MostRequested => compare(b.requestCount, a.requestCount)
         | LatestUpdate => compare(b.timestamp, a.timestamp)
         };
       };
@@ -86,21 +86,31 @@ let renderMostRequestedCard =
         <div className=Styles.requestResponseBox>
           <Heading size=Heading.H5 value="Requests" marginBottom=8 />
           {switch (oracleScriptSub) {
-           | Data({request}) =>
-             <Text size=Text.Lg value={request |> Format.iPretty} weight=Text.Regular block=true />
+           | Data({requestCount}) =>
+             <Text
+               size=Text.Lg
+               value={requestCount |> Format.iPretty}
+               weight=Text.Regular
+               block=true
+             />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
         <div className=Styles.requestResponseBox>
           <Heading size=Heading.H5 value="Response time" marginBottom=8 />
           {switch (oracleScriptSub) {
-           | Data({responseTime}) =>
-             <Text
-               size=Text.Lg
-               value={(responseTime |> Format.iPretty) ++ "ms"}
-               weight=Text.Regular
-               block=true
-             />
+           | Data({responseTime: responseTimeOpt}) =>
+             switch (responseTimeOpt) {
+             | Some(responseTime') =>
+               <Text
+                 size=Text.Lg
+                 value={(responseTime' |> Format.fPretty(~digits=2)) ++ " s"}
+                 weight=Text.Regular
+                 block=true
+               />
+             | None => <Text value="TBD" />
+             }
+
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -148,11 +158,11 @@ let renderBody =
             (),
           )}>
           {switch (oracleScriptSub) {
-           | Data({request, responseTime}) =>
+           | Data({requestCount, responseTime: responseTimeOpt}) =>
              <>
                <div>
                  <Text
-                   value={request |> Format.iPretty}
+                   value={requestCount |> Format.iPretty}
                    weight=Text.Medium
                    block=true
                    ellipsis=true
@@ -161,7 +171,13 @@ let renderBody =
                </div>
                <div>
                  <Text
-                   value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
+                   value={
+                     switch (responseTimeOpt) {
+                     | Some(responseTime') =>
+                       "(" ++ (responseTime' |> Format.fPretty(~digits=2)) ++ " s)"
+                     | None => "(TBD)"
+                     }
+                   }
                    weight=Text.Medium
                    block=true
                    color=Colors.gray6
@@ -198,12 +214,12 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
   switch (oracleScriptSub) {
-  | Data({id, timestamp: timestampOpt, description, name, request, responseTime}) =>
+  | Data({id, timestamp: timestampOpt, description, name, requestCount, responseTime}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
-        ("Request&\nResponse time", RequestResponse({request, responseTime})),
+        ("Request&\nResponse time", RequestResponse({requestCount, responseTime})),
         (
           "Timestamp",
           switch (timestampOpt) {

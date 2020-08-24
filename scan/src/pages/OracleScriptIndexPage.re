@@ -44,9 +44,9 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading value="Requests" size=Heading.H4 marginBottom=8 align=Heading.Center />
                   {switch (oracleScriptSub) {
-                   | Data({request}) =>
+                   | Data({requestCount}) =>
                      <Text
-                       value={request |> Format.iPretty}
+                       value={requestCount |> Format.iPretty}
                        size=Text.Xxl
                        align=Text.Center
                        block=true
@@ -72,9 +72,14 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                     </CTooltip>
                   </div>
                   {switch (oracleScriptSub) {
-                   | Data({responseTime}) =>
+                   | Data({responseTime: responseTimeOpt}) =>
                      <Text
-                       value={responseTime |> Format.iPretty}
+                       value={
+                         switch (responseTimeOpt) {
+                         | Some(responseTime') => responseTime' |> Format.fPretty(~digits=2)
+                         | None => "TBD"
+                         }
+                       }
                        size=Text.Xxl
                        align=Text.Center
                        block=true

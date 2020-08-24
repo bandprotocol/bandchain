@@ -5,18 +5,10 @@ type data_source_t = {
 type related_data_sources = {dataSource: data_source_t};
 type block_t = {timestamp: MomentRe.Moment.t};
 type transaction_t = {block: block_t};
-
-type t = {
-  id: ID.OracleScript.t,
-  owner: Address.t,
-  name: string,
-  description: string,
-  schema: string,
-  sourceCodeURL: string,
-  timestamp: option(MomentRe.Moment.t),
-  relatedDataSources: list(data_source_t),
-  request: int,
-  responseTime: int,
+type request_stat_t = {count: int};
+type response_last_1_day_t = {
+  responseTime: float,
+  resolveStatus: string,
 };
 
 type internal_t = {
@@ -28,6 +20,21 @@ type internal_t = {
   sourceCodeURL: string,
   transaction: option(transaction_t),
   relatedDataSources: array(related_data_sources),
+  requestStat: option(request_stat_t),
+  responsesLast1Day: array(response_last_1_day_t),
+};
+
+type t = {
+  id: ID.OracleScript.t,
+  owner: Address.t,
+  name: string,
+  description: string,
+  schema: string,
+  sourceCodeURL: string,
+  timestamp: option(MomentRe.Moment.t),
+  relatedDataSources: list(data_source_t),
+  requestCount: int,
+  responseTime: option(float),
 };
 
 let toExternal =
@@ -41,6 +48,8 @@ let toExternal =
         sourceCodeURL,
         transaction: txOpt,
         relatedDataSources,
+        requestStat: requestStatOpt,
+        responsesLast1Day,
       },
     ) => {
   id,
@@ -55,9 +64,14 @@ let toExternal =
   },
   relatedDataSources:
     relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
-  // TODO: These will be removed after the data adding to schema
-  request: Js.Math.random_int(300, 200000),
-  responseTime: Js.Math.random_int(100, 999),
+  // Note: requestCount can't be nullable value.
+  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
+  responseTime:
+    responsesLast1Day
+    ->Belt.Array.keepMap(({responseTime, resolveStatus}) =>
+        resolveStatus == "Success" ? Some(responseTime) : None
+      )
+    ->Belt.Array.get(0),
 };
 
 module MultiConfig = [%graphql
@@ -80,6 +94,13 @@ module MultiConfig = [%graphql
           dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
           dataSourceName: name
         }
+      }
+      requestStat: request_stat @bsRecord {
+        count
+      }
+      responsesLast1Day: response_last_1_day @bsRecord {
+        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
+        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   }
@@ -106,6 +127,13 @@ module SingleConfig = [%graphql
           dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
           dataSourceName: name
         }
+      }
+      requestStat: request_stat @bsRecord {
+        count
+      }
+      responsesLast1Day: response_last_1_day @bsRecord {
+        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
+        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   },

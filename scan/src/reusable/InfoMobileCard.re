@@ -10,8 +10,8 @@ type request_count_t = {
 };
 
 type request_response_t = {
-  request: int,
-  responseTime: int,
+  requestCount: int,
+  responseTime: option(float),
 };
 
 type t =
@@ -81,12 +81,17 @@ let make = (~info) => {
       <Text value=name ellipsis=true />
     </div>
   | RequestID(id) => <TypeID.Request id />
-  | RequestResponse({request, responseTime}) =>
+  | RequestResponse({requestCount, responseTime: responseTimeOpt}) =>
     <div className={CssHelper.flexBox()}>
-      <Text value={request |> Format.iPretty} block=true ellipsis=true />
+      <Text value={requestCount |> Format.iPretty} block=true ellipsis=true />
       <HSpacing size=Spacing.sm />
       <Text
-        value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
+        value={
+          switch (responseTimeOpt) {
+          | Some(responseTime') => "(" ++ (responseTime' |> Format.fPretty(~digits=2)) ++ "s)"
+          | None => "(TBD)"
+          }
+        }
         block=true
         color=Colors.gray6
       />
