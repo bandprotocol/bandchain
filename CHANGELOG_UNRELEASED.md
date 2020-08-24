@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#2552](https://github.com/bandprotocol/bandchain/pull/2552) Wire up related data source, handle nullable timestamp
 - (bugs) [\#2527](https://github.com/bandprotocol/bandchain/pull/2527) Fix serach bugs on ds & os home page
 - (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
 - (impv) [\#2499](https://github.com/bandprotocol/bandchain/pull/2499) Implemented Total request chart
