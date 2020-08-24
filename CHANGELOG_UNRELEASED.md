@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
+
 ### Scan
 
 - (bugs) [\#2552](https://github.com/bandprotocol/bandchain/pull/2552) Wire up related data source, handle nullable timestamp
