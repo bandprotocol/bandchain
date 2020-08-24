@@ -249,6 +249,13 @@ class Handler(object):
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
+    def handle_remove_unbonding(self, msg):
+        self.conn.execute(
+            unbonding_delegations.delete().where(
+                unbonding_delegations.c.completion_time <= msg["timestamp"]
+            )
+        )
+
     def handle_new_redelegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
@@ -257,6 +264,11 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_remove_redelegation(self, msg):
+        self.conn.execute(
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
+        )
 
     def handle_new_proposal(self, msg):
         msg["proposer_id"] = self.get_account_id(msg["proposer"])
