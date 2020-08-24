@@ -26,7 +26,7 @@
 - (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
 - (impv) [\#2499](https://github.com/bandprotocol/bandchain/pull/2499) Implemented Total request chart
 - (impv) [\#2455](https://github.com/bandprotocol/bandchain/pull/2455) Implement full copy non evm proof
-- (impv) [\#2363](https://github.com/bandprotocol/bandchain/pull/2363) Added loading state on AccountIndexPAge
+- (impv) [\#2363](https://github.com/bandprotocol/bandchain/pull/2363) Added loading state on AccountIndexPage, fixed some layout to make everything consistance.
 
 ### Bridges
 
