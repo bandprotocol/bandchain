@@ -24,6 +24,9 @@
 
 ### Bridges
 
+- (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added
+    `BridgeProxy` contract
+
 ### Runtime
 
 ### Owasm
