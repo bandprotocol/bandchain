@@ -24,7 +24,8 @@ contract BridgeWithCache is Bridge, IBridgeCache {
     /// @param _request A tuple that represents RequestPacket struct.
     function getRequestKey(RequestPacket memory _request)
         public
-        pure
+        view
+        override
         returns (bytes32)
     {
         return keccak256(abi.encode(_request));
@@ -48,7 +49,7 @@ contract BridgeWithCache is Bridge, IBridgeCache {
     /// Performs oracle state relay and oracle data verification in one go.
     /// After that, the results will be recorded to the state by using the hash of RequestPacket as key.
     /// @param _data The encoded data for oracle state relay and data verification.
-    function relay(bytes calldata _data) external {
+    function relay(bytes calldata _data) external override {
         (RequestPacket memory req, ResponsePacket memory res) = this
             .relayAndVerify(_data);
 

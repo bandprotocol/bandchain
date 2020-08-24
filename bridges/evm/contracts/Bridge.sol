@@ -28,11 +28,6 @@ contract Bridge is IBridge, Ownable {
     /// The total voting power of active validators currently on duty.
     uint256 public totalValidatorPower;
 
-    struct ValidatorWithPower {
-        address addr;
-        uint256 power;
-    }
-
     /// Initializes an oracle bridge to BandChain.
     /// @param _validators The initial set of BandChain active validators.
     constructor(ValidatorWithPower[] memory _validators) public {
@@ -51,6 +46,7 @@ contract Bridge is IBridge, Ownable {
     /// @param _validators The changed set of BandChain validators.
     function updateValidatorPowers(ValidatorWithPower[] memory _validators)
         external
+        override
         onlyOwner
     {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {
