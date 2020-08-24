@@ -207,6 +207,15 @@ def test_encode_decode_array():
         "000000046d756d75000000046c756c75000000086d756d756d756d75"
     )
 
+    # vector
+    assert PyObiArray("[[u64];0]").encode([]) == bytes.fromhex("")
+    assert PyObiArray("[[u64];2]").encode([[1, 2, 3, 4, 5], []]) == bytes.fromhex(
+        "000000050000000000000001000000000000000200000000000000030000000000000004000000000000000500000000"
+    )
+    assert PyObiArray("[[string];3]").encode([["a", "", "b"], [], ["aaa", "bbb"]]) == bytes.fromhex(
+        "00000003000000016100000000000000016200000000000000020000000361616100000003626262"
+    )
+
     # bytes
     assert PyObiArray("[bytes;0]").encode([]) == bytes.fromhex("")
     assert PyObiArray("[bytes;1]").encode([bytes.fromhex("ababab")]) == bytes.fromhex(
@@ -255,6 +264,19 @@ def test_encode_decode_array():
     assert PyObiArray("[bytes;3]").decode(
         bytes.fromhex("00000003ababab00000001cd00000002efef")
     ) == ([bytes.fromhex("ababab"), bytes.fromhex("cd"), bytes.fromhex("efef")], b"")
+
+    # vector
+    assert PyObiArray("[[u64];0]").decode(bytes.fromhex("")) == ([], b"")
+    assert PyObiArray("[[u64];2]").decode(
+        bytes.fromhex(
+            "000000050000000000000001000000000000000200000000000000030000000000000004000000000000000500000000"
+        )
+    ) == ([[1, 2, 3, 4, 5], []], b"")
+    assert PyObiArray("[[string];3]").decode(
+        bytes.fromhex(
+            "00000003000000016100000000000000016200000000000000020000000361616100000003626262"
+        )
+    ) == ([["a", "", "b"], [], ["aaa", "bbb"]], b"")
 
     # array
     assert PyObiArray("[[bool;2];0]").decode(bytes.fromhex("")) == ([], b"")
