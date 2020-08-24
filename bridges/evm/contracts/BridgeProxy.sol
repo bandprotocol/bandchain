@@ -1,9 +1,11 @@
+// SPDX-License-Identifier: Apache-2.0
+
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {Packets} from "./Packets.sol";
-import {Bridge} from "./Bridge.sol";
+import {IBridge} from "./IBridge.sol";
 import {IBridgeCache} from "./IBridgeCache.sol";
 
 contract BridgeProxy is IBridge, IBridgeCache, Ownable {
