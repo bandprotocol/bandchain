@@ -27,6 +27,7 @@ from .db import (
     reporters,
     related_data_source_oracle_scripts,
     historical_oracle_statuses,
+    data_source_requests,
     oracle_script_requests,
     request_count_per_days,
 )
@@ -78,6 +79,10 @@ class Handler(object):
             for col in accounts.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(accounts.update().where(condition).values(**msg))
+
+    def handle_new_data_source(self, msg):
+        self.handle_set_data_source(msg)
+        self.handle_new_data_source_request({"data_source_id": msg["id"], "count": 0})
 
     def handle_set_data_source(self, msg):
         if msg["tx_hash"] is not None:
@@ -138,6 +143,7 @@ class Handler(object):
             }
         )
         self.conn.execute(raw_requests.insert(), msg)
+        self.handle_set_data_source_request({"data_source_id": msg["data_source_id"]})
 
     def handle_new_val_request(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["validator"])
@@ -307,6 +313,17 @@ class Handler(object):
             insert(historical_oracle_statuses)
             .values(**msg)
             .on_conflict_do_update(constraint="historical_oracle_statuses_pkey", set_=msg)
+        )
+
+    def handle_new_data_source_request(self, msg):
+        self.conn.execute(data_source_requests.insert(), msg)
+
+    def handle_set_data_source_request(self, msg):
+        condition = True
+        for col in data_source_requests.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(
+            data_source_requests.update(condition).values(count=data_source_requests.c.count + 1)
         )
 
     def handle_new_oracle_script_request(self, msg):

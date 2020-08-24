@@ -14,6 +14,17 @@ func parseBytes(b []byte) []byte {
 	return b
 }
 
+func (app *App) emitNewDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
+	app.Write("NEW_DATA_SOURCE", JsDict{
+		"id":          id,
+		"name":        ds.Name,
+		"description": ds.Description,
+		"owner":       ds.Owner.String(),
+		"executable":  app.OracleKeeper.GetFile(ds.Filename),
+		"tx_hash":     txHash,
+	})
+}
+
 func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
 	app.Write("SET_DATA_SOURCE", JsDict{
 		"id":          id,
@@ -125,7 +136,7 @@ func (app *App) handleMsgCreateDataSource(
 ) {
 	id := types.DataSourceID(atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
-	app.emitSetDataSource(id, ds, txHash)
+	app.emitNewDataSource(id, ds, txHash)
 	extra["id"] = id
 }
 
