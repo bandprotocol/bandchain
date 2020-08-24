@@ -1,12 +1,12 @@
-from ..cache_consumer_mock import CACHE_CONSUMER_MOCK
+from ..cache_consumer_mock import CacheConsunmerMock
 from tbears.libs.scoretest.score_test_case import ScoreTestCase
 
 
-class TestCACHE_CONSUMER_MOCK(ScoreTestCase):
+class TestCacheConsumerMock(ScoreTestCase):
     def setUp(self):
         super().setUp()
         self.score = self.get_score_instance(
-            CACHE_CONSUMER_MOCK,
+            CacheConsunmerMock,
             self.test_account1,
             on_install_params={
                 # For testing
@@ -17,5 +17,14 @@ class TestCACHE_CONSUMER_MOCK(ScoreTestCase):
             },
         )
 
-    def test_1(self):
-        print(">>>> \n ", self.score.get_request_key_template())
+    def test_(self):
+        self.assertEqual(
+            {
+                "client_id": "test",
+                "oracle_script_id": 1,
+                "calldata": b"\x00\x00\x00\x03BTC\x00\x00\x00\x00\x00\x00\x00d",
+                "ask_count": 4,
+                "min_count": 4,
+            },
+            self.score.get_request_key_template(),
+        )

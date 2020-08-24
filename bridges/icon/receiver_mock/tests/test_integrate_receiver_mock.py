@@ -15,8 +15,3 @@ class TestTest(IconIntegrateTestBase):
 
     def setUp(self):
         super().setUp()
-
-        self.icon_service = None
-        # if you want to send request to network, uncomment next line and set self.TEST_HTTP_ENDPOINT_URI_V3
-        # self.icon_service = IconService(HTTPProvider(self.TEST_HTTP_ENDPOINT_URI_V3))
-

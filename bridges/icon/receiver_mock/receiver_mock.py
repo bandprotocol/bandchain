@@ -1,7 +1,7 @@
 from iconservice import *
 from .pyobi import *
 
-TAG = "RECEIVER_MOCK"
+TAG = "ReceiverMock"
 
 
 class IBridge(InterfaceScore):
@@ -10,7 +10,7 @@ class IBridge(InterfaceScore):
         pass
 
 
-class RECEIVER_MOCK(IconScoreBase):
+class ReceiverMock(IconScoreBase):
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
         self.bridge_address = VarDB("bridge_address", db, value_type=Address)

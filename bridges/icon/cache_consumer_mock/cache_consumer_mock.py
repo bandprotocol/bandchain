@@ -1,7 +1,7 @@
 from iconservice import *
 from .pyobi import *
 
-TAG = "CACHE_CONSUMER_MOCK"
+TAG = "CacheConsunmerMock"
 
 
 class IBridgeCache(InterfaceScore):
@@ -10,7 +10,7 @@ class IBridgeCache(InterfaceScore):
         pass
 
 
-class CACHE_CONSUMER_MOCK(IconScoreBase):
+class CacheConsunmerMock(IconScoreBase):
     def __init__(self, db: IconScoreDatabase) -> None:
         super().__init__(db)
         self.bridge_address = VarDB("bridge_address", db, value_type=Address)
