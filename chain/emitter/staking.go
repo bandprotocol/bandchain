@@ -16,8 +16,7 @@ var (
 
 func (app *App) emitStakingModule() {
 	app.StakingKeeper.IterateValidators(app.DeliverContext, func(_ int64, val exported.ValidatorI) (stop bool) {
-		operatorAddr := val.GetOperator()
-		app.emitSetValidator(operatorAddr)
+		app.emitSetValidator(val.GetOperator())
 		return false
 	})
 
