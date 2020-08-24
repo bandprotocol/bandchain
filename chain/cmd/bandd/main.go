@@ -29,6 +29,7 @@ const (
 	flagInvCheckPeriod        = "inv-check-period"
 	flagWithEmitter           = "with-emitter"
 	flagDisableFeelessReports = "disable-feeless-reports"
+	flagEnableFastSync        = "enable-fast-sync"
 )
 
 var invCheckPeriod uint
@@ -61,6 +62,7 @@ func main() {
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
+	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
@@ -88,6 +90,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			skipUpgradeHeights, viper.GetString(flags.FlagHome),
 			viper.GetBool(flagDisableFeelessReports),
+			viper.GetBool(flagEnableFastSync),
 			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),

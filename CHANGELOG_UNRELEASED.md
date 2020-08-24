@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
+
 ### Scan
 
 - (bugs) [\#2527](https://github.com/bandprotocol/bandchain/pull/2527) Fix serach bugs on ds & os home page

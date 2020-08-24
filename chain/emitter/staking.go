@@ -5,12 +5,20 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 	types "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var (
 	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
 )
+
+func (app *App) emitStakingModule() {
+	app.StakingKeeper.IterateValidators(app.DeliverContext, func(_ int64, val exported.ValidatorI) (stop bool) {
+		app.emitSetValidator(val.GetOperator())
+		return false
+	})
+}
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
