@@ -13,7 +13,7 @@ type t = {
   description: string,
   schema: string,
   sourceCodeURL: string,
-  timestamp: MomentRe.Moment.t,
+  timestamp: option(MomentRe.Moment.t),
   relatedDataSources: list(data_source_t),
   request: int,
   responseTime: int,
@@ -31,19 +31,28 @@ type internal_t = {
 };
 
 let toExternal =
-    ({id, owner, name, description, schema, sourceCodeURL, transaction, relatedDataSources}) => {
+    (
+      {
+        id,
+        owner,
+        name,
+        description,
+        schema,
+        sourceCodeURL,
+        transaction: txOpt,
+        relatedDataSources,
+      },
+    ) => {
   id,
   owner,
   name,
   description,
   schema,
   sourceCodeURL,
-  timestamp:
-    switch (transaction) {
-    | Some({block}) => block.timestamp
-    // TODO: Please revisit again.
-    | _ => MomentRe.momentNow()
-    },
+  timestamp: {
+    let%Opt tx = txOpt;
+    Some(tx.block.timestamp);
+  },
   relatedDataSources:
     relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
   // TODO: These will be removed after the data adding to schema
