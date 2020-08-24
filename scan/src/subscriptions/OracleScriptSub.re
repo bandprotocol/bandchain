@@ -1,3 +1,11 @@
+type data_source_t = {
+  dataSourceID: ID.DataSource.t,
+  dataSourceName: string,
+};
+type related_data_sources = {dataSource: data_source_t};
+type block_t = {timestamp: MomentRe.Moment.t};
+type transaction_t = {block: block_t};
+
 type t = {
   id: ID.OracleScript.t,
   owner: Address.t,
@@ -6,14 +14,10 @@ type t = {
   schema: string,
   sourceCodeURL: string,
   timestamp: MomentRe.Moment.t,
-  relatedDataSources: list(ID.DataSource.t),
+  relatedDataSources: list(data_source_t),
   request: int,
   responseTime: int,
 };
-
-type related_data_source_t = {dataSourceID: ID.DataSource.t};
-type block_t = {timestamp: MomentRe.Moment.t};
-type transaction_t = {block: block_t};
 
 type internal_t = {
   id: ID.OracleScript.t,
@@ -23,10 +27,11 @@ type internal_t = {
   schema: string,
   sourceCodeURL: string,
   transaction: option(transaction_t),
-  // related_data_sources: array(related_data_source_t),
+  relatedDataSources: array(related_data_sources),
 };
 
-let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transaction}) => {
+let toExternal =
+    ({id, owner, name, description, schema, sourceCodeURL, transaction, relatedDataSources}) => {
   id,
   owner,
   name,
@@ -39,11 +44,11 @@ let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transact
     // TODO: Please revisit again.
     | _ => MomentRe.momentNow()
     },
+  relatedDataSources:
+    relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
   // TODO: These will be removed after the data adding to schema
-  relatedDataSources: ID.DataSource.[ID(1), ID(2), ID(3)],
   request: Js.Math.random_int(300, 200000),
   responseTime: Js.Math.random_int(100, 999),
-  //   related_data_sources->Belt.Array.map(x => x.dataSourceID)->Belt.List.fromArray,
 };
 
 module MultiConfig = [%graphql
@@ -59,6 +64,12 @@ module MultiConfig = [%graphql
       transaction @bsRecord {
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+        }
+      }
+      relatedDataSources: related_data_source_oracle_scripts @bsRecord {
+        dataSource: data_source @bsRecord {
+          dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
+          dataSourceName: name
         }
       }
     }
@@ -79,6 +90,12 @@ module SingleConfig = [%graphql
       transaction @bsRecord {
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
+        }
+      }
+      relatedDataSources: related_data_source_oracle_scripts @bsRecord {
+        dataSource: data_source @bsRecord {
+          dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
+          dataSourceName: name
         }
       }
     }
