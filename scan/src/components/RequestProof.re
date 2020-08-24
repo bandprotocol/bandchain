@@ -13,6 +13,9 @@ module Styles = {
 
   let withWidth = w => style([width(`px(w))]);
 
+  let proofContainer =
+    style([padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24))]);
+
   let topicContainer = h =>
     style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
 
@@ -62,7 +65,7 @@ let make = (~request: RequestSub.t) => {
   switch (proofOpt) {
   | Some(proof) =>
     <>
-      <div className={CssHelper.flexBox()}>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
         <ShowProofButton showProof setShowProof />
         <HSpacing size={`px(24)} />
         <CopyButton.Modern

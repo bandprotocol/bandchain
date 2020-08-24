@@ -439,7 +439,7 @@ module SingleRequestConfig = [%graphql
             }
             gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
           }
-          reportDetails: raw_reports @bsRecord {
+          reportDetails: raw_reports(order_by: {external_id: asc}) @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
             exitCode: exit_code @bsDecoder (fn: "GraphQLParser.string")
             data @bsDecoder(fn: "GraphQLParser.buffer")
@@ -470,7 +470,7 @@ module SingleRequestConfig = [%graphql
           }
           gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
         }
-        rawDataRequests: raw_requests @bsRecord {
+        rawDataRequests: raw_requests(order_by: {external_id: asc}) @bsRecord {
           externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
           dataSource: data_source @bsRecord {
             dataSourceID: id @bsDecoder(fn: "ID.DataSource.fromInt")
@@ -507,7 +507,7 @@ module MultiRequestConfig = [%graphql
             }
             gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
           }
-          reportDetails: raw_reports @bsRecord {
+          reportDetails: raw_reports(order_by: {external_id: asc}) @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
             exitCode: exit_code @bsDecoder (fn: "GraphQLParser.string")
             data @bsDecoder(fn: "GraphQLParser.buffer")
@@ -538,7 +538,7 @@ module MultiRequestConfig = [%graphql
           }
           gasFee: gas_fee @bsDecoder(fn: "GraphQLParser.coins")
         }
-        rawDataRequests: raw_requests @bsRecord {
+        rawDataRequests: raw_requests(order_by: {external_id: asc}) @bsRecord {
           externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
           dataSource: data_source @bsRecord {
             dataSourceID: id @bsDecoder(fn: "ID.DataSource.fromInt")
