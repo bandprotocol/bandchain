@@ -32,16 +32,17 @@ type App struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	accsInBlock map[string]bool // The accounts that need balance update at the end of block.
-	accsInTx    map[string]bool // The accounts related to the current processing transaction.
-	msgs        []Message       // The list of all messages to publish for this block.
+	accsInBlock    map[string]bool // The accounts that need balance update at the end of block.
+	accsInTx       map[string]bool // The accounts related to the current processing transaction.
+	msgs           []Message       // The list of all messages to publish for this block.
+	emitStartState bool            // If the variable is true will emit all no historical state to Kafka
 }
 
 // NewBandAppWithEmitter creates a new App instance.
 func NewBandAppWithEmitter(
 	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, enableFastSync bool, baseAppOptions ...func(*bam.BaseApp),
 ) *App {
 	app := bandapp.NewBandApp(
 		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
@@ -58,6 +59,7 @@ func NewBandAppWithEmitter(
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
 		}),
+		emitStartState: enableFastSync,
 	}
 }
 
@@ -167,12 +169,36 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	return res
 }
 
+func (app *App) emitNonHistoricalState() {
+	app.emitAccountModule()
+	app.emitStakingModule()
+	app.Write("COMMIT", JsDict{"height": -1})
+	app.FlushMessages()
+	app.msgs = []Message{}
+}
+
 // BeginBlock calls into the underlying BeginBlock and emits relevant events to Kafka.
 func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
 	app.accsInBlock = make(map[string]bool)
 	app.accsInTx = make(map[string]bool)
 	app.msgs = []Message{}
+	if app.emitStartState {
+		app.emitStartState = false
+		app.emitNonHistoricalState()
+	} else {
+		{
+			for _, val := range req.GetLastCommitInfo().Votes {
+				validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+				app.Write("NEW_VALIDATOR_VOTE", JsDict{
+					"consensus_address": validator.GetConsAddr().String(),
+					"block_height":      req.Header.GetHeight() - 1,
+					"voted":             val.GetSignedLastBlock(),
+				})
+				app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
+			}
+		}
+	}
 	app.Write("NEW_BLOCK", JsDict{
 		"height":    req.Header.GetHeight(),
 		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
@@ -181,16 +207,6 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
 	})
-	for _, val := range req.GetLastCommitInfo().Votes {
-		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
-		app.Write("NEW_VALIDATOR_VOTE", JsDict{
-			"consensus_address": validator.GetConsAddr().String(),
-			"block_height":      req.Header.GetHeight() - 1,
-			"voted":             val.GetSignedLastBlock(),
-		})
-		app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
-	}
-
 	for _, event := range res.Events {
 		app.handleBeginBlockEndBlockEvent(event)
 	}
