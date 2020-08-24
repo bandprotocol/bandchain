@@ -50,7 +50,8 @@ let make = (~placeholder, ~onChange, ~debounce=500) => {
       className=Styles.searchBar
       placeholder
       onChange={event => {
-        let newVal = ReactEvent.Form.target(event)##value |> String.lowercase_ascii;
+        let newVal =
+          ReactEvent.Form.target(event)##value |> String.lowercase_ascii |> String.trim;
         setChangeValue(_ => newVal);
       }}
     />
