@@ -121,23 +121,30 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   {switch (oracleScriptSub) {
                    | Data({relatedDataSources}) =>
-                     relatedDataSources
-                     ->Belt.List.map(({dataSourceName, dataSourceID}) =>
-                         <>
-                           <div key={dataSourceID |> ID.DataSource.toString}>
-                             <CTooltip
-                               mobile=false
-                               align=`center
-                               width=250
-                               tooltipText={Ellipsis.format(~text=dataSourceName, ~limit=32, ())}>
-                               <TypeID.DataSource id=dataSourceID position=TypeID.Subtitle />
-                             </CTooltip>
-                           </div>
-                           <HSpacing size=Spacing.xs />
-                         </>
-                       )
-                     ->Belt.List.toArray
-                     ->React.array
+                     relatedDataSources->Belt.List.size > 0
+                       ? relatedDataSources
+                         ->Belt.List.map(({dataSourceName, dataSourceID}) =>
+                             <>
+                               <div key={dataSourceID |> ID.DataSource.toString}>
+                                 <CTooltip
+                                   mobile=false
+                                   align=`center
+                                   width=250
+                                   tooltipText={Ellipsis.format(
+                                     ~text=dataSourceName,
+                                     ~limit=32,
+                                     (),
+                                   )}>
+                                   <TypeID.DataSource id=dataSourceID position=TypeID.Subtitle />
+                                 </CTooltip>
+                               </div>
+                               <HSpacing size=Spacing.xs />
+                             </>
+                           )
+                         ->Belt.List.toArray
+                         ->React.array
+                       : <Text value="TBD" />
+
                    | _ => <LoadingCensorBar width=284 height=15 />
                    }}
                 </div>
