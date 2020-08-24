@@ -13,7 +13,7 @@ let make = () => {
     <Section pt=40 pb=40 ptSm=24 pbSm=24 bg=Colors.bg>
       <div className=CssHelper.container>
         <Row.Grid>
-          <Col.Grid col=Col.Six> <TotalRequestsGraph /> </Col.Grid>
+          <Col.Grid col=Col.Six mbSm=24> <TotalRequestsGraph /> </Col.Grid>
           <Col.Grid col=Col.Six> <LatestRequests /> </Col.Grid>
         </Row.Grid>
       </div>

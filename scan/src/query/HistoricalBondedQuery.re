@@ -5,7 +5,7 @@ type t = {
 
 module HistoricalConfig = [%graphql
   {|
-  subscription HistoricalBondedToken($operator_address: String!) {
+  query HistoricalBondedToken($operator_address: String!) {
     historical_bonded_token_on_validators(where: {validator: {operator_address: {_eq: $operator_address}}}) {
       bonded_tokens
       timestamp
@@ -15,8 +15,8 @@ module HistoricalConfig = [%graphql
 ];
 
 let get = operatorAddress => {
-  let (resultSub, _) =
-    ApolloHooks.useSubscription(
+  let (resultQuery, _) =
+    ApolloHooks.useQuery(
       HistoricalConfig.definition,
       ~variables=
         HistoricalConfig.makeVariables(
@@ -25,9 +25,9 @@ let get = operatorAddress => {
         ),
     );
 
-  let%Sub result = resultSub;
+  let%Query result = resultQuery;
   let x = result##historical_bonded_token_on_validators;
-  Sub.resolve(
+  Query.resolve(
     x->Belt.Array.map(each => {
       Js.Json.{
         t: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
