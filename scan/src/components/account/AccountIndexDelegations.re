@@ -1,26 +1,22 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
-
-  let hFlex = style([display(`flex)]);
-
-  let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
   let emptyContainer =
     style([
       height(`px(300)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      flexDirection(`column),
       backgroundColor(white),
     ]);
-  let noTransactionLogo = style([width(`px(160))]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let renderBody =
     (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
-  <TBody
+  <TBody.Grid
     key={
       switch (delegationsSub) {
       | Data({amount, operatorAddress, reward}) =>
@@ -31,13 +27,12 @@ let renderBody =
       | _ => reserveIndex |> string_of_int
       }
     }
-    minHeight=50>
-    <Row>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-      <Col size=0.9>
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Six>
         {switch (delegationsSub) {
          | Data({moniker, operatorAddress, identity}) =>
-           <div className=Styles.hFlex>
+           <div className={CssHelper.flexBox()}>
              <ValidatorMonikerLink
                validatorAddress=operatorAddress
                moniker
@@ -47,28 +42,28 @@ let renderBody =
            </div>
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col>
-      <Col size=0.6>
-        {switch (delegationsSub) {
-         | Data({amount}) =>
-           <div className=Styles.alignRight>
-             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} code=true />
-           </div>
-         | _ => <LoadingCensorBar width=200 height=20 />
-         }}
-      </Col>
-      <Col size=0.6>
-        {switch (delegationsSub) {
-         | Data({reward}) =>
-           <div className=Styles.alignRight>
-             <Text value={reward |> Coin.getBandAmountFromCoin |> Format.fPretty} code=true />
-           </div>
-         | _ => <LoadingCensorBar width=200 height=20 />
-         }}
-      </Col>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (delegationsSub) {
+           | Data({amount}) =>
+             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (delegationsSub) {
+           | Data({reward}) =>
+             <Text value={reward |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile =
@@ -82,9 +77,9 @@ let renderBodyMobile =
       ++ (reserveIndex |> string_of_int);
     <MobileCard
       values=InfoMobileCard.[
-        ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
-        ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
-        ("REWARD\n(BAND)", Coin({value: [reward], hasDenom: false})),
+        ("Validator", Validator(operatorAddress, moniker, identity)),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+        ("Reward\n(BAND)", Coin({value: [reward], hasDenom: false})),
       ]
       key=key_
       idx=key_
@@ -92,9 +87,9 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("VALIDATOR", Loading(230)),
-        ("AMOUNT\n(BAND)", Loading(100)),
-        ("REWARD\n(BAND)", Loading(100)),
+        ("Validator", Loading(230)),
+        ("Amount\n(BAND)", Loading(100)),
+        ("Reward\n(BAND)", Loading(100)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -110,68 +105,75 @@ let make = (~address) => {
   let delegationsCountSub = DelegationSub.getStakeCountByDelegator(address);
   let delegationsSub = DelegationSub.getStakeList(address, ~pageSize, ~page, ());
 
-  <div className=Styles.tableLowerContainer>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.hFlex>
-      {switch (delegationsCountSub) {
-       | Data(delegationsCount) =>
-         <>
-           <HSpacing size=Spacing.lg />
-           <Text value={delegationsCount |> string_of_int} weight=Text.Semibold />
-           <HSpacing size=Spacing.xs />
-           <Text value="Validators Delegated" />
-         </>
-       | _ =>
-         <div className=Styles.hFlex>
-           <HSpacing size=Spacing.lg />
-           <LoadingCensorBar width=130 height=15 />
-         </div>
-       }}
-    </div>
-    <VSpacing size=Spacing.lg />
+  <div className=Styles.tableWrapper>
     <>
       {isMobile
-         ? React.null
-         : <THead>
-             <Row>
-               <Col> <HSpacing size=Spacing.lg /> </Col>
-               <Col size=0.9>
+         ? <Row.Grid marginBottom=16>
+             <Col.Grid>
+               {switch (delegationsCountSub) {
+                | Data(delegationsCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={delegationsCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Validators Delegated"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+           </Row.Grid>
+         : <THead.Grid>
+             <Row.Grid alignItems=Row.Center>
+               <Col.Grid col=Col.Six>
+                 {switch (delegationsCountSub) {
+                  | Data(delegationsCount) =>
+                    <div className={CssHelper.flexBox()}>
+                      <Text
+                        block=true
+                        value={delegationsCount |> string_of_int}
+                        weight=Text.Semibold
+                        color=Colors.gray7
+                      />
+                      <HSpacing size=Spacing.xs />
+                      <Text
+                        block=true
+                        value="Validators Delegated"
+                        weight=Text.Semibold
+                        color=Colors.gray7
+                      />
+                    </div>
+                  | _ => <LoadingCensorBar width=100 height=15 />
+                  }}
+               </Col.Grid>
+               <Col.Grid col=Col.Three>
                  <Text
                    block=true
-                   value="VALIDATOR"
-                   size=Text.Sm
-                   weight=Text.Bold
-                   spacing={Text.Em(0.05)}
-                   color=Colors.gray6
+                   value="Amount (BAND)"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Right
                  />
-               </Col>
-               <Col size=0.6>
-                 <div className=Styles.alignRight>
-                   <Text
-                     block=true
-                     value="AMOUNT (BAND)"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     spacing={Text.Em(0.05)}
-                     color=Colors.gray6
-                   />
-                 </div>
-               </Col>
-               <Col size=0.6>
-                 <div className=Styles.alignRight>
-                   <Text
-                     block=true
-                     value="REWARD (BAND)"
-                     size=Text.Sm
-                     spacing={Text.Em(0.05)}
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </div>
-               </Col>
-               <Col> <HSpacing size=Spacing.lg /> </Col>
-             </Row>
-           </THead>}
+               </Col.Grid>
+               <Col.Grid col=Col.Three>
+                 <Text
+                   block=true
+                   value="Reward (BAND)"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Right
+                 />
+               </Col.Grid>
+             </Row.Grid>
+           </THead.Grid>}
       {switch (delegationsSub) {
        | Data(delegations) =>
          delegations->Belt.Array.size > 0
@@ -181,7 +183,14 @@ let make = (~address) => {
                )
              ->React.array
            : <div className=Styles.emptyContainer>
-               <img src=Images.noTransaction className=Styles.noTransactionLogo />
+               <img src=Images.noBlock className=Styles.noDataImage />
+               <Heading
+                 size=Heading.H4
+                 value="No Delegation"
+                 align=Heading.Center
+                 weight=Heading.Regular
+                 color=Colors.bandBlue
+               />
              </div>
        | _ =>
          Belt_Array.make(1, ApolloHooks.Subscription.NoData)
@@ -190,19 +199,10 @@ let make = (~address) => {
            )
          ->React.array
        }}
-      <VSpacing size=Spacing.lg />
       {switch (delegationsCountSub) {
        | Data(delegationsCount) =>
          let pageCount = Page.getPageCount(delegationsCount, pageSize);
-         <>
-           <VSpacing size=Spacing.lg />
-           <Pagination
-             currentPage=page
-             pageCount
-             onPageChange={newPage => setPage(_ => newPage)}
-           />
-           <VSpacing size=Spacing.lg />
-         </>;
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
        | _ => React.null
        }}
     </>

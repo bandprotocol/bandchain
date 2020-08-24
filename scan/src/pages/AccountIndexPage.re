@@ -1,17 +1,6 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let addressContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let cFlex = alignItems_ =>
-    style([display(`flex), flexDirection(`column), alignItems(alignItems_)]);
-
-  let rFlex = style([display(`flex), flexDirection(`row)]);
-
   let innerCenter = style([Media.mobile([display(`flex), justifyContent(`center)])]);
 
   let separatorLine =
@@ -84,7 +73,6 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
     <Col size=1.2>
       <Text
         value=title
-        size=Text.Sm
         height={Text.Px(18)}
         spacing={Text.Em(0.03)}
         nowrap=true
@@ -93,8 +81,8 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
       />
     </Col>
     <Col size=0.6>
-      <div className={Styles.cFlex(`flexEnd)}>
-        <div className=Styles.rFlex>
+      <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
+        <div className={CssHelper.flexBox()}>
           {isCountup
              ? <NumberCountup
                  value=amount
@@ -121,7 +109,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
           />
         </div>
         <VSpacing size=Spacing.xs />
-        <div className={Css.merge([Styles.rFlex, Styles.balance])}>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.balance])}>
           {isCountup
              ? <NumberCountup
                  value={amount *. usdPrice}
@@ -156,7 +144,7 @@ let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
   let titles = isMobile ? rawTitle->Js.String2.split("\n") : [|rawTitle|];
 
   <div className=Styles.totalBalance>
-    <div className={Styles.cFlex(`flexStart)}>
+    <div className={CssHelper.flexBox(~direction=`column, ())}>
       {titles
        ->Belt_Array.mapWithIndex((i, title) =>
            <Text
@@ -170,7 +158,7 @@ let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
        ->React.array}
     </div>
     <VSpacing size=Spacing.md />
-    <div className=Styles.rFlex>
+    <div className={CssHelper.flexBox()}>
       <NumberCountup
         value=amount
         size={isMobile ? Text.Lg : Text.Xxl}
@@ -228,54 +216,35 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     };
   };
 
-  <Section>
+  <Section pbSm=0>
     <div className=CssHelper.container>
-      <Row justify=Row.Between>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.accountLogo className=Styles.logo />
-            <Text
-              value="ACCOUNT DETAIL"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.sm />
-      <div className=Styles.addressContainer>
+      <Row.Grid marginBottom=40 marginBottomSm=24>
+        <Col.Grid> <Heading value="Account Detail" size=Heading.H4 /> </Col.Grid>
+      </Row.Grid>
+      <div className={CssHelper.flexBox()}>
         {switch (topPartAllSub) {
-         | Data(_) =>
-           <AddressRender address position=AddressRender.Title copy=true clickable=false />
-         | _ => <LoadingCensorBar width=460 height=20 />
-         }}
-        {isMobile
-           ? React.null
-           : <>
-               {switch (topPartAllSub) {
-                | Data((_, _, _, _, {chainID})) =>
-                  <>
+         | Data((_, _, _, _, {chainID})) =>
+           <>
+             <AddressRender address position=AddressRender.Title copy=true clickable=false />
+             {isMobile
+                ? React.null
+                : <>
                     <HSpacing size=Spacing.md />
-                    <div className=Styles.button onClick={_ => {send(chainID)}}>
+                    <div
+                      className={CssHelper.btn(~px=13, ~fsize=10, ~py=5, ())}
+                      onClick={_ => {send(chainID)}}>
                       <Text
                         value="Send BAND"
                         size=Text.Lg
                         block=true
-                        color=Colors.blue7
+                        color=Colors.white
                         nowrap=true
-                        weight=Text.Medium
                       />
                     </div>
-                  </>
-                | _ => <LoadingCensorBar width=100 height=20 />
-                }}
-             </>}
+                  </>}
+           </>
+         | _ => <LoadingCensorBar width=600 height=20 />
+         }}
       </div>
       <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
       <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
@@ -305,7 +274,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
           {switch (topPartAllSub) {
            | Data(({financial}, {balance}, _, _, _)) =>
              balanceDetail(
-               ~title="AVAILABLE BALANCE",
+               ~title="Available Balance",
                ~description="Balance available to send, delegate, etc",
                ~amount={
                  balance->Coin.getBandAmountFromCoins;
@@ -321,7 +290,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
           {switch (topPartAllSub) {
            | Data(({financial}, _, {amount}, _, _)) =>
              balanceDetail(
-               ~title="BALANCE AT STAKE",
+               ~title="Balance At Stake",
                ~description="Balance currently delegated to validators",
                ~amount={
                  amount->Coin.getBandAmountFromCoin;
@@ -337,7 +306,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
           {switch (topPartAllSub) {
            | Data(({financial}, _, _, unbonding, _)) =>
              balanceDetail(
-               ~title="UNBONDING AMOUNT",
+               ~title="Unbonding Amount",
                ~description="Amount undelegated from validators awaiting 21 days lockup period",
                ~amount={
                  unbonding->Coin.getBandAmountFromCoin;
@@ -353,7 +322,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
           {switch (topPartAllSub) {
            | Data(({financial}, _, {reward}, _, _)) =>
              balanceDetail(
-               ~title="REWARD",
+               ~title="Reward",
                ~description="Reward from staking to validators",
                ~amount={
                  reward->Coin.getBandAmountFromCoin;
@@ -374,7 +343,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                    <VSpacing size=Spacing.lg />
                    <VSpacing size=Spacing.md />
                    {balanceDetail(
-                      ~title="COMMISSION",
+                      ~title="Commission",
                       ~description="Reward commission from delegator's reward",
                       ~amount=commissionAmount,
                       ~usdPrice=financial.usdPrice,
@@ -399,7 +368,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
                totalBalanceRender(
                  isMobile,
-                 "TOTAL BAND BALANCE",
+                 "Total BAND Balance",
                  sumBalance(balance, amount, unbonding, reward, commission),
                  "BAND",
                )
@@ -409,7 +378,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
              | Data(({financial}, {balance, commission}, {amount, reward}, unbonding, _)) =>
                totalBalanceRender(
                  isMobile,
-                 "TOTAL BAND IN USD \n($"
+                 "Total BAND In USD \n($"
                  ++ (financial.usdPrice |> Format.fPretty(~digits=2))
                  ++ " / BAND)",
                  sumBalance(balance, amount, unbonding, reward, commission) *. financial.usdPrice,
@@ -425,15 +394,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
       <Tab
         tabs=[|
           {
-            name: "TRANSACTIONS",
+            name: "Transactions",
             route: Route.AccountIndexPage(address, Route.AccountTransactions),
           },
           {
-            name: "DELEGATIONS",
+            name: "Delegations",
             route: Route.AccountIndexPage(address, Route.AccountDelegations),
           },
-          {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
-          {name: "REDELEGATE", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
+          {name: "Unbonding", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
+          {name: "Redelegate", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
         |]
         currentRoute={Route.AccountIndexPage(address, hashtag)}>
         {switch (hashtag) {

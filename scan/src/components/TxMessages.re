@@ -5,6 +5,7 @@ module Styles = {
       position(`relative),
       height(overflowed ? `px(60) : `auto),
       overflow(overflowed ? `hidden : `visible),
+      selector("> div + div", [marginTop(`px(10))]),
       Media.mobile([height(overflowed ? `px(50) : `auto)]),
     ]);
   let showButton =
@@ -45,9 +46,7 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
        ->Belt_List.toArray
        ->Belt_Array.mapWithIndex((i, msg) =>
            <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
-             <VSpacing size=Spacing.sm />
              <Msg msg width />
-             <VSpacing size=Spacing.sm />
            </React.Fragment>
          )
        ->React.array}

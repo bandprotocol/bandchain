@@ -1,22 +1,17 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
-
-  let hFlex = style([display(`flex)]);
-
-  let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
-  let alignLeft = style([display(`flex), justifyContent(`flexStart)]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
   let emptyContainer =
     style([
       height(`px(300)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      flexDirection(`column),
       backgroundColor(white),
     ]);
-  let noTransactionLogo = style([width(`px(160))]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let renderBody =
@@ -24,7 +19,7 @@ let renderBody =
       reserveIndex,
       redelegateListSub: ApolloHooks.Subscription.variant(RedelegateSub.redelegate_list_t),
     ) => {
-  <TBody
+  <TBody.Grid
     key={
       switch (redelegateListSub) {
       | Data({
@@ -40,10 +35,9 @@ let renderBody =
       | _ => reserveIndex |> string_of_int
       }
     }
-    minHeight=50>
-    <Row>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-      <Col size=1.>
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Three>
         {switch (redelegateListSub) {
          | Data({
              srcValidator: {
@@ -60,9 +54,9 @@ let renderBody =
            />
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col>
-      <Col size=1.>
-        <div className=Styles.alignLeft>
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox()}>
           {switch (redelegateListSub) {
            | Data({
                dstValidator: {
@@ -81,36 +75,32 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col>
-      <Col size=0.6>
-        {switch (redelegateListSub) {
-         | Data({amount}) =>
-           <div className=Styles.alignRight>
-             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} code=true />
-           </div>
-         | _ => <LoadingCensorBar width=145 height=20 />
-         }}
-      </Col>
-      <Col size=1.>
-        <div className=Styles.alignRight>
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (redelegateListSub) {
+           | Data({amount}) =>
+             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+           | _ => <LoadingCensorBar width=145 height=20 />
+           }}
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (redelegateListSub) {
            | Data({completionTime}) =>
-             <Text
-               value={
-                 completionTime
-                 |> MomentRe.Moment.format(Config.timestampDisplayFormat)
-                 |> String.uppercase_ascii
-               }
-               code=true
+             <Timestamp.Grid
+               time=completionTime
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
              />
-
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile =
@@ -133,10 +123,10 @@ let renderBodyMobile =
       ++ (reserveIndex |> string_of_int);
     <MobileCard
       values=InfoMobileCard.[
-        ("SOURCE\nVALIDATOR", Validator(srcAddress, srcMoniker, srcIdentity)),
-        ("DESTINATION\nVALIDATOR", Validator(dstAddress, dstMoniker, dstIdentity)),
-        ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
-        ("REDELEGATE\nCOMPLETE AT", Timestamp(completionTime)),
+        ("Source\nValidator", Validator(srcAddress, srcMoniker, srcIdentity)),
+        ("Destination\nValidator", Validator(dstAddress, dstMoniker, dstIdentity)),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+        ("Redelegate\nComplete At", Timestamp(completionTime)),
       ]
       key=key_
       idx=key_
@@ -144,10 +134,10 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("SOURCE\nVALIDATOR", Loading(230)),
-        ("DESTINATION\nVALIDATOR", Loading(100)),
-        ("AMOUNT\n(BAND)", Loading(100)),
-        ("REDELEGATE\nCOMPLETE AT", Loading(230)),
+        ("Source\nValidator", Loading(230)),
+        ("Destination\nValidator", Loading(100)),
+        ("Amount\n(BAND)", Loading(100)),
+        ("Redelegate\nComplete At", Loading(230)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -168,80 +158,83 @@ let make = (~address) => {
   let redelegateListSub =
     RedelegateSub.getRedelegationByDelegator(address, currentTime, ~pageSize, ~page, ());
 
-  <div className=Styles.tableLowerContainer>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.hFlex>
-      {switch (redelegateCountSub) {
-       | Data(redelegateCount) =>
-         <>
-           <HSpacing size=Spacing.lg />
-           <Text value={redelegateCount |> string_of_int} weight=Text.Semibold />
-           <HSpacing size=Spacing.xs />
-           <Text value="Unbonding Entries" />
-         </>
-       | _ =>
-         <div className=Styles.hFlex>
-           <HSpacing size=Spacing.lg />
-           <LoadingCensorBar width=130 height=15 />
-         </div>
-       }}
-    </div>
-    <VSpacing size=Spacing.lg />
+  <div className=Styles.tableWrapper>
     <>
       {isMobile
-         ? React.null
-         : <THead>
-             <Row>
-               <Col> <HSpacing size=Spacing.lg /> </Col>
-               <Col size=1.>
+         ? <Row.Grid marginBottom=16>
+             <Col.Grid>
+               {switch (redelegateCountSub) {
+                | Data(redelegateCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={redelegateCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Redelegate Entries"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+           </Row.Grid>
+         : <THead.Grid>
+             <Row.Grid alignItems=Row.Center>
+               <Col.Grid col=Col.Three>
+                 {switch (redelegateCountSub) {
+                  | Data(redelegateCount) =>
+                    <div className={CssHelper.flexBox()}>
+                      <Text
+                        block=true
+                        value={redelegateCount |> string_of_int}
+                        weight=Text.Semibold
+                        color=Colors.gray7
+                      />
+                      <HSpacing size=Spacing.xs />
+                      <Text
+                        block=true
+                        value="Redelegate Entries"
+                        weight=Text.Semibold
+                        color=Colors.gray7
+                      />
+                    </div>
+                  | _ => <LoadingCensorBar width=100 height=15 />
+                  }}
+               </Col.Grid>
+               <Col.Grid col=Col.Three>
                  <Text
                    block=true
-                   value="SOURCE VALIDATOR"
-                   size=Text.Sm
-                   weight=Text.Bold
-                   spacing={Text.Em(0.05)}
-                   color=Colors.gray6
+                   value="Desination Validator"
+                   weight=Text.Semibold
+                   color=Colors.gray7
                  />
-               </Col>
-               <Col size=1.>
-                 <div className=Styles.alignLeft>
-                   <Text
-                     block=true
-                     value="DESTINATION VALIDATOR"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     spacing={Text.Em(0.05)}
-                     color=Colors.gray6
-                   />
-                 </div>
-               </Col>
-               <Col size=0.6>
-                 <div className=Styles.alignRight>
-                   <Text
-                     block=true
-                     value="AMOUNT (BAND)"
-                     size=Text.Sm
-                     spacing={Text.Em(0.05)}
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </div>
-               </Col>
-               <Col size=1.>
-                 <div className=Styles.alignRight>
-                   <Text
-                     block=true
-                     value="REDELEGATE COMPLETE AT"
-                     size=Text.Sm
-                     spacing={Text.Em(0.05)}
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </div>
-               </Col>
-               <Col> <HSpacing size=Spacing.lg /> </Col>
-             </Row>
-           </THead>}
+               </Col.Grid>
+               <Col.Grid col=Col.Three>
+                 <Text
+                   block=true
+                   value="Amount (BAND)"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Right
+                 />
+               </Col.Grid>
+               <Col.Grid col=Col.Three>
+                 <Text
+                   block=true
+                   value="Redelegate Complete At"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Right
+                 />
+               </Col.Grid>
+             </Row.Grid>
+           </THead.Grid>}
       {switch (redelegateListSub) {
        | Data(redelegateList) =>
          redelegateList->Belt.Array.size > 0
@@ -251,7 +244,14 @@ let make = (~address) => {
                )
              ->React.array
            : <div className=Styles.emptyContainer>
-               <img src=Images.noTransaction className=Styles.noTransactionLogo />
+               <img src=Images.noBlock className=Styles.noDataImage />
+               <Heading
+                 size=Heading.H4
+                 value="No redelegation"
+                 align=Heading.Center
+                 weight=Heading.Regular
+                 color=Colors.bandBlue
+               />
              </div>
        | _ =>
          Belt_Array.make(1, ApolloHooks.Subscription.NoData)
@@ -263,15 +263,7 @@ let make = (~address) => {
       {switch (redelegateCountSub) {
        | Data(redelegateCount) =>
          let pageCount = Page.getPageCount(redelegateCount, pageSize);
-         <>
-           <VSpacing size=Spacing.lg />
-           <Pagination
-             currentPage=page
-             pageCount
-             onPageChange={newPage => setPage(_ => newPage)}
-           />
-           <VSpacing size=Spacing.lg />
-         </>;
+         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
        | _ => React.null
        }}
     </>
