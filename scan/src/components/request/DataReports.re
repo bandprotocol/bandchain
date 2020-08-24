@@ -3,10 +3,9 @@ module Styles = {
 
   let reportCard = isLast =>
     style([
-      padding2(~v=`px(24), ~h=`zero),
+      padding(`px(24)),
       isLast ? borderBottomStyle(`none) : borderBottom(`px(1), `solid, Colors.gray9),
-      isLast ? paddingBottom(`zero) : paddingBottom(`px(24)),
-      Media.mobile([padding2(~v=`px(24), ~h=`zero), paddingBottom(isLast ? `zero : `px(24))]),
+      Media.mobile([padding2(~v=`px(24), ~h=`px(16))]),
     ]);
 
   let reportsTable =
@@ -30,7 +29,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       flexDirection(`column),
-      backgroundColor(white),
+      backgroundColor(Colors.blueGray1),
     ]);
 
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
