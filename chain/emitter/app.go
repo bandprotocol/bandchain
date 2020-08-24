@@ -35,7 +35,7 @@ type App struct {
 	accsInBlock    map[string]bool // The accounts that need balance update at the end of block.
 	accsInTx       map[string]bool // The accounts related to the current processing transaction.
 	msgs           []Message       // The list of all messages to publish for this block.
-	emitStartState bool            // If the variable is true will emit all no historical state to Kafka
+	emitStartState bool            // If emitStartState is true will emit all non historical state to Kafka
 }
 
 // NewBandAppWithEmitter creates a new App instance.
