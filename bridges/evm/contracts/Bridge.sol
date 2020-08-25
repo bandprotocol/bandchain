@@ -46,7 +46,6 @@ contract Bridge is IBridge, Ownable {
     /// @param _validators The changed set of BandChain validators.
     function updateValidatorPowers(ValidatorWithPower[] memory _validators)
         external
-        override
         onlyOwner
     {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {

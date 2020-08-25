@@ -11,11 +11,10 @@ import {IBridgeCache} from "./IBridgeCache.sol";
 contract BridgeProxy is IBridge, IBridgeCache, Ownable {
     IBridgeCache public bridge;
 
-    /**
-     * @notice Contract constructor
-     * @dev Initializes a new BandPriceOracle instance.
-     * @param _bridge Band's Bridge contract address
-     **/
+
+    /// @notice Contract constructor
+    /// @dev Initializes a new Bridge instance.
+    /// @param _bridge Band's Bridge contract address
     constructor(IBridgeCache _bridge) public {
         bridge = _bridge;
     }
@@ -49,16 +48,9 @@ contract BridgeProxy is IBridge, IBridgeCache, Ownable {
         return bridge.getLatestResponse(_request);
     }
 
-    /// Update validator powers by owner.
-    /// @param _validators The changed set of BandChain validators.
-    function updateValidatorPowers(ValidatorWithPower[] memory _validators)
-        external
-        override
-        onlyOwner
-    {
-      bridge.updateValidatorPowers(_validators);
-    }
-
+    /// Performs oracle state relay and oracle data verification in one go. The caller submits
+    /// the encoded proof and receives back the decoded data, ready to be validated and used.
+    /// @param _data The encoded data for oracle state relay and data verification.
     function relayAndVerify(bytes calldata _data)
         external
         override
@@ -67,6 +59,9 @@ contract BridgeProxy is IBridge, IBridgeCache, Ownable {
         return bridge.relayAndVerify(_data);
     }
 
+    /// Performs oracle state relay and oracle data verification in one go.
+    /// After that, the results will be recorded to the state by using the hash of RequestPacket as key.
+    /// @param _data The encoded data for oracle state relay and data verification.
     function relay(bytes calldata _data)
         external
         override
