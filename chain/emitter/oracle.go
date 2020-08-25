@@ -14,17 +14,6 @@ func parseBytes(b []byte) []byte {
 	return b
 }
 
-func (app *App) emitNewDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
-	app.Write("NEW_DATA_SOURCE", JsDict{
-		"id":          id,
-		"name":        ds.Name,
-		"description": ds.Description,
-		"owner":       ds.Owner.String(),
-		"executable":  app.OracleKeeper.GetFile(ds.Filename),
-		"tx_hash":     txHash,
-	})
-}
-
 func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
 	app.Write("SET_DATA_SOURCE", JsDict{
 		"id":          id,
@@ -33,19 +22,6 @@ func (app *App) emitSetDataSource(id types.DataSourceID, ds types.DataSource, tx
 		"owner":       ds.Owner.String(),
 		"executable":  app.OracleKeeper.GetFile(ds.Filename),
 		"tx_hash":     txHash,
-	})
-}
-
-func (app *App) emitNewOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
-	app.Write("NEW_ORACLE_SCRIPT", JsDict{
-		"id":              id,
-		"name":            os.Name,
-		"description":     os.Description,
-		"owner":           os.Owner.String(),
-		"schema":          os.Schema,
-		"codehash":        os.Filename,
-		"source_code_url": os.SourceCodeURL,
-		"tx_hash":         txHash,
 	})
 }
 
@@ -136,7 +112,7 @@ func (app *App) handleMsgCreateDataSource(
 ) {
 	id := types.DataSourceID(atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
-	app.emitNewDataSource(id, ds, txHash)
+	app.emitSetDataSource(id, ds, txHash)
 	extra["id"] = id
 }
 
@@ -146,7 +122,7 @@ func (app *App) handleMsgCreateOracleScript(
 ) {
 	id := types.OracleScriptID(atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
-	app.emitNewOracleScript(id, os, txHash)
+	app.emitSetOracleScript(id, os, txHash)
 	extra["id"] = id
 }
 

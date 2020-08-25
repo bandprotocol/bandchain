@@ -80,10 +80,6 @@ class Handler(object):
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(accounts.update().where(condition).values(**msg))
 
-    def handle_new_data_source(self, msg):
-        self.handle_set_data_source(msg)
-        self.handle_new_data_source_request({"data_source_id": msg["id"], "count": 0})
-
     def handle_set_data_source(self, msg):
         if msg["tx_hash"] is not None:
             msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
@@ -95,10 +91,11 @@ class Handler(object):
             .values(**msg)
             .on_conflict_do_update(constraint="data_sources_pkey", set_=msg)
         )
-
-    def handle_new_oracle_script(self, msg):
-        self.handle_set_oracle_script(msg)
-        self.handle_new_oracle_script_request({"oracle_script_id": msg["id"], "count": 0})
+        self.conn.execute(
+            insert(data_source_requests)
+            .values({"data_source_id": msg["id"], "count": 0})
+            .on_conflict_do_nothing(constraint="data_source_requests_pkey")
+        )
 
     def handle_set_oracle_script(self, msg):
         if msg["tx_hash"] is not None:
@@ -110,6 +107,11 @@ class Handler(object):
             insert(oracle_scripts)
             .values(**msg)
             .on_conflict_do_update(constraint="oracle_scripts_pkey", set_=msg)
+        )
+        self.conn.execute(
+            insert(oracle_script_requests)
+            .values({"oracle_script_id": msg["id"], "count": 0})
+            .on_conflict_do_nothing(constraint="oracle_script_requests_pkey")
         )
 
     def handle_new_request(self, msg):
@@ -315,9 +317,6 @@ class Handler(object):
             .on_conflict_do_update(constraint="historical_oracle_statuses_pkey", set_=msg)
         )
 
-    def handle_new_data_source_request(self, msg):
-        self.conn.execute(data_source_requests.insert(), msg)
-
     def handle_set_data_source_request(self, msg):
         condition = True
         for col in data_source_requests.primary_key.columns.values():
@@ -325,9 +324,6 @@ class Handler(object):
         self.conn.execute(
             data_source_requests.update(condition).values(count=data_source_requests.c.count + 1)
         )
-
-    def handle_new_oracle_script_request(self, msg):
-        self.conn.execute(oracle_script_requests.insert(), msg)
 
     def handle_set_oracle_script_request(self, msg):
         condition = True
