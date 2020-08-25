@@ -28,7 +28,6 @@ func (app *App) emitOracleModule() {
 	rqCount := app.OracleKeeper.GetRequestCount(app.DeliverContext)
 	for rid := types.RequestID(1); rid <= types.RequestID(rqCount); rid++ {
 		req := app.OracleKeeper.MustGetRequest(app.DeliverContext, rid)
-		res := app.OracleKeeper.MustGetResult(app.DeliverContext, rid)
 		app.Write("NEW_REQUEST", JsDict{
 			"id":               rid,
 			"oracle_script_id": req.OracleScriptID,
@@ -36,14 +35,12 @@ func (app *App) emitOracleModule() {
 			"ask_count":        len(req.RequestedValidators),
 			"min_count":        req.MinCount,
 			"tx_hash":          nil,
-			"sender":           nil,
 			"client_id":        req.ClientID,
-			"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
-			"request_time":     res.ResponsePacketData.RequestTime,
-			"resolve_time":     res.ResponsePacketData.ResolveTime,
-			"resolve_status":   res.ResponsePacketData.ResolveStatus,
-			"result":           parseBytes(res.ResponsePacketData.Result),
+			"resolve_status":   types.ResolveStatus_Open,
 		})
+		if app.OracleKeeper.HasResult(app.DeliverContext, rid) {
+			app.emitUpdateResult(rid)
+		}
 		app.emitRawRequestAndValRequest(rid, req)
 		reps := app.OracleKeeper.GetReports(app.DeliverContext, rid)
 		for _, rep := range reps {
@@ -122,6 +119,17 @@ func (app *App) emitReportAndRawReport(
 	}
 }
 
+func (app *App) emitUpdateResult(id types.RequestID) {
+	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
+	app.Write("UPDATE_REQUEST", JsDict{
+		"id":             id,
+		"request_time":   result.ResponsePacketData.RequestTime,
+		"resolve_time":   result.ResponsePacketData.ResolveTime,
+		"resolve_status": result.ResponsePacketData.ResolveStatus,
+		"result":         parseBytes(result.ResponsePacketData.Result),
+	})
+}
+
 // handleMsgRequestData implements emitter handler for MsgRequestData.
 func (app *App) handleMsgRequestData(
 	txHash []byte, msg oracle.MsgRequestData, evMap EvMap, extra JsDict,
@@ -194,15 +202,7 @@ func (app *App) handleMsgEditOracleScript(
 
 // handleEventRequestExecute implements emitter handler for EventRequestExecute.
 func (app *App) handleEventRequestExecute(evMap EvMap) {
-	id := types.RequestID(atoi(evMap[types.EventTypeResolve+"."+types.AttributeKeyID][0]))
-	result := app.OracleKeeper.MustGetResult(app.DeliverContext, id)
-	app.Write("UPDATE_REQUEST", JsDict{
-		"id":             id,
-		"request_time":   result.ResponsePacketData.RequestTime,
-		"resolve_time":   result.ResponsePacketData.ResolveTime,
-		"resolve_status": result.ResponsePacketData.ResolveStatus,
-		"result":         parseBytes(result.ResponsePacketData.Result),
-	})
+	app.emitUpdateResult(types.RequestID(atoi(evMap[types.EventTypeResolve+"."+types.AttributeKeyID][0])))
 }
 
 // handleMsgAddReporter implements emitter handler for MsgAddReporter.
