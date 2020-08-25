@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import {IBridge} from "./Bridge.sol";
 
-interface IBridgeCache is IBridge {
+interface ICacheBridge is IBridge {
 
     /// Returns the hash of a RequestPacket.
     /// @param _request A tuple that represents RequestPacket struct.

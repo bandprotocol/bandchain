@@ -5,11 +5,11 @@ pragma experimental ABIEncoderV2;
 
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
-import {IBridgeCache} from "./IBridgeCache.sol";
+import {ICacheBridge} from "./ICacheBridge.sol";
 
-/// @title BridgeWithCache <3 BandChain
+/// @title CacheBridge <3 BandChain
 /// @author Band Protocol Team
-contract BridgeWithCache is Bridge, IBridgeCache {
+contract CacheBridge is Bridge, ICacheBridge {
     /// Mapping from hash of RequestPacket to the latest ResponsePacket.
     mapping(bytes32 => ResponsePacket) public requestsCache;
 

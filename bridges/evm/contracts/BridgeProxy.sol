@@ -6,22 +6,22 @@ pragma experimental ABIEncoderV2;
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {Packets} from "./Packets.sol";
 import {IBridge} from "./IBridge.sol";
-import {IBridgeCache} from "./IBridgeCache.sol";
+import {ICacheBridge} from "./ICacheBridge.sol";
 
-contract BridgeProxy is IBridge, IBridgeCache, Ownable {
-    IBridgeCache public bridge;
+contract BridgeProxy is IBridge, ICacheBridge, Ownable {
+    ICacheBridge public bridge;
 
 
     /// @notice Contract constructor
     /// @dev Initializes a new Bridge instance.
     /// @param _bridge Band's Bridge contract address
-    constructor(IBridgeCache _bridge) public {
+    constructor(ICacheBridge _bridge) public {
         bridge = _bridge;
     }
 
     /// Set the address of the bridge contract to use
     /// @param _bridge The address of the bridge to use
-    function setBridge(IBridgeCache _bridge) external onlyOwner {
+    function setBridge(ICacheBridge _bridge) external onlyOwner {
         bridge = _bridge;
     }
     
