@@ -119,10 +119,33 @@ let make = (~address) => {
   let unbondingCountSub = UnbondingSub.getUnbondingCountByDelegator(address, currentTime);
 
   <div className=Styles.tableWrapper>
-    <>
-      {isMobile
-         ? <Row.Grid marginBottom=16>
-             <Col.Grid>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (unbondingCountSub) {
+              | Data(unbondingCount) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={unbondingCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text
+                    block=true
+                    value="Unbonding Entries"
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Six>
                {switch (unbondingCountSub) {
                 | Data(unbondingCount) =>
                   <div className={CssHelper.flexBox()}>
@@ -143,81 +166,56 @@ let make = (~address) => {
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
              </Col.Grid>
-           </Row.Grid>
-         : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Six>
-                 {switch (unbondingCountSub) {
-                  | Data(unbondingCount) =>
-                    <div className={CssHelper.flexBox()}>
-                      <Text
-                        block=true
-                        value={unbondingCount |> string_of_int}
-                        weight=Text.Semibold
-                        color=Colors.gray7
-                      />
-                      <HSpacing size=Spacing.xs />
-                      <Text
-                        block=true
-                        value="Unbonding Entries"
-                        weight=Text.Semibold
-                        color=Colors.gray7
-                      />
-                    </div>
-                  | _ => <LoadingCensorBar width=100 height=15 />
-                  }}
-               </Col.Grid>
-               <Col.Grid col=Col.Three>
-                 <Text
-                   block=true
-                   value="Amount (BAND)"
-                   weight=Text.Semibold
-                   color=Colors.gray7
-                   align=Text.Right
-                 />
-               </Col.Grid>
-               <Col.Grid col=Col.Three>
-                 <Text
-                   block=true
-                   value="Unbonded At"
-                   weight=Text.Semibold
-                   color=Colors.gray7
-                   align=Text.Right
-                 />
-               </Col.Grid>
-             </Row.Grid>
-           </THead.Grid>}
-      {switch (unbondingListSub) {
-       | Data(unbondingList) =>
-         unbondingList->Belt.Array.size > 0
-           ? unbondingList
-             ->Belt_Array.mapWithIndex((i, e) =>
-                 isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-               )
-             ->React.array
-           : <div className=Styles.emptyContainer>
-               <img src=Images.noBlock className=Styles.noDataImage />
-               <Heading
-                 size=Heading.H4
-                 value="No Unbonding"
-                 align=Heading.Center
-                 weight=Heading.Regular
-                 color=Colors.bandBlue
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Amount (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
                />
-             </div>
-       | _ =>
-         Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
-         ->Belt_Array.mapWithIndex((i, noData) =>
-             isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
-           )
-         ->React.array
-       }}
-      {switch (unbondingCountSub) {
-       | Data(unbondingCount) =>
-         let pageCount = Page.getPageCount(unbondingCount, pageSize);
-         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
-       | _ => React.null
-       }}
-    </>
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Unbonded At"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (unbondingListSub) {
+     | Data(unbondingList) =>
+       unbondingList->Belt.Array.size > 0
+         ? unbondingList
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
+         : <div className=Styles.emptyContainer>
+             <img src=Images.noBlock className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No Unbonding"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </div>
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
+     }}
+    {switch (unbondingCountSub) {
+     | Data(unbondingCount) =>
+       let pageCount = Page.getPageCount(unbondingCount, pageSize);
+       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
+     | _ => React.null
+     }}
   </div>;
 };
