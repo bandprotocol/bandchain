@@ -67,17 +67,13 @@ let toExternal =
   // Note: requestCount can't be nullable value.
   requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
   responseTime:
-    responsesLast1Day
-    ->Belt.Array.keepMap(({responseTime, resolveStatus}) =>
-        resolveStatus == "Success" ? Some(responseTime) : None
-      )
-    ->Belt.Array.get(0),
+    responsesLast1Day->Belt.Array.map(({responseTime}) => responseTime)->Belt.Array.get(0),
 };
 
 module MultiConfig = [%graphql
   {|
   subscription OracleScripts($limit: Int!, $offset: Int!, $searchTerm: String!) {
-    oracle_scripts(limit: $limit, offset: $offset,where: {name: {_ilike: $searchTerm}}, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
+    oracle_scripts(limit: $limit, offset: $offset,where: {name: {_ilike: $searchTerm}}, order_by: {request_stat: {count: desc}, transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.OracleScript.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
@@ -98,7 +94,7 @@ module MultiConfig = [%graphql
       requestStat: request_stat @bsRecord {
         count
       }
-      responsesLast1Day: response_last_1_day @bsRecord {
+      responsesLast1Day: response_last_1_day(where: {resolve_status: {_eq: "Success"}}) @bsRecord {
         responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
         resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }

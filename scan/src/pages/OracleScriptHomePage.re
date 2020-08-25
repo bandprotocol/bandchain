@@ -267,8 +267,7 @@ let make = () => {
   let oracleScriptsCountSub = OracleScriptSub.count(~searchTerm, ());
   let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
 
-  //TODO: we will implement another subscribe function for getting the most requested oracle scripts
-  let oracleScriptTopPart =
+  let mostRequestedOracleScriptSub =
     OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
 
   let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
@@ -279,16 +278,15 @@ let make = () => {
         <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
         <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
         <Row.Grid>
-          {switch (oracleScriptTopPart) {
+          {switch (mostRequestedOracleScriptSub) {
            | Data(oracleScripts) =>
              <>
                {oracleScripts
-                ->sorting(MostRequested)
                 ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, Sub.resolve(e)))
                 ->React.array}
              </>
            | _ =>
-             Belt_Array.make(6, ApolloHooks.Subscription.NoData)
+             Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
              ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
              ->React.array
            }}
