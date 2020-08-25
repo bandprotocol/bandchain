@@ -5,6 +5,7 @@ import hashlib
 from bech32 import bech32_encode, convertbits
 from bip32 import BIP32
 from ecdsa import SigningKey, VerifyingKey, SECP256k1
+from ecdsa.util import sigencode_string_canonize
 from mnemonic import Mnemonic
 
 BECH32_PUBKEY_ACC_PREFIX = "bandaccpub"
@@ -14,34 +15,31 @@ BECH32_PUBKEY_CONS_PREFIX = "bandvalconspub"
 
 class PrivateKey:
     """
-    Class for wraping SigningKey using for signature creation.
+    Class for wrapping SigningKey using for signature creation and public key derivation.
 
     :ivar signing_key: the ecdsa SigningKey instance
     :vartype signing_key: ecdsa.SigningKey
     """
 
-    def __init__(self, _error__please_use_generate=None) -> None:
-        """Unsupported, please use from_mnemonic to initialise."""
-        if not _error__please_use_generate:
-            raise TypeError("Please use SigningKey.from_mnemonic() to construct me")
+    def __init__(self, _error_do_not_use_init_directly=None) -> None:
+        """Unsupported, please use from_mnemonic to initialize."""
+        if not _error_do_not_use_init_directly:
+            raise TypeError("Please use PrivateKey.from_mnemonic() to construct me")
         self.signing_key = None
 
     @classmethod
     def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> PrivateKey:
         """
-        Create a Private key instance that wraps SigningKey from a given mnemonic phrase and path.
+        Create a PrivateKey instance from a given mnemonic phrase and a HD derivation path.
+        If path is not given, default to Band's HD prefix 494 and all other indexes being zeroes.
 
-        :param words: The mnemonic phrase for recover private key
-        :type words: str
-        :param path: The path using for generate private key follow BIP32 standard the default value
-        is Band prefix on index 0
-        :type path: str
+        :param words: the mnemonic phrase for recover private key
+        :param path: the HD path that follows the BIP32 standard
 
-        :return: Initialised PrivateKey object
-        :rtype: PrivateKey
+        :return: Initialized PrivateKey object
         """
         seed = Mnemonic("english").to_seed(words)
-        self = cls(_error__please_use_generate=True)
+        self = cls(_error_do_not_use_init_directly=True)
         self.signing_key = SigningKey.from_string(
             BIP32.from_seed(seed).get_privkey_from_path(path),
             curve=SECP256k1,
@@ -54,21 +52,22 @@ class PrivateKey:
         Return the PublicKey associated with this private key.
 
         :return: a PublicKey that can be used to verify the signatures made with this PrivateKey
-        :rtype: VerifyingKey
         """
-        return PublicKey(self.signing_key.get_verifying_key())
+        pubkey = PublicKey(_error_do_not_use_init_directly=True)
+        pubkey.verify_key = self.signing_key.get_verifying_key()
+        return pubkey
 
     def sign(self, msg: bytes) -> bytes:
         """
-        Create signature over data using the ecdsa sign_deterministic function to get the signature.
+        Sign and the given message using the edcsa sign_deterministic function.
 
-        :param msg: msg that will be hashed for signing
-        :type msg: bytes like object
+        :param msg: the message that will be hashed and signed
 
-        :return: encoded signature of the hash of `msg`
-        :rtype: bytes
+        :return: a signature of this private key over the given message
         """
-        pass
+        return self.signing_key.sign_deterministic(
+            msg, hashfunc=hashlib.sha256, sigencode=sigencode_string_canonize,
+        )
 
 
 class PublicKey:
@@ -80,8 +79,11 @@ class PublicKey:
     :vartype verify_key: ecdsa.VerifyingKey
     """
 
-    def __init__(self, verify_key: VerifyingKey) -> None:
-        self.verify_key = verify_key
+    def __init__(self, _error_do_not_use_init_directly=None) -> None:
+        """Unsupported, please do not contruct it directly."""
+        if not _error_do_not_use_init_directly:
+            raise TypeError("Please use PublicKey's factory methods to construct me")
+        self.verify_key = None
 
     @classmethod
     def _from_bech32(cls, bech: str, prefix: str) -> PublicKey:
@@ -128,15 +130,12 @@ class PublicKey:
         Verify a signature made over provided data.
 
         :param msg: data signed by the `signature`, will be hashed using sha256 function
-        :type msg: bytes like object
         :param sig: encoding of the signature
-        :type sig: bytes like object
 
         :raises BadSignatureError: if the signature is invalid or malformed
         :return: True if the verification was successful
-        :rtype: bool
         """
-        pass
+        return self.verify_key.verify(sig, msg, hashfunc=hashlib.sha256)
 
 
 class Address:
