@@ -11,7 +11,7 @@ let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
   if (a.timestamp != b.timestamp) {
     compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
   } else {
-    compare(b.request, a.request);
+    compare(b.requestCount, a.requestCount);
   };
 
 let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
@@ -20,7 +20,7 @@ let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | MostRequested => compare(b.request, a.request)
+        | MostRequested => compare(b.requestCount, a.requestCount)
         | LatestUpdate => compare(b.timestamp, a.timestamp)
         };
       };
@@ -63,9 +63,14 @@ let renderBody =
       </Col.Grid>
       <Col.Grid col=Col.One>
         {switch (dataSourcesSub) {
-         | Data({request}) =>
+         | Data({requestCount}) =>
            <div>
-             <Text value={request |> Format.iPretty} weight=Text.Medium block=true ellipsis=true />
+             <Text
+               value={requestCount |> Format.iPretty}
+               weight=Text.Medium
+               block=true
+               ellipsis=true
+             />
            </div>
          | _ => <LoadingCensorBar width=70 height=15 />
          }}
@@ -95,12 +100,12 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
   switch (dataSourcesSub) {
-  | Data({id, timestamp: timestampOpt, description, name, request}) =>
+  | Data({id, timestamp: timestampOpt, description, name, requestCount}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
-        ("Requests", Count(request)),
+        ("Requests", Count(requestCount)),
         (
           "Timestamp",
           switch (timestampOpt) {
