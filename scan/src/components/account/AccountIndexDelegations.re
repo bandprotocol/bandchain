@@ -1,135 +1,208 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
-
-  let hFlex = style([display(`flex)]);
-
-  let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
+    ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-let renderBody = (delegation: DelegationSub.stake_t) => {
-  <TBody key={delegation.operatorAddress |> Address.toBech32} minHeight=50>
-    <Row>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-      <Col size=0.9>
-        <div className=Styles.hFlex>
-          <ValidatorMonikerLink
-            validatorAddress={delegation.operatorAddress}
-            moniker={delegation.moniker}
-            identity={delegation.identity}
-            width={`px(300)}
-          />
+let renderBody =
+    (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+  <TBody.Grid
+    key={
+      switch (delegationsSub) {
+      | Data({amount, operatorAddress, reward}) =>
+        (operatorAddress |> Address.toHex)
+        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+        ++ (reward |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+        ++ (reserveIndex |> string_of_int)
+      | _ => reserveIndex |> string_of_int
+      }
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Six>
+        {switch (delegationsSub) {
+         | Data({moniker, operatorAddress, identity}) =>
+           <div className={CssHelper.flexBox()}>
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`px(300)}
+             />
+           </div>
+         | _ => <LoadingCensorBar width=200 height=20 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (delegationsSub) {
+           | Data({amount}) =>
+             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=0.6>
-        <div className=Styles.alignRight>
-          <Text
-            value={delegation.amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
-            code=true
-          />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (delegationsSub) {
+           | Data({reward}) =>
+             <Text value={reward |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=0.6>
-        <div className=Styles.alignRight>
-          <Text
-            value={delegation.reward |> Coin.getBandAmountFromCoin |> Format.fPretty}
-            code=true
-          />
-        </div>
-      </Col>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile =
-    ({operatorAddress, moniker, identity, amount, reward}: DelegationSub.stake_t) => {
-  <MobileCard
-    values=InfoMobileCard.[
-      ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
-      ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
-      ("REWARD\n(BAND)", Coin({value: [reward], hasDenom: false})),
-    ]
-    key={operatorAddress |> Address.toHex}
-    idx={operatorAddress |> Address.toHex}
-  />;
+    (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+  switch (delegationsSub) {
+  | Data({amount, moniker, operatorAddress, reward, identity}) =>
+    let key_ =
+      (operatorAddress |> Address.toHex)
+      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reward |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reserveIndex |> string_of_int);
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Validator", Validator(operatorAddress, moniker, identity)),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+        ("Reward\n(BAND)", Coin({value: [reward], hasDenom: false})),
+      ]
+      key=key_
+      idx=key_
+    />;
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Validator", Loading(230)),
+        ("Amount\n(BAND)", Loading(100)),
+        ("Reward\n(BAND)", Loading(100)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = (~address) =>
-  {
-    let isMobile = Media.isMobile();
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
-    let delegationsCountSub = DelegationSub.getStakeCountByDelegator(address);
-    let delegationsSub = DelegationSub.getStakeList(address, ~pageSize, ~page, ());
+let make = (~address) => {
+  let isMobile = Media.isMobile();
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
+  let delegationsCountSub = DelegationSub.getStakeCountByDelegator(address);
+  let delegationsSub = DelegationSub.getStakeList(address, ~pageSize, ~page, ());
 
-    let%Sub delegationsCount = delegationsCountSub;
-    let%Sub delegations = delegationsSub;
-
-    let pageCount = Page.getPageCount(delegationsCount, pageSize);
-
-    <div className=Styles.tableLowerContainer>
-      <VSpacing size=Spacing.md />
-      <div className=Styles.hFlex>
-        <HSpacing size=Spacing.lg />
-        <Text value={delegationsCount |> string_of_int} weight=Text.Semibold />
-        <HSpacing size=Spacing.xs />
-        <Text value="Validators Delegated" />
-      </div>
-      <VSpacing size=Spacing.lg />
-      <>
-        {isMobile
-           ? React.null
-           : <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=0.9>
-                   <Text
-                     block=true
-                     value="VALIDATOR"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     spacing={Text.Em(0.05)}
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=0.6>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="AMOUNT (BAND)"
-                       size=Text.Sm
-                       weight=Text.Bold
-                       spacing={Text.Em(0.05)}
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col size=0.6>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="REWARD (BAND)"
-                       size=Text.Sm
-                       spacing={Text.Em(0.05)}
-                       weight=Text.Bold
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-               </Row>
-             </THead>}
-        {delegations
-         ->Belt.Array.map(delegation => {
-             isMobile ? renderBodyMobile(delegation) : renderBody(delegation)
-           })
-         ->React.array}
-        <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      </>
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <div className=Styles.tableWrapper>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (delegationsCountSub) {
+              | Data(delegationsCount) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={delegationsCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text
+                    block=true
+                    value="Validators Delegated"
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Six>
+               {switch (delegationsCountSub) {
+                | Data(delegationsCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={delegationsCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Validators Delegated"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Amount (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Reward (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (delegationsSub) {
+     | Data(delegations) =>
+       delegations->Belt.Array.size > 0
+         ? delegations
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
+         : <div className=Styles.emptyContainer>
+             <img src=Images.noBlock className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No Delegation"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </div>
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
+     }}
+    {switch (delegationsCountSub) {
+     | Data(delegationsCount) =>
+       let pageCount = Page.getPageCount(delegationsCount, pageSize);
+       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
+     | _ => React.null
+     }}
+  </div>;
+};

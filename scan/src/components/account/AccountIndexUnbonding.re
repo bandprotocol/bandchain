@@ -1,157 +1,221 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
-
-  let hFlex = style([display(`flex)]);
-
-  let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
+    ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-let renderBody = (unbondingEntry: UnbondingSub.unbonding_list_t) => {
-  <TBody
+let renderBody =
+    (
+      reserveIndex,
+      unbondingListSub: ApolloHooks.Subscription.variant(UnbondingSub.unbonding_list_t),
+    ) => {
+  <TBody.Grid
     key={
-      (unbondingEntry.validator.operatorAddress |> Address.toBech32)
-      ++ (unbondingEntry.completionTime |> MomentRe.Moment.toISOString)
-      ++ (unbondingEntry.amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      switch (unbondingListSub) {
+      | Data({validator: {operatorAddress}, amount, completionTime}) =>
+        (operatorAddress |> Address.toBech32)
+        ++ (completionTime |> MomentRe.Moment.toISOString)
+        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      | _ => reserveIndex |> string_of_int
+      }
     }
-    minHeight=50>
-    <Row>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-      <Col size=1.>
-        <div className=Styles.hFlex>
-          <ValidatorMonikerLink
-            validatorAddress={unbondingEntry.validator.operatorAddress}
-            moniker={unbondingEntry.validator.moniker}
-            identity={unbondingEntry.validator.identity}
-            width={`px(300)}
-          />
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Six>
+        {switch (unbondingListSub) {
+         | Data({validator: {operatorAddress, moniker, identity}}) =>
+           <div className={CssHelper.flexBox()}>
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`px(300)}
+             />
+           </div>
+         | _ => <LoadingCensorBar width=200 height=20 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (unbondingListSub) {
+           | Data({amount}) =>
+             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=0.6>
-        <div className=Styles.alignRight>
-          <Text
-            value={unbondingEntry.amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
-            code=true
-          />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (unbondingListSub) {
+           | Data({completionTime}) =>
+             <Timestamp.Grid
+               time=completionTime
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
+             />
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=1.>
-        <div className=Styles.alignRight>
-          <Text
-            value={
-              unbondingEntry.completionTime
-              |> MomentRe.Moment.format(Config.timestampDisplayFormat)
-              |> String.uppercase_ascii
-            }
-            code=true
-          />
-        </div>
-      </Col>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile =
     (
-      {validator: {operatorAddress, moniker, identity}, amount, completionTime}: UnbondingSub.unbonding_list_t,
+      reserveIndex,
+      unbondingListSub: ApolloHooks.Subscription.variant(UnbondingSub.unbonding_list_t),
     ) => {
-  let key_ =
-    (operatorAddress |> Address.toBech32)
-    ++ (completionTime |> MomentRe.Moment.toISOString)
-    ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString);
-
-  <MobileCard
-    values=InfoMobileCard.[
-      ("VALIDATOR", Validator(operatorAddress, moniker, identity)),
-      ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
-      ("UNBONDED AT", Timestamp(completionTime)),
-    ]
-    key=key_
-    idx=key_
-  />;
+  switch (unbondingListSub) {
+  | Data({validator: {operatorAddress, moniker, identity}, amount, completionTime}) =>
+    let key_ =
+      (operatorAddress |> Address.toBech32)
+      ++ (completionTime |> MomentRe.Moment.toISOString)
+      ++ (reserveIndex |> string_of_int);
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Validator", Validator(operatorAddress, moniker, identity)),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+        ("Unbonded At", Timestamp(completionTime)),
+      ]
+      key=key_
+      idx=key_
+    />;
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Validator", Loading(230)),
+        ("Amount\n(BAND)", Loading(230)),
+        ("Unbonded At", Loading(230)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = (~address) =>
-  {
-    let isMobile = Media.isMobile();
-    let currentTime =
-      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+let make = (~address) => {
+  let isMobile = Media.isMobile();
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
 
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
 
-    let unbondingListSub =
-      UnbondingSub.getUnbondingByDelegator(address, currentTime, ~pageSize, ~page, ());
-    let unbondingCountSub = UnbondingSub.getUnbondingCountByDelegator(address, currentTime);
+  let unbondingListSub =
+    UnbondingSub.getUnbondingByDelegator(address, currentTime, ~pageSize, ~page, ());
+  let unbondingCountSub = UnbondingSub.getUnbondingCountByDelegator(address, currentTime);
 
-    let%Sub unbondingCount = unbondingCountSub;
-    let%Sub unbondingList = unbondingListSub;
-
-    let pageCount = Page.getPageCount(unbondingCount, pageSize);
-
-    <div className=Styles.tableLowerContainer>
-      <VSpacing size=Spacing.md />
-      <div className=Styles.hFlex>
-        <HSpacing size=Spacing.lg />
-        <Text value={unbondingCount |> string_of_int} weight=Text.Semibold />
-        <HSpacing size=Spacing.xs />
-        <Text value="Unbonding Entries" />
-      </div>
-      <VSpacing size=Spacing.lg />
-      <>
-        {isMobile
-           ? React.null
-           : <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=1.>
-                   <Text
-                     block=true
-                     value="VALIDATOR"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     spacing={Text.Em(0.05)}
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=0.6>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="AMOUNT (BAND)"
-                       size=Text.Sm
-                       weight=Text.Bold
-                       spacing={Text.Em(0.05)}
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col size=1.>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="UNBONDED AT"
-                       size=Text.Sm
-                       spacing={Text.Em(0.05)}
-                       weight=Text.Bold
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-               </Row>
-             </THead>}
-        {unbondingList
-         ->Belt.Array.map(unbondingEntry =>
-             isMobile ? renderBodyMobile(unbondingEntry) : renderBody(unbondingEntry)
-           )
-         ->React.array}
-        <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      </>
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <div className=Styles.tableWrapper>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (unbondingCountSub) {
+              | Data(unbondingCount) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={unbondingCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text
+                    block=true
+                    value="Unbonding Entries"
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Six>
+               {switch (unbondingCountSub) {
+                | Data(unbondingCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={unbondingCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Unbonding Entries"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Amount (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Unbonded At"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (unbondingListSub) {
+     | Data(unbondingList) =>
+       unbondingList->Belt.Array.size > 0
+         ? unbondingList
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
+         : <div className=Styles.emptyContainer>
+             <img src=Images.noBlock className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No Unbonding"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </div>
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
+     }}
+    {switch (unbondingCountSub) {
+     | Data(unbondingCount) =>
+       let pageCount = Page.getPageCount(unbondingCount, pageSize);
+       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
+     | _ => React.null
+     }}
+  </div>;
+};

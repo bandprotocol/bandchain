@@ -1,7 +1,7 @@
 module Styles = {
   open Css;
 
-  let logo = style([width(`px(20))]);
+  let statusImg = style([width(`px(20)), marginTop(`px(-3))]);
 };
 
 let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
@@ -13,7 +13,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid minHeight={`px(30)} alignItems=Row.Center>
+    <Row.Grid alignItems=Row.Start>
       <Col.Grid col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=110 />
@@ -30,7 +30,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
         <div className={CssHelper.flexBox(~justify=`center, ~align=`center, ())}>
           {switch (txSub) {
            | Data({success}) =>
-             <img src={success ? Images.success : Images.fail} className=Styles.logo />
+             <img src={success ? Images.success : Images.fail} className=Styles.statusImg />
            | _ => <LoadingCensorBar width=20 height=20 radius=20 />
            }}
         </div>
@@ -38,7 +38,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       <Col.Grid col=Col.Seven>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
-           <TxMessages txHash messages success errMsg width=360 />
+           <TxMessages txHash messages success errMsg width=320 />
          | _ => <LoadingCensorBar width=320 height=15 />
          }}
       </Col.Grid>
