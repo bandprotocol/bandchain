@@ -3,9 +3,9 @@ module Styles = {
   let msgContainer = overflowed =>
     style([
       position(`relative),
-      height(overflowed ? `px(60) : `auto),
+      height(overflowed ? `px(45) : `auto),
       overflow(overflowed ? `hidden : `visible),
-      Media.mobile([height(overflowed ? `px(50) : `auto)]),
+      selector("> div + div", [marginTop(`px(10))]),
     ]);
   let showButton =
     style([
@@ -45,9 +45,7 @@ let make = (~txHash: Hash.t, ~messages, ~width: int, ~success: bool, ~errMsg: st
        ->Belt_List.toArray
        ->Belt_Array.mapWithIndex((i, msg) =>
            <React.Fragment key={(txHash |> Hash.toHex) ++ (i |> string_of_int)}>
-             <VSpacing size=Spacing.sm />
              <Msg msg width />
-             <VSpacing size=Spacing.sm />
            </React.Fragment>
          )
        ->React.array}

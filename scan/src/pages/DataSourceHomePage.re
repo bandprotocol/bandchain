@@ -73,13 +73,17 @@ let renderBody =
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (dataSourcesSub) {
-           | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+           | Data({timestamp: timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp') =>
+               <Timestamp.Grid
+                 time=timestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Genesis" />
+             }
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -91,13 +95,19 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
   switch (dataSourcesSub) {
-  | Data({id, timestamp, description, name, request}) =>
+  | Data({id, timestamp: timestampOpt, description, name, request}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
         ("Requests", Count(request)),
-        ("Timestamp", Timestamp(timestamp)),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp') => Timestamp(timestamp')
+          | None => Text("Genesis")
+          },
+        ),
       ]
       key={id |> ID.DataSource.toString}
       idx={id |> ID.DataSource.toString}

@@ -15,22 +15,20 @@ type t = {
   name: string,
   description: string,
   executable: JsBuffer.t,
-  timestamp: MomentRe.Moment.t,
+  timestamp: option(MomentRe.Moment.t),
   request: int,
 };
 
-let toExternal = ({id, owner, name, description, executable, transaction}) => {
+let toExternal = ({id, owner, name, description, executable, transaction: txOpt}) => {
   id,
   owner,
   name,
   description,
   executable,
-  timestamp:
-    switch (transaction) {
-    | Some({block}) => block.timestamp
-    // TODO: Please revisit again.
-    | _ => MomentRe.momentNow()
-    },
+  timestamp: {
+    let%Opt tx = txOpt;
+    Some(tx.block.timestamp);
+  },
   //TODO: wire up later
   request: Js.Math.random_int(300, 200000),
 };

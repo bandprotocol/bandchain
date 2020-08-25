@@ -19,7 +19,7 @@ module Styles = {
   let chart = show => style([important(display(show ? `block : `none))]);
 };
 
-let renderGraph: array(HistoricalBondedSub.t) => unit = [%bs.raw
+let renderGraph: array(HistoricalBondedQuery.t) => unit = [%bs.raw
   {|
 // TODO: let's binding chart.js later
 function(data) {
@@ -139,21 +139,21 @@ function(data) {
 
 [@react.component]
 let make = (~operatorAddress) => {
-  let dataSub = HistoricalBondedSub.get(operatorAddress);
+  let dataQuery = HistoricalBondedQuery.get(operatorAddress);
 
   React.useEffect1(
     () => {
-      switch (dataSub) {
+      switch (dataQuery) {
       | Data(data) => renderGraph(data)
       | _ => ()
       };
 
       None;
     },
-    [|dataSub|],
+    [|dataQuery|],
   );
 
-  switch (dataSub) {
+  switch (dataQuery) {
   | Data(data) =>
     let show = data->Belt.Array.size > 5;
 

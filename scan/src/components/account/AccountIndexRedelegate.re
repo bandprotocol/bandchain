@@ -1,182 +1,269 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
-
-  let hFlex = style([display(`flex)]);
-
-  let alignRight = style([display(`flex), justifyContent(`flexEnd)]);
-  let alignLeft = style([display(`flex), justifyContent(`flexStart)]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
+    ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let renderBody =
-    ({srcValidator, dstValidator, completionTime, amount}: RedelegateSub.redelegate_list_t) => {
-  <TBody
+    (
+      reserveIndex,
+      redelegateListSub: ApolloHooks.Subscription.variant(RedelegateSub.redelegate_list_t),
+    ) => {
+  <TBody.Grid
     key={
-      (srcValidator.operatorAddress |> Address.toBech32)
-      ++ (dstValidator.operatorAddress |> Address.toBech32)
-      ++ (completionTime |> MomentRe.Moment.toISOString)
-      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      switch (redelegateListSub) {
+      | Data({
+          srcValidator: {operatorAddress: srcAddress},
+          dstValidator: {operatorAddress: dstAddress},
+          completionTime,
+          amount,
+        }) =>
+        (srcAddress |> Address.toBech32)
+        ++ (dstAddress |> Address.toBech32)
+        ++ (completionTime |> MomentRe.Moment.toISOString)
+        ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      | _ => reserveIndex |> string_of_int
+      }
     }
-    minHeight=50>
-    <Row>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-      <Col size=1.>
-        <ValidatorMonikerLink
-          validatorAddress={srcValidator.operatorAddress}
-          moniker={srcValidator.moniker}
-          identity={srcValidator.identity}
-          width={`px(200)}
-        />
-      </Col>
-      <Col size=1.>
-        <div className=Styles.alignLeft>
-          <ValidatorMonikerLink
-            validatorAddress={dstValidator.operatorAddress}
-            moniker={dstValidator.moniker}
-            identity={dstValidator.identity}
-            width={`px(200)}
-          />
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Three>
+        {switch (redelegateListSub) {
+         | Data({
+             srcValidator: {
+               operatorAddress: srcAddress,
+               moniker: srcMoniker,
+               identity: srcIdentity,
+             },
+           }) =>
+           <ValidatorMonikerLink
+             validatorAddress=srcAddress
+             moniker=srcMoniker
+             identity=srcIdentity
+             width={`px(200)}
+           />
+         | _ => <LoadingCensorBar width=200 height=20 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox()}>
+          {switch (redelegateListSub) {
+           | Data({
+               dstValidator: {
+                 operatorAddress: dstAddress,
+                 moniker: dstMoniker,
+                 identity: dstIdentity,
+               },
+             }) =>
+             <ValidatorMonikerLink
+               validatorAddress=dstAddress
+               moniker=dstMoniker
+               identity=dstIdentity
+               width={`px(200)}
+             />
+
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=0.6>
-        <div className=Styles.alignRight>
-          <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} code=true />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (redelegateListSub) {
+           | Data({amount}) =>
+             <Text value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty} />
+           | _ => <LoadingCensorBar width=145 height=20 />
+           }}
         </div>
-      </Col>
-      <Col size=1.>
-        <div className=Styles.alignRight>
-          <Text
-            value={
-              completionTime
-              |> MomentRe.Moment.format(Config.timestampDisplayFormat)
-              |> String.uppercase_ascii
-            }
-            code=true
-          />
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (redelegateListSub) {
+           | Data({completionTime}) =>
+             <Timestamp.Grid
+               time=completionTime
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
+             />
+           | _ => <LoadingCensorBar width=200 height=20 />
+           }}
         </div>
-      </Col>
-      <Col> <HSpacing size=Spacing.lg /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile =
-    ({amount, completionTime, dstValidator, srcValidator}: RedelegateSub.redelegate_list_t) => {
-  let key_ =
-    (srcValidator.operatorAddress |> Address.toBech32)
-    ++ (dstValidator.operatorAddress |> Address.toBech32)
-    ++ (completionTime |> MomentRe.Moment.toISOString)
-    ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString);
-
-  <MobileCard
-    values=InfoMobileCard.[
-      (
-        "SOURCE\nVALIDATOR",
-        Validator(srcValidator.operatorAddress, srcValidator.moniker, srcValidator.identity),
-      ),
-      (
-        "DESTINATION\nVALIDATOR",
-        Validator(dstValidator.operatorAddress, dstValidator.moniker, dstValidator.identity),
-      ),
-      ("AMOUNT\n(BAND)", Coin({value: [amount], hasDenom: false})),
-      ("REDELEGATE\nCOMPLETE AT", Timestamp(completionTime)),
-    ]
-    key=key_
-    idx=key_
-  />;
+    (
+      reserveIndex,
+      redelegateListSub: ApolloHooks.Subscription.variant(RedelegateSub.redelegate_list_t),
+    ) => {
+  switch (redelegateListSub) {
+  | Data({
+      srcValidator: {operatorAddress: srcAddress, moniker: srcMoniker, identity: srcIdentity},
+      dstValidator: {operatorAddress: dstAddress, moniker: dstMoniker, identity: dstIdentity},
+      completionTime,
+      amount,
+    }) =>
+    let key_ =
+      (srcAddress |> Address.toBech32)
+      ++ (dstAddress |> Address.toBech32)
+      ++ (completionTime |> MomentRe.Moment.toISOString)
+      ++ (amount |> Coin.getBandAmountFromCoin |> Js.Float.toString)
+      ++ (reserveIndex |> string_of_int);
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Source\nValidator", Validator(srcAddress, srcMoniker, srcIdentity)),
+        ("Destination\nValidator", Validator(dstAddress, dstMoniker, dstIdentity)),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+        ("Redelegate\nComplete At", Timestamp(completionTime)),
+      ]
+      key=key_
+      idx=key_
+    />;
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Source\nValidator", Loading(230)),
+        ("Destination\nValidator", Loading(100)),
+        ("Amount\n(BAND)", Loading(100)),
+        ("Redelegate\nComplete At", Loading(230)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = (~address) =>
-  {
-    let isMobile = Media.isMobile();
-    let currentTime =
-      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+let make = (~address) => {
+  let isMobile = Media.isMobile();
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
 
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
+  let (page, setPage) = React.useState(_ => 1);
+  let pageSize = 10;
 
-    let redelegateCountSub = RedelegateSub.getRedelegateCountByDelegator(address, currentTime);
-    let redelegateListSub =
-      RedelegateSub.getRedelegationByDelegator(address, currentTime, ~pageSize, ~page, ());
+  let redelegateCountSub = RedelegateSub.getRedelegateCountByDelegator(address, currentTime);
+  let redelegateListSub =
+    RedelegateSub.getRedelegationByDelegator(address, currentTime, ~pageSize, ~page, ());
 
-    let%Sub redelegateCount = redelegateCountSub;
-    let%Sub redelegateList = redelegateListSub;
-
-    let pageCount = Page.getPageCount(redelegateCount, pageSize);
-    <div className=Styles.tableLowerContainer>
-      <VSpacing size=Spacing.md />
-      <div className=Styles.hFlex>
-        <HSpacing size=Spacing.lg />
-        <Text value={redelegateCount |> string_of_int} weight=Text.Semibold />
-        <HSpacing size=Spacing.xs />
-        <Text value="Redelegate Entries" />
-      </div>
-      <VSpacing size=Spacing.lg />
-      <>
-        {isMobile
-           ? React.null
-           : <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=1.>
-                   <Text
-                     block=true
-                     value="SOURCE VALIDATOR"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     spacing={Text.Em(0.05)}
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=1.>
-                   <div className=Styles.alignLeft>
-                     <Text
-                       block=true
-                       value="DESTINATION VALIDATOR"
-                       size=Text.Sm
-                       weight=Text.Bold
-                       spacing={Text.Em(0.05)}
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col size=0.6>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="AMOUNT (BAND)"
-                       size=Text.Sm
-                       spacing={Text.Em(0.05)}
-                       weight=Text.Bold
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col size=1.>
-                   <div className=Styles.alignRight>
-                     <Text
-                       block=true
-                       value="REDELEGATE COMPLETE AT"
-                       size=Text.Sm
-                       spacing={Text.Em(0.05)}
-                       weight=Text.Bold
-                       color=Colors.gray6
-                     />
-                   </div>
-                 </Col>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-               </Row>
-             </THead>}
-        {redelegateList
-         ->Belt.Array.map(redelegateEntry =>
-             isMobile ? renderBodyMobile(redelegateEntry) : renderBody(redelegateEntry)
-           )
-         ->React.array}
-        <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      </>
-    </div>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+  <div className=Styles.tableWrapper>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (redelegateCountSub) {
+              | Data(redelegateCount) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={redelegateCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text
+                    block=true
+                    value="Redelegate Entries"
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Three>
+               {switch (redelegateCountSub) {
+                | Data(redelegateCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={redelegateCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Redelegate Entries"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Desination Validator"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Amount (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
+               <Text
+                 block=true
+                 value="Redelegate Complete At"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (redelegateListSub) {
+     | Data(redelegateList) =>
+       redelegateList->Belt.Array.size > 0
+         ? redelegateList
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
+         : <div className=Styles.emptyContainer>
+             <img src=Images.noBlock className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No redelegation"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </div>
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
+     }}
+    {switch (redelegateCountSub) {
+     | Data(redelegateCount) =>
+       let pageCount = Page.getPageCount(redelegateCount, pageSize);
+       <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
+     | _ => React.null
+     }}
+  </div>;
+};

@@ -176,13 +176,17 @@ let renderBody =
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (oracleScriptSub) {
-           | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+           | Data({timestamp: timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp') =>
+               <Timestamp.Grid
+                 time=timestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Genesis" />
+             }
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -194,13 +198,19 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
   switch (oracleScriptSub) {
-  | Data({id, timestamp, description, name, request, responseTime}) =>
+  | Data({id, timestamp: timestampOpt, description, name, request, responseTime}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
         ("Request&\nResponse time", RequestResponse({request, responseTime})),
-        ("Timestamp", Timestamp(timestamp)),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp') => Timestamp(timestamp')
+          | None => Text("Genesis")
+          },
+        ),
       ]
       key={id |> ID.OracleScript.toString}
       idx={id |> ID.OracleScript.toString}
