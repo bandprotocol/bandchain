@@ -1,92 +1,71 @@
-module Styles = {
-  open Css;
-
-  let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
-
-  let header =
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
-
-  let logo = style([minWidth(`px(50)), marginRight(`px(10))]);
-
-  let seperatedLine =
-    style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
-    ]);
-  let blockWrapper = style([Media.mobile([paddingBottom(`px(20))])]);
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
-
-  let withWidth = w => style([width(`px(w))]);
-
-  let fillLeft = style([marginLeft(`auto)]);
-};
-
 let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
-  <TBody
+  <TBody.Grid
     key={
       switch (blockSub) {
       | Data({height}) => height |> ID.Block.toString
       | _ => reserveIndex |> string_of_int
       }
-    }>
-    <Row minHeight={`px(30)}>
-      <Col> <HSpacing size=Spacing.md /> </Col>
-      <Col size=1.11>
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
          | _ => <LoadingCensorBar width=65 height=15 />
          }}
-      </Col>
-      <Col size=3.93>
+      </Col.Grid>
+      <Col.Grid col=Col.Four>
         {switch (blockSub) {
          | Data({hash}) =>
-           <div className={Styles.withWidth(330)}>
-             <Text
-               value={hash |> Hash.toHex(~upper=true)}
-               weight=Text.Medium
-               block=true
-               code=true
-               ellipsis=true
-             />
-           </div>
-         | _ => <LoadingCensorBar width=300 height=15 />
+           <Text
+             value={hash |> Hash.toHex(~upper=true)}
+             weight=Text.Medium
+             block=true
+             code=true
+             ellipsis=true
+           />
+         | _ => <LoadingCensorBar fullWidth=true height=15 />
          }}
-      </Col>
-      <Col size=2.1>
-        {switch (blockSub) {
-         | Data({timestamp}) =>
-           <Timestamp time=timestamp size=Text.Md weight=Text.Regular code=true />
-         | _ => <LoadingCensorBar width=150 height=15 />
-         }}
-      </Col>
-      <Col size=1.5>
+      </Col.Grid>
+      <Col.Grid col=Col.Three>
         {switch (blockSub) {
          | Data({validator}) =>
-           <div className={Styles.withWidth(150)}>
-             <ValidatorMonikerLink
-               validatorAddress={validator.operatorAddress}
-               moniker={validator.moniker}
-               identity={validator.identity}
-             />
-           </div>
-         | _ => <LoadingCensorBar width=150 height=15 />
+           <ValidatorMonikerLink
+             validatorAddress={validator.operatorAddress}
+             moniker={validator.moniker}
+             identity={validator.identity}
+           />
+         | _ => <LoadingCensorBar fullWidth=true height=15 />
          }}
-      </Col>
-      <Col size=1.05>
-        <Row>
-          <div className=Styles.fillLeft />
+      </Col.Grid>
+      <Col.Grid col=Col.One>
+        <div className={CssHelper.flexBox(~justify=`center, ())}>
           {switch (blockSub) {
            | Data({txn}) => <Text value={txn |> Format.iPretty} code=true weight=Text.Medium />
-           | _ => <LoadingCensorBar width=40 height=15 isRight=true />
+           | _ => <LoadingCensorBar width=40 height=15 />
            }}
-        </Row>
-      </Col>
-      <Col> <HSpacing size=Spacing.md /> </Col>
-    </Row>
-  </TBody>;
+        </div>
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (blockSub) {
+           | Data({timestamp}) =>
+             <Timestamp.Grid
+               time=timestamp
+               size=Text.Md
+               weight=Text.Regular
+               textAlign=Text.Right
+             />
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
@@ -94,13 +73,13 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
   | Data({height, timestamp, validator, txn}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("BLOCK", Height(height)),
-        ("TIMESTAMP", Timestamp(timestamp)),
+        ("Block", Height(height)),
+        ("Timestamp", Timestamp(timestamp)),
         (
-          "PROPOSER",
+          "Proposer",
           Validator(validator.operatorAddress, validator.moniker, validator.identity),
         ),
-        ("TXN", Count(txn)),
+        ("Txn", Count(txn)),
       ]
       key={height |> ID.Block.toString}
       idx={height |> ID.Block.toString}
@@ -108,10 +87,10 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("BLOCK", Loading(70)),
-        ("TIMESTAMP", Loading(166)),
-        ("PROPOSER", Loading(136)),
-        ("TXN", Loading(20)),
+        ("Block", Loading(70)),
+        ("Timestamp", Loading(166)),
+        ("Proposer", Loading(136)),
+        ("Txn", Loading(20)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -129,69 +108,70 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container>
-      <div className=Styles.blockWrapper>
-        <Row>
-          <div className=Styles.header>
-            <img src=Images.blockLogo className=Styles.logo />
-            <Text
-              value="ALL BLOCKS"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              block=true
-              color=Colors.gray7
-            />
+      <div className=CssHelper.mobileSpacing>
+        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col.Grid col=Col.Twelve>
+            <Heading value="All Blocks" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (allSub) {
              | Data((_, blocksCount)) =>
-               <>
-                 <div className=Styles.seperatedLine />
-                 <Text
-                   value={blocksCount->Format.iPretty ++ " in total"}
-                   size=Text.Md
-                   weight=Text.Thin
-                   spacing={Text.Em(0.06)}
-                   color=Colors.gray7
-                   nowrap=true
-                 />
-               </>
-             | _ => React.null
+               <Heading value={blocksCount->string_of_int ++ " In total"} size=Heading.H3 />
+             | _ => <LoadingCensorBar width=65 height=21 />
              }}
-          </div>
-        </Row>
-        <VSpacing size=Spacing.xl />
+          </Col.Grid>
+        </Row.Grid>
         {isMobile
            ? React.null
-           : <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.md /> </Col>
-                 {[
-                    ("BLOCK", 1.11, false),
-                    ("BLOCK HASH", 3.80, false),
-                    ("TIMESTAMP", 2.1, false),
-                    ("PROPOSER", 1.55, false),
-                    ("TXN", 1.05, true),
-                  ]
-                  ->Belt.List.map(((title, size, alignRight)) => {
-                      <Col size key=title justifyContent=Col.Start>
-                        <div className={Styles.vFlex(`flexEnd)}>
-                          {alignRight ? <div className=Styles.fillLeft /> : React.null}
-                          <Text
-                            value=title
-                            size=Text.Sm
-                            weight=Text.Semibold
-                            color=Colors.gray6
-                            spacing={Text.Em(0.1)}
-                          />
-                        </div>
-                      </Col>
-                    })
-                  ->Array.of_list
-                  ->React.array}
-                 <Col> <HSpacing size=Spacing.md /> </Col>
-               </Row>
-             </THead>}
+           : <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Block"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text
+                     block=true
+                     value="Block Hash"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Three>
+                   <Text
+                     block=true
+                     value="Proposer"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text
+                     block=true
+                     value="Txn"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Center
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Timestamp"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>}
         {switch (allSub) {
          | Data((blocks, blocksCount)) =>
            let pageCount = Page.getPageCount(blocksCount, pageSize);
