@@ -43,7 +43,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({id, name}) =>
@@ -89,7 +89,11 @@ let renderBody =
                />
              | None => <Text value="Genesis" />
              }
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
            }}
         </div>
       </Col.Grid>
@@ -167,70 +171,95 @@ let make = () => {
              }}
           </Col.Grid>
         </Row.Grid>
-        <>
-          <Row.Grid alignItems=Row.Center marginBottom=16>
-            <Col.Grid col=Col.Six colSm=Col.Eight>
-              <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
-            </Col.Grid>
-            <Col.Grid col=Col.Six colSm=Col.Four>
-              <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
-                <SortableDropdown
-                  sortedBy
-                  setSortedBy
-                  sortList=[
-                    (MostRequested, getName(MostRequested)),
-                    (LatestUpdate, getName(LatestUpdate)),
-                  ]
-                />
-              </div>
-            </Col.Grid>
-          </Row.Grid>
-          {isMobile
-             ? React.null
-             : <THead.Grid>
-                 <Row.Grid alignItems=Row.Center>
-                   <Col.Grid col=Col.Five>
-                     <div className=TElement.Styles.hashContainer>
-                       <Text
-                         block=true
-                         value="Data Source"
-                         size=Text.Md
-                         weight=Text.Semibold
-                         color=Colors.gray7
-                       />
-                     </div>
-                   </Col.Grid>
-                   <Col.Grid col=Col.Four>
+        <Row.Grid alignItems=Row.Center marginBottom=16>
+          <Col.Grid col=Col.Six colSm=Col.Eight>
+            <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
+          </Col.Grid>
+          <Col.Grid col=Col.Six colSm=Col.Four>
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
+              />
+            </div>
+          </Col.Grid>
+        </Row.Grid>
+        {isMobile
+           ? React.null
+           : <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Five>
+                   <div className=TElement.Styles.hashContainer>
                      <Text
                        block=true
-                       value="Description"
+                       value="Data Source"
                        size=Text.Md
                        weight=Text.Semibold
                        color=Colors.gray7
                      />
-                   </Col.Grid>
-                   <Col.Grid col=Col.One>
-                     <Text
-                       block=true
-                       value="Requests"
-                       size=Text.Md
-                       weight=Text.Semibold
-                       color=Colors.gray7
-                     />
-                   </Col.Grid>
-                   <Col.Grid col=Col.Two>
-                     <Text
-                       block=true
-                       value="Timestamp"
-                       size=Text.Md
-                       weight=Text.Semibold
-                       color=Colors.gray7
-                       align=Text.Right
-                     />
-                   </Col.Grid>
-                 </Row.Grid>
-               </THead.Grid>}
-        </>
+                   </div>
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text
+                     block=true
+                     value="Description"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text
+                     block=true
+                     value="Requests"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Data Source"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text
+                     block=true
+                     value="Description"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text
+                     block=true
+                     value="Requests"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Timestamp"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>}
         {switch (allSub) {
          | Data((dataSources, dataSourcesCount)) =>
            let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
