@@ -224,33 +224,6 @@ let make = () => {
                  <Col.Grid col=Col.Two>
                    <Text
                      block=true
-                     value="Data Source"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                   />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Four>
-                   <Text
-                     block=true
-                     value="Description"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                   />
-                 </Col.Grid>
-                 <Col.Grid col=Col.One>
-                   <Text
-                     block=true
-                     value="Requests"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                   />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Two>
-                   <Text
-                     block=true
                      value="Timestamp"
                      size=Text.Md
                      weight=Text.Semibold
