@@ -15,15 +15,18 @@ func parseBytes(b []byte) []byte {
 }
 
 func (app *App) emitOracleModule() {
-	for id := types.DataSourceID(1); id <= types.DataSourceID(app.OracleKeeper.GetDataSourceCount(app.DeliverContext)); id++ {
-		ds := app.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
+	dataSources := app.OracleKeeper.GetAllDataSources(app.DeliverContext)
+	for idx, ds := range dataSources {
+		id := types.DataSourceID(idx + 1)
 		app.emitSetDataSource(id, ds, nil)
 	}
-	for id := types.OracleScriptID(1); id <= types.OracleScriptID(app.OracleKeeper.GetOracleScriptCount(app.DeliverContext)); id++ {
-		os := app.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
+	oracleScripts := app.OracleKeeper.GetAllOracleScripts(app.DeliverContext)
+	for idx, os := range oracleScripts {
+		id := types.OracleScriptID(idx + 1)
 		app.emitSetOracleScript(id, os, nil)
 	}
-	for rid := types.RequestID(1); rid <= types.RequestID(app.OracleKeeper.GetRequestCount(app.DeliverContext)); rid++ {
+	rqCount := app.OracleKeeper.GetRequestCount(app.DeliverContext)
+	for rid := types.RequestID(1); rid <= types.RequestID(rqCount); rid++ {
 		req := app.OracleKeeper.MustGetRequest(app.DeliverContext, rid)
 		res := app.OracleKeeper.MustGetResult(app.DeliverContext, rid)
 		app.Write("NEW_REQUEST", JsDict{
