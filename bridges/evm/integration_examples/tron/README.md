@@ -25,3 +25,5 @@ https://api.shasta.trongrid.io
 4. use [tronide](http://www.tronide.io/) for contract creation, compiling and deployment
 
 5. enable plugins using plugin manager
+
+   - ![img](https://user-images.githubusercontent.com/12705423/91192951-c3502280-e720-11ea-8e81-9cc151d322d9.png)
