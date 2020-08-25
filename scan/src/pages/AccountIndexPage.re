@@ -205,7 +205,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     switch (accountOpt) {
     | Some({address: sender}) =>
       let openSendModal = () =>
-        dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(Some(address)))));
+        Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
       if (sender == address) {
         Window.confirm("Are you sure you want to send tokens to yourself?")
           ? openSendModal() : ();

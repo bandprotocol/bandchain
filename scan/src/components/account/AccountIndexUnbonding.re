@@ -206,7 +206,7 @@ let make = (~address) => {
                />
              </div>
        | _ =>
-         Belt_Array.make(1, ApolloHooks.Subscription.NoData)
+         Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
          ->Belt_Array.mapWithIndex((i, noData) =>
              isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
            )

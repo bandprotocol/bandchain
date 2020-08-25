@@ -32,11 +32,6 @@ let make = (~minHeight=45, ~children, ~paddingV=`px(10), ~paddingH=`zero) => {
 module Grid = {
   [@react.component]
   let make = (~children, ~paddingV=`px(15), ~paddingH=`zero) => {
-    <div
-      className={Css.merge([
-        Styles.containerBase(paddingV, paddingH),
-      ])}>
-      children
-    </div>;
+    <div className={Css.merge([Styles.containerBase(paddingV, paddingH)])}> children </div>;
   };
 };

@@ -25,7 +25,7 @@ let make = () => {
          : <THead.Grid>
              <Row.Grid alignItems=Row.Center>
                <Col.Grid col=Col.Two>
-                 <Text block=true value="Tx Hash" weight=Text.Semibold color=Colors.gray7 />
+                 <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
                </Col.Grid>
                <Col.Grid col=Col.One>
                  <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />

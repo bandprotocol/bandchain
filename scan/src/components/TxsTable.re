@@ -83,7 +83,7 @@ let renderBodyMobile =
     let msgTransform = messages->Belt_List.map(msgTransform);
     <MobileCard
       values=InfoMobileCard.[
-        ("Tx Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
+        ("TX Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
         ("Block", Height(blockHeight)),
         ("Gas Fee\n(BAND)", Coin({value: gasFee, hasDenom: false})),
         ("Actions", Messages(txHash, msgTransform, success, errMsg)),
@@ -95,7 +95,7 @@ let renderBodyMobile =
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("Tx Hash", Loading(Media.isSmallMobile() ? 170 : 200)),
+        ("TX Hash", Loading(Media.isSmallMobile() ? 170 : 200)),
         ("Block", Loading(70)),
         ("Gas Fee\n(BAND)", Loading(70)),
         (

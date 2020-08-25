@@ -3,10 +3,10 @@ module Styles = {
   let msgContainer = overflowed =>
     style([
       position(`relative),
-      height(overflowed ? `px(60) : `auto),
+      height(overflowed ? `px(45) : `auto),
       overflow(overflowed ? `hidden : `visible),
       selector("> div + div", [marginTop(`px(10))]),
-      Media.mobile([height(overflowed ? `px(50) : `auto)]),
+      // Media.mobile([height(overflowed ? `px(50) : `auto)]),
     ]);
   let showButton =
     style([
