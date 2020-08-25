@@ -1,23 +1,3 @@
-module Styles = {
-  open Css;
-
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let header =
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
-
-  let logo = style([minWidth(`px(50)), marginRight(`px(10))]);
-
-  let seperatedLine =
-    style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
-    ]);
-};
-
 [@react.component]
 let make = () => {
   let (page, setPage) = React.useState(_ => 1);
@@ -26,39 +6,54 @@ let make = () => {
   let txsSub = TxSub.getList(~pageSize, ~page, ());
   let txsCountSub = TxSub.count();
 
+  let isMobile = Media.isMobile();
+
   <Section>
     <div className=CssHelper.container>
-      <Row>
-        <div className=Styles.header>
-          <img src=Images.txLogo className=Styles.logo />
-          <Text
-            value="ALL TRANSACTIONS"
-            weight=Text.Medium
-            size=Text.Md
-            spacing={Text.Em(0.06)}
-            height={Text.Px(15)}
-            nowrap=true
-            block=true
-            color=Colors.gray7
-          />
+      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Col.Grid col=Col.Twelve>
+          <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (txsCountSub) {
-           | Data(txsCount) =>
-             <>
-               <div className=Styles.seperatedLine />
-               <Text
-                 value={txsCount->Format.iPretty ++ " in total"}
-                 size=Text.Md
-                 weight=Text.Thin
-                 spacing={Text.Em(0.06)}
-                 color=Colors.gray7
-                 nowrap=true
-               />
-             </>
-           | _ => React.null
+           | Data(txsCountSub) =>
+             <Heading value={txsCountSub->string_of_int ++ " In total"} size=Heading.H3 />
+           | _ => <LoadingCensorBar width=65 height=21 />
            }}
-        </div>
-      </Row>
-      <VSpacing size=Spacing.xl />
+        </Col.Grid>
+      </Row.Grid>
+      {isMobile
+         ? React.null
+         : <THead.Grid>
+             <Row.Grid alignItems=Row.Center>
+               <Col.Grid col=Col.Two>
+                 <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
+               </Col.Grid>
+               <Col.Grid col=Col.One>
+                 <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
+               </Col.Grid>
+               <Col.Grid col=Col.One>
+                 <Text
+                   block=true
+                   value="Status"
+                   size=Text.Md
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Center
+                 />
+               </Col.Grid>
+               <Col.Grid col=Col.Two>
+                 <Text
+                   block=true
+                   value="Gas Fee (BAND)"
+                   weight=Text.Semibold
+                   color=Colors.gray7
+                   align=Text.Center
+                 />
+               </Col.Grid>
+               <Col.Grid col=Col.Six>
+                 <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
+               </Col.Grid>
+             </Row.Grid>
+           </THead.Grid>}
       <TxsTable txsSub />
       {switch (txsCountSub) {
        | Data(txsCount) =>
