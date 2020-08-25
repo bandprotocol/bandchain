@@ -360,6 +360,13 @@ historical_oracle_statuses = sa.Table(
     Column("timestamp", CustomDateTime, primary_key=True),
 )
 
+data_source_requests = sa.Table(
+    "data_source_requests",
+    metadata,
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
+    Column("count", sa.Integer),
+)
+
 oracle_script_requests = sa.Table(
     "oracle_script_requests",
     metadata,
