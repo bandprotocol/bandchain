@@ -22,6 +22,7 @@
 ### Scan
 
 - (impv) [\#2561](https://github.com/bandprotocol/bandchain/pull/2561) Implemented the new layout for Validator Homepage
+- (impv) [\#2560](https://github.com/bandprotocol/bandchain/pull/2560) Refactor, improve Block Home Page for revamp GuanYu version
 - (impv) [\#2557](https://github.com/bandprotocol/bandchain/pull/2557) Fix and clean up copy button
 - (impv) [\#2552](https://github.com/bandprotocol/bandchain/pull/2552) Wire up related data source, handle nullable timestamp
 - (impv) [\#2550](https://github.com/bandprotocol/bandchain/pull/2550) Polish request index page
