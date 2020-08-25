@@ -11,16 +11,19 @@ module Styles = {
       backgroundColor(Colors.blueGray1),
     ]);
 
-  let withWidth = w => style([width(`px(w))]);
-
   let proofContainer =
     style([
       padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
-      selector("> div + div", [marginLeft(`px(24)), Media.mobile([marginLeft(`px(16))])]),
+      Media.mobile([padding4(~top=`zero, ~left=`px(12), ~right=`px(12), ~bottom=`px(24))]),
+      selector(
+        "> div + div",
+        [
+          marginLeft(`px(24)),
+          Media.mobile([marginLeft(`px(16))]),
+          Media.smallMobile([marginLeft(`px(10))]),
+        ],
+      ),
     ]);
-
-  let topicContainer = h =>
-    style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
 
   let scriptContainer =
     style([
