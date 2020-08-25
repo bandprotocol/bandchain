@@ -122,8 +122,9 @@ class Handler(object):
     def handle_new_request(self, msg):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        self.handle_set_request_count_per_days({"date": msg["timestamp"]})
-        del msg["timestamp"]
+        if "timestamp" in msg:
+            self.handle_set_request_count_per_days({"date": msg["timestamp"]})
+            del msg["timestamp"]
         self.conn.execute(requests.insert(), msg)
         self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
 
@@ -162,8 +163,7 @@ class Handler(object):
         del msg["tx_hash"]
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
-        if msg["reporter"] is not None:
-            msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
         self.conn.execute(reports.insert(), msg)
 
