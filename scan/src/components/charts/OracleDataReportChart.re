@@ -1,6 +1,5 @@
 module Styles = {
   open Css;
-  let loadingBox = style([width(`percent(100.))]);
   let chartContainer =
     style([width(`percent(100.)), minHeight(`px(90)), margin2(~v=`zero, ~h=`px(-2))]);
   let blockContainer =
@@ -82,7 +81,7 @@ let make = (~oracleStatus, ~operatorAddress) => {
                  />
                )
              ->React.array
-           | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=90 />
            }}
         </div>
       </Col.Grid>

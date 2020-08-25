@@ -15,7 +15,6 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
-  let loadingBox = style([width(`percent(100.))]);
 
   let emptyContainer =
     style([
@@ -468,7 +467,7 @@ let make = (~reqID) => {
                    />
                  </div>
                }
-             | _ => <LoadingCensorBar width=125 height=100 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=100 />
              }}
           </div>
         </Col.Grid>
@@ -580,7 +579,7 @@ let make = (~reqID) => {
             </div>
             {switch (requestSub) {
              | Data({reports}) => <DataReports reports />
-             | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=200 />
              }}
           </div>
         </Col.Grid>

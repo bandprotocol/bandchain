@@ -11,7 +11,6 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let titleSpacing = style([marginBottom(`px(8))]);
-  let loadingBox = style([width(`percent(100.))]);
   let idCointainer = style([marginBottom(`px(16))]);
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 };
@@ -196,19 +195,19 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
          | OracleScriptExecute =>
            switch (oracleScriptSub) {
            | Data({schema}) => <OracleScriptExecute id=oracleScriptID schema />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
 
          | OracleScriptCode =>
            switch (oracleScriptSub) {
            | Data({sourceCodeURL}) => <OracleScriptCode url=sourceCodeURL />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
 
          | OracleScriptBridgeCode =>
            switch (oracleScriptSub) {
            | Data({schema}) => <OracleScriptBridgeCode schema />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />

@@ -77,7 +77,6 @@ module Styles = {
       minHeight(`px(164)),
       selector("> i", [marginBottom(`px(16))]),
     ]);
-  let loadingBox = style([width(`percent(100.))]);
 };
 
 module ConnectPanel = {
@@ -430,7 +429,7 @@ module ExecutionPart = {
                    // log for err details
                    Js.Console.log(err);
                    <Text value="chain id not found" />;
-                 | _ => <LoadingCensorBar width=100 height=120 style=Styles.loadingBox />
+                 | _ => <LoadingCensorBar fullWidth=true height=120 />
                  }
                }}
             </div>

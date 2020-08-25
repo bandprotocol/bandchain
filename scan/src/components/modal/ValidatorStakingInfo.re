@@ -16,7 +16,6 @@ module Styles = {
       paddingBottom(`px(12)),
       marginBottom(`px(16)),
     ]);
-  let loadingBox = style([width(`percent(100.))]);
   let rewardContainer =
     style([backgroundColor(Colors.profileBG), padding2(~v=`px(16), ~h=`px(24))]);
 };
@@ -251,7 +250,7 @@ let make = (~validatorAddress) => {
          // log for err details
          Js.Console.log(err);
          <Text value="chain id not found" />;
-       | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
+       | _ => <LoadingCensorBar fullWidth=true height=200 />
        }
      }}
   </div>;
