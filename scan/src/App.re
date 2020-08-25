@@ -34,7 +34,7 @@ let make = () => {
   <div className=Styles.container>
     <Header />
     {Media.isMobile()
-       ? <Section pt=16 pb=16 bg={currentRoute == HomePage ? Colors.highlightBg : Colors.white}>
+       ? <Section pt=16 pb=16 bg={currentRoute == HomePage ? Colors.highlightBg : Colors.bg}>
            <div className=CssHelper.container> <SearchBar /> </div>
          </Section>
        : React.null}
