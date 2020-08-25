@@ -25,7 +25,7 @@ type btn_style_t =
   | Secondary
   | Outline;
 
-let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ()) => {
+let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ~pxSm=px, ~pySm=py, ()) => {
   let base =
     style([
       display(`block),
@@ -36,6 +36,7 @@ let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ()) => {
       cursor(`pointer),
       outlineStyle(`none),
       borderStyle(`none),
+      Media.mobile([padding2(~v=`px(pySm), ~h=`px(pxSm))]),
     ]);
 
   let custom =
