@@ -305,14 +305,16 @@ let make = () => {
             <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
           </Col.Grid>
           <Col.Grid col=Col.Six colSm=Col.Four>
-            <SortableDropdown
-              sortedBy
-              setSortedBy
-              sortList=[
-                (MostRequested, getName(MostRequested)),
-                (LatestUpdate, getName(LatestUpdate)),
-              ]
-            />
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
+              />
+            </div>
           </Col.Grid>
         </Row.Grid>
         {isMobile
