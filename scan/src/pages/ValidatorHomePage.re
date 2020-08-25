@@ -60,7 +60,7 @@ let make = () => {
   <Section>
     <div className=CssHelper.container>
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid col=Col.Twelve>
+        <Col.Grid>
           <Heading value="All Validators" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (topPartAllSub) {
            | Data((validatorCount, _, _, _, _)) =>

@@ -114,16 +114,7 @@ let renderBody =
                <VSpacing size=Spacing.sm />
                <ProgressBar.Uptime percent=uptime' />
              </>
-           | None =>
-             <Text
-               value="N/A"
-               color=Colors.gray7
-               code=true
-               weight=Text.Regular
-               spacing={Text.Em(0.02)}
-               block=true
-               size=Text.Md
-             />
+           | None => <Text value="N/A" color=Colors.gray7 block=true />
            }
          | _ =>
            <>
