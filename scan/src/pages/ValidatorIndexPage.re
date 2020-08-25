@@ -11,7 +11,6 @@ module Styles = {
     ]);
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
-  let loadingBox = style([width(`percent(100.))]);
   let idContainer = style([marginBottom(`px(16)), Media.mobile([marginBottom(`px(8))])]);
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 
@@ -53,11 +52,6 @@ module Styles = {
       borderRadius(`px(50)),
       padding2(~v=`px(2), ~h=`px(10)),
     ]);
-  };
-
-  //Mockup
-  let mockup = {
-    style([minHeight(`px(300))]);
   };
 };
 
@@ -401,7 +395,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             <div className={CssHelper.flexBox()}>
               {switch (allSub) {
                | Data(({operatorAddress}, _, _)) => <HistoricalBondedGraph operatorAddress />
-               | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
+               | _ => <LoadingCensorBar fullWidth=true height=180 />
                }}
             </div>
           </div>
@@ -428,7 +422,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             </div>
             {switch (allSub) {
              | Data(({consensusAddress}, _, _)) => <BlockUptimeChart consensusAddress />
-             | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
         </Col.Grid>
@@ -450,7 +444,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             {switch (allSub) {
              | Data(({oracleStatus}, _, _)) =>
                <OracleDataReportChart oracleStatus operatorAddress=address />
-             | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
         </Col.Grid>

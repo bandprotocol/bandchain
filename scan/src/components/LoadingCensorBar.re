@@ -42,24 +42,31 @@ module Styles = {
     ]);
 
   let alignRight = style([marginLeft(`auto)]);
+  let fullWidth = style([width(`percent(100.))]);
+  let mt = (~size, ()) => style([marginTop(`px(size))]);
+  let mb = (~size, ()) => style([marginBottom(`px(size))]);
 };
 
 [@react.component]
 let make =
     (
-      ~width,
+      ~width=100,
       ~height,
+      ~fullWidth=false,
       ~radius=4,
       ~colorBase=Colors.blueGray2,
       ~colorLighter=Colors.blueGray1,
       ~isRight=false,
-      ~style="",
+      ~mt=0,
+      ~mb=0,
     ) => {
   <div
     className={Css.merge([
       Styles.main(~w=width, ~h=height, ~r=radius, ~colorBase, ~colorLighter, ()),
+      Styles.mt(~size=mt, ()),
+      Styles.mb(~size=mb, ()),
       isRight ? Styles.alignRight : "",
-      style,
+      fullWidth ? Styles.fullWidth : "",
     ])}
   />;
 };
