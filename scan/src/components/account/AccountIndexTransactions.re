@@ -1,9 +1,8 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(10))]);
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
 
-  let hFlex = style([display(`flex)]);
 };
 
 let transform = (account, msg: TxSub.Msg.t) => {
@@ -22,30 +21,83 @@ let make = (~accountAddress: Address.t) => {
   let txsSub = TxSub.getListBySender(accountAddress, ~pageSize, ~page, ());
   let txsCountSub = TxSub.countBySender(accountAddress);
 
-  <div className=Styles.tableLowerContainer>
-    <VSpacing size=Spacing.md />
-    {switch (txsCountSub) {
-     | Data(txsCount) =>
-       <div className=Styles.hFlex>
-         <HSpacing size=Spacing.lg />
-         <Text value={txsCount |> string_of_int} weight=Text.Semibold />
-         <HSpacing size=Spacing.xs />
-         <Text value="Transactions In Total" />
-       </div>
-     | _ =>
-       <div className=Styles.hFlex>
-         <HSpacing size=Spacing.lg />
-         <LoadingCensorBar width=130 height=15 />
-       </div>
-     }}
-    <VSpacing size=Spacing.lg />
+  let isMobile = Media.isMobile();
+
+  <div className=Styles.tableWrapper>
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (txsCountSub) {
+              | Data(txsCount) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={txsCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text block=true value="Transactions" weight=Text.Semibold color=Colors.gray7 />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Two>
+               {switch (txsCountSub) {
+                | Data(txsCount) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={txsCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text
+                      block=true
+                      value="Transactions"
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.One>
+               <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+             <Col.Grid col=Col.One>
+               <Text
+                 block=true
+                 value="Status"
+                 size=Text.Md
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Center
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Two>
+               <Text
+                 block=true
+                 value="Gas Fee (BAND)"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Center
+               />
+             </Col.Grid>
+             <Col.Grid col=Col.Six>
+               <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
     <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {
      | Data(txsCount) =>
        let pageCount = Page.getPageCount(txsCount, pageSize);
-
        <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
-
      | _ => React.null
      }}
   </div>;
