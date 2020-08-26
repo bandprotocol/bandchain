@@ -5,7 +5,6 @@ import {IBridge} from "./Bridge.sol";
 
 
 library BridgeUtils {
-  
     /// Returns the hash of a RequestPacket.
     /// @param _request A tuple that represents RequestPacket struct.
     function getRequestKey(IBridge.RequestPacket memory _request)

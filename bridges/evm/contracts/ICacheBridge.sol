@@ -6,8 +6,6 @@ pragma experimental ABIEncoderV2;
 import {IBridge} from "./IBridge.sol";
 
 interface ICacheBridge is IBridge {
-
-
     /// Returns the ResponsePacket for a given RequestPacket.
     /// @param _request The tuple that represents RequestPacket struct.
     function getLatestResponse(IBridge.RequestPacket calldata _request)
