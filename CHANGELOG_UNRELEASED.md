@@ -18,6 +18,9 @@
 
 - (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
 - (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
+- (feat) [\#2564](https://github.com/bandprotocol/bandchain/pull/2564) fast-sync: Emit all gov module from start state
+- (impv) [\#2549](https://github.com/bandprotocol/bandchain/pull/2549) Implemented `data_source_requests` table
+- (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
 
 ### Scan
 
