@@ -12,6 +12,38 @@ var (
 	StatusInactive            = 6
 )
 
+func (app *App) emitGovModule() {
+	app.GovKeeper.IterateProposals(app.DeliverContext, func(proposal types.Proposal) (stop bool) {
+		app.emitNewProposal(proposal, nil)
+		return false
+	})
+	app.GovKeeper.IterateAllDeposits(app.DeliverContext, func(deposit types.Deposit) (stop bool) {
+		app.emitSetDeposit(nil, deposit.ProposalID, deposit.Depositor)
+		return false
+	})
+	app.GovKeeper.IterateAllVotes(app.DeliverContext, func(vote types.Vote) (stop bool) {
+		app.emitSetVote(nil, vote)
+		return false
+	})
+}
+
+func (app *App) emitNewProposal(proposal gov.Proposal, proposer sdk.AccAddress) {
+	app.Write("NEW_PROPOSAL", JsDict{
+		"id":               proposal.ProposalID,
+		"proposer":         proposer,
+		"type":             proposal.Content.ProposalType(),
+		"title":            proposal.Content.GetTitle(),
+		"description":      proposal.Content.GetDescription(),
+		"proposal_route":   proposal.Content.ProposalRoute(),
+		"status":           int(proposal.Status),
+		"submit_time":      proposal.SubmitTime.UnixNano(),
+		"deposit_end_time": proposal.DepositEndTime.UnixNano(),
+		"total_deposit":    proposal.TotalDeposit.String(),
+		"voting_time":      proposal.VotingStartTime.UnixNano(),
+		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
+	})
+}
+
 func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
 	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
 	app.Write("SET_DEPOSIT", JsDict{
@@ -33,26 +65,22 @@ func (app *App) emitUpdateProposalAfterDeposit(id uint64) {
 	})
 }
 
+func (app *App) emitSetVote(txHash []byte, vote types.Vote) {
+	app.Write("SET_VOTE", JsDict{
+		"proposal_id": vote.ProposalID,
+		"voter":       vote.Voter,
+		"answer":      int(vote.Option),
+		"tx_hash":     txHash,
+	})
+}
+
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
 func (app *App) handleMsgSubmitProposal(
 	txHash []byte, msg gov.MsgSubmitProposal, evMap EvMap, extra JsDict,
 ) {
 	proposalId := uint64(atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
 	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, proposalId)
-	app.Write("NEW_PROPOSAL", JsDict{
-		"id":               proposalId,
-		"proposer":         msg.Proposer,
-		"type":             msg.Content.ProposalType(),
-		"title":            msg.Content.GetTitle(),
-		"description":      msg.Content.GetDescription(),
-		"proposal_route":   msg.Content.ProposalRoute(),
-		"status":           int(proposal.Status),
-		"submit_time":      proposal.SubmitTime.UnixNano(),
-		"deposit_end_time": proposal.DepositEndTime.UnixNano(),
-		"total_deposit":    proposal.TotalDeposit.String(),
-		"voting_time":      proposal.VotingStartTime.UnixNano(),
-		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
-	})
+	app.emitNewProposal(proposal, msg.Proposer)
 	app.emitSetDeposit(txHash, proposalId, msg.Proposer)
 }
 
@@ -68,12 +96,8 @@ func (app *App) handleMsgDeposit(
 func (app *App) handleMsgVote(
 	txHash []byte, msg gov.MsgVote, evMap EvMap, extra JsDict,
 ) {
-	app.Write("SET_VOTE", JsDict{
-		"proposal_id": msg.ProposalID,
-		"voter":       msg.Voter,
-		"answer":      int(msg.Option),
-		"tx_hash":     txHash,
-	})
+	vote, _ := app.GovKeeper.GetVote(app.DeliverContext, msg.ProposalID, msg.Voter)
+	app.emitSetVote(txHash, vote)
 }
 
 func (app *App) handleEventInactiveProposal(evMap EvMap) {

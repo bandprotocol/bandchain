@@ -299,7 +299,7 @@ proposals = sa.Table(
     "proposals",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id"), nullable=True),
     Column("type", sa.String),
     Column("title", sa.String),
     Column("description", sa.String),
@@ -318,7 +318,7 @@ deposits = sa.Table(
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("amount", sa.String),  # uband suffix
-    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 votes = sa.Table(
@@ -327,7 +327,7 @@ votes = sa.Table(
     Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
     Column("voter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("answer", CustomVoteOption),
-    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id")),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 historical_bonded_token_on_validators = sa.Table(
