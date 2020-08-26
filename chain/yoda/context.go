@@ -31,12 +31,12 @@ type Context struct {
 	rpcPollInterval  time.Duration
 	maxReport        uint64
 
-	pendingMsgs chan ReportMsgWithKey
-	freeKeys    chan int64
-	keyIndex    int64
+	pendingMsgs        chan ReportMsgWithKey
+	freeKeys           chan int64
+	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
 }
 
-func (c *Context) getKeyIndex() int64 {
-	keyIndex := atomic.AddInt64(&c.keyIndex, 1) % int64(len(c.keys))
+func (c *Context) nextKeyIndex() int64 {
+	keyIndex := atomic.AddInt64(&c.keyRoundRobinIndex, 1) % int64(len(c.keys))
 	return keyIndex
 }

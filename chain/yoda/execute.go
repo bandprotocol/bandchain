@@ -22,7 +22,7 @@ var (
 )
 
 func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
-	// Return key when sending transaction successfully
+	// Return key when done with SubmitReport whether successfully or not.
 	defer func() {
 		c.freeKeys <- keyIndex
 	}()
@@ -49,7 +49,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 	for exec := range versionMap {
 		versions = append(versions, exec)
 	}
-	memo := strings.Join(versions, ",")
+	executorVersion := strings.Join(versions, ",")
 	key := c.keys[keyIndex]
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
 	txHash := ""
@@ -64,7 +64,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 
 		txBldr := auth.NewTxBuilder(
 			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, memo), sdk.NewCoins(), c.gasPrices,
+			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, executorVersion), sdk.NewCoins(), c.gasPrices,
 		)
 		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 		// if err != nil {

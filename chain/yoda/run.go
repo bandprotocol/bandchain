@@ -132,7 +132,7 @@ func runCmd(c *Context) *cobra.Command {
 			}
 			c.pendingMsgs = make(chan ReportMsgWithKey, 0)
 			c.freeKeys = make(chan int64, len(keys))
-			c.keyIndex = -1
+			c.keyRoundRobinIndex = -1
 			return runImpl(c, l)
 		},
 	}

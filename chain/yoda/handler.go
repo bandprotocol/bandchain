@@ -85,7 +85,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
 
-	keyIndex := c.getKeyIndex()
+	keyIndex := c.nextKeyIndex()
 	key := c.keys[keyIndex]
 
 	reportsChan := make(chan types.RawReport, len(reqs))
