@@ -342,7 +342,7 @@ reporters = sa.Table(
     "reporters",
     metadata,
     Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
-    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("operator_address", sa.String, primary_key=True),
 )
 
 related_data_source_oracle_scripts = sa.Table(
