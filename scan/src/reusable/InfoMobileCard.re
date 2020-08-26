@@ -138,7 +138,12 @@ let make = (~info) => {
         block=true
       />
     }
-  | CopyButton(calldata) => <CopyButton data=calldata title="Copy as bytes" />
+  | CopyButton(calldata) =>
+    <CopyButton
+      data={calldata |> JsBuffer.toHex(~with0x=false)}
+      title="Copy as bytes"
+      width=125
+    />
   | Percentage(value, digits) => <Text value={value |> Format.fPercent(~digits?)} />
   | Text(text) =>
     <Text value=text spacing={Text.Em(0.02)} nowrap=true ellipsis=true block=true />

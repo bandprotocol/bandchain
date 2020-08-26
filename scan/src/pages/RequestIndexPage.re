@@ -344,7 +344,7 @@ let make = (~reqID) => {
               </div>
               {switch (requestSub) {
                | Data({calldata}) =>
-                 <CopyButton.Modern
+                 <CopyButton
                    data={calldata |> JsBuffer.toHex(~with0x=false)}
                    title="Copy as bytes"
                    width=125
@@ -382,7 +382,7 @@ let make = (~reqID) => {
                | Data({result: resultOpt, resolveStatus}) =>
                  switch (resultOpt, resolveStatus) {
                  | (Some(result), Success) =>
-                   <CopyButton.Modern
+                   <CopyButton
                      data={result |> JsBuffer.toHex(~with0x=false)}
                      title="Copy as bytes"
                      width=125
