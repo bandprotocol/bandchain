@@ -2,7 +2,7 @@
 
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
-import {IBridge} from "../Bridge.sol";
+import {IBridge} from "../IBridge.sol";
 import {ICacheBridge} from "../ICacheBridge.sol";
 
 /// @dev Mock Consumer contract for BridgeWithCache which will only consume requests that meet the requirement.

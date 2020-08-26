@@ -1,7 +1,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import {IBridge} from "./Bridge.sol";
+import {IBridge} from "./IBridge.sol";
 
 
 library BridgeUtils {
