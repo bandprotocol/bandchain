@@ -22,6 +22,7 @@
 
 ### Scan
 
+- (impv) [\#2566](https://github.com/bandprotocol/bandchain/pull/2566) Implemented TxIndexpage with new theme
 - (impv) [\#2563](https://github.com/bandprotocol/bandchain/pull/2563) Implemented the revamp block index page
 - (impv) [\#2561](https://github.com/bandprotocol/bandchain/pull/2561) Implemented the new layout for Validator Homepage
 - (impv) [\#2560](https://github.com/bandprotocol/bandchain/pull/2560) Refactor, improve Block Home Page for revamp GuanYu version
