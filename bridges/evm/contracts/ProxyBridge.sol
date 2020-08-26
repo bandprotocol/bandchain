@@ -8,7 +8,7 @@ import {Packets} from "./Packets.sol";
 import {IBridge} from "./IBridge.sol";
 import {ICacheBridge} from "./ICacheBridge.sol";
 
-contract BridgeProxy is IBridge, ICacheBridge, Ownable {
+contract ProxyBridge is IBridge, ICacheBridge, Ownable {
     ICacheBridge public bridge;
 
 
