@@ -6,13 +6,13 @@ pragma experimental ABIEncoderV2;
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
 import {ICacheBridge} from "./ICacheBridge.sol";
-import {BridgePackets} from "./BridgePackets.sol";
+import {BridgeUtils} from "./BridgeUtils.sol";
 import {IBridge} from "./IBridge.sol";
 
 /// @title CacheBridge <3 BandChain
 /// @author Band Protocol Team
 contract CacheBridge is Bridge, ICacheBridge {
-    using BridgePackets for IBridge.RequestPacket;
+    using BridgeUtils for IBridge.RequestPacket;
 
     /// Mapping from hash of RequestPacket to the latest ResponsePacket.
     mapping(bytes32 => ResponsePacket) public requestsCache;
