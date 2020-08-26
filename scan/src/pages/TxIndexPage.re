@@ -1,33 +1,24 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let header =
-    style([display(`flex), flexDirection(`row), alignItems(`center), height(`px(50))]);
-
-  let seperatedLine =
+  let titleContainer =
     style([
-      width(`px(13)),
+      Media.mobile([
+        flexDirection(`columnReverse),
+        alignItems(`flexStart),
+        minHeight(`px(80)),
+      ]),
+    ]);
+
+  let separatorLine =
+    style([
+      borderStyle(`none),
+      backgroundColor(Colors.gray9),
       height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
+      margin2(~v=`px(24), ~h=`auto),
     ]);
 
-  let hashContainer =
-    style([
-      display(`flex),
-      flexDirection(`row),
-      alignItems(`center),
-      marginTop(`px(25)),
-      marginBottom(`px(44)),
-      Media.mobile([marginBottom(`px(25))]),
-    ]);
-
-  let correctLogo = style([width(`px(20)), marginLeft(`px(10))]);
-
-  let logo = style([minWidth(`px(50)), marginRight(`px(10))]);
+  let successLogo = style([width(`px(20)), marginRight(`px(10))]);
 
   let notfoundContainer =
     style([
@@ -63,6 +54,16 @@ module Styles = {
         selector("> div *", [alignItems(`flexStart)]),
       ]),
     ]);
+
+  let infoContainer =
+    style([
+      backgroundColor(Colors.white),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      padding(`px(24)),
+      Media.mobile([padding(`px(16))]),
+    ]);
+  let infoHeader =
+    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
 module TxNotFound = {
@@ -100,180 +101,199 @@ let make = (~txHash) => {
   | Data(_) =>
     <Section>
       <div className=CssHelper.container>
-        <Row justify=Row.Between>
-          <div className=Styles.header>
-            <img src=Images.txLogo className=Styles.logo />
-            <Text
-              value="TRANSACTION"
-              weight=Text.Medium
-              nowrap=true
-              color=Colors.gray7
-              spacing={Text.Em(0.06)}
-              block=true
-            />
-            <div className=Styles.seperatedLine />
+        <Row.Grid marginBottom=40 marginBottomSm=16>
+          <Col.Grid>
+            <Heading value="Transaction" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
+            <div
+              className={Css.merge([
+                CssHelper.flexBox(~justify=`spaceBetween, ()),
+                Styles.titleContainer,
+              ])}>
+              <div className={CssHelper.flexBox()}>
+                {switch (txSub) {
+                 | Data(_) =>
+                   isMobile
+                     ? <Text
+                         value={txHash |> Hash.toHex(~upper=true)}
+                         size=Text.Lg
+                         weight=Text.Bold
+                         nowrap=false
+                         breakAll=true
+                         code=true
+                         color=Colors.gray7
+                       />
+                     : <>
+                         <Text
+                           value={txHash |> Hash.toHex(~upper=true)}
+                           size=Text.Xxl
+                           weight=Text.Bold
+                           nowrap=true
+                           code=true
+                           color=Colors.gray7
+                         />
+                         <HSpacing size=Spacing.sm />
+                         <CopyRender width=15 message={txHash |> Hash.toHex(~upper=true)} />
+                       </>
+                 | _ => <LoadingCensorBar width=270 height=15 />
+                 }}
+              </div>
+              <div className={CssHelper.flexBox()}>
+                {switch (txSub) {
+                 | Data({success}) =>
+                   <>
+                     <img
+                       src={success ? Images.success : Images.fail}
+                       className=Styles.successLogo
+                     />
+                     <Text
+                       value={success ? "Success" : "Failed"}
+                       nowrap=true
+                       size=Text.Lg
+                       color=Colors.gray7
+                       block=true
+                     />
+                   </>
+                 | _ =>
+                   <>
+                     <LoadingCensorBar width=20 height=20 radius=20 />
+                     <HSpacing size=Spacing.sm />
+                     <LoadingCensorBar width=60 height=15 />
+                   </>
+                 }}
+              </div>
+            </div>
+          </Col.Grid>
+        </Row.Grid>
+        <Row.Grid marginBottom=24>
+          <Col.Grid>
+            <div className=Styles.infoContainer>
+              <Heading
+                value="Information"
+                size=Heading.H4
+                style=Styles.infoHeader
+                marginBottom=24
+              />
+              <Row.Grid>
+                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                  <Heading value="Block" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({blockHeight}) =>
+                     <TypeID.Block id=blockHeight position=TypeID.Subtitle />
+                   | _ => <LoadingCensorBar width=75 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                  <Heading value="Sender" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({sender}) =>
+                     <AddressRender address=sender position=AddressRender.Subtitle />
+                   | _ => <LoadingCensorBar width=280 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                  <Heading value="Timestamp" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({timestamp}) =>
+                     <div className={CssHelper.flexBox()}>
+                       <Text
+                         value={
+                           timestamp
+                           |> MomentRe.Moment.format(Config.timestampDisplayFormat)
+                           |> String.uppercase_ascii
+                         }
+                         size=Text.Lg
+                       />
+                       <HSpacing size=Spacing.sm />
+                       <TimeAgos time=timestamp prefix="(" suffix=")" color=Colors.gray7 />
+                     </div>
+                   | _ => <LoadingCensorBar width=280 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid>
+                  <Heading value="Memo" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({memo}) =>
+                     <p>
+                       <Text
+                         value=memo
+                         weight=Text.Regular
+                         size=Text.Lg
+                         color=Colors.gray7
+                         block=true
+                       />
+                     </p>
+                   | _ => <LoadingCensorBar width=280 height=15 />
+                   }}
+                </Col.Grid>
+              </Row.Grid>
+              <hr className=Styles.separatorLine />
+              <Row.Grid>
+                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+                  <Heading value="Gas used" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({gasUsed}) => <Text value={gasUsed |> Format.iPretty} size=Text.Lg />
+                   | _ => <LoadingCensorBar width=75 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+                  <Heading value="Gas limit" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({gasLimit}) => <Text value={gasLimit |> Format.iPretty} size=Text.Lg />
+                   | _ => <LoadingCensorBar width=75 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid col=Col.Three colSm=Col.Six>
+                  <Heading value="Gas price (UBAND)" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({gasFee, gasLimit}) =>
+                     <Text
+                       value={
+                         (gasFee |> Coin.getBandAmountFromCoins)
+                         /. (gasLimit |> float_of_int)
+                         *. 1e6
+                         |> Format.fPretty
+                       }
+                       size=Text.Lg
+                     />
+                   | _ => <LoadingCensorBar width=75 height=15 />
+                   }}
+                </Col.Grid>
+                <Col.Grid col=Col.Three colSm=Col.Six>
+                  <Heading value="Fee (BAND)" size=Heading.H5 marginBottom=8 />
+                  {switch (txSub) {
+                   | Data({gasFee}) =>
+                     <Text
+                       value={gasFee |> Coin.getBandAmountFromCoins |> Format.fPretty}
+                       size=Text.Lg
+                     />
+                   | _ => <LoadingCensorBar width=75 height=15 />
+                   }}
+                </Col.Grid>
+              </Row.Grid>
+            </div>
+          </Col.Grid>
+        </Row.Grid>
+        <Row.Grid marginBottom=24>
+          <Col.Grid>
             {switch (txSub) {
-             | Data({success}) =>
+             | Data({success, errMsg, messages}) =>
+               let msgCount = messages |> Belt.List.length;
                <>
-                 <Text
-                   value={success ? "SUCCESS" : "FAILED"}
-                   weight=Text.Thin
-                   nowrap=true
-                   color=Colors.gray7
-                   spacing={Text.Em(0.06)}
-                   block=true
-                 />
-                 <img src={success ? Images.success : Images.fail} className=Styles.correctLogo />
-               </>
-             | _ =>
-               <>
-                 <LoadingCensorBar width=60 height=15 />
-                 <HSpacing size=Spacing.sm />
-                 <LoadingCensorBar width=20 height=20 radius=20 />
-               </>
+                 {success ? React.null : <TxError.Full msg=errMsg />}
+                 <div className={CssHelper.flexBox()}>
+                   <Text value={msgCount |> string_of_int} size=Text.Lg />
+                   <HSpacing size=Spacing.md />
+                   <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
+                 </div>
+               </>;
+             | _ => <LoadingCensorBar width=100 height=20 />
              }}
-          </div>
-        </Row>
-        <div className=Styles.hashContainer>
-          {switch (txSub) {
-           | Data(_) =>
-             <>
-               {isMobile
-                  ? <Text
-                      value={txHash |> Hash.toHex(~upper=true)}
-                      size=Text.Lg
-                      weight=Text.Bold
-                      nowrap=false
-                      breakAll=true
-                      code=true
-                      color=Colors.gray7
-                    />
-                  : <>
-                      <Text
-                        value={txHash |> Hash.toHex(~upper=true)}
-                        size=Text.Xxl
-                        weight=Text.Bold
-                        nowrap=true
-                        code=true
-                        color=Colors.gray7
-                      />
-                      <HSpacing size=Spacing.sm />
-                      <CopyRender width=15 message={txHash |> Hash.toHex(~upper=true)} />
-                    </>}
-             </>
-           | _ => <LoadingCensorBar width=700 height=20 />
-           }}
-        </div>
-        <Row wrap=true style=Styles.infoContainerFullwidth>
-          <Col size=0.9>
-            {switch (txSub) {
-             | Data({blockHeight}) => <InfoHL info={InfoHL.Height(blockHeight)} header="BLOCK" />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="BLOCK" />
-             }}
-          </Col>
-          <Col size=2.2>
-            {switch (txSub) {
-             | Data({timestamp}) =>
-               <InfoHL info={InfoHL.Timestamp(timestamp)} header="TIMESTAMP" />
-             | _ =>
-               <InfoHL
-                 info={
-                   InfoHL.Loading(
-                     {
-                       isMobile ? 240 : 400;
-                     },
-                   )
-                 }
-                 header="TIMESTAMP"
-               />
-             }}
-          </Col>
-          <Col size=1.4>
-            {switch (txSub) {
-             | Data({sender}) => <InfoHL info={InfoHL.Address(sender, 290)} header="SENDER" />
-             | _ => <InfoHL info={InfoHL.Loading(295)} header="SENDER" />
-             }}
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.xl />
-        <Row wrap=true style=Styles.infoContainerHalfwidth>
-          <Col size=1.35>
-            {switch (txSub) {
-             | Data({gasUsed}) => <InfoHL info={InfoHL.Count(gasUsed)} header="GAS USED" />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="GAS USED" />
-             }}
-          </Col>
-          <Col size=1.>
-            {switch (txSub) {
-             | Data({gasLimit}) => <InfoHL info={InfoHL.Count(gasLimit)} header="GAS LIMIT" />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="GAS LIMIT" />
-             }}
-          </Col>
-          <Col size=1.>
-            {switch (txSub) {
-             | Data({gasFee, gasLimit}) =>
-               <InfoHL
-                 info={
-                   InfoHL.Float(
-                     (gasFee |> Coin.getBandAmountFromCoins) /. (gasLimit |> float_of_int) *. 1e6,
-                   )
-                 }
-                 header="GAS PRICE (UBAND)"
-                 isLeft=false
-               />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="GAS PRICE (BAND)" isLeft=false />
-             }}
-          </Col>
-          <Col size=1.35>
-            {switch (txSub) {
-             | Data({gasFee}) =>
-               <InfoHL
-                 info={InfoHL.Float(gasFee |> Coin.getBandAmountFromCoins)}
-                 header="FEE (BAND)"
-                 isLeft=false
-               />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="FEE (BAND)" isLeft=false />
-             }}
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.xl />
-        <Row>
-          <Col>
-            {switch (txSub) {
-             | Data({memo}) => <InfoHL info={InfoHL.Description(memo)} header="MEMO" />
-             | _ => <InfoHL info={InfoHL.Loading(75)} header="MEMO" />
-             }}
-          </Col>
-        </Row>
+          </Col.Grid>
+        </Row.Grid>
         {switch (txSub) {
-         | Data({success, errMsg, messages}) =>
-           <>
-             {success
-                ? React.null : <> <VSpacing size=Spacing.xl /> <TxError.Full msg=errMsg /> </>}
-             <VSpacing size=Spacing.xxl />
-             <div className=Styles.vFlex>
-               <HSpacing size=Spacing.md />
-               <Text
-                 value={messages |> Belt.List.length |> string_of_int}
-                 weight=Text.Semibold
-                 size=Text.Lg
-               />
-               <HSpacing size=Spacing.md />
-               <Text value="Messages" size=Text.Lg spacing={Text.Em(0.06)} />
-             </div>
-             <VSpacing size=Spacing.md />
-             {isMobile ? <TxMobileIndexPageTable messages /> : <TxIndexPageTable messages />}
-           </>
-         | _ =>
-           <>
-             <VSpacing size=Spacing.xxl />
-             <div className=Styles.vFlex>
-               <HSpacing size=Spacing.md />
-               <LoadingCensorBar width=100 height=20 />
-             </div>
-             <VSpacing size=Spacing.md />
-             {isMobile ? <TxMobileIndexPageTable.Loading /> : <TxIndexPageTable.Loading />}
-           </>
+         | Data({messages}) =>
+           isMobile ? <TxMobileIndexPageTable messages /> : <TxIndexPageTable messages />
+         | _ => isMobile ? <TxMobileIndexPageTable.Loading /> : <TxIndexPageTable.Loading />
          }}
       </div>
     </Section>

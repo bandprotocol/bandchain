@@ -3,14 +3,14 @@ module Styles = {
 
   let addressContainer = width_ => style([width(`px(width_))]);
 
-  let badgeContainer = style([display(`block)]);
+  let badgeContainer = style([display(`block), marginTop(`px(-4))]);
 
   let badge = color =>
     style([
       display(`inlineFlex),
-      padding2(~v=`px(8), ~h=`px(10)),
+      padding2(~v=`px(5), ~h=`px(8)),
       backgroundColor(color),
-      borderRadius(`px(15)),
+      borderRadius(`px(50)),
     ]);
 
   let hFlex = style([display(`flex), alignItems(`center)]);
@@ -21,6 +21,7 @@ module Styles = {
       justifyContent(`spaceBetween),
       width(`percent(100.)),
       lineHeight(`px(16)),
+      alignItems(`center),
     ]);
 
   let detailContainer = style([display(`flex), maxWidth(`px(360)), justifyContent(`flexEnd)]);
@@ -46,11 +47,18 @@ module Styles = {
       alignItems(`center),
       justifyContent(`spaceBetween),
     ]);
+
+  let separatorLine =
+    style([
+      borderStyle(`none),
+      backgroundColor(Colors.gray9),
+      height(`px(1)),
+      margin2(~v=`px(10), ~h=`auto),
+    ]);
 };
 
 let renderSend = (send: TxSub.Msg.Send.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -76,7 +84,6 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
 let renderRequest = (request: TxSub.Msg.Request.t) => {
   let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex>
@@ -132,7 +139,6 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
 
 let renderReport = (report: TxSub.Msg.Report.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex> <TypeID.Request id={report.requestID} /> </div>
@@ -164,7 +170,6 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
 
 let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <Col> <VSpacing size=Spacing.md /> </Col>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -191,7 +196,6 @@ let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.t) => {
 
 let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <Col> <VSpacing size=Spacing.md /> </Col>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -219,7 +223,6 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
 
 let renderCreateOracleScript = (oracleScript: TxSub.Msg.CreateOracleScript.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <Col> <VSpacing size=Spacing.md /> </Col>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -241,7 +244,6 @@ let renderCreateOracleScript = (oracleScript: TxSub.Msg.CreateOracleScript.t) =>
 
 let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <Col> <VSpacing size=Spacing.md /> </Col>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -264,7 +266,6 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
 
 let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={address.validatorMoniker} code=true />
@@ -279,7 +280,6 @@ let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
 
 let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={address.validatorMoniker} code=true />
@@ -294,7 +294,6 @@ let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.t) => {
 
 let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={validator.moniker} code=true />
@@ -370,7 +369,6 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
 
 let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
@@ -437,7 +435,6 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
 
 let renderCreateClient = (info: TxSub.Msg.CreateClient.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={info.clientID} code=true />
@@ -462,7 +459,6 @@ let renderCreateClient = (info: TxSub.Msg.CreateClient.t) => {
 
 let renderUpdateClient = (info: TxSub.Msg.UpdateClient.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={info.clientID} code=true />
@@ -513,7 +509,6 @@ let renderUpdateClient = (info: TxSub.Msg.UpdateClient.t) => {
 
 let renderSubmitClientMisbehaviour = (info: TxSub.Msg.SubmitClientMisbehaviour.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CLIENT ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={info.clientID} code=true />
@@ -546,7 +541,6 @@ let renderSubmitClientMisbehaviour = (info: TxSub.Msg.SubmitClientMisbehaviour.t
 
 let renderPacketVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.Packet.common_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CHAIN ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={common.chainID} code=true />
@@ -605,7 +599,6 @@ let renderPacketVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.Packet.common_t) 
 
 let renderChannelVariant = (common: TxSub.Msg.ChannelCommon.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CHAIN ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={common.chainID} code=true />
@@ -625,7 +618,6 @@ let renderChannelVariant = (common: TxSub.Msg.ChannelCommon.t) => {
 
 let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCommon.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="CHAIN ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={common.chainID} code=true />
@@ -658,7 +650,6 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
 
 let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -682,7 +673,6 @@ let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
 
 let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -706,7 +696,6 @@ let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
 
 let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -737,7 +726,6 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
 
 let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -761,7 +749,6 @@ let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
 
 let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -819,7 +806,6 @@ let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
 
 let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -837,7 +823,6 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
 };
 let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -854,7 +839,6 @@ let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
 
 let renderVote = (vote: TxSub.Msg.Vote.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VOTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -876,7 +860,6 @@ let renderVote = (vote: TxSub.Msg.Vote.t) => {
 
 let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="Inputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
     </div>
@@ -931,7 +914,6 @@ let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
 
 let renderActivate = (activate: TxSub.Msg.Activate.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className={Styles.addressContainer(300)}>
@@ -943,7 +925,6 @@ let renderActivate = (activate: TxSub.Msg.Activate.t) => {
 
 let renderFailMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex> <img src=Images.fail className=Styles.failIcon /> </div>
@@ -953,7 +934,6 @@ let renderFailMessage = () => {
 
 let renderUnknownMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.topicContainer>
       <Text value="UNKNOWN MESSAGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <img src=Images.fail className=Styles.failIcon />
@@ -1009,46 +989,19 @@ let renderBody = (msg: TxSub.Msg.t) =>
 module THead = {
   [@react.component]
   let make = () => {
-    <THead>
-      <Row>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-        <Col size=Styles.firstCol>
-          <Text
-            block=true
-            value="MESSAGE TYPE"
-            size=Text.Sm
-            weight=Text.Semibold
-            spacing={Text.Em(0.1)}
-            color=Colors.gray5
-          />
-        </Col>
-        <Col size=Styles.secondCol>
-          <div>
-            <Text
-              block=true
-              value="CREATOR"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray5
-              spacing={Text.Em(0.1)}
-            />
-          </div>
-        </Col>
-        <Col size=Styles.thirdCol>
-          <div>
-            <Text
-              block=true
-              value="DETAIL"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray5
-              spacing={Text.Em(0.1)}
-            />
-          </div>
-        </Col>
-        <Col> <HSpacing size=Spacing.md /> </Col>
-      </Row>
-    </THead>;
+    <THead.Grid>
+      <Row.Grid alignItems=Row.Center>
+        <Col.Grid col=Col.Two>
+          <Text block=true value="Message Type" weight=Text.Semibold color=Colors.gray7 />
+        </Col.Grid>
+        <Col.Grid col=Col.Three>
+          <Text block=true value="Creator" weight=Text.Semibold color=Colors.gray7 />
+        </Col.Grid>
+        <Col.Grid col=Col.Seven>
+          <Text block=true value="Detail" weight=Text.Semibold color=Colors.gray7 />
+        </Col.Grid>
+      </Row.Grid>
+    </THead.Grid>;
   };
 };
 
@@ -1060,55 +1013,48 @@ let make = (~messages: list(TxSub.Msg.t)) => {
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
          //TODO: Change index to be uniqe something
-         <TBody key={index |> string_of_int}>
-           <Row>
-             <Col> <HSpacing size=Spacing.md /> </Col>
-             <Col size=Styles.firstCol alignSelf=Col.Start>
+         <TBody.Grid key={index |> string_of_int} paddingH={`px(24)}>
+           <Row.Grid alignItems=Row.Start>
+             <Col.Grid col=Col.Two>
                <div className=Styles.badgeContainer>
                  <div className={Styles.badge(theme.bgColor)}>
-                   <Text
-                     value={theme.text}
-                     size=Text.Sm
-                     spacing={Text.Em(0.07)}
-                     color={theme.textColor}
-                   />
+                   <Text value={theme.text} size=Text.Xs color={theme.textColor} />
                  </div>
-                 <VSpacing size=Spacing.sm />
                  {switch (msg) {
                   | CreateDataSourceMsg(dataSource) =>
-                    <div className={Styles.badge(theme.bgColor)}>
+                    <>
+                      <hr className=Styles.separatorLine />
                       <TypeID.DataSource id={dataSource.id} />
-                    </div>
+                    </>
                   | EditDataSourceMsg(dataSource) =>
-                    <div className={Styles.badge(theme.bgColor)}>
+                    <>
+                      <hr className=Styles.separatorLine />
                       <TypeID.DataSource id={dataSource.id} />
-                    </div>
+                    </>
                   | CreateOracleScriptMsg(oracleScript) =>
-                    <div className={Styles.badge(theme.bgColor)}>
+                    <>
+                      <hr className=Styles.separatorLine />
                       <TypeID.OracleScript id={oracleScript.id} />
-                    </div>
+                    </>
                   | EditOracleScriptMsg(oracleScript) =>
-                    <div className={Styles.badge(theme.bgColor)}>
+                    <>
+                      <hr className=Styles.separatorLine />
                       <TypeID.OracleScript id={oracleScript.id} />
-                    </div>
+                    </>
                   | RequestMsg(request) =>
-                    <div className={Styles.badge(theme.bgColor)}>
-                      <TypeID.Request id={request.id} />
-                    </div>
+                    <> <hr className=Styles.separatorLine /> <TypeID.Request id={request.id} /> </>
                   | _ => React.null
                   }}
                </div>
-             </Col>
-             <Col size=Styles.secondCol alignSelf=Col.Start>
-               <VSpacing size=Spacing.sm />
+             </Col.Grid>
+             <Col.Grid col=Col.Three>
                <div className={Styles.addressContainer(170)}>
                  <AddressRender address={msg |> TxSub.Msg.getCreator} />
                </div>
-             </Col>
-             {renderBody(msg)}
-             <Col> <HSpacing size=Spacing.md /> </Col>
-           </Row>
-         </TBody>;
+             </Col.Grid>
+             <Col.Grid col=Col.Seven> {renderBody(msg)} </Col.Grid>
+           </Row.Grid>
+         </TBody.Grid>;
        })
      ->Array.of_list
      ->React.array}
@@ -1120,17 +1066,14 @@ module Loading = {
   let make = () => {
     <>
       <THead />
-      <TBody>
-        <Row>
-          <Col> <HSpacing size=Spacing.md /> </Col>
-          <Col size=Styles.firstCol alignSelf=Col.Start>
-            <LoadingCensorBar width=95 height=25 />
-          </Col>
-          <Col size=Styles.secondCol alignSelf=Col.Start>
+      <TBody.Grid paddingH={`px(24)}>
+        <Row.Grid>
+          <Col.Grid col=Col.Two> <LoadingCensorBar width=95 height=25 /> </Col.Grid>
+          <Col.Grid col=Col.Three>
             <VSpacing size=Spacing.sm />
             <LoadingCensorBar width=160 height=15 />
-          </Col>
-          <Col size=Styles.thirdCol alignSelf=Col.Start>
+          </Col.Grid>
+          <Col.Grid col=Col.Seven>
             <VSpacing size=Spacing.sm />
             <div className=Styles.topicContainer>
               <LoadingCensorBar width=60 height=15 />
@@ -1146,10 +1089,9 @@ module Loading = {
               <LoadingCensorBar width=95 height=15 />
               <LoadingCensorBar width=280 height=15 />
             </div>
-          </Col>
-          <Col> <HSpacing size=Spacing.md /> </Col>
-        </Row>
-      </TBody>
+          </Col.Grid>
+        </Row.Grid>
+      </TBody.Grid>
     </>;
   };
 };
