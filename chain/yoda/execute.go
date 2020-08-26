@@ -2,18 +2,18 @@ package yoda
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
-	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -21,12 +21,36 @@ var (
 	cdc = app.MakeCodec()
 )
 
-func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, reps []otypes.RawReport, execVersion string) {
-	msg := otypes.NewMsgReportData(otypes.RequestID(id), reps, c.validator, key.GetAddress())
-	if err := msg.ValidateBasic(); err != nil {
-		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
-		return
+func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
+	// Return key when sending transaction successfully
+	defer func() {
+		c.freeKeys <- keyIndex
+	}()
+
+	// Summarize execute version
+	versionMap := make(map[string]bool)
+	msgs := make([]sdk.Msg, len(reports))
+	ids := make([]types.RequestID, len(reports))
+
+	for i, report := range reports {
+		if err := report.msg.ValidateBasic(); err != nil {
+			l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
+			return
+		}
+		msgs[i] = report.msg
+		ids[i] = report.msg.RequestID
+		for _, exec := range report.execVersion {
+			versionMap[exec] = true
+		}
 	}
+	l = l.With("rids", ids)
+
+	versions := make([]string, 0, len(versionMap))
+	for exec := range versionMap {
+		versions = append(versions, exec)
+	}
+	memo := strings.Join(versions, ",")
+	key := c.keys[keyIndex]
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
 	txHash := ""
 	for try := uint64(1); try <= c.maxTry; try++ {
@@ -40,14 +64,15 @@ func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, rep
 
 		txBldr := auth.NewTxBuilder(
 			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, execVersion), sdk.NewCoins(), c.gasPrices,
+			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, memo), sdk.NewCoins(), c.gasPrices,
 		)
 		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 		// if err != nil {
 		// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
 		// 	return
 		// }
-		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
+
+		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
 		if err != nil {
 			l.Info(":warning: Failed to build tx with error: %s", err.Error())
 			time.Sleep(c.rpcPollInterval)
@@ -87,7 +112,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	resValue, err := c.fileCache.GetFile(hash)
 	if err != nil {
 		l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
-		res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, otypes.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
+		res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
 		if err != nil {
 			l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
 			return nil, err

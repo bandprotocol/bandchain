@@ -2,7 +2,6 @@ package yoda
 
 import (
 	"strconv"
-	"strings"
 	"sync"
 
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
@@ -86,10 +85,8 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
 
-	key := <-c.keys
-	defer func() {
-		c.keys <- key
-	}()
+	keyIndex := c.getKeyIndex()
+	key := c.keys[keyIndex]
 
 	reportsChan := make(chan types.RawReport, len(reqs))
 	var version sync.Map
@@ -143,5 +140,10 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		execVersions = append(execVersions, key.(string))
 		return true
 	})
-	SubmitReport(c, l, key, types.RequestID(id), reports, strings.Join(execVersions, "+"))
+
+	c.pendingMsgs <- ReportMsgWithKey{
+		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
+		execVersion: execVersions,
+		keyIndex:    keyIndex,
+	}
 }

@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
-	keyring "github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,10 +41,36 @@ func runImpl(c *Context, l *Logger) error {
 		return err
 	}
 
+	availiableKeys := make([]bool, len(c.keys))
+	waitingMsgs := make([][]ReportMsgWithKey, len(c.keys))
+	for i := range availiableKeys {
+		availiableKeys[i] = true
+		waitingMsgs[i] = []ReportMsgWithKey{}
+	}
+
 	for {
 		select {
 		case ev := <-eventChan:
 			go handleTransaction(c, l, ev.Data.(tmtypes.EventDataTx).TxResult)
+		case keyIndex := <-c.freeKeys:
+			if len(waitingMsgs[keyIndex]) != 0 {
+				if uint64(len(waitingMsgs[keyIndex])) > c.maxReport {
+					go SubmitReport(c, l, keyIndex, waitingMsgs[keyIndex][:c.maxReport])
+					waitingMsgs[keyIndex] = waitingMsgs[keyIndex][c.maxReport:]
+				} else {
+					go SubmitReport(c, l, keyIndex, waitingMsgs[keyIndex])
+					waitingMsgs[keyIndex] = []ReportMsgWithKey{}
+				}
+			} else {
+				availiableKeys[keyIndex] = true
+			}
+		case pm := <-c.pendingMsgs:
+			if availiableKeys[pm.keyIndex] {
+				availiableKeys[pm.keyIndex] = false
+				go SubmitReport(c, l, pm.keyIndex, []ReportMsgWithKey{pm})
+			} else {
+				waitingMsgs[pm.keyIndex] = append(waitingMsgs[pm.keyIndex], pm)
+			}
 		}
 	}
 }
@@ -67,10 +92,7 @@ func runCmd(c *Context) *cobra.Command {
 			if len(keys) == 0 {
 				return errors.New("No key available")
 			}
-			c.keys = make(chan keyring.Info, len(keys))
-			for _, key := range keys {
-				c.keys <- key
-			}
+			c.keys = keys
 			c.validator, err = sdk.ValAddressFromBech32(cfg.Validator)
 			if err != nil {
 				return err
@@ -103,10 +125,14 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			c.maxTry = cfg.MaxTry
+			c.maxReport = cfg.MaxReport
 			c.rpcPollInterval, err = time.ParseDuration(cfg.RPCPollInterval)
 			if err != nil {
 				return err
 			}
+			c.pendingMsgs = make(chan ReportMsgWithKey, 0)
+			c.freeKeys = make(chan int64, len(keys))
+			c.keyIndex = -1
 			return runImpl(c, l)
 		},
 	}
@@ -119,6 +145,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagBroadcastTimeout, "5m", "The time that Yoda will wait for tx commit")
 	cmd.Flags().String(flagRPCPollInterval, "1s", "The duration of rpc poll interval")
 	cmd.Flags().Uint64(flagMaxTry, 5, "The maximum number of tries to submit a report transaction")
+	cmd.Flags().Uint64(flagMaxReport, 10, "The maximum number of reports in one transaction")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
 	viper.BindPFlag(flags.FlagNode, cmd.Flags().Lookup(flags.FlagNode))
 	viper.BindPFlag(flagValidator, cmd.Flags().Lookup(flagValidator))
@@ -128,5 +155,6 @@ func runCmd(c *Context) *cobra.Command {
 	viper.BindPFlag(flagBroadcastTimeout, cmd.Flags().Lookup(flagBroadcastTimeout))
 	viper.BindPFlag(flagRPCPollInterval, cmd.Flags().Lookup(flagRPCPollInterval))
 	viper.BindPFlag(flagMaxTry, cmd.Flags().Lookup(flagMaxTry))
+	viper.BindPFlag(flagMaxReport, cmd.Flags().Lookup(flagMaxReport))
 	return cmd
 }
