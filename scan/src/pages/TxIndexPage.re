@@ -229,21 +229,21 @@ let make = (~txHash) => {
               <hr className=Styles.separatorLine />
               <Row.Grid>
                 <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
-                  <Heading value="Gas used" size=Heading.H5 marginBottom=8 />
+                  <Heading value="Gas Used" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasUsed}) => <Text value={gasUsed |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
                 </Col.Grid>
                 <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
-                  <Heading value="Gas limit" size=Heading.H5 marginBottom=8 />
+                  <Heading value="Gas Limit" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasLimit}) => <Text value={gasLimit |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
                 </Col.Grid>
                 <Col.Grid col=Col.Three colSm=Col.Six>
-                  <Heading value="Gas price (UBAND)" size=Heading.H5 marginBottom=8 />
+                  <Heading value="Gas Price (UBAND)" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasFee, gasLimit}) =>
                      <Text

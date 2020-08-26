@@ -97,7 +97,11 @@ let renderRequest = (request: TxSub.Msg.Request.t) => {
     <div className=Styles.hFlex>
       <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <HSpacing size=Spacing.md />
-      <CopyButton data={request.calldata} title="Copy as bytes" />
+      <CopyButton
+        data={request.calldata |> JsBuffer.toHex(~with0x=false)}
+        title="Copy as bytes"
+        width=125
+      />
     </div>
     <VSpacing size=Spacing.md />
     {switch (calldataKVsOpt) {

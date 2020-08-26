@@ -54,12 +54,12 @@ let renderDetailMobile =
   | RedelegateMsg({validatorSourceAddress, validatorDestinationAddress, delegatorAddress, amount}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Source Address", Address(validatorSourceAddress, addressWidth, `validator)),
-      ("Destination ADDRESS", Address(validatorDestinationAddress, addressWidth, `validator)),
+      ("Destination Address", Address(validatorDestinationAddress, addressWidth, `validator)),
       ("Amount", Coin({value: [amount], hasDenom: true})),
     ]
   | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
-      ("WITHDRAW ADDRESS", Address(withdrawAddress, addressWidth, `account)),
+      ("Withdraw Address", Address(withdrawAddress, addressWidth, `account)),
     ]
   | CreateValidatorMsg({
       moniker,
@@ -184,7 +184,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
          <MobileCard
            values={
              InfoMobileCard.[
-               ("Message\ntype", Badge(theme)),
+               ("Message\nType", Badge(theme)),
                ("Creator", Address(creator, addressWidth, `account)),
              ]
              ->Belt.List.concat(renderList)
@@ -203,7 +203,7 @@ module Loading = {
   let make = () => {
     <MobileCard
       values=InfoMobileCard.[
-        ("Message\ntype", Loading(80)),
+        ("Message\nType", Loading(80)),
         ("Creator", Loading(80)),
         ("Detail", Loading(80)),
       ]
