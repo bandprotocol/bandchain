@@ -60,9 +60,9 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | Data({txHash, gasFee, success, messages, errMsg}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", TxHash(txHash, 200)),
-        ("GAS FEE\n(BAND)", Coin({value: gasFee, hasDenom: false})),
-        ("ACTIONS", Messages(txHash, messages, success, errMsg)),
+        ("TX Hash", TxHash(txHash, 200)),
+        ("Gas Fee\n(BAND)", Coin({value: gasFee, hasDenom: false})),
+        ("Actions", Messages(txHash, messages, success, errMsg)),
       ]
       key={txHash |> Hash.toHex}
       idx={txHash |> Hash.toHex}
@@ -71,9 +71,9 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", Loading(200)),
-        ("GAS FEE\n(BAND)", Loading(60)),
-        ("ACTIONS", Loading(230)),
+        ("TX Hash", Loading(200)),
+        ("Gas Fee\n(BAND)", Loading(60)),
+        ("Actions", Loading(230)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
