@@ -16,6 +16,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2565](https://github.com/bandprotocol/bandchain/pull/2565) cdb: Fix bug reporters table
 - (impv) [\#2549](https://github.com/bandprotocol/bandchain/pull/2549) Implemented `data_source_requests` table
 - (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
 
