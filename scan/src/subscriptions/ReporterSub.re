@@ -1,6 +1,6 @@
 module ReportersByValidatorAddressConfig = [%graphql
   {|
-subscription HistoricalBondedToken($operator_address: String!, $limit: Int!, $offset: Int!) {
+subscription ReportersConfig($operator_address: String!, $limit: Int!, $offset: Int!) {
     reporters(where: {operator_address: {_eq: $operator_address}}, offset: $offset, limit: $limit, order_by: {reporter_id: asc}) {
       account {
         address
@@ -12,7 +12,7 @@ subscription HistoricalBondedToken($operator_address: String!, $limit: Int!, $of
 
 module ReportersCountConfig = [%graphql
   {|
-    subscription DelegatorCount($operator_address: String!) {
+    subscription ReporterCount($operator_address: String!) {
       reporters_aggregate(where: {operator_address: {_eq: $operator_address}}) {
         aggregate {
           count @bsDecoder(fn: "Belt_Option.getExn")
