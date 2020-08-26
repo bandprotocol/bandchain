@@ -14,6 +14,8 @@
 
 ### Yoda
 
+- (impv) [\#2569](https://github.com/bandprotocol/bandchain/pull/2569) Queued and combine report msgs to one transaction
+
 ### Emitter & Flusher
 
 - (impv) [\#2549](https://github.com/bandprotocol/bandchain/pull/2549) Implemented `data_source_requests` table
