@@ -1,8 +1,7 @@
 module Styles = {
   open Css;
 
-  let sortDrowdownContainer =
-    style([position(`relative), zIndex(2), flexBasis(`percent(40.))]);
+  let sortDrowdownContainer = style([position(`relative), zIndex(2), maxWidth(`px(60))]);
   let sortDrowdownPanel = show => {
     style([
       display(

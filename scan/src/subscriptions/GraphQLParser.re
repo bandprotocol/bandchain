@@ -1,5 +1,7 @@
 let int64 = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> int_of_string;
 let string = json => json |> Js.Json.decodeString |> Belt.Option.getExn;
+let jsonToStringExn = jsonOpt =>
+  jsonOpt |> Belt.Option.getExn |> Js.Json.decodeString |> Belt.Option.getExn;
 let stringExn = (stringOpt: option(string)) => stringOpt |> Belt_Option.getExn;
 let buffer = json =>
   json

@@ -10,11 +10,17 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
     ]);
+
+  let proofContainer =
+    style([
+      selector("> div + div", [marginLeft(`px(24)), Media.mobile([marginLeft(`px(16))])]),
+    ]);
 };
 
 [@react.component]
 let make = (~id: ID.Request.t) => {
   let (proofOpt, reload) = ProofHook.get(id);
+  let isMobile = Media.isMobile();
 
   React.useEffect1(
     () => {
@@ -42,16 +48,21 @@ let make = (~id: ID.Request.t) => {
     </div>
     {switch (proofOpt) {
      | Some(proof) =>
-       <div className={CssHelper.flexBox()}>
-         <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
-         <HSpacing size=Spacing.md />
-         <CopyButton
-           data={proof.jsonProof->NonEVMProof.createProofFromJson}
-           title="Copy non-EVM proof"
-           width=130
+       <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
+         <CopyButton.Modern
+           data={proof.evmProofBytes |> JsBuffer.toHex(~with0x=false)}
+           title={isMobile ? "EVM" : "Copy EVM proof"}
+           py=10
+           px=14
          />
-         <HSpacing size=Spacing.lg />
-         <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
+         <CopyButton.Modern
+           data={
+             proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)
+           }
+           title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
+           py=10
+           px=14
+         />
        </div>
      | _ =>
        <div className={Styles.withWH(`percent(100.), `auto)}>

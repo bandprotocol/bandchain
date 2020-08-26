@@ -10,7 +10,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~children, ~pt=24, ~pb=24, ~ptSm=pt, ~pbSm=pb, ~bg=Colors.white) => {
+let make = (~children, ~pt=24, ~pb=24, ~ptSm=pt, ~pbSm=pb, ~bg=Colors.bg) => {
   let css =
     Css.merge([
       Styles.bgColor(bg),

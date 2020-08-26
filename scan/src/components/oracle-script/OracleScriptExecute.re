@@ -429,7 +429,7 @@ module ExecutionPart = {
                    // log for err details
                    Js.Console.log(err);
                    <Text value="chain id not found" />;
-                 | _ => <LoadingCensorBar width=60 height=18 />
+                 | _ => <LoadingCensorBar fullWidth=true height=120 />
                  }
                }}
             </div>

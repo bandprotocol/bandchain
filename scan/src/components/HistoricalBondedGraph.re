@@ -12,9 +12,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       backgroundColor(white),
-    ]);
-
-  let loadingBox = style([width(`percent(100.))]);
+    ])
 
   let chart = show => style([important(display(show ? `block : `none))]);
 };
@@ -173,6 +171,6 @@ let make = (~operatorAddress) => {
            </div>
          : React.null}
     </div>;
-  | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
+  | _ => <LoadingCensorBar fullWidth=true height=180 />
   };
 };

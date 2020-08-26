@@ -49,8 +49,6 @@ module Styles = {
         ),
       ]),
     ]);
-
-  let loadingBox = style([width(`percent(100.))]);
 };
 
 module UptimeBlock = {
@@ -87,7 +85,7 @@ let make = (~consensusAddress) => {
                  <UptimeBlock key={blockHeight |> ID.Block.toString} status height=blockHeight />
                )
              ->React.array
-           | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=90  />
            }}
         </div>
       </Col.Grid>
