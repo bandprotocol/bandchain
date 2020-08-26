@@ -3,13 +3,10 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import {IBridge} from "./Bridge.sol";
+import {IBridge} from "./IBridge.sol";
 
 interface ICacheBridge is IBridge {
 
-    /// Returns the hash of a RequestPacket.
-    /// @param _request A tuple that represents RequestPacket struct.
-    function getRequestKey(IBridge.RequestPacket calldata _request) external view returns(bytes32);
 
     /// Returns the ResponsePacket for a given RequestPacket.
     /// @param _request The tuple that represents RequestPacket struct.

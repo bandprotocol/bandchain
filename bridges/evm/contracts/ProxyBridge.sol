@@ -25,17 +25,6 @@ contract ProxyBridge is IBridge, ICacheBridge, Ownable {
         bridge = _bridge;
     }
     
-    /// Returns the hash of a RequestPacket.
-    /// @param _request A tuple that represents RequestPacket struct.
-    function getRequestKey(RequestPacket memory _request)
-        external
-        view
-        override
-        returns (bytes32)
-    {
-        return bridge.getRequestKey(_request);
-    }
-    
     /// Returns the ResponsePacket for a given RequestPacket.
     /// Reverts if can't find the related response in the mapping.
     /// @param _request A tuple that represents RequestPacket struct.

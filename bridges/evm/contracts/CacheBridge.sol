@@ -6,10 +6,14 @@ pragma experimental ABIEncoderV2;
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
 import {ICacheBridge} from "./ICacheBridge.sol";
+import {BridgePackets} from "./BridgePackets.sol";
+import {IBridge} from "./IBridge.sol";
 
 /// @title CacheBridge <3 BandChain
 /// @author Band Protocol Team
 contract CacheBridge is Bridge, ICacheBridge {
+    using BridgePackets for IBridge.RequestPacket;
+
     /// Mapping from hash of RequestPacket to the latest ResponsePacket.
     mapping(bytes32 => ResponsePacket) public requestsCache;
 
@@ -20,17 +24,6 @@ contract CacheBridge is Bridge, ICacheBridge {
         Bridge(_validators)
     {}
 
-    /// Returns the hash of a RequestPacket.
-    /// @param _request A tuple that represents RequestPacket struct.
-    function getRequestKey(RequestPacket memory _request)
-        public
-        view
-        override
-        returns (bytes32)
-    {
-        return keccak256(abi.encode(_request));
-    }
-
     /// Returns the ResponsePacket for a given RequestPacket.
     /// Reverts if can't find the related response in the mapping.
     /// @param _request A tuple that represents RequestPacket struct.
@@ -40,7 +33,7 @@ contract CacheBridge is Bridge, ICacheBridge {
         override
         returns (ResponsePacket memory)
     {
-        ResponsePacket memory res = requestsCache[getRequestKey(_request)];
+        ResponsePacket memory res = requestsCache[_request.getRequestKey()];
         require(res.requestId != 0, "RESPONSE_NOT_FOUND");
 
         return res;
@@ -53,7 +46,7 @@ contract CacheBridge is Bridge, ICacheBridge {
         (RequestPacket memory req, ResponsePacket memory res) = this
             .relayAndVerify(_data);
 
-        bytes32 requestKey = getRequestKey(req);
+        bytes32 requestKey = req.getRequestKey();
 
         require(
             res.resolveTime > requestsCache[requestKey].resolveTime,
