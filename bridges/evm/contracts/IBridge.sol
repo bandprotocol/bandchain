@@ -25,11 +25,6 @@ interface IBridge {
         bytes result;
     }
 
-    struct ValidatorWithPower {
-        address addr;
-        uint256 power;
-    }
-
 
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
     /// the encoded proof and receives back the decoded data, ready to be validated and used.

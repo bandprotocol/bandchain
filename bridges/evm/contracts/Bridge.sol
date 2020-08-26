@@ -21,6 +21,11 @@ contract Bridge is IBridge, Ownable {
     using TMSignature for TMSignature.Data;
     using SafeMath for uint256;
 
+    struct ValidatorWithPower {
+        address addr;
+        uint256 power;
+    }
+
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
     /// Mapping from an address to its voting power.
