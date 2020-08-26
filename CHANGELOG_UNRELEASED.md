@@ -37,6 +37,8 @@
 
 ### Runtime
 
+- (impv) [#\2555](https://github.com/bandprotocol/bandchain/pull/2555) Added `websocket-clients` to runtime
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
