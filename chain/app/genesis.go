@@ -52,6 +52,9 @@ func NewDefaultGenesisState() GenesisState {
 	slashingGenesis.Params.SlashFractionDoubleSign = sdk.NewDecWithPrec(5, 2) // 5%
 	slashingGenesis.Params.SlashFractionDowntime = sdk.NewDecWithPrec(1, 4)   // 0.01%
 	stakingGenesis.Params.UnbondingTime = 2 * time.Minute
+	govGenesis.DepositParams.MaxDepositPeriod = 5 * time.Minute
+	govGenesis.VotingParams.VotingPeriod = 5 * time.Minute
+
 	return GenesisState{
 		genutil.ModuleName:  genutil.AppModuleBasic{}.DefaultGenesis(),
 		auth.ModuleName:     cdc.MustMarshalJSON(authGenesis),
