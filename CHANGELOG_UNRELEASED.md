@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
+
 ### Scan
 
 ### Bridges
