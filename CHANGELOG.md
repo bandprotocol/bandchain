@@ -8,6 +8,22 @@
 
 # Changelog
 
+## [v1.2.3](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.3)
+
+### Yoda
+
+- (impv) [\#2569](https://github.com/bandprotocol/bandchain/pull/2569) Queued and combine report msgs to one transaction + Remove hard code gas used on report and add retry logic when transaction out of gas.
+
+### Emitter & Flusher
+
+- (bugs) [\#2565](https://github.com/bandprotocol/bandchain/pull/2565) cdb: Fix bug reporters table
+- (impv) [\#2549](https://github.com/bandprotocol/bandchain/pull/2549) Implemented `data_source_requests` table
+- (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
+
+### Runtime
+
+- (impv) [#\2555](https://github.com/bandprotocol/bandchain/pull/2555) Added `websocket-clients` to runtime
+
 ## [v1.2.2](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.2)
 
 ### Chain (Non-consensus)
