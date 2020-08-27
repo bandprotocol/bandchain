@@ -8,9 +8,13 @@ from ecdsa import SigningKey, VerifyingKey, SECP256k1
 from ecdsa.util import sigencode_string_canonize
 from mnemonic import Mnemonic
 
-BECH32_PUBKEY_ACC_PREFIX = "bandaccpub"
+BECH32_PUBKEY_ACC_PREFIX = "bandpub"
 BECH32_PUBKEY_VAL_PREFIX = "bandvalpub"
 BECH32_PUBKEY_CONS_PREFIX = "bandvalconspub"
+
+BECH32_ADDR_ACC_PREFIX = "band"
+BECH32_ADDR_VAL_PREFIX = "bandvaloper"
+BECH32_ADDR_CONS_PREFIX = "bandvalcons"
 
 
 class PrivateKey:
@@ -103,10 +107,13 @@ class PublicKey:
 
     def __str__(self) -> str:
         """Return hex-format of compressed pubkey"""
-        return self.verify_key.to_string("compressed")
+        return self.verify_key.to_string("compressed").hex()
 
     def _to_bech32(self, prefix: str) -> str:
-        pass
+
+        five_bit_r = convertbits(self.verify_key.to_string("compressed"), 8, 5)
+        assert five_bit_r is not None, "Unsuccessful bech32.convertbits call"
+        return bech32_encode(prefix, five_bit_r)
 
     def to_acc_bech32(self) -> str:
         """Return bech32-encoded with account public key prefix"""
@@ -122,7 +129,7 @@ class PublicKey:
 
     def to_address(self) -> Address:
         """Return address instance from this public key"""
-        hash = hashlib.new("sha256", self.__str__()).digest()
+        hash = hashlib.new("sha256", self.verify_key.to_string("compressed")).digest()
         return Address(hashlib.new("ripemd160", hash).digest())
 
     def verify(self, msg: bytes, sig: bytes) -> bool:
@@ -147,10 +154,22 @@ class Address:
     def from_bech32(cls, bech: str, prefix="band") -> Address:
         pass
 
-    def to_bech32(self, prefix="band") -> str:
+    def _to_bech32(self, prefix: str) -> str:
         five_bit_r = convertbits(self.addr, 8, 5)
         assert five_bit_r is not None, "Unsuccessful bech32.convertbits call"
         return bech32_encode(prefix, five_bit_r)
+
+    def to_acc_bech32(self) -> str:
+        """Return bech32-encoded with account address prefix"""
+        return self._to_bech32(BECH32_ADDR_ACC_PREFIX)
+
+    def to_val_bech32(self) -> str:
+        """Return bech32-encoded with validator address prefix"""
+        return self._to_bech32(BECH32_ADDR_VAL_PREFIX)
+
+    def to_cons_bech32(self) -> str:
+        """Return bech32-encoded with validator consensus address key prefix"""
+        return self._to_bech32(BECH32_ADDR_CONS_PREFIX)
 
     def __str__(self) -> str:
         return self.addr.hex()
