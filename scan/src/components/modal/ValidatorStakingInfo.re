@@ -218,8 +218,7 @@ let make = (~validatorAddress) => {
       <div className={CssHelper.flexBox()}>
         <Heading value="Your Delegation Info" size=Heading.H4 />
         <HSpacing size=Spacing.xs />
-        //TODO: remove mock message later
-        <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+        <CTooltip tooltipText="Your delegation stats on this validators">
           <Icon name="fal fa-info-circle" size=10 />
         </CTooltip>
       </div>

@@ -44,11 +44,8 @@ module Styles = {
   let textColor = color_ => {
     style([color(color_)]);
   };
-  let mb = size => {
-    style([marginBottom(`px(size))]);
-  };
-  let mbSm = size => {
-    style([marginBottom(`px(size))]);
+  let mb = (~mb, ~mbSm, ()) => {
+    style([marginBottom(`px(mb)), Media.mobile([marginBottom(`px(mbSm))])]);
   };
 };
 
@@ -73,8 +70,7 @@ let make =
         textColor(color),
         textAlign(align),
         lineHeight,
-        mb(marginBottom),
-        mbSm(marginBottomSm),
+        mb(~mb=marginBottom, ~mbSm=marginBottomSm, ()),
         style,
       ],
     );

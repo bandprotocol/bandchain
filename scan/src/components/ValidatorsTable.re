@@ -378,7 +378,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  weight=Text.Semibold
                  value="Oracle Status"
                  align=Text.Center
-                 tooltipItem={"Oracle status" |> React.string}
+                 tooltipItem={"The validator's Oracle status" |> React.string}
                />
              </Col.Grid>
            </Row.Grid>

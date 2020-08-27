@@ -63,10 +63,9 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                     ])}>
                     <Heading value="Response time" size=Heading.H4 align=Heading.Center />
                     <HSpacing size=Spacing.xs />
-                    //TODO: remove mock message later
                     <CTooltip
                       tooltipPlacementSm=CTooltip.BottomRight
-                      tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                      tooltipText="The average time requests to this oracle script takes to resolve">
                       <Icon name="fal fa-info-circle" size=12 />
                     </CTooltip>
                   </div>
@@ -100,8 +99,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Owner" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The owner of the oracle script">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -116,8 +114,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={Css.merge([CssHelper.flexBox(), Styles.containerSpacingSm])}>
                   <Heading value="Data Sources" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The data sources used in this oracle script">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
