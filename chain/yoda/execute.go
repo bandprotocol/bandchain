@@ -7,7 +7,9 @@ import (
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
@@ -32,7 +34,7 @@ var (
 
 // Constant used to estimate gas price of reports transaction.
 const (
-	dataSizeMultiplier    = uint64(75)
+	dataSizeMultiplier    = uint64(50)
 	msgReportDataConstant = uint64(16000)
 	txSizeConstant        = uint64(10) // Using DefaultTxSizeCostPerByte
 	baseTransaction       = uint64(40000)
@@ -55,6 +57,37 @@ func estimatedReportsGas(msgs []sdk.Msg) uint64 {
 		txSize += uint64(len(msg.GetSignBytes()))
 	}
 	return est + txSize*txSizeConstant + pendingRequests
+}
+
+func signAndBroadcast(
+	c *Context, key keys.Info, msgs []sdk.Msg, gasLimit uint64, memo string,
+) (string, error) {
+	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
+	acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
+	if err != nil {
+		return "", fmt.Errorf("Failed to retreive account with error: %s", err.Error())
+	}
+
+	txBldr := auth.NewTxBuilder(
+		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
+		gasLimit, 1, false, cfg.ChainID, memo, sdk.NewCoins(), c.gasPrices,
+	)
+	// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
+	// if err != nil {
+	// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
+	// 	return
+	// }
+
+	out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
+	if err != nil {
+		return "", fmt.Errorf("Failed to build tx with error: %s", err.Error())
+	}
+
+	res, err := cliCtx.BroadcastTxSync(out)
+	if err != nil {
+		return "", fmt.Errorf("Failed to broadcast tx with error: %s", err.Error())
+	}
+	return res.TxHash, nil
 }
 
 func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
@@ -85,62 +118,62 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 	for exec := range versionMap {
 		versions = append(versions, exec)
 	}
-	executorVersion := strings.Join(versions, ",")
+	memo := fmt.Sprintf("yoda:%s/exec:%s", version.Version, strings.Join(versions, ","))
 	key := c.keys[keyIndex]
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
-	txHash := ""
-	for try := uint64(1); try <= c.maxTry; try++ {
-		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
-		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
-		if err != nil {
-			l.Info(":warning: Failed to retreive account with error: %s", err.Error())
-			time.Sleep(c.rpcPollInterval)
-			continue
-		}
-
-		txBldr := auth.NewTxBuilder(
-			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			estimatedReportsGas(msgs), 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, executorVersion), sdk.NewCoins(), c.gasPrices,
-		)
-		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
-		// if err != nil {
-		// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
-		// 	return
-		// }
-
-		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
-		if err != nil {
-			l.Info(":warning: Failed to build tx with error: %s", err.Error())
-			time.Sleep(c.rpcPollInterval)
-			continue
-		}
-		res, err := cliCtx.BroadcastTxSync(out)
-		if err == nil {
-			txHash = res.TxHash
+	gasLimit := estimatedReportsGas(msgs)
+	// We want to resend transaction only if tx returns Out of gas error.
+	for sendAttempt := uint64(1); sendAttempt <= c.maxTry; sendAttempt++ {
+		var txHash string
+		l.Info(":e-mail: Sending report transaction attempt: (%d/%d)", sendAttempt, c.maxTry)
+		for broadcastTry := uint64(1); broadcastTry <= c.maxTry; broadcastTry++ {
+			l.Info(":writing_hand: Try to sign and broadcast report transaction(%d/%d)", broadcastTry, c.maxTry)
+			hash, err := signAndBroadcast(c, key, msgs, gasLimit, memo)
+			if err != nil {
+				// Use info level because this error can happen and retry process can solve this error.
+				l.Info(":warning: %s", err.Error())
+				time.Sleep(c.rpcPollInterval)
+				continue
+			}
+			// Transaction passed CheckTx process and wait to include in block.
+			txHash = hash
 			break
 		}
-		l.Info(":warning: Failed to broadcast tx with error: %s", err.Error())
-		time.Sleep(c.rpcPollInterval)
-	}
-	if txHash == "" {
-		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
-		return
-	}
-	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
-		time.Sleep(c.rpcPollInterval)
-		txRes, err := utils.QueryTx(cliCtx, txHash)
-		if err != nil {
-			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
-			continue
-		}
-		if txRes.Code != 0 {
-			l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+		if txHash == "" {
+			l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
 			return
 		}
-		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
-		return
+		txFound := false
+	FindTx:
+		for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
+			time.Sleep(c.rpcPollInterval)
+			txRes, err := utils.QueryTx(cliCtx, txHash)
+			if err != nil {
+				l.Debug(":warning: Failed to query tx with error: %s", err.Error())
+				continue
+			}
+			switch txRes.Code {
+			case 0:
+				l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
+				return
+			case sdkerrors.ErrOutOfGas.ABCICode():
+				// Increase gas limit and try to broadcast again
+				gasLimit = gasLimit * 110 / 100
+				l.Info(":fuel_pump: Tx(%s) is out of gas and will be rebroadcasted with %d gas", txHash, gasLimit)
+				txFound = true
+				break FindTx
+			default:
+				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+				return
+			}
+		}
+		if !txFound {
+			l.Error(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
+			return
+		}
 	}
-	l.Info(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
+	l.Error(":anxious_face_with_sweat: Cannot send reports with adjusted gas: %d", gasLimit)
+	return
 }
 
 // GetExecutable fetches data source executable using the provided client.
