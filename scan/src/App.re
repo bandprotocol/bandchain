@@ -56,6 +56,8 @@ let make = () => {
        | RequestHomePage => <RequestHomePage />
        | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
        | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
+       | ProposalHomePage => <ProposalHomePage />
+       | ProposalIndexPage(proposalID) => <ProposalIndexPage proposalID />
        | IBCHomePage => <IBCHomePage />
        | NotFound => <NotFound />
        }}
