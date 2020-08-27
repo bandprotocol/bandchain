@@ -18,12 +18,18 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2565](https://github.com/bandprotocol/bandchain/pull/2565) cdb: Fix bug reporters table
 - (impv) [\#2549](https://github.com/bandprotocol/bandchain/pull/2549) Implemented `data_source_requests` table
 - (feat) [\#2551](https://github.com/bandprotocol/bandchain/pull/2551) fast-sync: add flag enable fast sync and emit all account and validator
 
 ### Scan
 
+- (impv) [\#2573](https://github.com/bandprotocol/bandchain/pull/2573) Added tooltip text to each place which is lorem
+- (bugs) [\#2568](https://github.com/bandprotocol/bandchain/pull/2568) Updated reporters subscription
+- (impv) [\#2566](https://github.com/bandprotocol/bandchain/pull/2566) Implemented TxIndexpage with new theme
+- (impv) [\#2563](https://github.com/bandprotocol/bandchain/pull/2563) Implemented the revamp block index page
 - (impv) [\#2561](https://github.com/bandprotocol/bandchain/pull/2561) Implemented the new layout for Validator Homepage
+- (impv) [\#2560](https://github.com/bandprotocol/bandchain/pull/2560) Refactor, improve Block Home Page for revamp GuanYu version
 - (impv) [\#2557](https://github.com/bandprotocol/bandchain/pull/2557) Fix and clean up copy button
 - (impv) [\#2552](https://github.com/bandprotocol/bandchain/pull/2552) Wire up related data source, handle nullable timestamp
 - (impv) [\#2550](https://github.com/bandprotocol/bandchain/pull/2550) Polish request index page
@@ -36,6 +42,8 @@
 ### Bridges
 
 ### Runtime
+
+- (impv) [#\2555](https://github.com/bandprotocol/bandchain/pull/2555) Added `websocket-clients` to runtime
 
 ### Owasm
 
