@@ -6,6 +6,7 @@ type proposal_status_t =
   | Failed;
 
 let parseProposalStatus = json => {
+  exception NotFound(string);
   let status = json |> Js.Json.decodeString |> Belt_Option.getExn;
   switch (status) {
   | "DepositPeriod" => Deposit
@@ -13,7 +14,7 @@ let parseProposalStatus = json => {
   | "Passed" => Passed
   | "Rejected" => Rejected
   | "Failed" => Failed
-  | _ => Failed
+  | _ => raise(NotFound("The proposal status is not existing"))
   };
 };
 
@@ -74,7 +75,7 @@ let toExternal =
 module MultiConfig = [%graphql
   {|
   subscription Proposals($limit: Int!, $offset: Int!) {
-    proposals(limit: $limit, offset: $offset, order_by: {id: asc}, where: {status: {_neq: "Inactive"}}) @bsRecord {
+    proposals(limit: $limit, offset: $offset, order_by: {id: desc}, where: {status: {_neq: "Inactive"}}) @bsRecord {
       id @bsDecoder(fn: "ID.Proposal.fromInt")
       title
       status @bsDecoder(fn: "parseProposalStatus")

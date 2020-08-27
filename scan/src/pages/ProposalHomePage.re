@@ -19,26 +19,7 @@ module Styles = {
   let badgeContainer = {
     style([Media.mobile([position(`absolute), right(`px(16)), top(`px(16))])]);
   };
-  let badge = color => {
-    style([backgroundColor(color), padding2(~v=`px(3), ~h=`px(10)), borderRadius(`px(50))]);
-  };
 };
-
-let getBadgeText =
-  fun
-  | ProposalSub.Deposit => "Deposit Period"
-  | Voting => "Voting Period"
-  | Passed => "Passed"
-  | Rejected => "Rejected"
-  | Failed => "Failed";
-
-let getBadgeColor =
-  fun
-  | ProposalSub.Deposit
-  | Voting => Colors.bandBlue
-  | Passed => Colors.green4
-  | Rejected
-  | Failed => Colors.red4;
 
 module ProposalCard = {
   [@react.component]
@@ -77,14 +58,7 @@ module ProposalCard = {
                 Styles.badgeContainer,
               ])}>
               {switch (proposalSub) {
-               | Data({status}) =>
-                 <div
-                   className={Css.merge([
-                     Styles.badge(getBadgeColor(status)),
-                     CssHelper.flexBox(~justify=`center, ()),
-                   ])}>
-                   <Text value={getBadgeText(status)} color=Colors.white />
-                 </div>
+               | Data({status}) => <ProposalBadge status />
                | _ => <LoadingCensorBar width=100 height=15 radius=50 />
                }}
             </div>
@@ -170,12 +144,10 @@ module ProposalCard = {
 
 [@react.component]
 let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
   let pageSize = 10;
-  let proposalsSub = ProposalSub.getList(~pageSize, ~page, ());
+  let proposalsSub = ProposalSub.getList(~pageSize, ~page=1, ());
   let proposalsCountSub = ProposalSub.count();
   let allSub = Sub.all2(proposalsSub, proposalsCountSub);
-  let isMobile = Media.isMobile();
 
   <Section>
     <div className=CssHelper.container>
@@ -191,28 +163,18 @@ let make = () => {
       </Row.Grid>
       <Row.Grid>
         {switch (allSub) {
-         | Data((proposals, proposalsCount)) =>
-           let pageCount = Page.getPageCount(proposalsCount, pageSize);
-           <>
-             {proposals
-              ->Belt_Array.mapWithIndex((i, e) =>
-                  <ProposalCard
-                    key={i |> string_of_int}
-                    reserveIndex=i
-                    proposalSub={Sub.resolve(e)}
-                  />
-                )
-              ->React.array}
-             {isMobile
-                ? React.null
-                : <Pagination
-                    currentPage=page
-                    pageCount
-                    onPageChange={newPage => setPage(_ => newPage)}
-                  />}
-           </>;
+         | Data((proposals, _)) =>
+           proposals
+           ->Belt_Array.mapWithIndex((i, e) =>
+               <ProposalCard
+                 key={i |> string_of_int}
+                 reserveIndex=i
+                 proposalSub={Sub.resolve(e)}
+               />
+             )
+           ->React.array
          | _ =>
-           Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+           Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>
                <ProposalCard key={i |> string_of_int} reserveIndex=i proposalSub=noData />
              )
