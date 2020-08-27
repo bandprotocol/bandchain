@@ -36,7 +36,7 @@ var (
 const (
 	dataSizeMultiplier    = uint64(50)
 	msgReportDataConstant = uint64(16000)
-	txSizeConstant        = uint64(10) // Using DefaultTxSizeCostPerByte
+	txSizeConstant        = uint64(5) // Using DefaultTxSizeCostPerByte of BandChain
 	baseTransaction       = uint64(40000)
 	pendingRequests       = uint64(4000)
 )
