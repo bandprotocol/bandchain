@@ -264,17 +264,7 @@ let make = (~reqID) => {
             <div className=Styles.seperatedLine />
             <Row.Grid marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
-                <div className={CssHelper.flexBox()}>
-                  <Heading value="Report Status" size=Heading.H5 />
-                  <HSpacing size=Spacing.sm />
-                  //TODO: remove mock message later
-                  <CTooltip
-                    tooltipPlacementSm=CTooltip.BottomLeft
-                    tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                    <img className=Styles.infoIcon src=Images.infoIcon />
-                  </CTooltip>
-                </div>
-                <VSpacing size={`px(8)} />
+                <Heading value="Report Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
                  | Data({minCount, requestedValidators, reports}) =>
                    <ProgressBar
@@ -286,8 +276,7 @@ let make = (~reqID) => {
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
-                <Heading value="Resolve Status" size=Heading.H5 />
-                <VSpacing size={`px(8)} />
+                <Heading value="Resolve Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
                  | Data({resolveStatus}) =>
                    <RequestStatus resolveStatus display=RequestStatus.Full />
@@ -297,8 +286,7 @@ let make = (~reqID) => {
             </Row.Grid>
             <Row.Grid>
               <Col.Grid>
-                <Heading value="Request to" size=Heading.H5 />
-                <VSpacing size={`px(8)} />
+                <Heading value="Request to" size=Heading.H5 marginBottom=8 />
                 <Row.Grid wrap=true>
                   {switch (requestSub) {
                    | Data({requestedValidators, resolveStatus, reports}) =>
@@ -337,8 +325,7 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="Calldata" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip tooltipText="The input parameters associated with the request">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>
@@ -373,8 +360,7 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="Result" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip tooltipText="The final result of the request">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>
@@ -432,11 +418,6 @@ let make = (~reqID) => {
           <div className=Styles.kvTableContainer>
             <div className={Css.merge([Styles.kvTableHeader, CssHelper.flexBox()])}>
               <Heading value="Proof of validity" size=Heading.H4 />
-              <HSpacing size=Spacing.xs />
-              //TODO: remove mock message later
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                <Icon name="fal fa-info-circle" size=10 />
-              </CTooltip>
             </div>
             // TODO: add later
             // <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
@@ -480,8 +461,8 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="External Data" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip
+                  tooltipText="Data reported by the validators by querying the data sources">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>

@@ -9,7 +9,6 @@ module Styles = {
     ]);
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
-  let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
 };
 
 [@react.component]
@@ -38,8 +37,8 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
             <div className={CssHelper.flexBox()}>
               <Heading value="Owner" size=Heading.H5 />
               <HSpacing size=Spacing.xs />
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                <img className=Styles.infoIcon src=Images.infoIcon />
+              <CTooltip tooltipText="The owner of the data source">
+                <Icon name="fal fa-info-circle" size=10 />
               </CTooltip>
             </div>
             <VSpacing size=Spacing.sm />
