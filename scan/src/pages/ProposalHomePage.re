@@ -152,15 +152,14 @@ let make = () => {
   <Section>
     <div className=CssHelper.container>
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid col=Col.Twelve>
-          <Heading value="All Proposals" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-          {switch (allSub) {
-           | Data((_, proposalsCount)) =>
-             <Heading value={proposalsCount->string_of_int ++ " In total"} size=Heading.H3 />
-           | _ => <LoadingCensorBar width=65 height=21 />
-           }}
-        </Col.Grid>
+        <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
       </Row.Grid>
+      //TODO: It will be shown after there are more proposals
+      // {switch (allSub) {
+      //  | Data((_, proposalsCount)) =>
+      //    <Heading value={proposalsCount->string_of_int ++ " In total"} size=Heading.H3 />
+      //  | _ => <LoadingCensorBar width=65 height=21 />
+      //  }}
       <Row.Grid>
         {switch (allSub) {
          | Data((proposals, _)) =>
