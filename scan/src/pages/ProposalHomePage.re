@@ -100,7 +100,7 @@ module ProposalCard = {
         </Row.Grid>
         <Row.Grid>
           <Col.Grid col=Col.Four mbSm=16>
-            <Heading value="Proposer" size=Heading.H5 marginBottom=16 marginBottomSm=8 />
+            <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
             {switch (proposalSub) {
              | Data({proposerAddress}) =>
                <AddressRender address=proposerAddress position=AddressRender.Subtitle />
@@ -108,8 +108,7 @@ module ProposalCard = {
              }}
           </Col.Grid>
           <Col.Grid col=Col.Four colSm=Col.Seven>
-            <div
-              className={Css.merge([CssHelper.mb(~size=16, ()), CssHelper.mbSm(~size=8, ())])}>
+            <div className={CssHelper.mb(~size=8, ())}>
               {switch (proposalSub) {
                | Data({status}) =>
                  <Heading
@@ -153,13 +152,13 @@ module ProposalCard = {
              | Rejected
              | Failed =>
                <Col.Grid col=Col.Four colSm=Col.Five>
-                 <Heading value="Turnout" size=Heading.H5 marginBottom=16 marginBottomSm=8 />
+                 <Heading value="Turnout" size=Heading.H5 marginBottom=8 />
                  <Text value={turnout |> Format.fPercent(~digits=2)} size=Text.Lg />
                </Col.Grid>
              }
            | _ =>
              <Col.Grid col=Col.Four colSm=Col.Five>
-               <LoadingCensorBar width=100 height=15 mb=16 mbSm=8 />
+               <LoadingCensorBar width=100 height=15 mb=8 />
                <LoadingCensorBar width=50 height=15 />
              </Col.Grid>
            }}
