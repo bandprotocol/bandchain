@@ -1,6 +1,7 @@
 package yoda
 
 import (
+	"sync/atomic"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -8,17 +9,34 @@ import (
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
+
+type ReportMsgWithKey struct {
+	msg         types.MsgReportData
+	execVersion []string
+	keyIndex    int64
+}
 
 type Context struct {
 	client           rpcclient.Client
 	validator        sdk.ValAddress
 	gasPrices        sdk.DecCoins
-	keys             chan keys.Info
+	keys             []keys.Info
 	executor         executor.Executor
 	fileCache        filecache.Cache
 	broadcastTimeout time.Duration
 	maxTry           uint64
 	rpcPollInterval  time.Duration
+	maxReport        uint64
+
+	pendingMsgs        chan ReportMsgWithKey
+	freeKeys           chan int64
+	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
+}
+
+func (c *Context) nextKeyIndex() int64 {
+	keyIndex := atomic.AddInt64(&c.keyRoundRobinIndex, 1) % int64(len(c.keys))
+	return keyIndex
 }
