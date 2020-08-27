@@ -14,7 +14,7 @@
 
 ### Yoda
 
-- (impv) [\#2569](https://github.com/bandprotocol/bandchain/pull/2569) Queued and combine report msgs to one transaction
+- (impv) [\#2569](https://github.com/bandprotocol/bandchain/pull/2569) Queued and combine report msgs to one transaction + Remove hard code gas used on report and add retry logic when transaction out of gas.
 
 ### Emitter & Flusher
 
