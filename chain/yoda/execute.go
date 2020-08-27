@@ -21,6 +21,42 @@ var (
 	cdc = app.MakeCodec()
 )
 
+// TODO: Improve precision of equation.
+// const (
+// 	rawReportMultiplier   = uint64(10)
+// 	dataSizeMultiplier    = uint64(10)
+// 	msgReportDataConstant = uint64(10)
+// 	txSizeConstant        = uint64(10)
+// 	baseTransaction       = uint64(30000)
+// )
+
+// Constant used to estimate gas price of reports transaction.
+const (
+	dataSizeMultiplier    = uint64(75)
+	msgReportDataConstant = uint64(16000)
+	txSizeConstant        = uint64(10) // Using DefaultTxSizeCostPerByte
+	baseTransaction       = uint64(40000)
+	pendingRequests       = uint64(4000)
+)
+
+func estimatedReportsGas(msgs []sdk.Msg) uint64 {
+	est := baseTransaction
+	txSize := uint64(0)
+	for _, msg := range msgs {
+		msg, ok := msg.(types.MsgReportData)
+		if !ok {
+			panic("Don't support non-report data message")
+		}
+		calldataSize := uint64(0)
+		for _, c := range msg.RawReports {
+			calldataSize += uint64(len(c.Data))
+		}
+		est += dataSizeMultiplier*calldataSize + msgReportDataConstant
+		txSize += uint64(len(msg.GetSignBytes()))
+	}
+	return est + txSize*txSizeConstant + pendingRequests
+}
+
 func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
 	// Return key when done with SubmitReport whether successfully or not.
 	defer func() {
@@ -64,7 +100,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 
 		txBldr := auth.NewTxBuilder(
 			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, executorVersion), sdk.NewCoins(), c.gasPrices,
+			estimatedReportsGas(msgs), 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, executorVersion), sdk.NewCoins(), c.gasPrices,
 		)
 		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 		// if err != nil {
