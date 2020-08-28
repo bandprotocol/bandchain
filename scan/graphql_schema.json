@@ -10470,6 +10470,180 @@
         "description": "columns and relationships of \"data_sources\"",
         "fields": [
           {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "data_source_requests_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "data_source_requests_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_source_requests_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "data_source_requests",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "data_source_requests",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "An array relationship"
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "data_source_requests_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "data_source_requests_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "data_source_requests_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "data_source_requests_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "data_source_requests_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "An aggregated array relationship"
+          },
+          {
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
@@ -11425,6 +11599,16 @@
             "description": null
           },
           {
+            "name": "data_source_requests",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "data_source_requests_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "description",
             "defaultValue": null,
             "type": {
@@ -11583,6 +11767,16 @@
       },
       {
         "inputFields": [
+          {
+            "name": "data_source_requests",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "data_source_requests_arr_rel_insert_input",
+              "ofType": null
+            },
+            "description": null
+          },
           {
             "name": "description",
             "defaultValue": null,
@@ -12101,6 +12295,16 @@
       },
       {
         "inputFields": [
+          {
+            "name": "data_source_requests_aggregate",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "data_source_requests_aggregate_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
           {
             "name": "description",
             "defaultValue": null,
@@ -41408,21 +41612,21 @@
           {
             "args": [
               {
-                "name": "operator_address",
+                "name": "reporter_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
                     "kind": "SCALAR",
-                    "name": "String",
+                    "name": "Int",
                     "ofType": null
                   }
                 },
                 "description": null
               },
               {
-                "name": "reporter_id",
+                "name": "validator_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -52137,13 +52341,13 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "operator_address",
+            "name": "reporter_id",
             "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
                 "kind": "SCALAR",
-                "name": "String",
+                "name": "Int",
                 "ofType": null
               }
             },
@@ -52153,7 +52357,23 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "reporter_id",
+            "name": "validator",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validators",
+                "ofType": null
+              }
+            },
+            "description": "An object relationship"
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -52570,6 +52790,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -52577,6 +52809,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52645,17 +52887,27 @@
             "description": null
           },
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
-              "name": "String_comparison_exp",
+              "name": "Int_comparison_exp",
               "ofType": null
             },
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validators_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
@@ -52701,6 +52953,16 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "validator_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -52724,17 +52986,27 @@
             "description": null
           },
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validators_obj_rel_insert_input",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -52765,10 +53037,10 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "operator_address",
+            "name": "reporter_id",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52777,7 +53049,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "reporter_id",
+            "name": "validator_id",
             "type": {
               "kind": "SCALAR",
               "name": "Int",
@@ -52790,7 +53062,7 @@
       {
         "inputFields": [
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52800,7 +53072,7 @@
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52831,10 +53103,10 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "operator_address",
+            "name": "reporter_id",
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
@@ -52843,7 +53115,7 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "reporter_id",
+            "name": "validator_id",
             "type": {
               "kind": "SCALAR",
               "name": "Int",
@@ -52856,7 +53128,7 @@
       {
         "inputFields": [
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -52866,7 +53138,7 @@
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53040,7 +53312,7 @@
             "description": null
           },
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53050,7 +53322,17 @@
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "validators_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53078,13 +53360,13 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "operator_address",
+            "name": "reporter_id",
             "description": "column name"
           },
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "reporter_id",
+            "name": "validator_id",
             "description": "column name"
           }
         ],
@@ -53094,17 +53376,17 @@
       {
         "inputFields": [
           {
-            "name": "operator_address",
+            "name": "reporter_id",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
-              "name": "String",
+              "name": "Int",
               "ofType": null
             },
             "description": null
           },
           {
-            "name": "reporter_id",
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -53142,6 +53424,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53149,6 +53443,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53186,6 +53490,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53193,6 +53509,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53230,6 +53556,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53237,6 +53575,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53274,6 +53622,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53281,6 +53641,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53308,13 +53678,13 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "operator_address",
+            "name": "reporter_id",
             "description": "column name"
           },
           {
             "isDeprecated": false,
             "deprecationReason": null,
-            "name": "reporter_id",
+            "name": "validator_id",
             "description": "column name"
           }
         ],
@@ -53341,6 +53711,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53348,6 +53730,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53385,6 +53777,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53392,6 +53796,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -53429,6 +53843,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "validator_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -53436,6 +53862,16 @@
         "inputFields": [
           {
             "name": "reporter_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "validator_id",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65640,21 +66076,21 @@
           {
             "args": [
               {
-                "name": "operator_address",
+                "name": "reporter_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
                   "ofType": {
                     "kind": "SCALAR",
-                    "name": "String",
+                    "name": "Int",
                     "ofType": null
                   }
                 },
                 "description": null
               },
               {
-                "name": "reporter_id",
+                "name": "validator_id",
                 "defaultValue": null,
                 "type": {
                   "kind": "NON_NULL",
@@ -83409,6 +83845,180 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
+                      "name": "reporters_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "reporters_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "reporters_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "reporters",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "reporters",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "description": "An array relationship"
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
+                      "name": "reporters_select_column",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "distinct select on columns"
+              },
+              {
+                "name": "limit",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "limit the number of rows returned"
+              },
+              {
+                "name": "offset",
+                "defaultValue": null,
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Int",
+                  "ofType": null
+                },
+                "description": "skip the first n rows. Use only with order_by"
+              },
+              {
+                "name": "order_by",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "INPUT_OBJECT",
+                      "name": "reporters_order_by",
+                      "ofType": null
+                    }
+                  }
+                },
+                "description": "sort the rows by one or more columns"
+              },
+              {
+                "name": "where",
+                "defaultValue": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "reporters_bool_exp",
+                  "ofType": null
+                },
+                "description": "filter the rows returned"
+              }
+            ],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "reporters_aggregate",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "reporters_aggregate",
+                "ofType": null
+              }
+            },
+            "description": "An aggregated array relationship"
+          },
+          {
+            "args": [
+              {
+                "name": "distinct_on",
+                "defaultValue": null,
+                "type": {
+                  "kind": "LIST",
+                  "name": null,
+                  "ofType": {
+                    "kind": "NON_NULL",
+                    "name": null,
+                    "ofType": {
+                      "kind": "ENUM",
                       "name": "reports_select_column",
                       "ofType": null
                     }
@@ -84966,6 +85576,16 @@
             "description": null
           },
           {
+            "name": "reporters",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "reporters_bool_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "reports",
             "defaultValue": null,
             "type": {
@@ -85348,6 +85968,16 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "redelegations_arr_rel_insert_input",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reporters",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "reporters_arr_rel_insert_input",
               "ofType": null
             },
             "description": null
@@ -86648,6 +87278,16 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "redelegations_aggregate_order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "reporters_aggregate",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "reporters_aggregate_order_by",
               "ofType": null
             },
             "description": null

@@ -30,6 +30,7 @@ type internal_t = {
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
   account: account_t,
+  proposalType: string,
 };
 
 type t = {
@@ -43,6 +44,7 @@ type t = {
   votingEndTime: MomentRe.Moment.t,
   proposerAddress: Address.t,
   turnout: float,
+  proposalType: string,
 };
 
 let toExternal =
@@ -57,6 +59,7 @@ let toExternal =
         votingStartTime,
         votingEndTime,
         account,
+        proposalType,
       },
     ) => {
   id,
@@ -68,6 +71,7 @@ let toExternal =
   votingStartTime,
   votingEndTime,
   proposerAddress: account.address,
+  proposalType,
   //TODO: To remove mock data after we got the actual one
   turnout: 50.5,
 };
@@ -84,6 +88,7 @@ module MultiConfig = [%graphql
       depositEndTime: deposit_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
+      proposalType: type
       account @bsRecord {
           address @bsDecoder(fn: "Address.fromBech32")
       }
@@ -104,6 +109,7 @@ module SingleConfig = [%graphql
       depositEndTime: deposit_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
+      proposalType: type
       account @bsRecord {
           address @bsDecoder(fn: "Address.fromBech32")
       }
@@ -140,6 +146,7 @@ let get = id => {
       SingleConfig.definition,
       ~variables=SingleConfig.makeVariables(~id=id |> ID.Proposal.toInt, ()),
     );
+
   let%Sub x = result;
   switch (x##proposals_by_pk) {
   | Some(data) => Sub.resolve(data |> toExternal)
