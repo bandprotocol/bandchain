@@ -19,6 +19,7 @@
 ### Scan
 
 - (impv) [\#2573](https://github.com/bandprotocol/bandchain/pull/2573) Added tooltip text to each place which is lorem
+- (feat) [\#2570](https://github.com/bandprotocol/bandchain/pull/2570) Created ProposalSub and ProposalHomepage, and also implemented the route for both home and index page
 - (bugs) [\#2568](https://github.com/bandprotocol/bandchain/pull/2568) Updated reporters subscription
 - (impv) [\#2566](https://github.com/bandprotocol/bandchain/pull/2566) Implemented TxIndexpage with new theme
 - (impv) [\#2563](https://github.com/bandprotocol/bandchain/pull/2563) Implemented the revamp block index page
