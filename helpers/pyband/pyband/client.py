@@ -11,6 +11,10 @@ class Client(object):
     def _get(self, path, **kwargs):
         return requests.get(self.rpc_url + path, **kwargs).json()["result"]
 
+    def get_chain_id(self) -> str:
+        genesis = self._get("/bandchain/genesis")
+        return genesis["chain_id"]
+
     def get_data_source(self, id: int) -> DataSource:
         return from_dict(
             data_class=DataSource,
