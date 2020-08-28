@@ -3,7 +3,7 @@
   "scripts": {
     "build": "rm -rf dist/ && bsb -make-world && parcel build index.html --no-source-maps --no-cache",
     "start": "bsb -make-world -w",
-    "test": "yarn build && yarn jest --coverage"
+    "test": "yarn jest --coverage"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",

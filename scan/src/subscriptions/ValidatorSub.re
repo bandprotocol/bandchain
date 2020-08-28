@@ -111,13 +111,8 @@ type validator_vote_t = {
   voted: bool,
 };
 
-type historical_oracle_statuses_t = {
-  status: bool,
-  timestamp: int,
-};
-
 type historical_oracle_statuses_count_t = {
-  oracleStatusReports: array(historical_oracle_statuses_t),
+  oracleStatusReports: array(HistoryOracleParser.t),
   uptimeCount: int,
   downtimeCount: int,
 };
@@ -405,76 +400,21 @@ let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
     );
   let%Sub x = result;
 
+  let startDate = greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix;
+
   let oracleStatusReports =
     x##historical_oracle_statuses->Belt.Array.size > 0
       ? x##historical_oracle_statuses
         ->Belt.Array.map(each =>
             {
-              status: each##status,
+              HistoryOracleParser.status: each##status,
               timestamp: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
             }
           )
         ->Belt.List.fromArray
-      : [
-        {
-          timestamp: greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix,
-          status: oracleStatus,
-        },
-      ];
+      : [{timestamp: startDate, status: oracleStatus}];
 
-  // TODO: let's move this to helper function and implement test case.
-  let normalizedDateReports =
-    oracleStatusReports->Belt_List.map(({timestamp, status}) =>
-      if (status) {
-        {timestamp: (timestamp / 86400 + 1) * 86400, status: true};
-      } else {
-        {timestamp: timestamp / 86400 * 86400, status: false};
-      }
-    );
-
-  let addedHeadNormalizedDateReports =
-    normalizedDateReports
-    ->Belt_List.add({
-        timestamp: greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix,
-        status: !normalizedDateReports->Belt_List.headExn.status,
-      })
-    ->Belt.List.sort(({timestamp: t1, status: s1}, {timestamp: t2, _}) => {
-        switch (compare(t1, t2)) {
-        | 0 => s1 ? 1 : (-1)
-        | v => v
-        }
-      });
-
-  let addedTailNormalizedReports =
-    normalizedDateReports
-    ->Belt_List.concat([
-        {
-          timestamp:
-            MomentRe.momentNow()
-            |> MomentRe.Moment.defaultUtc
-            |> MomentRe.Moment.startOf(`day)
-            |> MomentRe.Moment.add(~duration=MomentRe.duration(1., `days))
-            |> MomentRe.Moment.toUnix,
-          status: false,
-        },
-      ])
-    ->Belt.List.sort(({timestamp: t1, status: s1}, {timestamp: t2, _}) => {
-        switch (compare(t1, t2)) {
-        | 0 => s1 ? 1 : (-1)
-        | v => v
-        }
-      });
-
-  let optimizedDate = addedHeadNormalizedDateReports->Belt_List.zip(addedTailNormalizedReports);
-
-  let parsedReports =
-    {
-      let%IterList ({timestamp: st, status}, {timestamp: en, _}) = optimizedDate;
-
-      Belt_List.makeBy((en - st) / 86400, idx => {timestamp: st + 86400 * idx, status});
-    }
-    ->Belt.List.toArray
-    ->Belt.Array.sliceToEnd(1);
+  let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
 
   Sub.resolve({
     oracleStatusReports: parsedReports,
