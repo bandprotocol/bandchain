@@ -46,6 +46,6 @@
 
 - The reason we support Tron is that Tron is one of the largest blockchain-based operating systems in the world.
 
-- We have deployed our Bridge contract ([413b8f4fc34b3d39a05241ff964109114b95a703b4](https://shasta.tronscan.org/?_ga=2.202473362.209196786.1598357557-168793461.1597990053#/contract/TFQ8Yqf1MitgCV1Gor94Tq9NHX2d24mMM7/code)) on the Shasta test network.
+- We have deployed our Bridge contract [TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69](https://shasta.tronscan.org/?_ga=2.202473362.209196786.1598357557-168793461.1597990053#/contract/TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69/code) on the Shasta test network.
 
 - Please see this [`example`](integration_examples/tron) for more details about Bridge contract deployment and interaction on the Shasta test network.
