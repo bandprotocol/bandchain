@@ -44,4 +44,6 @@
 
 ### Helpers
 
+- (impv) [\#2577](https://github.com/bandprotocol/bandchain/pull/2577) Wallet module completion
+
 ### MISC
