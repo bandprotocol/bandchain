@@ -47,3 +47,15 @@ https://api.shasta.trongrid.io
 8. Test our contract by calling `relay` function with a proof that copy from [https://guanyu-devnet.cosmoscan.io/oracle-script/76](https://guanyu-devnet.cosmoscan.io/oracle-script/76) and then try to read the result by calling `requestCache` function with `0xc108bbcdbdfe335f46444f46cfaa4f623270db239bbd1e2ea05ab15db47d10c0` as a parameter.
 
    - `0xc108bbcdbdfe335f46444f46cfaa4f623270db239bbd1e2ea05ab15db47d10c0` is a keccak256 of `["from_scan", 76, "0x00000003584147", 4,3]`
+
+### Example deployed contracts
+
+#### Bridge
+
+[TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69](https://shasta.tronscan.org/#/contract/TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69)
+
+#### Simple Price DB
+
+A contract that consume data from Bridge contract via function `setPrice`.
+
+[TWp5svfQxLesfbzqX9LREx4DYeqxwB9BTT](https://shasta.tronscan.org/#/contract/TWp5svfQxLesfbzqX9LREx4DYeqxwB9BTT)
