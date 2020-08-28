@@ -11,7 +11,6 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let titleSpacing = style([marginBottom(`px(8))]);
-  let loadingBox = style([width(`percent(100.))]);
   let idCointainer = style([marginBottom(`px(16))]);
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 };
@@ -44,9 +43,9 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading value="Requests" size=Heading.H4 marginBottom=8 align=Heading.Center />
                   {switch (oracleScriptSub) {
-                   | Data({request}) =>
+                   | Data({requestCount}) =>
                      <Text
-                       value={request |> Format.iPretty}
+                       value={requestCount |> Format.iPretty}
                        size=Text.Xxl
                        align=Text.Center
                        block=true
@@ -64,17 +63,21 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                     ])}>
                     <Heading value="Response time" size=Heading.H4 align=Heading.Center />
                     <HSpacing size=Spacing.xs />
-                    //TODO: remove mock message later
                     <CTooltip
                       tooltipPlacementSm=CTooltip.BottomRight
-                      tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                      tooltipText="The average time requests to this oracle script takes to resolve">
                       <Icon name="fal fa-info-circle" size=12 />
                     </CTooltip>
                   </div>
                   {switch (oracleScriptSub) {
-                   | Data({responseTime}) =>
+                   | Data({responseTime: responseTimeOpt}) =>
                      <Text
-                       value={responseTime |> Format.iPretty}
+                       value={
+                         switch (responseTimeOpt) {
+                         | Some(responseTime') => responseTime' |> Format.fPretty(~digits=2)
+                         | None => "TBD"
+                         }
+                       }
                        size=Text.Xxl
                        align=Text.Center
                        block=true
@@ -96,8 +99,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Owner" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The owner of the oracle script">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -112,8 +114,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={Css.merge([CssHelper.flexBox(), Styles.containerSpacingSm])}>
                   <Heading value="Data Sources" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The data sources used in this oracle script">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -121,22 +122,30 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   {switch (oracleScriptSub) {
                    | Data({relatedDataSources}) =>
-                     //TODO: it will be correct after we get the actual data
-                     relatedDataSources
-                     ->Belt.List.mapWithIndex((i, id) =>
-                         <>
-                           <div key={i |> string_of_int}>
-                             <CTooltip
-                               mobile=false
-                               tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                               <TypeID.DataSource id position=TypeID.Subtitle />
-                             </CTooltip>
-                           </div>
-                           <HSpacing size=Spacing.xs />
-                         </>
-                       )
-                     ->Belt.List.toArray
-                     ->React.array
+                     relatedDataSources->Belt.List.size > 0
+                       ? relatedDataSources
+                         ->Belt.List.map(({dataSourceName, dataSourceID}) =>
+                             <>
+                               <div key={dataSourceID |> ID.DataSource.toString}>
+                                 <CTooltip
+                                   mobile=false
+                                   align=`center
+                                   width=250
+                                   tooltipText={Ellipsis.format(
+                                     ~text=dataSourceName,
+                                     ~limit=32,
+                                     (),
+                                   )}>
+                                   <TypeID.DataSource id=dataSourceID position=TypeID.Subtitle />
+                                 </CTooltip>
+                               </div>
+                               <HSpacing size=Spacing.xs />
+                             </>
+                           )
+                         ->Belt.List.toArray
+                         ->React.array
+                       : <Text value="TBD" />
+
                    | _ => <LoadingCensorBar width=284 height=15 />
                    }}
                 </div>
@@ -183,19 +192,19 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
          | OracleScriptExecute =>
            switch (oracleScriptSub) {
            | Data({schema}) => <OracleScriptExecute id=oracleScriptID schema />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
 
          | OracleScriptCode =>
            switch (oracleScriptSub) {
            | Data({sourceCodeURL}) => <OracleScriptCode url=sourceCodeURL />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
 
          | OracleScriptBridgeCode =>
            switch (oracleScriptSub) {
            | Data({schema}) => <OracleScriptBridgeCode schema />
-           | _ => <LoadingCensorBar width=100 height=400 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
          | OracleScriptRevisions => <OracleScriptRevisionTable id=oracleScriptID />

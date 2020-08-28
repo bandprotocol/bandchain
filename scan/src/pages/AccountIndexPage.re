@@ -1,17 +1,6 @@
 module Styles = {
   open Css;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let addressContainer = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let cFlex = alignItems_ =>
-    style([display(`flex), flexDirection(`column), alignItems(alignItems_)]);
-
-  let rFlex = style([display(`flex), flexDirection(`row)]);
-
   let innerCenter = style([Media.mobile([display(`flex), justifyContent(`center)])]);
 
   let separatorLine =
@@ -84,7 +73,6 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
     <Col size=1.2>
       <Text
         value=title
-        size=Text.Sm
         height={Text.Px(18)}
         spacing={Text.Em(0.03)}
         nowrap=true
@@ -93,8 +81,8 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
       />
     </Col>
     <Col size=0.6>
-      <div className={Styles.cFlex(`flexEnd)}>
-        <div className=Styles.rFlex>
+      <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
+        <div className={CssHelper.flexBox()}>
           {isCountup
              ? <NumberCountup
                  value=amount
@@ -121,7 +109,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
           />
         </div>
         <VSpacing size=Spacing.xs />
-        <div className={Css.merge([Styles.rFlex, Styles.balance])}>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.balance])}>
           {isCountup
              ? <NumberCountup
                  value={amount *. usdPrice}
@@ -156,7 +144,7 @@ let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
   let titles = isMobile ? rawTitle->Js.String2.split("\n") : [|rawTitle|];
 
   <div className=Styles.totalBalance>
-    <div className={Styles.cFlex(`flexStart)}>
+    <div className={CssHelper.flexBox(~direction=`column, ())}>
       {titles
        ->Belt_Array.mapWithIndex((i, title) =>
            <Text
@@ -170,7 +158,7 @@ let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
        ->React.array}
     </div>
     <VSpacing size=Spacing.md />
-    <div className=Styles.rFlex>
+    <div className={CssHelper.flexBox()}>
       <NumberCountup
         value=amount
         size={isMobile ? Text.Lg : Text.Xxl}
@@ -190,213 +178,240 @@ let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
 };
 
 [@react.component]
-let make = (~address, ~hashtag: Route.account_tab_t) =>
-  {
-    let currentTime =
-      React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
-    let isMobile = Media.isMobile();
-    let accountSub = AccountSub.get(address);
-    let trackingSub = TrackingSub.use();
-    let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
-    let unbondingSub = UnbondingSub.getUnbondingBalance(address, currentTime);
-    let infoSub = React.useContext(GlobalContext.context);
-    let (_, dispatchModal) = React.useContext(ModalContext.context);
-    let (accountOpt, _) = React.useContext(AccountContext.context);
+let make = (~address, ~hashtag: Route.account_tab_t) => {
+  let currentTime =
+    React.useContext(TimeContext.context) |> MomentRe.Moment.format(Config.timestampUseFormat);
+  let isMobile = Media.isMobile();
+  let accountSub = AccountSub.get(address);
+  let trackingSub = TrackingSub.use();
+  let balanceAtStakeSub = DelegationSub.getTotalStakeByDelegator(address);
+  let unbondingSub = UnbondingSub.getUnbondingBalance(address, currentTime);
+  let infoSub = React.useContext(GlobalContext.context);
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
+  let (accountOpt, _) = React.useContext(AccountContext.context);
 
-    let%Sub info = infoSub;
-    let%Sub account = accountSub;
-    let%Sub balanceAtStake = balanceAtStakeSub;
-    let%Sub unbonding = unbondingSub;
-    let%Sub tracking = trackingSub;
+  let topPartAllSub = Sub.all5(infoSub, accountSub, balanceAtStakeSub, unbondingSub, trackingSub);
 
-    let usdPrice = info.financial.usdPrice;
-
-    let availableBalance = account.balance->Coin.getBandAmountFromCoins;
-    let balanceAtStakeAmount = balanceAtStake.amount->Coin.getBandAmountFromCoin;
+  let sumBalance = (balance, amount, unbonding, reward, commission) => {
+    let availableBalance = balance->Coin.getBandAmountFromCoins;
+    let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
-    let rewardAmount = balanceAtStake.reward->Coin.getBandAmountFromCoin;
-    let commissionAmount = account.commission->Coin.getBandAmountFromCoins;
+    let rewardAmount = reward->Coin.getBandAmountFromCoin;
+    let commissionAmount = commission->Coin.getBandAmountFromCoins;
 
-    let totalBalance =
-      availableBalance
-      +. balanceAtStakeAmount
-      +. rewardAmount
-      +. unbondingAmount
-      +. commissionAmount;
-
-    let send = () => {
-      switch (accountOpt) {
-      | Some({address: sender}) =>
-        let openSendModal = () =>
-          dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(Some(address)))));
-        if (sender == address) {
-          Window.confirm("Are you sure you want to send tokens to yourself?")
-            ? openSendModal() : ();
-        } else {
-          openSendModal();
-        };
-      | None => dispatchModal(OpenModal(Connect(tracking.chainID)))
+    availableBalance +. balanceAtStakeAmount +. rewardAmount +. unbondingAmount +. commissionAmount;
+  };
+  let send = chainID => {
+    switch (accountOpt) {
+    | Some({address: sender}) =>
+      let openSendModal = () =>
+        Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+      if (sender == address) {
+        Window.confirm("Are you sure you want to send tokens to yourself?")
+          ? openSendModal() : ();
+      } else {
+        openSendModal();
       };
+    | None => dispatchModal(OpenModal(Connect(chainID)))
     };
+  };
 
-    <Section>
-      <div className=CssHelper.container>
-        <Row justify=Row.Between>
-          <Col>
-            <div className=Styles.vFlex>
-              <img src=Images.accountLogo className=Styles.logo />
-              <Text
-                value="ACCOUNT DETAIL"
-                weight=Text.Medium
-                size=Text.Md
-                spacing={Text.Em(0.06)}
-                height={Text.Px(15)}
-                nowrap=true
-                color=Colors.gray7
-                block=true
-              />
-            </div>
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.lg />
-        <VSpacing size=Spacing.sm />
-        <div className=Styles.addressContainer>
-          <AddressRender
-            address
-            position=AddressRender.Title
-            copy=true
-            clickable=false
-            wordBreak=true
-          />
-          {isMobile
-             ? React.null
-             : <>
-                 <HSpacing size=Spacing.md />
-                 <div className=Styles.button onClick={_ => {send()}}>
-                   <Text
-                     value="Send BAND"
-                     size=Text.Lg
-                     block=true
-                     color=Colors.blue7
-                     nowrap=true
-                     weight=Text.Medium
-                   />
-                 </div>
-               </>}
-        </div>
-        <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
-        <Row
-          justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
-          <Col size=0.75>
-            <div className=Styles.innerCenter>
-              <PieChart
-                size={isMobile ? 160 : 187}
-                availableBalance
-                balanceAtStake=balanceAtStakeAmount
-                reward=rewardAmount
-                unbonding=unbondingAmount
-                commission=commissionAmount
-              />
-            </div>
-          </Col>
-          <Col size=1.>
-            <VSpacing size=Spacing.md />
-            {balanceDetail(
-               ~title="AVAILABLE BALANCE",
+  <Section pbSm=0>
+    <div className=CssHelper.container>
+      <Row.Grid marginBottom=40 marginBottomSm=24>
+        <Col.Grid> <Heading value="Account Detail" size=Heading.H4 /> </Col.Grid>
+      </Row.Grid>
+      <div className={CssHelper.flexBox()}>
+        {switch (topPartAllSub) {
+         | Data((_, _, _, _, {chainID})) =>
+           <>
+             <AddressRender address position=AddressRender.Title copy=true clickable=false />
+             {isMobile
+                ? React.null
+                : <>
+                    <HSpacing size=Spacing.md />
+                    <div
+                      className={CssHelper.btn(~px=13, ~fsize=10, ~py=5, ())}
+                      onClick={_ => {send(chainID)}}>
+                      <Text
+                        value="Send BAND"
+                        size=Text.Lg
+                        block=true
+                        color=Colors.white
+                        nowrap=true
+                      />
+                    </div>
+                  </>}
+           </>
+         | _ => <LoadingCensorBar width=600 height=20 />
+         }}
+      </div>
+      <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
+      <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
+        <Col size=0.75>
+          <div className=Styles.innerCenter>
+            {switch (topPartAllSub) {
+             | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
+               let availableBalance = balance->Coin.getBandAmountFromCoins;
+               let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
+               let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+               let rewardAmount = reward->Coin.getBandAmountFromCoin;
+               let commissionAmount = commission->Coin.getBandAmountFromCoins;
+               <PieChart
+                 size={isMobile ? 160 : 187}
+                 availableBalance
+                 balanceAtStake=balanceAtStakeAmount
+                 reward=rewardAmount
+                 unbonding=unbondingAmount
+                 commission=commissionAmount
+               />;
+             | _ => <LoadingCensorBar width=160 height=160 radius=160 />
+             }}
+          </div>
+        </Col>
+        <Col size=1.>
+          <VSpacing size=Spacing.md />
+          {switch (topPartAllSub) {
+           | Data(({financial}, {balance}, _, _, _)) =>
+             balanceDetail(
+               ~title="Available Balance",
                ~description="Balance available to send, delegate, etc",
-               ~amount=availableBalance,
-               ~usdPrice,
+               ~amount={
+                 balance->Coin.getBandAmountFromCoins;
+               },
+               ~usdPrice=financial.usdPrice,
                ~color=Colors.bandBlue,
                (),
-             )}
-            <VSpacing size=Spacing.lg />
-            <VSpacing size=Spacing.md />
-            {balanceDetail(
-               ~title="BALANCE AT STAKE",
+             )
+           | _ => <LoadingCensorBar width=338 height=20 />
+           }}
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.md />
+          {switch (topPartAllSub) {
+           | Data(({financial}, _, {amount}, _, _)) =>
+             balanceDetail(
+               ~title="Balance At Stake",
                ~description="Balance currently delegated to validators",
-               ~amount=balanceAtStakeAmount,
-               ~usdPrice,
+               ~amount={
+                 amount->Coin.getBandAmountFromCoin;
+               },
+               ~usdPrice=financial.usdPrice,
                ~color=Colors.chartBalanceAtStake,
                (),
-             )}
-            <VSpacing size=Spacing.lg />
-            <VSpacing size=Spacing.md />
-            {balanceDetail(
-               ~title="UNBONDING AMOUNT",
+             )
+           | _ => <LoadingCensorBar width=338 height=20 />
+           }}
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.md />
+          {switch (topPartAllSub) {
+           | Data(({financial}, _, _, unbonding, _)) =>
+             balanceDetail(
+               ~title="Unbonding Amount",
                ~description="Amount undelegated from validators awaiting 21 days lockup period",
-               ~amount=unbondingAmount,
-               ~usdPrice,
+               ~amount={
+                 unbonding->Coin.getBandAmountFromCoin;
+               },
+               ~usdPrice=financial.usdPrice,
                ~color=Colors.blue4,
                (),
-             )}
-            <VSpacing size=Spacing.lg />
-            <VSpacing size=Spacing.md />
-            {balanceDetail(
-               ~title="REWARD",
+             )
+           | _ => <LoadingCensorBar width=338 height=20 />
+           }}
+          <VSpacing size=Spacing.lg />
+          <VSpacing size=Spacing.md />
+          {switch (topPartAllSub) {
+           | Data(({financial}, _, {reward}, _, _)) =>
+             balanceDetail(
+               ~title="Reward",
                ~description="Reward from staking to validators",
-               ~amount=rewardAmount,
-               ~usdPrice,
+               ~amount={
+                 reward->Coin.getBandAmountFromCoin;
+               },
+               ~usdPrice=financial.usdPrice,
                ~color=Colors.chartReward,
                ~isCountup=true,
                (),
-             )}
-            {commissionAmount == 0.
+             )
+           | _ => <LoadingCensorBar width=338 height=20 />
+           }}
+          {switch (topPartAllSub) {
+           | Data(({financial}, {commission}, _, _, _)) =>
+             let commissionAmount = commission->Coin.getBandAmountFromCoins;
+             commissionAmount == 0.
                ? React.null
                : <>
                    <VSpacing size=Spacing.lg />
                    <VSpacing size=Spacing.md />
                    {balanceDetail(
-                      ~title="COMMISSION",
+                      ~title="Commission",
                       ~description="Reward commission from delegator's reward",
                       ~amount=commissionAmount,
-                      ~usdPrice,
+                      ~usdPrice=financial.usdPrice,
                       ~color=Colors.gray6,
                       ~isCountup=true,
                       (),
                     )}
                    <VSpacing size=Spacing.lg />
-                 </>}
-          </Col>
-          <div className=Styles.separatorLine />
-          <Col size=1. alignSelf=Col.Start>
-            <div className=Styles.totalContainer>
-              {totalBalanceRender(isMobile, "TOTAL BAND BALANCE", totalBalance, "BAND")}
-              {totalBalanceRender(
-                 isMobile,
-                 "TOTAL BAND IN USD \n($" ++ (usdPrice |> Format.fPretty(~digits=2)) ++ " / BAND)",
-                 totalBalance *. usdPrice,
-                 "USD",
-               )}
-            </div>
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.xl />
-        <Tab
-          tabs=[|
-            {
-              name: "TRANSACTIONS",
-              route: Route.AccountIndexPage(address, Route.AccountTransactions),
-            },
-            {
-              name: "DELEGATIONS",
-              route: Route.AccountIndexPage(address, Route.AccountDelegations),
-            },
-            {name: "UNBONDING", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
-            {
-              name: "REDELEGATE",
-              route: Route.AccountIndexPage(address, Route.AccountRedelegate),
-            },
-          |]
-          currentRoute={Route.AccountIndexPage(address, hashtag)}>
-          {switch (hashtag) {
-           | AccountTransactions => <AccountIndexTransactions accountAddress=address />
-           | AccountDelegations => <AccountIndexDelegations address />
-           | AccountUnbonding => <AccountIndexUnbonding address />
-           | AccountRedelegate => <AccountIndexRedelegate address />
+                 </>;
+           | _ =>
+             <>
+               <VSpacing size=Spacing.lg />
+               <VSpacing size=Spacing.md />
+               <LoadingCensorBar width=338 height=20 />
+             </>
            }}
-        </Tab>
-      </div>
-    </Section>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+        </Col>
+        <div className=Styles.separatorLine />
+        <Col size=1. alignSelf=Col.Start>
+          <div className=Styles.totalContainer>
+            {switch (topPartAllSub) {
+             | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
+               totalBalanceRender(
+                 isMobile,
+                 "Total BAND Balance",
+                 sumBalance(balance, amount, unbonding, reward, commission),
+                 "BAND",
+               )
+             | _ => <LoadingCensorBar width=200 height=20 />
+             }}
+            {switch (topPartAllSub) {
+             | Data(({financial}, {balance, commission}, {amount, reward}, unbonding, _)) =>
+               totalBalanceRender(
+                 isMobile,
+                 "Total BAND In USD \n($"
+                 ++ (financial.usdPrice |> Format.fPretty(~digits=2))
+                 ++ " / BAND)",
+                 sumBalance(balance, amount, unbonding, reward, commission) *. financial.usdPrice,
+                 "USD",
+               )
+
+             | _ => <LoadingCensorBar width=200 height=20 />
+             }}
+          </div>
+        </Col>
+      </Row>
+      <VSpacing size=Spacing.xl />
+      <Tab
+        tabs=[|
+          {
+            name: "Transactions",
+            route: Route.AccountIndexPage(address, Route.AccountTransactions),
+          },
+          {
+            name: "Delegations",
+            route: Route.AccountIndexPage(address, Route.AccountDelegations),
+          },
+          {name: "Unbonding", route: Route.AccountIndexPage(address, Route.AccountUnbonding)},
+          {name: "Redelegate", route: Route.AccountIndexPage(address, Route.AccountRedelegate)},
+        |]
+        currentRoute={Route.AccountIndexPage(address, hashtag)}>
+        {switch (hashtag) {
+         | AccountTransactions => <AccountIndexTransactions accountAddress=address />
+         | AccountDelegations => <AccountIndexDelegations address />
+         | AccountUnbonding => <AccountIndexUnbonding address />
+         | AccountRedelegate => <AccountIndexRedelegate address />
+         }}
+      </Tab>
+    </div>
+  </Section>;
+};

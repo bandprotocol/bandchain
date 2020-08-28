@@ -11,10 +11,19 @@ module Styles = {
       backgroundColor(Colors.blueGray1),
     ]);
 
-  let withWidth = w => style([width(`px(w))]);
-
-  let topicContainer = h =>
-    style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
+  let proofContainer =
+    style([
+      padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
+      Media.mobile([padding4(~top=`zero, ~left=`px(12), ~right=`px(12), ~bottom=`px(24))]),
+      selector(
+        "> div + div",
+        [
+          marginLeft(`px(24)),
+          Media.mobile([marginLeft(`px(16))]),
+          Media.smallMobile([marginLeft(`px(10))]),
+        ],
+      ),
+    ]);
 
   let scriptContainer =
     style([
@@ -62,34 +71,31 @@ let make = (~request: RequestSub.t) => {
   switch (proofOpt) {
   | Some(proof) =>
     <>
-      <div className={CssHelper.flexBox()}>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
         <ShowProofButton showProof setShowProof />
-        <HSpacing size={`px(24)} />
-        <CopyButton.Modern
+        <CopyButton
           data={proof.evmProofBytes |> JsBuffer.toHex(~with0x=false)}
           title={isMobile ? "EVM" : "Copy EVM proof"}
-          width=155
           py=12
           px=20
+          pySm=10
+          pxSm=12
         />
-        <HSpacing size={`px(24)} />
-        <CopyButton.Modern
+        <CopyButton
           data={proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)}
           title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
-          width=180
           py=12
           px=20
+          pySm=10
+          pxSm=12
         />
       </div>
       {showProof
-         ? <>
-             <VSpacing size=Spacing.lg />
-             <div className=Styles.scriptContainer>
-               <ReactHighlight className=Styles.padding>
-                 {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
-               </ReactHighlight>
-             </div>
-           </>
+         ? <div className=Styles.scriptContainer>
+             <ReactHighlight className=Styles.padding>
+               {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
+             </ReactHighlight>
+           </div>
          : React.null}
     </>
   | None =>

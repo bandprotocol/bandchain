@@ -7,7 +7,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Three>
         {switch (requestSub) {
          | Data({id}) => <TypeID.Request id />

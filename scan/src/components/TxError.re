@@ -8,6 +8,7 @@ module Styles = {
       backgroundColor(Colors.red1),
       border(`px(1), `solid, Colors.red5),
       borderRadius(`px(4)),
+      marginBottom(`px(24)),
     ]);
 };
 

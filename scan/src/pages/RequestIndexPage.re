@@ -15,7 +15,6 @@ module Styles = {
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
-  let loadingBox = style([width(`percent(100.))]);
 
   let emptyContainer =
     style([
@@ -265,17 +264,7 @@ let make = (~reqID) => {
             <div className=Styles.seperatedLine />
             <Row.Grid marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
-                <div className={CssHelper.flexBox()}>
-                  <Heading value="Report Status" size=Heading.H5 />
-                  <HSpacing size=Spacing.sm />
-                  //TODO: remove mock message later
-                  <CTooltip
-                    tooltipPlacementSm=CTooltip.BottomLeft
-                    tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                    <img className=Styles.infoIcon src=Images.infoIcon />
-                  </CTooltip>
-                </div>
-                <VSpacing size={`px(8)} />
+                <Heading value="Report Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
                  | Data({minCount, requestedValidators, reports}) =>
                    <ProgressBar
@@ -287,8 +276,7 @@ let make = (~reqID) => {
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
-                <Heading value="Resolve Status" size=Heading.H5 />
-                <VSpacing size={`px(8)} />
+                <Heading value="Resolve Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
                  | Data({resolveStatus}) =>
                    <RequestStatus resolveStatus display=RequestStatus.Full />
@@ -298,8 +286,7 @@ let make = (~reqID) => {
             </Row.Grid>
             <Row.Grid>
               <Col.Grid>
-                <Heading value="Request to" size=Heading.H5 />
-                <VSpacing size={`px(8)} />
+                <Heading value="Request to" size=Heading.H5 marginBottom=8 />
                 <Row.Grid wrap=true>
                   {switch (requestSub) {
                    | Data({requestedValidators, resolveStatus, reports}) =>
@@ -338,14 +325,13 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="Calldata" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip tooltipText="The input parameters associated with the request">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>
               {switch (requestSub) {
                | Data({calldata}) =>
-                 <CopyButton.Modern
+                 <CopyButton
                    data={calldata |> JsBuffer.toHex(~with0x=false)}
                    title="Copy as bytes"
                    width=125
@@ -374,21 +360,20 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="Result" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip tooltipText="The final result of the request">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>
               {switch (requestSub) {
-               | Data({result: resultOpt}) =>
-                 switch (resultOpt) {
-                 | Some(result) =>
-                   <CopyButton.Modern
+               | Data({result: resultOpt, resolveStatus}) =>
+                 switch (resultOpt, resolveStatus) {
+                 | (Some(result), Success) =>
+                   <CopyButton
                      data={result |> JsBuffer.toHex(~with0x=false)}
                      title="Copy as bytes"
                      width=125
                    />
-                 | None => React.null
+                 | (_, _) => React.null
                  }
                | _ => <LoadingCensorBar width=125 height=28 />
                }}
@@ -415,7 +400,7 @@ let make = (~reqID) => {
                    <img src=Images.noSource className=Styles.noDataImage />
                    <Heading
                      size=Heading.H4
-                     value="This request is not resolved"
+                     value="This request hasn't resolved"
                      align=Heading.Center
                      weight=Heading.Regular
                      color=Colors.bandBlue
@@ -430,42 +415,45 @@ let make = (~reqID) => {
       // Proof
       <Row.Grid marginBottom=24>
         <Col.Grid>
-          <div className=Styles.infoContainer>
-            <div className=Styles.infoHeader>
-              <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
-                <div className={CssHelper.flexBox()}>
-                  <Heading value="Proof of validity" size=Heading.H4 />
-                  <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-                    <Icon name="fal fa-info-circle" size=10 />
-                  </CTooltip>
-                </div>
-              </div>
+          <div className=Styles.kvTableContainer>
+            <div className={Css.merge([Styles.kvTableHeader, CssHelper.flexBox()])}>
+              <Heading value="Proof of validity" size=Heading.H4 />
             </div>
             // TODO: add later
             // <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
-            <VSpacing size={`px(24)} />
             {switch (requestSub) {
              | Data(request) =>
-               request.resolveStatus == Success
-                 ? <RequestProof request />
-                 : <div className=Styles.emptyContainer>
-                     <img src=Images.loadingCircles className=Styles.loading />
-                     <Heading
-                       size=Heading.H4
-                       value="Waiting for result"
-                       align=Heading.Center
-                       weight=Heading.Regular
-                       color=Colors.bandBlue
-                     />
-                   </div>
-             | _ => <LoadingCensorBar width=125 height=15 />
+               switch (request.resolveStatus) {
+               | Success => <RequestProof request />
+               | Pending =>
+                 <div className=Styles.emptyContainer>
+                   <img src=Images.loadingCircles className=Styles.loading />
+                   <Heading
+                     size=Heading.H4
+                     value="Waiting for result"
+                     align=Heading.Center
+                     weight=Heading.Regular
+                     color=Colors.bandBlue
+                   />
+                 </div>
+               | _ =>
+                 <div className=Styles.emptyContainer>
+                   <img src=Images.noSource className=Styles.noDataImage />
+                   <Heading
+                     size=Heading.H4
+                     value="This request hasn't resolved"
+                     align=Heading.Center
+                     weight=Heading.Regular
+                     color=Colors.bandBlue
+                   />
+                 </div>
+               }
+             | _ => <LoadingCensorBar fullWidth=true height=100 />
              }}
           </div>
         </Col.Grid>
       </Row.Grid>
-      // External ID Table
+      // External Data Table
       <Row.Grid marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
@@ -473,8 +461,8 @@ let make = (~reqID) => {
               <div className={CssHelper.flexBox()}>
                 <Heading value="External Data" size=Heading.H4 />
                 <HSpacing size=Spacing.xs />
-                //TODO: remove mock message later
-                <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                <CTooltip
+                  tooltipText="Data reported by the validators by querying the data sources">
                   <Icon name="fal fa-info-circle" size=10 />
                 </CTooltip>
               </div>
@@ -566,11 +554,13 @@ let make = (~reqID) => {
       // Data report
       <Row.Grid marginBottom=24>
         <Col.Grid>
-          <div className=Styles.infoContainer>
-            <Heading value="Data Report" size=Heading.H4 style=Styles.infoHeader />
+          <div className=Styles.kvTableContainer>
+            <div className=Styles.kvTableHeader>
+              <Heading value="Data Report" size=Heading.H4 />
+            </div>
             {switch (requestSub) {
              | Data({reports}) => <DataReports reports />
-             | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=200 />
              }}
           </div>
         </Col.Grid>

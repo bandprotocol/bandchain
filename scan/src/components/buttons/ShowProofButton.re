@@ -1,6 +1,8 @@
 [@react.component]
 let make = (~showProof: bool, ~setShowProof) => {
-  <div className={CssHelper.btn(~px=20, ~py=12, ())} onClick={_ => setShowProof(_ => !showProof)}>
+  <div
+    className={CssHelper.btn(~px=20, ~py=12, ~pxSm=12, ~pySm=10, ())}
+    onClick={_ => setShowProof(_ => !showProof)}>
     <div className={CssHelper.flexBox()}>
       <Icon name="fal fa-long-arrow-down" color=Colors.white />
       <HSpacing size=Spacing.sm />

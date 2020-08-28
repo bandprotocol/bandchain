@@ -11,7 +11,7 @@ let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
   if (a.timestamp != b.timestamp) {
     compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
   } else {
-    compare(b.request, a.request);
+    compare(b.requestCount, a.requestCount);
   };
 
 let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
@@ -20,7 +20,7 @@ let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | MostRequested => compare(b.request, a.request)
+        | MostRequested => compare(b.requestCount, a.requestCount)
         | LatestUpdate => compare(b.timestamp, a.timestamp)
         };
       };
@@ -43,7 +43,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({id, name}) =>
@@ -63,9 +63,14 @@ let renderBody =
       </Col.Grid>
       <Col.Grid col=Col.One>
         {switch (dataSourcesSub) {
-         | Data({request}) =>
+         | Data({requestCount}) =>
            <div>
-             <Text value={request |> Format.iPretty} weight=Text.Medium block=true ellipsis=true />
+             <Text
+               value={requestCount |> Format.iPretty}
+               weight=Text.Medium
+               block=true
+               ellipsis=true
+             />
            </div>
          | _ => <LoadingCensorBar width=70 height=15 />
          }}
@@ -73,14 +78,22 @@ let renderBody =
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (dataSourcesSub) {
-           | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | Data({timestamp: timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp') =>
+               <Timestamp.Grid
+                 time=timestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Genesis" />
+             }
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
            }}
         </div>
       </Col.Grid>
@@ -91,13 +104,19 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
   switch (dataSourcesSub) {
-  | Data({id, timestamp, description, name, request}) =>
+  | Data({id, timestamp: timestampOpt, description, name, requestCount}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
-        ("Requests", Count(request)),
-        ("Timestamp", Timestamp(timestamp)),
+        ("Requests", Count(requestCount)),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp') => Timestamp(timestamp')
+          | None => Text("Genesis")
+          },
+        ),
       ]
       key={id |> ID.DataSource.toString}
       idx={id |> ID.DataSource.toString}
@@ -152,12 +171,12 @@ let make = () => {
              }}
           </Col.Grid>
         </Row.Grid>
-        <>
-          <Row.Grid alignItems=Row.Center marginBottom=16>
-            <Col.Grid col=Col.Six colSm=Col.Eight>
-              <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
-            </Col.Grid>
-            <Col.Grid col=Col.Six colSm=Col.Four>
+        <Row.Grid alignItems=Row.Center marginBottom=16>
+          <Col.Grid col=Col.Six colSm=Col.Eight>
+            <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
+          </Col.Grid>
+          <Col.Grid col=Col.Six colSm=Col.Four>
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
               <SortableDropdown
                 sortedBy
                 setSortedBy
@@ -166,54 +185,54 @@ let make = () => {
                   (LatestUpdate, getName(LatestUpdate)),
                 ]
               />
-            </Col.Grid>
-          </Row.Grid>
-          {isMobile
-             ? React.null
-             : <THead.Grid>
-                 <Row.Grid alignItems=Row.Center>
-                   <Col.Grid col=Col.Five>
-                     <div className=TElement.Styles.hashContainer>
-                       <Text
-                         block=true
-                         value="Data Source"
-                         size=Text.Md
-                         weight=Text.Semibold
-                         color=Colors.gray7
-                       />
-                     </div>
-                   </Col.Grid>
-                   <Col.Grid col=Col.Four>
+            </div>
+          </Col.Grid>
+        </Row.Grid>
+        {isMobile
+           ? React.null
+           : <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Five>
+                   <div className=TElement.Styles.hashContainer>
                      <Text
                        block=true
-                       value="Description"
+                       value="Data Source"
                        size=Text.Md
                        weight=Text.Semibold
                        color=Colors.gray7
                      />
-                   </Col.Grid>
-                   <Col.Grid col=Col.One>
-                     <Text
-                       block=true
-                       value="Requests"
-                       size=Text.Md
-                       weight=Text.Semibold
-                       color=Colors.gray7
-                     />
-                   </Col.Grid>
-                   <Col.Grid col=Col.Two>
-                     <Text
-                       block=true
-                       value="Timestamp"
-                       size=Text.Md
-                       weight=Text.Semibold
-                       color=Colors.gray7
-                       align=Text.Right
-                     />
-                   </Col.Grid>
-                 </Row.Grid>
-               </THead.Grid>}
-        </>
+                   </div>
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text
+                     block=true
+                     value="Description"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text
+                     block=true
+                     value="Requests"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Timestamp"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>}
         {switch (allSub) {
          | Data((dataSources, dataSourcesCount)) =>
            let pageCount = Page.getPageCount(dataSourcesCount, pageSize);

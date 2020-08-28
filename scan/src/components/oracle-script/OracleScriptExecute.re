@@ -68,7 +68,6 @@ module Styles = {
       margin3(~top=`px(10), ~h=`zero, ~bottom=`px(20)),
     ]);
   let titleSpacing = style([marginBottom(`px(8))]);
-  let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
   let mobileBlockContainer = style([padding2(~v=`px(24), ~h=`zero)]);
   let mobileBlock =
     style([
@@ -140,11 +139,10 @@ module CountInputs = {
             transform=Text.Capitalize
           />
           <HSpacing size=Spacing.xs />
-          //TODO: remove mock message later
           <CTooltip
             tooltipPlacementSm=CTooltip.BottomLeft
-            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-            <img className=Styles.infoIcon src=Images.infoIcon />
+            tooltipText="The number of validators that are requested to respond to this request">
+            <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
         <select
@@ -172,11 +170,10 @@ module CountInputs = {
             transform=Text.Capitalize
           />
           <HSpacing size=Spacing.xs />
-          //TODO: remove mock message later
           <CTooltip
             tooltipPlacementSm=CTooltip.BottomLeft
-            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-            <img className=Styles.infoIcon src=Images.infoIcon />
+            tooltipText="The minimum number of validators necessary for the request to proceed to the execution phase">
+            <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
         <select
@@ -429,7 +426,7 @@ module ExecutionPart = {
                    // log for err details
                    Js.Console.log(err);
                    <Text value="chain id not found" />;
-                 | _ => <LoadingCensorBar width=60 height=18 />
+                 | _ => <LoadingCensorBar fullWidth=true height=120 />
                  }
                }}
             </div>

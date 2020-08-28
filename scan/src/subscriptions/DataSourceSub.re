@@ -1,5 +1,6 @@
 type block_t = {timestamp: MomentRe.Moment.t};
 type transaction_t = {block: block_t};
+type request_stat_t = {count: int};
 type internal_t = {
   id: ID.DataSource.t,
   owner: Address.t,
@@ -7,6 +8,7 @@ type internal_t = {
   description: string,
   executable: JsBuffer.t,
   transaction: option(transaction_t),
+  requestStat: option(request_stat_t),
 };
 
 type t = {
@@ -15,24 +17,23 @@ type t = {
   name: string,
   description: string,
   executable: JsBuffer.t,
-  timestamp: MomentRe.Moment.t,
-  request: int,
+  timestamp: option(MomentRe.Moment.t),
+  requestCount: int,
 };
 
-let toExternal = ({id, owner, name, description, executable, transaction}) => {
+let toExternal =
+    ({id, owner, name, description, executable, transaction: txOpt, requestStat: requestStatOpt}) => {
   id,
   owner,
   name,
   description,
   executable,
-  timestamp:
-    switch (transaction) {
-    | Some({block}) => block.timestamp
-    // TODO: Please revisit again.
-    | _ => MomentRe.momentNow()
-    },
-  //TODO: wire up later
-  request: Js.Math.random_int(300, 200000),
+  timestamp: {
+    let%Opt tx = txOpt;
+    Some(tx.block.timestamp);
+  },
+  // Note: requestCount can't be nullable value.
+  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
 };
 
 module MultiConfig = [%graphql
@@ -48,6 +49,9 @@ module MultiConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
+      }
+      requestStat: request_stat @bsRecord {
+        count
       }
     }
   }
@@ -67,6 +71,9 @@ module SingleConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
+      }
+      requestStat: request_stat @bsRecord {
+        count
       }
     }
   },

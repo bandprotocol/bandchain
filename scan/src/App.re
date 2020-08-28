@@ -34,7 +34,7 @@ let make = () => {
   <div className=Styles.container>
     <Header />
     {Media.isMobile()
-       ? <Section pt=16 pb=16 bg={currentRoute == HomePage ? Colors.highlightBg : Colors.white}>
+       ? <Section pt=16 pb=16 bg={currentRoute == HomePage ? Colors.highlightBg : Colors.bg}>
            <div className=CssHelper.container> <SearchBar /> </div>
          </Section>
        : React.null}
@@ -56,6 +56,8 @@ let make = () => {
        | RequestHomePage => <RequestHomePage />
        | RequestIndexPage(reqID) => <RequestIndexPage reqID={ID.Request.ID(reqID)} />
        | AccountIndexPage(address, hashtag) => <AccountIndexPage address hashtag />
+       | ProposalHomePage => <ProposalHomePage />
+       | ProposalIndexPage(proposalID) => <ProposalIndexPage proposalID />
        | IBCHomePage => <IBCHomePage />
        | NotFound => <NotFound />
        }}
