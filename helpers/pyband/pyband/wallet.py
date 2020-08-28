@@ -2,19 +2,21 @@ from __future__ import annotations
 
 import hashlib
 
-from bech32 import bech32_encode, convertbits
+from bech32 import bech32_encode, bech32_decode, convertbits
 from bip32 import BIP32
-from ecdsa import SigningKey, VerifyingKey, SECP256k1
+from ecdsa import SigningKey, VerifyingKey, SECP256k1, BadSignatureError
 from ecdsa.util import sigencode_string_canonize
 from mnemonic import Mnemonic
 
 BECH32_PUBKEY_ACC_PREFIX = "bandpub"
-BECH32_PUBKEY_VAL_PREFIX = "bandvalpub"
+BECH32_PUBKEY_VAL_PREFIX = "bandvaloperpub"
 BECH32_PUBKEY_CONS_PREFIX = "bandvalconspub"
 
 BECH32_ADDR_ACC_PREFIX = "band"
 BECH32_ADDR_VAL_PREFIX = "bandvaloper"
 BECH32_ADDR_CONS_PREFIX = "bandvalcons"
+
+DEFAULT_DERIVATION_PATH = "m/44'/494'/0'/0/0"
 
 
 class PrivateKey:
@@ -30,6 +32,22 @@ class PrivateKey:
         if not _error_do_not_use_init_directly:
             raise TypeError("Please use PrivateKey.from_mnemonic() to construct me")
         self.signing_key = None
+
+    @classmethod
+    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> (str, PrivateKey):
+        """
+        Generate new private key with random mnemonic phrase
+
+        :param path: the HD path that follows the BIP32 standard
+
+        :return: A tuple of mnemonic phrase and PrivateKey instance
+        """
+        while True:
+            phrase = Mnemonic(language="english").generate(strength=256)
+            try:
+                return (phrase, cls.from_mnemonic(phrase))
+            except BIP32DerivationError:
+                pass
 
     @classmethod
     def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> PrivateKey:
@@ -50,6 +68,12 @@ class PrivateKey:
             hashfunc=hashlib.sha256,
         )
         return self
+
+    def to_hex(self) -> str:
+        """
+        Return a hex representation of signing key.
+        """
+        return self.signing_key.to_string().hex()
 
     def to_pubkey(self) -> PublicKey:
         """
@@ -91,27 +115,40 @@ class PublicKey:
 
     @classmethod
     def _from_bech32(cls, bech: str, prefix: str) -> PublicKey:
-        pass
+        hrp, bz = bech32_decode(bech)
+        assert hrp == prefix, "Invalid bech32 prefix"
+        bz = convertbits(bz, 5, 8, False)
+        self = cls(_error_do_not_use_init_directly=True)
+        self.verify_key = VerifyingKey.from_string(
+            bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256
+        )
+        return self
 
     @classmethod
-    def from_acc_pub(cls, bech: str) -> PublicKey:
+    def from_acc_bech32(cls, bech: str) -> PublicKey:
         return cls._from_bech32(bech, BECH32_PUBKEY_ACC_PREFIX)
 
     @classmethod
-    def from_val_pub(cls, bech: str) -> PublicKey:
+    def from_val_bech32(cls, bech: str) -> PublicKey:
         return cls._from_bech32(bech, BECH32_PUBKEY_VAL_PREFIX)
 
     @classmethod
-    def from_val_cons_pub(cls, bech: str) -> PublicKey:
+    def from_cons_bech32(cls, bech: str) -> PublicKey:
         return cls._from_bech32(bech, BECH32_PUBKEY_CONS_PREFIX)
 
-    def __str__(self) -> str:
-        """Return hex-format of compressed pubkey"""
+    def to_hex(self) -> str:
+        """
+        Return a hex representation of verify key.
+        """
         return self.verify_key.to_string("compressed").hex()
 
     def _to_bech32(self, prefix: str) -> str:
-
-        five_bit_r = convertbits(self.verify_key.to_string("compressed"), 8, 5)
+        five_bit_r = convertbits(
+            # Append prefix public key type follow amino spec.
+            bytes.fromhex("eb5ae98721") + self.verify_key.to_string("compressed"),
+            8,
+            5,
+        )
         assert five_bit_r is not None, "Unsuccessful bech32.convertbits call"
         return bech32_encode(prefix, five_bit_r)
 
@@ -142,17 +179,36 @@ class PublicKey:
         :raises BadSignatureError: if the signature is invalid or malformed
         :return: True if the verification was successful
         """
-        return self.verify_key.verify(sig, msg, hashfunc=hashlib.sha256)
+        try:
+            return self.verify_key.verify(sig, msg, hashfunc=hashlib.sha256)
+        except BadSignatureError:
+            return False
 
 
 class Address:
     def __init__(self, addr: bytes) -> None:
         self.addr = addr
 
-    # TODO: Split into acc, val, cons address.
     @classmethod
-    def from_bech32(cls, bech: str, prefix="band") -> Address:
-        pass
+    def _from_bech32(cls, bech: str, prefix: str) -> Address:
+        hrp, bz = bech32_decode(bech)
+        assert hrp == prefix, "Invalid bech32 prefix"
+        return cls(bytes(convertbits(bz, 5, 8, False)))
+
+    @classmethod
+    def from_acc_bech32(cls, bech: str) -> Address:
+        """Create an address instance from a bech32-encoded account address"""
+        return cls._from_bech32(bech, BECH32_ADDR_ACC_PREFIX)
+
+    @classmethod
+    def from_val_bech32(cls, bech: str) -> Address:
+        """Create an address instance from a bech32-encoded validator address"""
+        return cls._from_bech32(bech, BECH32_ADDR_VAL_PREFIX)
+
+    @classmethod
+    def from_cons_bech32(cls, bech: str) -> Address:
+        """Create an address instance from a bech32-encoded consensus address"""
+        return cls._from_bech32(bech, BECH32_ADDR_CONS_PREFIX)
 
     def _to_bech32(self, prefix: str) -> str:
         five_bit_r = convertbits(self.addr, 8, 5)
@@ -160,16 +216,17 @@ class Address:
         return bech32_encode(prefix, five_bit_r)
 
     def to_acc_bech32(self) -> str:
-        """Return bech32-encoded with account address prefix"""
+        """Return a bech32-encoded account address"""
         return self._to_bech32(BECH32_ADDR_ACC_PREFIX)
 
     def to_val_bech32(self) -> str:
-        """Return bech32-encoded with validator address prefix"""
+        """Return a bech32-encoded validator address"""
         return self._to_bech32(BECH32_ADDR_VAL_PREFIX)
 
     def to_cons_bech32(self) -> str:
-        """Return bech32-encoded with validator consensus address key prefix"""
+        """Return a bech32-encoded with consensus address"""
         return self._to_bech32(BECH32_ADDR_CONS_PREFIX)
 
-    def __str__(self) -> str:
+    def to_hex(self) -> str:
+        """Return a hex representation of address"""
         return self.addr.hex()
