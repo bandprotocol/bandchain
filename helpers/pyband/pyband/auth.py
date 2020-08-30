@@ -1,7 +1,11 @@
 import json
+import base64
 
 from .client import Client
 from .wallet import PublicKey
+from .data import Request, RequestInfo
+
+REQUET_DURATION = 100
 
 
 class Auth:
@@ -34,13 +38,56 @@ class Auth:
         reporter_pubkey: str,
         signature: bytes,
     ) -> bool:
-        reporter = PublicKey.from_acc_pub(reporter_pubkey)
+        reporter = PublicKey.from_acc_bech32(reporter_pubkey)
 
         msg = Auth.get_msg_sign_bytes(chain_id, validator, request_id, external_id)
         return reporter.verify(msg, signature)
 
+    def verify(
+        self,
+        chain_id: str,
+        validator: str,
+        request_id: str,
+        external_id: str,
+        reporter_pubkey: str,
+        signature: str,
+    ) -> bool:
+        if not Auth.verify_verification_message(
+            chain_id,
+            validator,
+            request_id,
+            external_id,
+            reporter_pubkey,
+            base64.b64decode(signature),
+        ):
+            return False
+        if not self.verify_chain_id(chain_id):
+            return False
+
+        requestInfo = self.client.get_request_by_id(request_id)
+
+        if not self.verify_non_expired_request(requestInfo.request):
+            return False
+        if not self.verify_requested_validator(requestInfo.request, validator):
+            return False
+        if not self.verify_unsubmitted_report(requestInfo.reports, validator):
+            return False
+
+        return True
+
     def verify_chain_id(self, chain_id: str) -> bool:
         return self.client.get_chain_id() == chain_id
 
-    # def verify_requested_validator(self)
+    def verify_non_expired_request(self, request: Request) -> bool:
+        latest_block = self.client.get_latest_block()
+        return latest_block["block"]["header"]["height"] - request.request_height <= REQUET_DURATION
+
+    def verify_requested_validator(self, request: Request, validator: str) -> bool:
+        return validator in request.requested_validators
+
+    def verify_unsubmitted_report(self, reports: list, validator: str) -> bool:
+        for report in reports:
+            if report.validator == validator:
+                return False
+        return True
 

@@ -15,6 +15,9 @@ class Client(object):
         genesis = self._get("/bandchain/genesis")
         return genesis["chain_id"]
 
+    def get_latest_block(self) -> dict:
+        return self._get("/blocks/latest")
+
     def get_data_source(self, id: int) -> DataSource:
         return from_dict(
             data_class=DataSource,
