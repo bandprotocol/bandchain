@@ -56,3 +56,5 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
+    def get_reporters(self, validator: str) -> list:
+        return self._get("/oracle/reporters/{}".format(validator))

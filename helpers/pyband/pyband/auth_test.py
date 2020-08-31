@@ -1,4 +1,4 @@
-from dacite import from_dict
+import base64
 
 from .auth import Auth
 
@@ -19,7 +19,9 @@ def test_verify_verification_message():
             "1",
             "1",
             "bandpub1addwnpepqgugvxy0ueqwfmlzh2ta5at2lumcy4wpzzjs4hjz8j44lrdcryqs66wh3rp",
-            "IsgagGxxSVHOPyzProTYBW9sFNMjLGkuDm+JvLgBH8Ux6GMpj3p6e5YGY8KRVWV3fdYWm/UBZdpVqsMbnpV6PQ==",
+            base64.b64decode(
+                "IsgagGxxSVHOPyzProTYBW9sFNMjLGkuDm+JvLgBH8Ux6GMpj3p6e5YGY8KRVWV3fdYWm/UBZdpVqsMbnpV6PQ=="
+            ),
         )
         == True
     )
