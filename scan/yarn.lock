@@ -7303,10 +7303,10 @@ parcel-bundler@^1.12.4:
     v8-compile-cache "^2.0.0"
     ws "^5.1.1"
 
-parcel-plugin-custom-dist-structure@^1.1.14:
-  version "1.1.14"
-  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.14.tgz#8cf983a7fad92d100356cddc2e0ba2eb386db031"
-  integrity sha512-Ldx2G3QgIyIDL/3GUPRmj6CmE53WhRIGuRl3Yf5ljIz7YhAJqBVO3fNKiH+/7t+7dtG1gj/SJdwF0anWofJ7MQ==
+parcel-plugin-custom-dist-structure@^1.1.16:
+  version "1.1.16"
+  resolved "https://registry.yarnpkg.com/parcel-plugin-custom-dist-structure/-/parcel-plugin-custom-dist-structure-1.1.16.tgz#c5067b4ec470f160e610dfbce32899fb59544bb6"
+  integrity sha512-HfVsz9XlQXlhngCRF5+l0cjpeEWQkuiuHX4x7sQcoCmZ0BulETkTIxlb7D23o1eLjbXXarOXjkI2g0rMLHRFSw==
   dependencies:
     dependency-graph "^0.9.0"
     glob "^7.1.6"
