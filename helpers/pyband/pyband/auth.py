@@ -9,6 +9,12 @@ REQUEST_DURATION = 100
 
 
 class Auth:
+    """
+    Class for verifying that reporter information is valid to get data for report.
+
+    :ivar client: the Client instance
+    """
+
     def __init__(self, client: Client) -> None:
         self.client = client
 
@@ -17,7 +23,7 @@ class Auth:
         chain_id: str, validator: str, request_id: str, external_id: str
     ) -> bytes:
         """
-        Return message using in signature verification
+        Return bytes message using in signature verification
         """
         return str.encode(
             json.dumps(
@@ -33,7 +39,7 @@ class Auth:
         )
 
     @staticmethod
-    def verify_verification_message(
+    def verify_verification_message_signature(
         chain_id: str,
         validator: str,
         request_id: str,
@@ -42,7 +48,7 @@ class Auth:
         signature: bytes,
     ) -> bool:
         """
-        Verify verification message by signature of reporter
+        Verify the verification message using the reporter's signature
         """
         reporter = PublicKey.from_acc_bech32(reporter_pubkey)
 
@@ -59,9 +65,18 @@ class Auth:
         signature: str,
     ) -> bool:
         """
-        Verify header of request that valid
+        Verify report infomation using reporter signature and on-chain request status
+
+        :param chain_id: a chain id that request come from
+        :param validator: validator address of this verify meassage
+        :param request_id: a request id that request come from
+        :param external_id: validator address of this verify meassage
+        :param reporter_pubkey: a chain id that request come from
+        :param signature: validator address of this verify meassage
+
+        :return: True if the validator has been assigned to report data. False otherwise
         """
-        if not Auth.verify_verification_message(
+        if not Auth.verify_verification_message_signature(
             chain_id,
             validator,
             request_id,
@@ -89,13 +104,22 @@ class Auth:
 
     def verify_chain_id(self, chain_id: str) -> bool:
         """
-        Verify request come from correct chain id
+        Verify that the request comes from correct chain ID
+
+        :param chain_id: the chain ID retrieved from the verification message
+
+        :return: True if the chain id match with rpc client.
         """
         return self.client.get_chain_id() == chain_id
 
     def is_reporter(self, validator: str, reporter_pubkey: str) -> bool:
         """
-        Verify this address is a registerd reporter for validator
+        Verify that an address is a registerd reporter for validator
+
+        :param validator: a validator on BandChain
+        :param reporter_pubkey: a public key of reporter
+
+        :return: True if the reporter is a registered reporter of the validator.
         """
         reporter = PublicKey.from_acc_bech32(reporter_pubkey).to_address().to_acc_bech32()
         reporters = self.client.get_reporters(validator)
@@ -103,7 +127,11 @@ class Auth:
 
     def verify_non_expired_request(self, request: Request) -> bool:
         """
-        Verify the request has not been expired
+        Verify the request has not expired
+
+        :param request: a request instance
+
+        :return: True if the request hasn't expired.
         """
         latest_block = self.client.get_latest_block()
         return (
@@ -112,13 +140,23 @@ class Auth:
 
     def verify_requested_validator(self, request: Request, validator: str) -> bool:
         """
-        Verify this validator has been assigned to report this request
+        Verify that this validator has been assigned to report this request
+
+        :param request: a request instance
+        :param validator: validator who reporter work for
+
+        :return: True if the validator has been assigned to report data.
         """
         return validator in request.requested_validators
 
     def verify_unsubmitted_report(self, reports: list, validator: str) -> bool:
         """
-        Verify this validator has not been reported on this request
+        Verify that this validator has not reported on this request
+
+        :param reports: list of reports on this request
+        :param validator: validator who reporter work for
+
+        :return: True if the validator hasn't reported data to chain yet
         """
         for report in reports:
             if report.validator == validator:
