@@ -2,6 +2,7 @@ const axios = require('axios')
 const { Obi } = require('@bandprotocol/obi.js')
 const cosmosjs = require('@cosmostation/cosmosjs')
 const delay = require('delay')
+const { result } = require('lodash')
 
 async function createRequestMsg(
   cosmos,
@@ -219,6 +220,113 @@ class BandChain {
       throw new Error('Error querying the latest matching request result')
     }
   }
+<<<<<<< Updated upstream
+=======
+
+  async getLatestValue(oracleScriptID, parameters) {
+    const minCount = 3
+    const askCount = 4
+    const validatorCounts = { minCount, askCount }
+    const oracleScript = await this.getOracleScript(oracleScriptID)
+    let result = await this.getLastMatchingRequestResult(
+      oracleScript,
+      parameters,
+      validatorCounts,
+    )
+    return result.result.rates
+  }
+
+  async getReferenceData(pairs) {
+    const sourceList = [
+      {
+        id: 8,
+        power: 9,
+        symbols: [
+          'BTC',
+          'ETH',
+          'DAI',
+          'REP',
+          'ZRX',
+          'BAT',
+          'KNC',
+          'LINK',
+          'COMP',
+          'BAND',
+        ],
+      },
+      {
+        id: 9,
+        power: 9,
+        symbols: [
+          'EUR',
+          'GBP',
+          'CNY',
+          'RMB',
+          'KRW',
+          'JPY',
+          'INR',
+          'RUB',
+          'CHF',
+          'AUD',
+          'BRL',
+        ],
+      },
+    ]
+    let set = new Set()
+    pairs.forEach((pair) => {
+      const [baseSymbol, quoteSymbol] = pair.split('/')
+      sourceList.forEach(({ symbols }, index) => {
+        if (symbols.includes(baseSymbol) || symbols.includes(quoteSymbol)) {
+          set.add(index)
+        }
+      })
+    })
+    let symbolDict = {}
+    await Promise.all(
+      [...set].map(async (index) => {
+        let result = await this.getLatestValue(sourceList[index].id, {
+          symbols: sourceList[index].symbols,
+          multiplier: Math.pow(10, sourceList[index].power),
+        })
+        return sourceList[index].symbols.map((symbol, id) => {
+          symbolDict[symbol] = {
+            value: result[id],
+            multiplier: Math.pow(10, sourceList[index].power),
+          }
+        })
+      }),
+    )
+
+    let data = []
+    pairs.forEach((pair) => {
+      const [baseSymbol, quoteSymbol] = pair.split('/')
+      if (quoteSymbol == 'USD') {
+        data.push({
+          pair: pair,
+          price:
+            Number(symbolDict[baseSymbol].value) /
+            symbolDict[baseSymbol].multiplier,
+          rawPrice: {
+            value: symbolDict[baseSymbol].value,
+            decimals: symbolDict[baseSymbol].multiplier,
+          },
+        })
+      } else {
+        data.push({
+          pair: pair,
+          price:
+            Number(symbolDict[baseSymbol]) / Number(symbolDict[quoteSymbol]),
+          rawPrice: {
+            value:
+              (symbolDict[baseSymbol] * BigInt(1e9)) / symbolDict[quoteSymbol],
+            decimals: 9,
+          },
+        })
+      }
+    })
+    return data
+  }
+>>>>>>> Stashed changes
 }
 
 module.exports = BandChain
