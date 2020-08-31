@@ -67,7 +67,7 @@ module ProposalCard = {
         <Row.Grid marginBottom=24>
           <Col.Grid>
             {switch (proposalSub) {
-             | Data({description}) => <Text value=description size=Text.Lg block=true />
+             | Data({description}) => <Markdown value=description />
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
           </Col.Grid>

@@ -123,7 +123,7 @@ let make = (~size=?, ~alignSelf=?, ~alignItems=?, ~justifyContent=?, ~children) 
 };
 module Grid = {
   [@react.component]
-  let make = (~col=Twelve, ~colSm=Twelve, ~offset=Twelve, ~mb=0, ~mbSm=0, ~children) => {
+  let make = (~col=Twelve, ~colSm=Twelve, ~offset=Twelve, ~mb=0, ~mbSm=mb, ~children) => {
     <div
       className={Css.merge([
         Styles.colGridBase,
