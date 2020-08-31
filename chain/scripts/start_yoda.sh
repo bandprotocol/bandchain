@@ -12,7 +12,7 @@ yoda config validator $(bandcli keys show $1 -a --bech val --keyring-backend tes
 yoda config executor "rest:https://iv3lgtv11a.execute-api.ap-southeast-1.amazonaws.com/live/master?timeout=10s"
 
 # setup broadcast-timeout to yoda config
-yoda config broadcast-timeout "30s"
+yoda config broadcast-timeout "5m"
 
 # setup rpc-poll-interval to yoda config
 yoda config rpc-poll-interval "1s"

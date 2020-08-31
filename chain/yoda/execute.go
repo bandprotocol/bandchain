@@ -2,18 +2,20 @@ package yoda
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/version"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 
@@ -21,65 +23,157 @@ var (
 	cdc = app.MakeCodec()
 )
 
-func SubmitReport(c *Context, l *Logger, key keys.Info, id otypes.RequestID, reps []otypes.RawReport, execVersion string) {
-	msg := otypes.NewMsgReportData(otypes.RequestID(id), reps, c.validator, key.GetAddress())
-	if err := msg.ValidateBasic(); err != nil {
-		l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
-		return
-	}
-	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
-	txHash := ""
-	for try := uint64(1); try <= c.maxTry; try++ {
-		l.Info(":e-mail: Try to broadcast report transaction(%d/%d)", try, c.maxTry)
-		acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
-		if err != nil {
-			l.Info(":warning: Failed to retreive account with error: %s", err.Error())
-			time.Sleep(c.rpcPollInterval)
-			continue
-		}
+// TODO: Improve precision of equation.
+// const (
+// 	rawReportMultiplier   = uint64(10)
+// 	dataSizeMultiplier    = uint64(10)
+// 	msgReportDataConstant = uint64(10)
+// 	txSizeConstant        = uint64(10)
+// 	baseTransaction       = uint64(30000)
+// )
 
-		txBldr := auth.NewTxBuilder(
-			auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
-			200000, 1, false, cfg.ChainID, fmt.Sprintf("yoda:%s/exec:%s", version.Version, execVersion), sdk.NewCoins(), c.gasPrices,
-		)
-		// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
-		// if err != nil {
-		// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
-		// 	return
-		// }
-		out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, []sdk.Msg{msg})
-		if err != nil {
-			l.Info(":warning: Failed to build tx with error: %s", err.Error())
-			time.Sleep(c.rpcPollInterval)
-			continue
+// Constant used to estimate gas price of reports transaction.
+const (
+	dataSizeMultiplier    = uint64(50)
+	msgReportDataConstant = uint64(16000)
+	txSizeConstant        = uint64(5) // Using DefaultTxSizeCostPerByte of BandChain
+	baseTransaction       = uint64(40000)
+	pendingRequests       = uint64(4000)
+)
+
+func estimatedReportsGas(msgs []sdk.Msg) uint64 {
+	est := baseTransaction
+	txSize := uint64(0)
+	for _, msg := range msgs {
+		msg, ok := msg.(types.MsgReportData)
+		if !ok {
+			panic("Don't support non-report data message")
 		}
-		res, err := cliCtx.BroadcastTxSync(out)
-		if err == nil {
-			txHash = res.TxHash
-			break
+		calldataSize := uint64(0)
+		for _, c := range msg.RawReports {
+			calldataSize += uint64(len(c.Data))
 		}
-		l.Info(":warning: Failed to broadcast tx with error: %s", err.Error())
-		time.Sleep(c.rpcPollInterval)
+		est += dataSizeMultiplier*calldataSize + msgReportDataConstant
+		txSize += uint64(len(msg.GetSignBytes()))
 	}
-	if txHash == "" {
-		l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
-		return
+	return est + txSize*txSizeConstant + pendingRequests
+}
+
+func signAndBroadcast(
+	c *Context, key keys.Info, msgs []sdk.Msg, gasLimit uint64, memo string,
+) (string, error) {
+	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
+	acc, err := auth.NewAccountRetriever(cliCtx).GetAccount(key.GetAddress())
+	if err != nil {
+		return "", fmt.Errorf("Failed to retreive account with error: %s", err.Error())
 	}
-	for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
-		time.Sleep(c.rpcPollInterval)
-		txRes, err := utils.QueryTx(cliCtx, txHash)
-		if err != nil {
-			l.Debug(":warning: Failed to query tx with error: %s", err.Error())
-			continue
-		}
-		if txRes.Code != 0 {
-			l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+
+	txBldr := auth.NewTxBuilder(
+		auth.DefaultTxEncoder(cdc), acc.GetAccountNumber(), acc.GetSequence(),
+		gasLimit, 1, false, cfg.ChainID, memo, sdk.NewCoins(), c.gasPrices,
+	)
+	// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
+	// if err != nil {
+	// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
+	// 	return
+	// }
+
+	out, err := txBldr.WithKeybase(keybase).BuildAndSign(key.GetName(), ckeys.DefaultKeyPass, msgs)
+	if err != nil {
+		return "", fmt.Errorf("Failed to build tx with error: %s", err.Error())
+	}
+
+	res, err := cliCtx.BroadcastTxSync(out)
+	if err != nil {
+		return "", fmt.Errorf("Failed to broadcast tx with error: %s", err.Error())
+	}
+	return res.TxHash, nil
+}
+
+func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
+	// Return key when done with SubmitReport whether successfully or not.
+	defer func() {
+		c.freeKeys <- keyIndex
+	}()
+
+	// Summarize execute version
+	versionMap := make(map[string]bool)
+	msgs := make([]sdk.Msg, len(reports))
+	ids := make([]types.RequestID, len(reports))
+
+	for i, report := range reports {
+		if err := report.msg.ValidateBasic(); err != nil {
+			l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
 			return
 		}
-		l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
-		return
+		msgs[i] = report.msg
+		ids[i] = report.msg.RequestID
+		for _, exec := range report.execVersion {
+			versionMap[exec] = true
+		}
 	}
-	l.Info(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
+	l = l.With("rids", ids)
+
+	versions := make([]string, 0, len(versionMap))
+	for exec := range versionMap {
+		versions = append(versions, exec)
+	}
+	memo := fmt.Sprintf("yoda:%s/exec:%s", version.Version, strings.Join(versions, ","))
+	key := c.keys[keyIndex]
+	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
+	gasLimit := estimatedReportsGas(msgs)
+	// We want to resend transaction only if tx returns Out of gas error.
+	for sendAttempt := uint64(1); sendAttempt <= c.maxTry; sendAttempt++ {
+		var txHash string
+		l.Info(":e-mail: Sending report transaction attempt: (%d/%d)", sendAttempt, c.maxTry)
+		for broadcastTry := uint64(1); broadcastTry <= c.maxTry; broadcastTry++ {
+			l.Info(":writing_hand: Try to sign and broadcast report transaction(%d/%d)", broadcastTry, c.maxTry)
+			hash, err := signAndBroadcast(c, key, msgs, gasLimit, memo)
+			if err != nil {
+				// Use info level because this error can happen and retry process can solve this error.
+				l.Info(":warning: %s", err.Error())
+				time.Sleep(c.rpcPollInterval)
+				continue
+			}
+			// Transaction passed CheckTx process and wait to include in block.
+			txHash = hash
+			break
+		}
+		if txHash == "" {
+			l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
+			return
+		}
+		txFound := false
+	FindTx:
+		for start := time.Now(); time.Since(start) < c.broadcastTimeout; {
+			time.Sleep(c.rpcPollInterval)
+			txRes, err := utils.QueryTx(cliCtx, txHash)
+			if err != nil {
+				l.Debug(":warning: Failed to query tx with error: %s", err.Error())
+				continue
+			}
+			switch txRes.Code {
+			case 0:
+				l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
+				return
+			case sdkerrors.ErrOutOfGas.ABCICode():
+				// Increase gas limit and try to broadcast again
+				gasLimit = gasLimit * 110 / 100
+				l.Info(":fuel_pump: Tx(%s) is out of gas and will be rebroadcasted with %d gas", txHash, gasLimit)
+				txFound = true
+				break FindTx
+			default:
+				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+				return
+			}
+		}
+		if !txFound {
+			l.Error(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
+			return
+		}
+	}
+	l.Error(":anxious_face_with_sweat: Cannot send reports with adjusted gas: %d", gasLimit)
+	return
 }
 
 // GetExecutable fetches data source executable using the provided client.
@@ -87,7 +181,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	resValue, err := c.fileCache.GetFile(hash)
 	if err != nil {
 		l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
-		res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", otypes.StoreKey, otypes.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
+		res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
 		if err != nil {
 			l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
 			return nil, err

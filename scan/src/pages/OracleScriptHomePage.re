@@ -129,7 +129,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
@@ -203,7 +203,11 @@ let renderBody =
                />
              | None => <Text value="Genesis" />
              }
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
            }}
         </div>
       </Col.Grid>
@@ -305,14 +309,16 @@ let make = () => {
             <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
           </Col.Grid>
           <Col.Grid col=Col.Six colSm=Col.Four>
-            <SortableDropdown
-              sortedBy
-              setSortedBy
-              sortList=[
-                (MostRequested, getName(MostRequested)),
-                (LatestUpdate, getName(LatestUpdate)),
-              ]
-            />
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
+              />
+            </div>
           </Col.Grid>
         </Row.Grid>
         {isMobile

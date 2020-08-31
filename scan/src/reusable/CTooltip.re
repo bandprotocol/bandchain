@@ -211,12 +211,12 @@ module Styles = {
 let make =
     (
       ~width=150,
-      ~pd=16,
+      ~pd=10,
       ~fsize=12,
       ~align=`left,
       ~tooltipText="",
       ~tooltipPlacement=Bottom,
-      ~tooltipPlacementSm=Bottom,
+      ~tooltipPlacementSm=tooltipPlacement,
       ~mobile=true,
       ~styles="",
       ~children,

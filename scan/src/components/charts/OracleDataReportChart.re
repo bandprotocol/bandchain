@@ -1,6 +1,5 @@
 module Styles = {
   open Css;
-  let loadingBox = style([width(`percent(100.))]);
   let chartContainer =
     style([width(`percent(100.)), minHeight(`px(90)), margin2(~v=`zero, ~h=`px(-2))]);
   let blockContainer =
@@ -47,7 +46,7 @@ module Item = {
       mobile=false
       align=`center
       pd=10
-      tooltipText={timestamp |> MomentRe.Moment.format("YYYY-MM-DD")}
+      tooltipText={timestamp |> MomentRe.momentWithUnix |> MomentRe.Moment.format("YYYY-MM-DD")}
       styles=Styles.blockContainer>
       <div className={Css.merge([Styles.blockBase, Styles.status(status)])} />
     </CTooltip>;
@@ -73,16 +72,13 @@ let make = (~oracleStatus, ~operatorAddress) => {
              oracleStatusReports
              ->Belt.Array.mapWithIndex((i, {timestamp, status}) =>
                  <Item
-                   key={
-                     (i |> string_of_int)
-                     ++ (timestamp |> MomentRe.Moment.format("YYYY-MM-DD HH:mm:ss.SSS"))
-                   }
+                   key={(i |> string_of_int) ++ (timestamp |> string_of_int)}
                    status
                    timestamp
                  />
                )
              ->React.array
-           | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+           | _ => <LoadingCensorBar fullWidth=true height=90 />
            }}
         </div>
       </Col.Grid>

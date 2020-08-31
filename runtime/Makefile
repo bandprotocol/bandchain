@@ -1,6 +1,6 @@
 .PHONY: lambda
 
-VERSION=1.1.0
+VERSION=1.1.1
 CURRENT_DIR=$(shell pwd)
 
 lambda:

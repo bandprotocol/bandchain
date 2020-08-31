@@ -11,7 +11,6 @@ module Styles = {
     ]);
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
-  let loadingBox = style([width(`percent(100.))]);
   let idContainer = style([marginBottom(`px(16)), Media.mobile([marginBottom(`px(8))])]);
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 
@@ -53,11 +52,6 @@ module Styles = {
       borderRadius(`px(50)),
       padding2(~v=`px(2), ~h=`px(10)),
     ]);
-  };
-
-  //Mockup
-  let mockup = {
-    style([minHeight(`px(300))]);
   };
 };
 
@@ -246,11 +240,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                   <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=27, ())])}>
                     <Heading value="Oracle Reports" size=Heading.H4 align=Heading.Center />
                     <HSpacing size=Spacing.xs />
-                    //TODO: remove mock message later
                     <CTooltip
                       width=100
                       tooltipPlacementSm=CTooltip.BottomRight
-                      tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                      tooltipText="The number of reports this validator has submitted to date">
                       <Icon name="fal fa-info-circle" size=12 />
                     </CTooltip>
                   </div>
@@ -280,8 +273,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Operator Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The address used to show the validator's entity status">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -302,8 +294,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip tooltipText="The validator entity's unique address">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -320,8 +311,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Commission Max Change" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip
+                    tooltipText="The maximum increment by which the validator can increase their commission rate">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -340,8 +331,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 <div className={CssHelper.flexBox()}>
                   <Heading value="Commission Max Rate" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
-                  //TODO: remove mock message later
-                  <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+                  <CTooltip
+                    tooltipText="Highest possible commission rate that the validator can set">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
@@ -393,15 +384,14 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               ])}>
               <Heading value="Bonded Token" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
-              //TODO: remove mock message later
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+              <CTooltip tooltipText="Total amount of tokens current staked across all validators">
                 <Icon name="fal fa-info-circle" size=10 />
               </CTooltip>
             </div>
             <div className={CssHelper.flexBox()}>
               {switch (allSub) {
                | Data(({operatorAddress}, _, _)) => <HistoricalBondedGraph operatorAddress />
-               | _ => <LoadingCensorBar width=100 height=180 style=Styles.loadingBox />
+               | _ => <LoadingCensorBar fullWidth=true height=180 />
                }}
             </div>
           </div>
@@ -421,14 +411,13 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               ])}>
               <Heading value="Block Uptime" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
-              //TODO: remove mock message later
-              <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+              <CTooltip tooltipText="The validator's non-oracle performance">
                 <Icon name="fal fa-info-circle" size=10 />
               </CTooltip>
             </div>
             {switch (allSub) {
              | Data(({consensusAddress}, _, _)) => <BlockUptimeChart consensusAddress />
-             | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
         </Col.Grid>
@@ -442,15 +431,14 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               ])}>
               <Heading value="Oracle Data Report" size=Heading.H4 />
               <HSpacing size=Spacing.xs />
-              <CTooltip
-                tooltipText="Last 90 days of Report" align=`center tooltipPlacement=CTooltip.Top>
+              <CTooltip tooltipText="Last 90 days of Report" align=`center>
                 <Icon name="fal fa-info-circle" size=10 />
               </CTooltip>
             </div>
             {switch (allSub) {
              | Data(({oracleStatus}, _, _)) =>
                <OracleDataReportChart oracleStatus operatorAddress=address />
-             | _ => <LoadingCensorBar width=400 height=90 style=Styles.loadingBox />
+             | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
         </Col.Grid>

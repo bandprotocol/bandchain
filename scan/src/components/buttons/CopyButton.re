@@ -18,38 +18,38 @@ module Styles = {
 };
 
 // TODO: we'll clean up this later.
+// [@react.component]
+// let make = (~data, ~title, ~width=105) => {
+//   <div
+//     className={Styles.button(width)}
+//     onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
+//     <img src=Images.copy className=Styles.logo />
+//     <HSpacing size=Spacing.sm />
+//     <Text value=title size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
+//   </div>;
+// };
+
+// module Modern = {
 [@react.component]
-let make = (~data, ~title, ~width=105) => {
+let make = (~data, ~title, ~width=105, ~py=5, ~px=10, ~pySm=py, ~pxSm=px) => {
+  let (copied, setCopy) = React.useState(_ => false);
   <div
-    className={Styles.button(width)}
-    onClick={_ => {Copy.copy(data |> JsBuffer.toHex(~with0x=false))}}>
-    <img src=Images.copy className=Styles.logo />
+    className={Css.merge([
+      CssHelper.btn(~variant=Outline, ~px, ~py, ~pxSm, ~pySm, ()),
+      CssHelper.flexBox(~align=`center, ~justify=`center, ()),
+      Styles.clickable,
+    ])}
+    onClick={_ => {
+      Copy.copy(data);
+      setCopy(_ => true);
+      let _ = Js.Global.setTimeout(() => setCopy(_ => false), 700);
+      ();
+    }}>
+    {copied
+       ? <img src=Images.tickIcon className=Styles.logo />
+       : <img src=Images.copy className=Styles.logo />}
     <HSpacing size=Spacing.sm />
-    <Text value=title size=Text.Sm block=true color=Colors.bandBlue nowrap=true />
+    <Text value=title size=Text.Md block=true color=Colors.bandBlue nowrap=true />
   </div>;
 };
-
-module Modern = {
-  [@react.component]
-  let make = (~data, ~title, ~width=105, ~py=5, ~px=10, ~pySm=py, ~pxSm=px) => {
-    let (copied, setCopy) = React.useState(_ => false);
-    <div
-      className={Css.merge([
-        CssHelper.btn(~variant=Outline, ~px, ~py, ~pxSm, ~pySm, ()),
-        CssHelper.flexBox(~align=`center, ~justify=`center, ()),
-        Styles.clickable,
-      ])}
-      onClick={_ => {
-        Copy.copy(data);
-        setCopy(_ => true);
-        let _ = Js.Global.setTimeout(() => setCopy(_ => false), 700);
-        ();
-      }}>
-      {copied
-         ? <img src=Images.tickIcon className=Styles.logo />
-         : <img src=Images.copy className=Styles.logo />}
-      <HSpacing size=Spacing.sm />
-      <Text value=title size=Text.Md block=true color=Colors.bandBlue nowrap=true />
-    </div>;
-  };
-};
+// };

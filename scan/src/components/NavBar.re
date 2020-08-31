@@ -148,6 +148,7 @@ let make = () => {
         ("Data Sources", DataSourceHomePage),
         ("Oracle Scripts", OracleScriptHomePage),
         ("Requests", RequestHomePage),
+        ("Proposals", ProposalHomePage),
       ])
     | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
     };
