@@ -50,6 +50,16 @@ module Styles = {
         paddingLeft(`px(10)),
       ]),
     ]);
+
+  // uptimeBar
+
+  let progressUptimeInner = (p, color) =>
+    style([
+      width(`percent(p)),
+      height(`percent(100.)),
+      borderRadius(`px(7)),
+      background(color),
+    ]);
 };
 
 [@react.component]
@@ -74,4 +84,22 @@ let make = (~reportedValidators, ~minimumValidators, ~requestValidators) => {
       />
     </div>
   </div>;
+};
+
+module Uptime = {
+  [@react.component]
+  let make = (~percent) => {
+    let color =
+      if (percent == 100.) {
+        Colors.bandBlue;
+      } else if (percent < 100. && percent >= 79.) {
+        Colors.blue11;
+      } else {
+        Colors.red4;
+      };
+
+    <div className=Styles.progressOuter>
+      <div className={Styles.progressUptimeInner(percent, color)} />
+    </div>;
+  };
 };

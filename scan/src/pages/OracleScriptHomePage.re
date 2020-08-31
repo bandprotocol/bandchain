@@ -27,7 +27,7 @@ let defaultCompare = (a: OracleScriptSub.t, b: OracleScriptSub.t) =>
   if (a.timestamp != b.timestamp) {
     compare(b.id |> ID.OracleScript.toInt, a.id |> ID.OracleScript.toInt);
   } else {
-    compare(b.request, a.request);
+    compare(b.requestCount, a.requestCount);
   };
 
 let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
@@ -36,7 +36,7 @@ let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
   ->Belt.List.sort((a, b) => {
       let result = {
         switch (sortedBy) {
-        | MostRequested => compare(b.request, a.request)
+        | MostRequested => compare(b.requestCount, a.requestCount)
         | LatestUpdate => compare(b.timestamp, a.timestamp)
         };
       };
@@ -86,21 +86,31 @@ let renderMostRequestedCard =
         <div className=Styles.requestResponseBox>
           <Heading size=Heading.H5 value="Requests" marginBottom=8 />
           {switch (oracleScriptSub) {
-           | Data({request}) =>
-             <Text size=Text.Lg value={request |> Format.iPretty} weight=Text.Regular block=true />
+           | Data({requestCount}) =>
+             <Text
+               size=Text.Lg
+               value={requestCount |> Format.iPretty}
+               weight=Text.Regular
+               block=true
+             />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
         <div className=Styles.requestResponseBox>
           <Heading size=Heading.H5 value="Response time" marginBottom=8 />
           {switch (oracleScriptSub) {
-           | Data({responseTime}) =>
-             <Text
-               size=Text.Lg
-               value={(responseTime |> Format.iPretty) ++ "ms"}
-               weight=Text.Regular
-               block=true
-             />
+           | Data({responseTime: responseTimeOpt}) =>
+             switch (responseTimeOpt) {
+             | Some(responseTime') =>
+               <Text
+                 size=Text.Lg
+                 value={(responseTime' |> Format.fPretty(~digits=2)) ++ " s"}
+                 weight=Text.Regular
+                 block=true
+               />
+             | None => <Text value="TBD" />
+             }
+
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -119,7 +129,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
@@ -148,11 +158,11 @@ let renderBody =
             (),
           )}>
           {switch (oracleScriptSub) {
-           | Data({request, responseTime}) =>
+           | Data({requestCount, responseTime: responseTimeOpt}) =>
              <>
                <div>
                  <Text
-                   value={request |> Format.iPretty}
+                   value={requestCount |> Format.iPretty}
                    weight=Text.Medium
                    block=true
                    ellipsis=true
@@ -161,7 +171,13 @@ let renderBody =
                </div>
                <div>
                  <Text
-                   value={"(" ++ (responseTime |> Format.iPretty) ++ "ms)"}
+                   value={
+                     switch (responseTimeOpt) {
+                     | Some(responseTime') =>
+                       "(" ++ (responseTime' |> Format.fPretty(~digits=2)) ++ " s)"
+                     | None => "(TBD)"
+                     }
+                   }
                    weight=Text.Medium
                    block=true
                    color=Colors.gray6
@@ -187,7 +203,11 @@ let renderBody =
                />
              | None => <Text value="Genesis" />
              }
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
            }}
         </div>
       </Col.Grid>
@@ -198,12 +218,12 @@ let renderBody =
 let renderBodyMobile =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
   switch (oracleScriptSub) {
-  | Data({id, timestamp: timestampOpt, description, name, request, responseTime}) =>
+  | Data({id, timestamp: timestampOpt, description, name, requestCount, responseTime}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
-        ("Request&\nResponse time", RequestResponse({request, responseTime})),
+        ("Request&\nResponse time", RequestResponse({requestCount, responseTime})),
         (
           "Timestamp",
           switch (timestampOpt) {
@@ -251,8 +271,7 @@ let make = () => {
   let oracleScriptsCountSub = OracleScriptSub.count(~searchTerm, ());
   let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
 
-  //TODO: we will implement another subscribe function for getting the most requested oracle scripts
-  let oracleScriptTopPart =
+  let mostRequestedOracleScriptSub =
     OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
 
   let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
@@ -263,16 +282,15 @@ let make = () => {
         <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
         <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
         <Row.Grid>
-          {switch (oracleScriptTopPart) {
+          {switch (mostRequestedOracleScriptSub) {
            | Data(oracleScripts) =>
              <>
                {oracleScripts
-                ->sorting(MostRequested)
                 ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, Sub.resolve(e)))
                 ->React.array}
              </>
            | _ =>
-             Belt_Array.make(6, ApolloHooks.Subscription.NoData)
+             Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
              ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
              ->React.array
            }}
@@ -291,14 +309,16 @@ let make = () => {
             <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
           </Col.Grid>
           <Col.Grid col=Col.Six colSm=Col.Four>
-            <SortableDropdown
-              sortedBy
-              setSortedBy
-              sortList=[
-                (MostRequested, getName(MostRequested)),
-                (LatestUpdate, getName(LatestUpdate)),
-              ]
-            />
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
+              />
+            </div>
           </Col.Grid>
         </Row.Grid>
         {isMobile

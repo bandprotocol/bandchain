@@ -4,23 +4,24 @@ import (
 	"fmt"
 	"strconv"
 
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type rawRequest struct {
-	dataSourceID   otypes.DataSourceID
+	dataSourceID   types.DataSourceID
 	dataSourceHash string
-	externalID     otypes.ExternalID
+	externalID     types.ExternalID
 	calldata       string
 }
 
 // GetRawRequests returns the list of all raw data requests in the given log.
 func GetRawRequests(log sdk.ABCIMessageLog) ([]rawRequest, error) {
-	dataSourceIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyDataSourceID)
-	dataSourceHashList := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyDataSourceHash)
-	externalIDs := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyExternalID)
-	calldataList := GetEventValues(log, otypes.EventTypeRawRequest, otypes.AttributeKeyCalldata)
+	dataSourceIDs := GetEventValues(log, types.EventTypeRawRequest, types.AttributeKeyDataSourceID)
+	dataSourceHashList := GetEventValues(log, types.EventTypeRawRequest, types.AttributeKeyDataSourceHash)
+	externalIDs := GetEventValues(log, types.EventTypeRawRequest, types.AttributeKeyExternalID)
+	calldataList := GetEventValues(log, types.EventTypeRawRequest, types.AttributeKeyCalldata)
 
 	if len(dataSourceIDs) != len(externalIDs) {
 		return nil, fmt.Errorf("Inconsistent data source count and external ID count")
@@ -42,9 +43,9 @@ func GetRawRequests(log sdk.ABCIMessageLog) ([]rawRequest, error) {
 		}
 
 		reqs = append(reqs, rawRequest{
-			dataSourceID:   otypes.DataSourceID(dataSourceID),
+			dataSourceID:   types.DataSourceID(dataSourceID),
 			dataSourceHash: dataSourceHashList[idx],
-			externalID:     otypes.ExternalID(externalID),
+			externalID:     types.ExternalID(externalID),
 			calldata:       calldataList[idx],
 		})
 	}

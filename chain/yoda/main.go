@@ -22,6 +22,7 @@ const (
 	flagBroadcastTimeout = "broadcast-timeout"
 	flagRPCPollInterval  = "rpc-poll-interval"
 	flagMaxTry           = "max-try"
+	flagMaxReport        = "max-report"
 )
 
 // Config data structure for yoda daemon.
@@ -35,6 +36,7 @@ type Config struct {
 	BroadcastTimeout string `mapstructure:"broadcast-timeout"` // The time that Yoda will wait for tx commit
 	RPCPollInterval  string `mapstructure:"rpc-poll-interval"` // The duration of rpc poll interval
 	MaxTry           uint64 `mapstructure:"max-try"`           // The maximum number of tries to submit a report transaction
+	MaxReport        uint64 `mapstructure:"max-report"`        // The maximum number of reports in one transaction
 }
 
 // Global instances.

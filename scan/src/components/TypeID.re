@@ -59,3 +59,4 @@ module DataSource = ComponentCreator(ID.DataSource);
 module OracleScript = ComponentCreator(ID.OracleScript);
 module Request = ComponentCreator(ID.Request);
 module Block = ComponentCreator(ID.Block);
+module Proposal = ComponentCreator(ID.Proposal);

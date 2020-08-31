@@ -163,7 +163,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		app.emitSetDataSource(types.DataSourceID(idx+1), ds, nil)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		app.emitNewOracleScript(types.OracleScriptID(idx+1), os, nil)
+		app.emitSetOracleScript(types.OracleScriptID(idx+1), os, nil)
 	}
 	app.FlushMessages()
 	return res
