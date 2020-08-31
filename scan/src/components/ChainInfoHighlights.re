@@ -6,7 +6,7 @@ module Styles = {
       position(`relative),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(0, 0, 0, 0.1))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       Media.smallMobile([margin2(~v=`zero, ~h=`px(-5))]),
     ]);
 
@@ -55,7 +55,7 @@ module HighlightCard = {
         {switch (valueAndExtraComponentSub) {
          | Data((valueComponent, extraComponent)) =>
            <>
-             <Text value=label size=Text.Lg color=Colors.gray7 weight=Text.Medium block=true />
+             <Text value=label size=Text.Lg color=Colors.gray7 weight=Text.Semibold block=true />
              valueComponent
              extraComponent
            </>
@@ -90,7 +90,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
           (
             {
               let bandPriceInUSD = "$" ++ (financial.usdPrice |> Format.fPretty(~digits=2));
-              <Text value=bandPriceInUSD size=Text.Xxxl color=Colors.gray8 code=true />;
+              <Text value=bandPriceInUSD size=Text.Xxxl color=Colors.gray7 code=true />;
             },
             {
               let bandPriceInBTC = financial.btcPrice;
@@ -103,7 +103,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
                 ])}>
                 <Text
                   value={bandPriceInBTC->Format.fPretty ++ " BTC"}
-                  color=Colors.gray7
+                  color=Colors.gray6
                   code=true
                   spacing={Text.Em(0.01)}
                 />
@@ -135,7 +135,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
               <Text
                 value={"$" ++ (financial.usdMarketCap |> Format.fCurrency)}
                 size=Text.Xxxl
-                color=Colors.gray8
+                color=Colors.gray7
                 code=true
               />;
             },
@@ -180,7 +180,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
           (
             {
               let activeValidators = activeValidatorCount->Format.iPretty ++ " Nodes";
-              <Text value=activeValidators size=Text.Xxxl color=Colors.gray8 />;
+              <Text value=activeValidators size=Text.Xxxl color=Colors.gray7 />;
             },
             <Text
               value={
