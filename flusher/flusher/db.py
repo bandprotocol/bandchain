@@ -342,7 +342,7 @@ reporters = sa.Table(
     "reporters",
     metadata,
     Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
-    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("operator_address", sa.String, primary_key=True),
 )
 
 related_data_source_oracle_scripts = sa.Table(
@@ -358,6 +358,13 @@ historical_oracle_statuses = sa.Table(
     Column("operator_address", sa.String, primary_key=True),
     Column("status", sa.Boolean),
     Column("timestamp", CustomDateTime, primary_key=True),
+)
+
+data_source_requests = sa.Table(
+    "data_source_requests",
+    metadata,
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
+    Column("count", sa.Integer),
 )
 
 oracle_script_requests = sa.Table(

@@ -39,6 +39,7 @@ type t =
   | Uptime(option(float))
   | Loading(int)
   | Text(string)
+  | Status(bool)
   | Nothing;
 
 module Styles = {
@@ -54,6 +55,7 @@ module Styles = {
       backgroundColor(color),
       borderRadius(`px(15)),
     ]);
+  let logo = style([width(`px(20))]);
 };
 
 [@react.component]
@@ -136,7 +138,12 @@ let make = (~info) => {
         block=true
       />
     }
-  | CopyButton(calldata) => <CopyButton data=calldata title="Copy as bytes" />
+  | CopyButton(calldata) =>
+    <CopyButton
+      data={calldata |> JsBuffer.toHex(~with0x=false)}
+      title="Copy as bytes"
+      width=125
+    />
   | Percentage(value, digits) => <Text value={value |> Format.fPercent(~digits?)} />
   | Text(text) =>
     <Text value=text spacing={Text.Em(0.02)} nowrap=true ellipsis=true block=true />
@@ -172,6 +179,8 @@ let make = (~info) => {
         block=true
       />
     </div>
+  | Status(status) => <img src={status ? Images.success : Images.fail} className=Styles.logo />
+
   // Special case for uptime to have loading state inside.
   | Uptime(uptimeOpt) =>
     switch (uptimeOpt) {
@@ -179,7 +188,7 @@ let make = (~info) => {
       <div className=Styles.vFlex>
         <Text value={uptime |> Format.fPercent(~digits=2)} spacing={Text.Em(0.02)} nowrap=true />
         <HSpacing size=Spacing.lg />
-        <UptimeBar percent=uptime />
+        <ProgressBar.Uptime percent=uptime />
       </div>
     | None => <Text value="N/A" nowrap=true />
     }

@@ -49,13 +49,13 @@ let make = (~id: ID.Request.t) => {
     {switch (proofOpt) {
      | Some(proof) =>
        <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
-         <CopyButton.Modern
+         <CopyButton
            data={proof.evmProofBytes |> JsBuffer.toHex(~with0x=false)}
            title={isMobile ? "EVM" : "Copy EVM proof"}
            py=10
            px=14
          />
-         <CopyButton.Modern
+         <CopyButton
            data={
              proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)
            }

@@ -18,7 +18,7 @@ let make = () => {
         </Row.Grid>
       </div>
     </Section>
-    <Section pt=40 pb=80 pbSm=40>
+    <Section pt=40 pb=80 pbSm=40 bg=Colors.white>
       <div className=CssHelper.container>
         <Row.Grid>
           <Col.Grid col=Col.Four> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col.Grid>

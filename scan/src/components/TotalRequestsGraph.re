@@ -31,8 +31,6 @@ module Styles = {
       display(show ? `flex : `none),
     ]);
 
-  let loadingBox = style([width(`percent(100.))]);
-
   let chart = show => style([important(display(show ? `block : `none))]);
 };
 
@@ -193,8 +191,7 @@ let make = () => {
       ])}>
       <Heading value="Total Requests" size=Heading.H4 />
       <HSpacing size=Spacing.xs />
-      //TODO: remove mock message later
-      <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
+      <CTooltip tooltipText="The total number of oracle data requests made">
         <Icon name="fal fa-info-circle" size=10 />
       </CTooltip>
     </div>
@@ -215,7 +212,7 @@ let make = () => {
            />
          </div>
        </div>;
-     | _ => <LoadingCensorBar width=100 height=200 style=Styles.loadingBox />
+     | _ => <LoadingCensorBar fullWidth=true height=200 />
      }}
   </div>;
 };

@@ -73,7 +73,7 @@ let make = (~request: RequestSub.t) => {
     <>
       <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
         <ShowProofButton showProof setShowProof />
-        <CopyButton.Modern
+        <CopyButton
           data={proof.evmProofBytes |> JsBuffer.toHex(~with0x=false)}
           title={isMobile ? "EVM" : "Copy EVM proof"}
           py=12
@@ -81,7 +81,7 @@ let make = (~request: RequestSub.t) => {
           pySm=10
           pxSm=12
         />
-        <CopyButton.Modern
+        <CopyButton
           data={proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)}
           title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
           py=12

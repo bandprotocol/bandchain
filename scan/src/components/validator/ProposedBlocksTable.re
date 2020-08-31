@@ -63,7 +63,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+    <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
@@ -96,7 +96,11 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
                weight=Text.Regular
                textAlign=Text.Right
              />
-           | _ => <LoadingCensorBar width=100 height=15 />
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
            }}
         </div>
       </Col.Grid>

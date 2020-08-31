@@ -50,9 +50,6 @@ module Styles = {
     ]);
 
   let iconBody = style([width(`px(20)), height(`px(20))]);
-
-  let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
-
   let copyContainer =
     style([
       position(`absolute),
@@ -196,7 +193,7 @@ module GenerateDecodeCode = {
         </Col.Grid>
       </Row.Grid>
       <div className=Styles.tableLowerContainer>
-        <div className=Styles.copyContainer> <CopyButton.Modern data=code title="Copy Code" /> </div>
+        <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>
         {code |> renderCode}
       </div>
     </>;
@@ -213,11 +210,10 @@ let make = (~schema) => {
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Heading size=Heading.H5 value="Target Platform" />
           <HSpacing size=Spacing.xs />
-          //TODO: remove mock message later
           <CTooltip
             tooltipPlacementSm=CTooltip.BottomLeft
-            tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-            <img className=Styles.infoIcon src=Images.infoIcon />
+            tooltipText="The target platform to which to generate the code for">
+            <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
         <div className=Styles.selectWrapper>
@@ -244,9 +240,8 @@ let make = (~schema) => {
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Heading size=Heading.H5 value="Language" />
           <HSpacing size=Spacing.xs />
-          //TODO: remove mock message later
-          <CTooltip tooltipText="Lorem ipsum, or lipsum as it is sometimes known.">
-            <img className=Styles.infoIcon src=Images.infoIcon />
+          <CTooltip tooltipText="The programming language">
+            <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
         <div className=Styles.selectWrapper>
@@ -285,7 +280,7 @@ let make = (~schema) => {
       </Col.Grid>
     </Row.Grid>
     <div className=Styles.tableLowerContainer>
-      <div className=Styles.copyContainer> <CopyButton.Modern data=schema title="Copy Code" /> </div>
+      <div className=Styles.copyContainer> <CopyButton data=schema title="Copy Code" /> </div>
       {schema |> renderCode}
     </div>
     <GenerateDecodeCode language schema dataType=Obi.Params />

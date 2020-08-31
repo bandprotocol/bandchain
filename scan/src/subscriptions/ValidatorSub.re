@@ -111,13 +111,8 @@ type validator_vote_t = {
   voted: bool,
 };
 
-type historical_oracle_statuses_t = {
-  status: bool,
-  timestamp: MomentRe.Moment.t,
-};
-
 type historical_oracle_statuses_count_t = {
-  oracleStatusReports: array(historical_oracle_statuses_t),
+  oracleStatusReports: array(HistoryOracleParser.t),
   uptimeCount: int,
   downtimeCount: int,
 };
@@ -404,65 +399,26 @@ let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
         ),
     );
   let%Sub x = result;
+
+  let startDate = greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix;
+
   let oracleStatusReports =
     x##historical_oracle_statuses->Belt.Array.size > 0
       ? x##historical_oracle_statuses
         ->Belt.Array.map(each =>
-            {status: each##status, timestamp: each##timestamp |> GraphQLParser.timestamp}
+            {
+              HistoryOracleParser.status: each##status,
+              timestamp: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
+            }
           )
         ->Belt.List.fromArray
-      : [{timestamp: greater |> MomentRe.Moment.startOf(`day), status: oracleStatus}];
+      : [{timestamp: startDate, status: oracleStatus}];
 
-  let normalizedDate =
-    oracleStatusReports->Belt_List.map(({timestamp, status}) =>
-      if (status) {
-        {
-          timestamp:
-            timestamp
-            |> MomentRe.Moment.startOf(`day)
-            |> MomentRe.Moment.add(~duration=MomentRe.duration(1., `days)),
-          status: true,
-        };
-      } else {
-        {timestamp: timestamp |> MomentRe.Moment.startOf(`day), status: false};
-      }
-    );
-
-  let optimizedDate =
-    normalizedDate
-    ->Belt_List.add({
-        timestamp: greater |> MomentRe.Moment.startOf(`day),
-        status: !normalizedDate->Belt_List.headExn.status,
-      })
-    ->Belt_List.zip(
-        normalizedDate->Belt_List.concat([
-          {
-            timestamp:
-              MomentRe.momentNow()
-              |> MomentRe.Moment.defaultUtc
-              |> MomentRe.Moment.startOf(`day)
-              |> MomentRe.Moment.add(~duration=MomentRe.duration(1., `days)),
-            status: false,
-          },
-        ]),
-      );
-  let response =
-    {
-      let%IterList ({timestamp: st, status}, {timestamp: en, _}) = optimizedDate;
-      Belt_List.makeBy(en->MomentRe.diff(st, `days)->int_of_float, idx =>
-        {
-          timestamp:
-            st |> MomentRe.Moment.add(~duration=MomentRe.duration(idx |> float_of_int, `days)),
-          status,
-        }
-      );
-    }
-    ->Belt.List.toArray
-    ->Belt.Array.sliceToEnd(1);
+  let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
 
   Sub.resolve({
-    oracleStatusReports: response,
-    uptimeCount: response->Belt.Array.keep(({status}) => status)->Belt.Array.size,
-    downtimeCount: response->Belt.Array.keep(({status}) => !status)->Belt.Array.size,
+    oracleStatusReports: parsedReports,
+    uptimeCount: parsedReports->Belt.Array.keep(({status}) => status)->Belt.Array.size,
+    downtimeCount: parsedReports->Belt.Array.keep(({status}) => !status)->Belt.Array.size,
   });
 };

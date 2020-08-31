@@ -30,6 +30,14 @@ module RawRequestID = {
   let defaultTab = ();
 };
 
+module RawProposalID = {
+  type tab_t = unit;
+  let prefix = "#P";
+  let color = Colors.bandBlue;
+  let route = (id, _) => Route.ProposalIndexPage(id);
+  let defaultTab = ();
+};
+
 module RawBlock = {
   type tab_t = unit;
   let prefix = "#B";
@@ -77,4 +85,5 @@ module IDCreator = (RawID: RawIDSig) => {
 module DataSource = IDCreator(RawDataSourceID);
 module OracleScript = IDCreator(RawOracleScriptID);
 module Request = IDCreator(RawRequestID);
+module Proposal = IDCreator(RawProposalID);
 module Block = IDCreator(RawBlock);
