@@ -1,10 +1,10 @@
 const { expectRevert } = require("openzeppelin-test-helpers");
-const BridgeWithCache = artifacts.require("BridgeWithCache");
+const CacheBridge = artifacts.require("CacheBridge");
 const BridgeCacheConsumerMock = artifacts.require("BridgeCacheConsumerMock");
 
 require("chai").should();
 
-contract("BridgeWithCache", ([_, owner, alice, bob]) => {
+contract("CacheBridge", ([_, owner, alice, bob]) => {
   context(
     "Checking oracle state relaying and consumtion  (4 validators)",
     () => {
@@ -16,7 +16,7 @@ contract("BridgeWithCache", ([_, owner, alice, bob]) => {
           "4",
           "4",
         ];
-        this.cache = await BridgeWithCache.new(
+        this.cache = await CacheBridge.new(
           [
             ["0x652D89a66Eb4eA55366c45b1f9ACfc8e2179E1c5", 100],
             ["0x88e1cd00710495EEB93D4f522d16bC8B87Cb00FE", 100],
