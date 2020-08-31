@@ -110,15 +110,33 @@ def init(chain_id, topic, db):
     )
     engine.execute(
         """
-        CREATE VIEW validator_vote_proposals_view AS
-        SELECT
-        validator_id,
-        proposal_id,
-        answer,
-        CAST(SUM(shares) AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount
-        FROM delegations
-        JOIN votes ON votes.voter_id = delegations.delegator_id
-        JOIN validators ON validators.id = delegations.validator_id AND votes.voter_id = validators.account_id
-        JOIN accounts ON accounts.id = delegations.delegator_id
-        GROUP BY answer, validator_id , proposal_id, delegator_shares, tokens;"""
+CREATE VIEW validator_vote_proposals_view AS
+SELECT validator_id,
+       proposal_id,
+       answer,
+       Sum(Cast(shares AS DECIMAL) * Cast(tokens AS DECIMAL) / Cast(delegator_shares AS DECIMAL)) AS amount
+FROM delegations
+JOIN votes ON votes.voter_id = delegations.delegator_id
+JOIN validators ON validators.id = delegations.validator_id
+JOIN accounts ON accounts.id = delegations.delegator_id GROUP  BY answer, validator_id, proposal_id;
+"""
+    )
+
+    engine.execute(
+        """
+CREATE VIEW validator_vote_proposals_view AS
+SELECT validators.id,
+       proposal_id,
+       answer,
+       amount
+FROM votes
+JOIN accounts ON accounts.id = votes.voter_id
+JOIN validators ON accounts.id = validators.account_id
+JOIN
+  (SELECT Sum(Cast(shares AS DECIMAL) * Cast(tokens AS DECIMAL) / Cast(delegator_shares AS DECIMAL)) AS amount,
+          validator_id
+   FROM delegations
+   JOIN validators ON delegations.validator_id = validators.id
+   JOIN accounts ON accounts.id = delegations.delegator_id GROUP  BY validator_id) tt ON tt.validator_id = validators.id;
+"""
     )
