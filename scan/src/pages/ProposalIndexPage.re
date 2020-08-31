@@ -202,6 +202,7 @@ let make = (~proposalID) => {
               ])}>
               // TODO: will add the button on the voting issue
                <Heading value="Results" size=Heading.H4 /> </div>
+            //TODO: will re-structure when the data is wired up.
             <div className=Styles.resultContainer>
               <ProgressBar.Voting label="Yes" amount=3600000 percent=90 />
               <ProgressBar.Voting label="No" amount=200000 percent=5 />
