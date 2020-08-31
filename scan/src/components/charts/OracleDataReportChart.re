@@ -46,7 +46,7 @@ module Item = {
       mobile=false
       align=`center
       pd=10
-      tooltipText={timestamp |> MomentRe.Moment.format("YYYY-MM-DD")}
+      tooltipText={timestamp |> MomentRe.momentWithUnix |> MomentRe.Moment.format("YYYY-MM-DD")}
       styles=Styles.blockContainer>
       <div className={Css.merge([Styles.blockBase, Styles.status(status)])} />
     </CTooltip>;
@@ -72,10 +72,7 @@ let make = (~oracleStatus, ~operatorAddress) => {
              oracleStatusReports
              ->Belt.Array.mapWithIndex((i, {timestamp, status}) =>
                  <Item
-                   key={
-                     (i |> string_of_int)
-                     ++ (timestamp |> MomentRe.Moment.format("YYYY-MM-DD HH:mm:ss.SSS"))
-                   }
+                   key={(i |> string_of_int) ++ (timestamp |> string_of_int)}
                    status
                    timestamp
                  />

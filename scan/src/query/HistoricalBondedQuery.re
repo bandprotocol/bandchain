@@ -1,6 +1,6 @@
 type t = {
   t: int,
-  y: int,
+  y: float,
 };
 
 module HistoricalConfig = [%graphql
@@ -31,8 +31,7 @@ let get = operatorAddress => {
     x->Belt.Array.map(each => {
       Js.Json.{
         t: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
-        y:
-          (each##bonded_tokens |> decodeString |> Belt.Option.getExn |> int_of_string) / 1_000_000,
+        y: (each##bonded_tokens |> decodeString |> Belt.Option.getExn |> float_of_string) /. 1e6,
       }
     }),
   );
