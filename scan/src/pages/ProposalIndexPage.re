@@ -5,6 +5,7 @@ module Styles = {
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
       padding(`px(24)),
+      height(`percent(100.)),
       position(`relative),
       Media.mobile([padding(`px(16))]),
     ]);
@@ -25,6 +26,18 @@ module Styles = {
     ]);
 
   let statusLogo = style([width(`px(20))]);
+  let resultContainer =
+    style([
+      margin3(~top=`px(40), ~h=`zero, ~bottom=`px(20)),
+      selector("> div + div", [marginTop(`px(24))]),
+    ]);
+  let separatorLine =
+    style([
+      borderStyle(`none),
+      backgroundColor(Colors.gray9),
+      height(`px(1)),
+      margin2(~v=`px(24), ~h=`auto),
+    ]);
 };
 
 [@react.component]
@@ -106,6 +119,95 @@ let make = (~proposalID) => {
                  }}
               </Col.Grid>
             </Row.Grid>
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <Row.Grid>
+        <Col.Grid col=Col.Six mb=24 mbSm=16>
+          <div className=Styles.infoContainer>
+            <Heading
+              value="Voting Overview"
+              size=Heading.H4
+              style=Styles.infoHeader
+              marginBottom=24
+            />
+            <Row.Grid marginTop=38 alignItems=Row.Center>
+              <Col.Grid col=Col.Seven>
+                <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
+                  <TurnoutChart percent=20. />
+                  {isMobile
+                     ? <div>
+                         <Heading value="Total" size=Heading.H5 marginBottom=8 />
+                         //TODO: wire up later
+                         <Text
+                           value={(4000000 |> Format.iPretty) ++ " BAND"}
+                           size=Text.Lg
+                           block=true
+                           color=Colors.gray6
+                         />
+                       </div>
+                     : React.null}
+                </div>
+              </Col.Grid>
+              {isMobile ? <Col.Grid> <hr className=Styles.separatorLine /> </Col.Grid> : React.null}
+              <Col.Grid col=Col.Five>
+                <Row.Grid>
+                  {isMobile
+                     ? React.null
+                     : <Col.Grid mb=24>
+                         <Heading value="Total" size=Heading.H5 marginBottom=8 />
+                         //TODO: wire up later
+                         <Text
+                           value={(4000000 |> Format.iPretty) ++ " BAND"}
+                           size=Text.Lg
+                           block=true
+                           color=Colors.gray6
+                         />
+                       </Col.Grid>}
+                  <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                    <Heading value="Voting Start" size=Heading.H5 marginBottom=8 />
+                    {switch (proposalSub) {
+                     | Data({votingStartTime}) =>
+                       <Timestamp.Grid size=Text.Lg time=votingStartTime />
+                     | _ =>
+                       <>
+                         <LoadingCensorBar width=70 height=15 />
+                         <LoadingCensorBar width=80 height=15 mt=5 />
+                       </>
+                     }}
+                  </Col.Grid>
+                  <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                    <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
+                    {switch (proposalSub) {
+                     | Data({votingEndTime}) => <Timestamp.Grid size=Text.Lg time=votingEndTime />
+                     | _ =>
+                       <>
+                         <LoadingCensorBar width=70 height=15 />
+                         <LoadingCensorBar width=80 height=15 mt=5 />
+                       </>
+                     }}
+                  </Col.Grid>
+                </Row.Grid>
+              </Col.Grid>
+            </Row.Grid>
+          </div>
+        </Col.Grid>
+        <Col.Grid col=Col.Six mb=24 mbSm=16>
+          <div className=Styles.infoContainer>
+            <div
+              className={Css.merge([
+                CssHelper.flexBox(),
+                Styles.infoHeader,
+                CssHelper.mb(~size=24, ()),
+              ])}>
+              // TODO: will add the button on the voting issue
+               <Heading value="Results" size=Heading.H4 /> </div>
+            <div className=Styles.resultContainer>
+              <ProgressBar.Voting label="Yes" amount=3600000 percent=90 />
+              <ProgressBar.Voting label="No" amount=200000 percent=5 />
+              <ProgressBar.Voting label="No with Veto" amount=120000 percent=3 />
+              <ProgressBar.Voting label="Abstain" amount=80000 percent=2 />
+            </div>
           </div>
         </Col.Grid>
       </Row.Grid>

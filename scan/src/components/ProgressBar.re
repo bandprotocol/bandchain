@@ -22,6 +22,7 @@ module Styles = {
       width(`percent(p)),
       height(`percent(100.)),
       borderRadius(`px(7)),
+      transition(~duration=200, "all"),
       background(success ? Colors.bandBlue : Colors.red4),
     ]);
   let leftText =
@@ -59,6 +60,7 @@ module Styles = {
       height(`percent(100.)),
       borderRadius(`px(7)),
       background(color),
+      transition(~duration=200, "all"),
     ]);
 };
 
@@ -129,6 +131,42 @@ module Deposit = {
       </div>
       <div className=Styles.progressOuter>
         <div className={Styles.progressUptimeInner(percent, Colors.bandBlue)} />
+      </div>
+    </div>;
+  };
+};
+
+module Voting = {
+  [@react.component]
+  let make = (~percent, ~label, ~amount) => {
+    <div>
+      <div
+        className={Css.merge([
+          CssHelper.flexBox(~justify=`spaceBetween, ()),
+          CssHelper.mb(~size=8, ()),
+        ])}>
+        <Heading value=label size=Heading.H4 />
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          <Text
+            value={percent |> float_of_int |> Format.fPercent(~digits=2)}
+            size=Text.Lg
+            block=true
+          />
+          {Media.isMobile()
+             ? React.null
+             : <>
+                 <HSpacing size=Spacing.sm />
+                 <Text
+                   value={"(" ++ (amount |> Format.iPretty) ++ " BAND)"}
+                   size=Text.Lg
+                   block=true
+                   color=Colors.gray6
+                 />
+               </>}
+        </div>
+      </div>
+      <div className=Styles.progressOuter>
+        <div className={Styles.progressInner(percent |> float_of_int, true)} />
       </div>
     </div>;
   };
