@@ -208,7 +208,7 @@ class BandChain {
     try {
       let res = await axios.get(requestEndpoint)
       if (res.status == 200 && res.data.result.result != null) {
-        let response = res.data.result.result.ResponsePacketData
+        let response = res.data.result.result.response_packet_data
         response.result = obiObj.decodeOutput(
           Buffer.from(response.result, 'base64'),
         )
@@ -220,8 +220,6 @@ class BandChain {
       throw new Error('Error querying the latest matching request result')
     }
   }
-<<<<<<< Updated upstream
-=======
 
   async getLatestValue(oracleScriptID, parameters) {
     const minCount = 3
@@ -240,7 +238,7 @@ class BandChain {
     const sourceList = [
       {
         id: 8,
-        power: 9,
+        exponent: 9,
         symbols: [
           'BTC',
           'ETH',
@@ -256,7 +254,7 @@ class BandChain {
       },
       {
         id: 9,
-        power: 9,
+        exponent: 9,
         symbols: [
           'EUR',
           'GBP',
@@ -286,12 +284,12 @@ class BandChain {
       [...set].map(async (index) => {
         let result = await this.getLatestValue(sourceList[index].id, {
           symbols: sourceList[index].symbols,
-          multiplier: Math.pow(10, sourceList[index].power),
+          multiplier: Math.pow(10, sourceList[index].exponent),
         })
         return sourceList[index].symbols.map((symbol, id) => {
           symbolDict[symbol] = {
             value: result[id],
-            multiplier: Math.pow(10, sourceList[index].power),
+            multiplier: Math.pow(10, sourceList[index].exponent),
           }
         })
       }),
@@ -326,7 +324,6 @@ class BandChain {
     })
     return data
   }
->>>>>>> Stashed changes
 }
 
 module.exports = BandChain

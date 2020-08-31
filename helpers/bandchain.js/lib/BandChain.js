@@ -42,7 +42,7 @@ function createRequestMsg(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
 
 function _createRequestMsg() {
   _createRequestMsg = (0, _asyncToGenerator2['default'])(
-    /*#__PURE__*/ _regenerator['default'].mark(function _callee14(
+    /*#__PURE__*/ _regenerator['default'].mark(function _callee13(
       cosmos,
       sender,
       oracleScriptID,
@@ -52,16 +52,16 @@ function _createRequestMsg() {
       fee,
     ) {
       var account
-      return _regenerator['default'].wrap(function _callee14$(_context14) {
+      return _regenerator['default'].wrap(function _callee13$(_context13) {
         while (1) {
-          switch ((_context14.prev = _context14.next)) {
+          switch ((_context13.prev = _context13.next)) {
             case 0:
-              _context14.next = 2
+              _context13.next = 2
               return cosmos.getAccounts(sender)
 
             case 2:
-              account = _context14.sent
-              return _context14.abrupt(
+              account = _context13.sent
+              return _context13.abrupt(
                 'return',
                 cosmos.newStdMsg({
                   msgs: [
@@ -87,10 +87,10 @@ function _createRequestMsg() {
 
             case 4:
             case 'end':
-              return _context14.stop()
+              return _context13.stop()
           }
         }
-      }, _callee14)
+      }, _callee13)
     }),
   )
   return _createRequestMsg.apply(this, arguments)
@@ -859,198 +859,23 @@ var BandChain = /*#__PURE__*/ (function () {
       })(),
     },
     {
-      key: 'getLatestPrice',
-      value: (function () {
-        var _getLatestPrice = (0, _asyncToGenerator2['default'])(
-          /*#__PURE__*/ _regenerator['default'].mark(function _callee11(pairs) {
-            var tokenList1,
-              rateList1,
-              multiplier,
-              tokenOracleScriptID,
-              rateOracleScriptID,
-              inputTokens,
-              inputRates,
-              index,
-              symbol,
-              tokenResult,
-              rateResult,
-              data,
-              _index,
-              _symbol,
-              value,
-              _value
-
-            return _regenerator['default'].wrap(
-              function _callee11$(_context11) {
-                while (1) {
-                  switch ((_context11.prev = _context11.next)) {
-                    case 0:
-                      tokenList1 = [
-                        'BTC',
-                        'ETH',
-                        'DAI',
-                        'REP',
-                        'ZRX',
-                        'BAT',
-                        'KNC',
-                        'LINK',
-                        'COMP',
-                        'BAND',
-                      ]
-                      rateList1 = [
-                        'EUR',
-                        'GBP',
-                        'CNY',
-                        'RMB',
-                        'KRW',
-                        'JPY',
-                        'INR',
-                        'RUB',
-                        'CHF',
-                        'AUD',
-                        'BRL',
-                      ]
-                      multiplier = 1e6
-                      tokenOracleScriptID = 8
-                      rateOracleScriptID = 9
-                      inputTokens = []
-                      inputRates = []
-                      index = 0
-
-                    case 8:
-                      if (!(index < pairs.length)) {
-                        _context11.next = 22
-                        break
-                      }
-
-                      symbol = pairs[index].split('/')[0]
-
-                      if (!tokenList1.includes(symbol)) {
-                        _context11.next = 14
-                        break
-                      }
-
-                      inputTokens.push(symbol)
-                      _context11.next = 19
-                      break
-
-                    case 14:
-                      if (!rateList1.includes(symbol)) {
-                        _context11.next = 18
-                        break
-                      }
-
-                      inputRates.push(symbol)
-                      _context11.next = 19
-                      break
-
-                    case 18:
-                      throw new Error('Unsupported symbol ' + symbol)
-
-                    case 19:
-                      index++
-                      _context11.next = 8
-                      break
-
-                    case 22:
-                      tokenResult = []
-                      rateResult = []
-
-                      if (!(inputTokens.length > 0)) {
-                        _context11.next = 28
-                        break
-                      }
-
-                      _context11.next = 27
-                      return this.getLatestValue(tokenOracleScriptID, {
-                        symbols: tokenList1,
-                        multiplier: multiplier,
-                      })
-
-                    case 27:
-                      tokenResult = _context11.sent
-
-                    case 28:
-                      if (!(inputRates.length > 0)) {
-                        _context11.next = 32
-                        break
-                      }
-
-                      _context11.next = 31
-                      return this.getLatestValue(rateOracleScriptID, {
-                        symbols: rateList1,
-                        multiplier: multiplier,
-                      })
-
-                    case 31:
-                      rateResult = _context11.sent
-
-                    case 32:
-                      data = []
-
-                      for (_index = 0; _index < pairs.length; _index++) {
-                        _symbol = pairs[_index].split('/')[0]
-
-                        if (tokenList1.includes(_symbol)) {
-                          value = tokenResult[tokenList1.indexOf(_symbol)]
-                          data.push({
-                            price: Number(value) / multiplier,
-                            rawPrice: {
-                              value: value,
-                              decimals: 6,
-                            },
-                          })
-                        } else {
-                          _value = rateResult[rateList1.indexOf(_symbol)]
-                          data.push({
-                            price: Number(_value) / multiplier,
-                            rawPrice: {
-                              value: _value,
-                              decimals: 6,
-                            },
-                          })
-                        }
-                      }
-
-                      return _context11.abrupt('return', data)
-
-                    case 35:
-                    case 'end':
-                      return _context11.stop()
-                  }
-                }
-              },
-              _callee11,
-              this,
-            )
-          }),
-        )
-
-        function getLatestPrice(_x23) {
-          return _getLatestPrice.apply(this, arguments)
-        }
-
-        return getLatestPrice
-      })(),
-    },
-    {
       key: 'getReferenceData',
       value: (function () {
         var _getReferenceData = (0, _asyncToGenerator2['default'])(
-          /*#__PURE__*/ _regenerator['default'].mark(function _callee13(pairs) {
+          /*#__PURE__*/ _regenerator['default'].mark(function _callee12(pairs) {
             var _this = this
 
             var sourceList, set, symbolDict, data
-            return _regenerator['default'].wrap(function _callee13$(
-              _context13,
+            return _regenerator['default'].wrap(function _callee12$(
+              _context12,
             ) {
               while (1) {
-                switch ((_context13.prev = _context13.next)) {
+                switch ((_context12.prev = _context12.next)) {
                   case 0:
                     sourceList = [
                       {
                         id: 8,
-                        power: 9,
+                        exponent: 9,
                         symbols: [
                           'BTC',
                           'ETH',
@@ -1066,7 +891,7 @@ var BandChain = /*#__PURE__*/ (function () {
                       },
                       {
                         id: 9,
-                        power: 9,
+                        exponent: 9,
                         symbols: [
                           'EUR',
                           'GBP',
@@ -1104,22 +929,22 @@ var BandChain = /*#__PURE__*/ (function () {
                       })
                     })
                     symbolDict = {}
-                    _context13.next = 6
+                    _context12.next = 6
                     return Promise.all(
                       (0, _toConsumableArray2['default'])(set).map(
                         /*#__PURE__*/ (function () {
                           var _ref4 = (0, _asyncToGenerator2['default'])(
                             /*#__PURE__*/ _regenerator['default'].mark(
-                              function _callee12(index) {
+                              function _callee11(index) {
                                 var result
                                 return _regenerator['default'].wrap(
-                                  function _callee12$(_context12) {
+                                  function _callee11$(_context11) {
                                     while (1) {
                                       switch (
-                                        (_context12.prev = _context12.next)
+                                        (_context11.prev = _context11.next)
                                       ) {
                                         case 0:
-                                          _context12.next = 2
+                                          _context11.next = 2
                                           return _this.getLatestValue(
                                             sourceList[index].id,
                                             {
@@ -1127,14 +952,14 @@ var BandChain = /*#__PURE__*/ (function () {
                                                 sourceList[index].symbols,
                                               multiplier: Math.pow(
                                                 10,
-                                                sourceList[index].power,
+                                                sourceList[index].exponent,
                                               ),
                                             },
                                           )
 
                                         case 2:
-                                          result = _context12.sent
-                                          return _context12.abrupt(
+                                          result = _context11.sent
+                                          return _context11.abrupt(
                                             'return',
                                             sourceList[index].symbols.map(
                                               function (symbol, id) {
@@ -1142,7 +967,7 @@ var BandChain = /*#__PURE__*/ (function () {
                                                   value: result[id],
                                                   multiplier: Math.pow(
                                                     10,
-                                                    sourceList[index].power,
+                                                    sourceList[index].exponent,
                                                   ),
                                                 }
                                               },
@@ -1151,17 +976,17 @@ var BandChain = /*#__PURE__*/ (function () {
 
                                         case 4:
                                         case 'end':
-                                          return _context12.stop()
+                                          return _context11.stop()
                                       }
                                     }
                                   },
-                                  _callee12,
+                                  _callee11,
                                 )
                               },
                             ),
                           )
 
-                          return function (_x25) {
+                          return function (_x24) {
                             return _ref4.apply(this, arguments)
                           }
                         })(),
@@ -1205,19 +1030,19 @@ var BandChain = /*#__PURE__*/ (function () {
                         })
                       }
                     })
-                    return _context13.abrupt('return', data)
+                    return _context12.abrupt('return', data)
 
                   case 9:
                   case 'end':
-                    return _context13.stop()
+                    return _context12.stop()
                 }
               }
             },
-            _callee13)
+            _callee12)
           }),
         )
 
-        function getReferenceData(_x24) {
+        function getReferenceData(_x23) {
           return _getReferenceData.apply(this, arguments)
         }
 
