@@ -3,7 +3,8 @@
   "scripts": {
     "build": "rm -rf dist/ && bsb -make-world && parcel build index.html --no-source-maps --no-cache",
     "start": "bsb -make-world -w",
-    "test": "yarn build && yarn jest --coverage"
+    "test:dev": "yarn jest --coverage",
+    "test": "yarn build && yarn test:dev"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -12,7 +13,7 @@
     "@ledgerhq/hw-transport-webhid": "^5.19.0",
     "@ledgerhq/hw-transport-webusb": "^5.19.0",
     "@material-ui/core": "^4.11.0",
-    "@sentry/browser": "^5.21.4",
+    "@sentry/browser": "^5.22.3",
     "axios": "^0.19.2",
     "axios-hook": "^0.0.6",
     "axios-hooks": "^2.1.0",
@@ -25,11 +26,13 @@
     "chart.js": "^2.9.3",
     "clipboard-copy": "^3.1.0",
     "crypto": "^1.0.1",
+    "html-react-parser": "^0.13.0",
     "js-sha256": "^0.9.0",
     "ledger-cosmos-js": "^2.1.7",
+    "marked": "^1.1.1",
     "moment": "^2.27.0",
     "obi.js": "^1.0.2",
-    "parcel-plugin-custom-dist-structure": "^1.1.14",
+    "parcel-plugin-custom-dist-structure": "^1.1.16",
     "react": "^16.13.1",
     "react-countup": "^4.3.3",
     "react-dom": "^16.13.1",
@@ -48,7 +51,7 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^4.2.2",
-    "html-webpack-plugin": "^4.3.0",
+    "html-webpack-plugin": "^4.4.1",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^1.2.1",
     "webpack": "^4.44.1",

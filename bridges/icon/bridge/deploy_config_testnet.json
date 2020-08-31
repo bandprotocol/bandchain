@@ -1,0 +1,19 @@
+{
+  "uri": "https://bicon.net.solidwallet.io/api/v3",
+  "nid": "0x3",
+  "keyStore": null,
+  "from": "hx55814f724bbffe49bfa4555535cd9d7e0e1dff32",
+  "to": "cx0000000000000000000000000000000000000000",
+  "deploy": {
+    "stepLimit": "0x279d7dae0",
+    "contentType": "zip",
+    "mode": "install",
+    "scoreParams": {
+      "validators_bytes": "00000004000000401d02f04ce20a5b470097e1929b10433fcdb2b547f8bfffb6abf89255bb58dbfc829c9ecaaeceae49c95d9aa5ca4e502aa09363cb3766b4761419b1d41f477a6d00000000000f42400000004018ef37e456db4cab9df8e46f8f0ab8146efaf0f252722428a117edc2cf27a9a82398cd0aa752c6d80a56334a7e9419ddcfd87b0219c738bb93053cc86ab7adb500000000000f424000000040744cbc2fc1e3e81930171e62b616fe3cf58ff1488329b3ef170932a2cee836125a3ed3cc79f39c9c9ea3f659a1a4a95784fc181ebbf25c4a08f96db7fe59326500000000000f424000000040efdbe4f27a0117d1c46df243a7ece18e932548e1aab40a337552feaa96c0a2f9233bacf4c53ed07ad519afd3ffa21ab905d0b43a64def7c3f7319ee0fc1178fb00000000000f4240"
+    }
+  },
+  "txresult": {},
+  "transfer": {
+    "stepLimit": "0x300000"
+  }
+}

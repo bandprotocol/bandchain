@@ -18,6 +18,8 @@
 
 ### Scan
 
+- (feat) [\#2578](https://github.com/bandprotocol/bandchain/pull/2578) Implemented the top part for proposal index page, markdown component
+- (bugs) [\#2576](https://github.com/bandprotocol/bandchain/pull/2576) Fix overflow value on History Bonded Token, implement HistoryOracleParser and unit test.
 - (impv) [\#2573](https://github.com/bandprotocol/bandchain/pull/2573) Added tooltip text to each place which is lorem
 - (feat) [\#2570](https://github.com/bandprotocol/bandchain/pull/2570) Created ProposalSub and ProposalHomepage, and also implemented the route for both home and index page
 - (bugs) [\#2568](https://github.com/bandprotocol/bandchain/pull/2568) Updated reporters subscription
@@ -36,6 +38,8 @@
 
 ### Bridges
 
+- (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge.
+
 ### Runtime
 
 ### Owasm
@@ -43,5 +47,7 @@
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
+
+- (impv) [\#2577](https://github.com/bandprotocol/bandchain/pull/2577) Wallet module completion
 
 ### MISC
