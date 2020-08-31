@@ -38,6 +38,8 @@
 
 ### Bridges
 
+- (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge.
+
 ### Runtime
 
 ### Owasm
