@@ -10,6 +10,21 @@ module Styles = {
     ]);
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
+
+  let tableContainer =
+    style([
+      backgroundColor(Colors.white),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      Media.mobile([margin2(~h=`px(-15), ~v=`zero), padding2(~h=`px(16), ~v=`zero)]),
+    ]);
+
+  let tableHeader =
+    style([
+      padding2(~v=`px(16), ~h=`px(24)),
+      Media.mobile([padding2(~v=`px(14), ~h=`px(12))]),
+    ]);
+
+  let statusLogo = style([width(`px(20))]);
 };
 
 [@react.component]
@@ -47,7 +62,7 @@ let make = (~proposalID) => {
           </div>
         </Col.Grid>
       </Row.Grid>
-      <Row.Grid>
+      <Row.Grid marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
             <Row.Grid>
@@ -82,7 +97,7 @@ let make = (~proposalID) => {
                  }}
               </Col.Grid>
             </Row.Grid>
-            <Row.Grid marginBottom=24>
+            <Row.Grid>
               <Col.Grid>
                 <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (proposalSub) {
@@ -94,6 +109,49 @@ let make = (~proposalID) => {
           </div>
         </Col.Grid>
       </Row.Grid>
+      <Row.Grid marginBottom=24>
+        <Col.Grid>
+          <div className=Styles.infoContainer>
+            <Row.Grid>
+              <Col.Grid>
+                <Heading value="Deposit" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
+              </Col.Grid>
+              <Col.Grid col=Col.Six mbSm=24>
+                <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
+                {switch (proposalSub) {
+                 | Data({depositAmount, status}) =>
+                   switch (status) {
+                   | ProposalSub.Deposit => <ProgressBar.Deposit depositAmount />
+                   | _ =>
+                     <div className={CssHelper.flexBox()}>
+                       <img src=Images.success className=Styles.statusLogo />
+                       <HSpacing size=Spacing.sm />
+                       // TODO: remove hard-coded later
+                       <Text value="Completed Min Deposit 1,000 BAND" />
+                     </div>
+                   }
+                 | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
+                 }}
+              </Col.Grid>
+              <Col.Grid col=Col.Six>
+                <Heading value="Deposit End Time" size=Heading.H5 marginBottom=8 />
+                {switch (proposalSub) {
+                 | Data({depositEndTime}) => <Timestamp size=Text.Lg time=depositEndTime />
+                 | _ => <LoadingCensorBar width=90 height=15 />
+                 }}
+              </Col.Grid>
+            </Row.Grid>
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <div className=Styles.tableContainer>
+        <Row.Grid>
+          <Col.Grid>
+            <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader />
+          </Col.Grid>
+          <Col.Grid> <DepositorTable proposalID /> </Col.Grid>
+        </Row.Grid>
+      </div>
     </div>
   </Section>;
 };

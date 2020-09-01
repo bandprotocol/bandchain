@@ -103,3 +103,33 @@ module Uptime = {
     </div>;
   };
 };
+
+module Deposit = {
+  [@react.component]
+  let make = (~depositAmount) => {
+    // TODO: remove hard-coded later.
+    let minDeposit = 1000.;
+    let depositAmount_ = depositAmount |> Coin.getBandAmountFromCoin;
+    let percent = depositAmount_ /. minDeposit *. 100.;
+    let formatedMinDeposit = minDeposit |> Format.fPretty(~digits=0);
+    let formatedDepositAmount = depositAmount_ |> Format.fPretty(~digits=0);
+
+    <div>
+      <div
+        className={Css.merge([
+          CssHelper.mb(~size=8, ()),
+          CssHelper.flexBox(~justify=`spaceBetween, ()),
+        ])}>
+        <Text value={j|Min Deposit $formatedMinDeposit BAND|j} color=Colors.gray7 size=Text.Lg />
+        <Text
+          value={j|$formatedDepositAmount / $formatedMinDeposit|j}
+          color=Colors.gray7
+          size=Text.Lg
+        />
+      </div>
+      <div className=Styles.progressOuter>
+        <div className={Styles.progressUptimeInner(percent, Colors.bandBlue)} />
+      </div>
+    </div>;
+  };
+};
