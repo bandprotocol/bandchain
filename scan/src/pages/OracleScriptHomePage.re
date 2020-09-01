@@ -4,7 +4,7 @@ module Styles = {
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      padding(`px(24)),
+      padding3(~top=`px(24), ~h=`px(24), ~bottom=`px(16)),
       height(`calc((`sub, `percent(100.), `px(24)))),
       marginBottom(`px(24)),
     ]);
