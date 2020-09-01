@@ -213,6 +213,9 @@ let make = (~proposalID) => {
         </Col.Grid>
       </Row.Grid>
       <Row.Grid marginBottom=24>
+        <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
+      </Row.Grid>
+      <Row.Grid marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
             <Row.Grid>
