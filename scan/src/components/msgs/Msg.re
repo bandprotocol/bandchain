@@ -215,7 +215,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <TypeID.Request id />
       <HSpacing size=Spacing.sm />
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Icon name="far fa-arrow-right" color=Colors.black />
       <HSpacing size=Spacing.sm />
       <TypeID.OracleScript id=oracleScriptID />
       <HSpacing size=Spacing.sm />
@@ -242,7 +242,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           />
         </div>
       </div>
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Icon name="far fa-arrow-right" color=Colors.black />
       <HSpacing size=Spacing.sm />
       <TypeID.Request id=requestID />
     </div>
@@ -999,7 +999,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <AmountRender coins=amount />
       <HSpacing size=Spacing.sm />
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Icon name="far fa-arrow-right" color=Colors.black />
       <HSpacing size=Spacing.sm />
       <div className={Styles.rowWithWidth(200)}>
         <Text
@@ -1027,7 +1027,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       </div>
       <Text value=option weight=Text.Regular code=true nowrap=true block=true />
       <HSpacing size=Spacing.sm />
-      <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+      <Icon name="far fa-arrow-right" color=Colors.black />
       <HSpacing size=Spacing.sm />
       <div className={Styles.rowWithWidth(200)}>
         <Text
@@ -1076,7 +1076,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
         <HSpacing size=Spacing.sm />
         <Text value="Inputs" />
         <HSpacing size=Spacing.sm />
-        <Text value={j|➜|j} size=Text.Xxl weight=Text.Bold code=true nowrap=true block=true />
+        <Icon name="far fa-arrow-right" color=Colors.black />
         <HSpacing size=Spacing.sm />
         <Text value={outputs |> Belt_List.length |> string_of_int} weight=Text.Semibold />
         <HSpacing size=Spacing.sm />

@@ -57,7 +57,7 @@ let renderBody =
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (dataSourcesSub) {
-         | Data({description}) => <Text value=description weight=Text.Medium block=true />
+         | Data({description}) => <Text value=description block=true />
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
@@ -166,7 +166,10 @@ let make = () => {
             <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (allSub) {
              | Data((_, dataSourcesCount)) =>
-               <Heading value={dataSourcesCount->string_of_int ++ " In total"} size=Heading.H3 />
+               <Heading
+                 value={(dataSourcesCount |> Format.iPretty) ++ " In total"}
+                 size=Heading.H3
+               />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
