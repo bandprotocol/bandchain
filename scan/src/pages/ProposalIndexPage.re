@@ -15,7 +15,6 @@ module Styles = {
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      padding(`px(1)),
       Media.mobile([margin2(~h=`px(-15), ~v=`zero), padding2(~h=`px(16), ~v=`zero)]),
     ]);
 
@@ -122,7 +121,7 @@ let make = (~proposalID) => {
                 {switch (proposalSub) {
                  | Data({depositAmount, status}) =>
                    switch (status) {
-                   | ProposalSub.Deposit => <div> <ProgressBar.Deposit depositAmount /> </div>
+                   | ProposalSub.Deposit => <ProgressBar.Deposit depositAmount />
                    | _ =>
                      <div className={CssHelper.flexBox()}>
                        <img src=Images.success className=Styles.statusLogo />

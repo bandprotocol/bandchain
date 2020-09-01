@@ -114,7 +114,7 @@ module Deposit = {
     let formatedMinDeposit = minDeposit |> Format.fPretty(~digits=0);
     let formatedDepositAmount = depositAmount_ |> Format.fPretty(~digits=0);
 
-    <>
+    <div>
       <div
         className={Css.merge([
           CssHelper.mb(~size=8, ()),
@@ -130,6 +130,6 @@ module Deposit = {
       <div className=Styles.progressOuter>
         <div className={Styles.progressUptimeInner(percent, Colors.bandBlue)} />
       </div>
-    </>;
+    </div>;
   };
 };
