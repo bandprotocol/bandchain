@@ -32,7 +32,7 @@ module Styles = {
           SVG.strokeWidth(`px(16)),
           SVG.stroke(Colors.bandBlue),
           //TODO: it will be remove when the bs-css upgrade to have this proporty
-          unsafe("stroke-dasharray", "calc(" ++ percent ++ "* 653.45 / 100) 653.45"),
+          unsafe("stroke-dasharray", {j|calc($percent * 653.45 / 100) 653.45|j}),
           transforms([`rotate(`deg(-90.)), `translateX(`percent(-100.))]),
           Media.mobile([width(`px(140)), height(`px(140))]),
         ],
