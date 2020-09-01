@@ -299,7 +299,10 @@ let make = () => {
           <Col.Grid>
             {switch (allSub) {
              | Data((_, oracleScriptsCount)) =>
-               <Heading value={oracleScriptsCount->string_of_int ++ " In total"} size=Heading.H3 />
+               <Heading
+                 value={(oracleScriptsCount |> Format.iPretty) ++ " In total"}
+                 size=Heading.H3
+               />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
