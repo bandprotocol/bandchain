@@ -18,6 +18,7 @@
 
 ### Scan
 
+- (bugs) [\#2595](https://github.com/bandprotocol/bandchain/pull/2595) Handle `client_id` optional case
 - (impv) [\#2593](https://github.com/bandprotocol/bandchain/pull/2593) Polish UI
 - (feat) [\#2592](https://github.com/bandprotocol/bandchain/pull/2592) Added new voting overview and results box to proposal index page
 - (feat) [\#2591](https://github.com/bandprotocol/bandchain/pull/2591) Implemented the deposit overview, depositors table
