@@ -74,7 +74,7 @@ type proof_t = {
 
 let decodeRequestPacket = (json: Js.Json.t) => {
   JsonUtils.Decode.{
-    clientID: json |> field("client_id", string),
+    clientID: json |> optional(field("client_id", string)) |> Belt.Option.getWithDefault(_, ""),
     oracleScriptID: json |> field("oracle_script_id", intstr),
     calldata: json |> field("calldata", string) |> JsBuffer.fromBase64,
     askCount: json |> field("ask_count", intstr),
@@ -84,7 +84,7 @@ let decodeRequestPacket = (json: Js.Json.t) => {
 
 let decodeResponsePacket = json => {
   JsonUtils.Decode.{
-    clientID: json |> field("client_id", string),
+    clientID: json |> optional(field("client_id", string)) |> Belt.Option.getWithDefault(_, ""),
     requestID: json |> field("request_id", intstr),
     ansCount: json |> field("ans_count", intstr),
     requestTime: json |> field("request_time", intstr),

@@ -15,7 +15,7 @@ let make = () => {
           <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (txsCountSub) {
            | Data(txsCountSub) =>
-             <Heading value={txsCountSub->string_of_int ++ " In total"} size=Heading.H3 />
+             <Heading value={(txsCountSub |> Format.iPretty) ++ " In total"} size=Heading.H3 />
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
         </Col.Grid>

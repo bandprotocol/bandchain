@@ -21,17 +21,17 @@ contract Bridge is IBridge, Ownable {
     using TMSignature for TMSignature.Data;
     using SafeMath for uint256;
 
+    struct ValidatorWithPower {
+        address addr;
+        uint256 power;
+    }
+
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
     /// Mapping from an address to its voting power.
     mapping(address => uint256) public validatorPowers;
     /// The total voting power of active validators currently on duty.
     uint256 public totalValidatorPower;
-
-    struct ValidatorWithPower {
-        address addr;
-        uint256 power;
-    }
 
     /// Initializes an oracle bridge to BandChain.
     /// @param _validators The initial set of BandChain active validators.
@@ -50,7 +50,7 @@ contract Bridge is IBridge, Ownable {
     /// Update validator powers by owner.
     /// @param _validators The changed set of BandChain validators.
     function updateValidatorPowers(ValidatorWithPower[] memory _validators)
-        public
+        external
         onlyOwner
     {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {
