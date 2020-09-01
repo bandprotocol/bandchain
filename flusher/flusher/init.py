@@ -96,29 +96,17 @@ def init(chain_id, topic, db):
     )
     engine.execute(
         """
-        CREATE VIEW non_validator_vote_proposals_view AS
-        SELECT
-        validator_id,
-        proposal_id,
-        answer,
-        CAST(SUM(shares) AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount
-        FROM delegations
-        JOIN votes ON delegations.delegator_id=votes.voter_id
-        JOIN validators ON delegations.validator_id=validators.id AND votes.voter_id != validators.account_id
-        JOIN accounts ON accounts.id=delegations.delegator_id
-        GROUP BY answer, validator_id , proposal_id, delegator_shares, tokens;"""
-    )
-    engine.execute(
-        """
-CREATE VIEW validator_vote_proposals_view AS
+CREATE VIEW non_validator_vote_proposals_view AS
 SELECT validator_id,
        proposal_id,
        answer,
-       Sum(Cast(shares AS DECIMAL) * Cast(tokens AS DECIMAL) / Cast(delegator_shares AS DECIMAL)) AS amount
+       CAST(SUM(shares) AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) AS amount
 FROM delegations
-JOIN votes ON votes.voter_id = delegations.delegator_id
-JOIN validators ON validators.id = delegations.validator_id
-JOIN accounts ON accounts.id = delegations.delegator_id GROUP  BY answer, validator_id, proposal_id;
+JOIN votes ON delegations.delegator_id=votes.voter_id
+JOIN validators ON delegations.validator_id=validators.id
+AND votes.voter_id != validators.account_id
+JOIN accounts ON accounts.id=delegations.delegator_id
+GROUP BY answer, validator_id, proposal_id, delegator_shares, tokens;
 """
     )
 
