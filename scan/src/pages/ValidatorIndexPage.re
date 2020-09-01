@@ -287,7 +287,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      clickable=false
                      wordBreak=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
@@ -302,7 +302,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 {switch (allSub) {
                  | Data(({operatorAddress}, _, _)) =>
                    <AddressRender address=operatorAddress position=AddressRender.Subtitle />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
@@ -324,7 +324,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      size=Text.Lg
                      block=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
@@ -344,29 +344,29 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      size=Text.Lg
                      block=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
             <Row.Grid marginBottom=24>
               <Col.Grid>
-                <Heading value="Website" size=Heading.H5 marginBottom=16 />
+                <Heading value="Website" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({website}, _, _)) =>
                    <a href=website target="_blank" className=Styles.link>
                      <Text value=website size=Text.Lg color=Colors.bandBlue block=true />
                    </a>
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
-            <Row.Grid marginBottom=24>
+            <Row.Grid>
               <Col.Grid>
-                <Heading value="Description" size=Heading.H5 marginBottom=16 />
+                <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({details}, _, _)) =>
                    <p> <Text value=details size=Text.Lg color=Colors.gray7 block=true /> </p>
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>

@@ -97,10 +97,17 @@ function(data) {
           ],
           yAxes: [
             {
+              gridLines: {
+                display: true,
+                color: "#f2f2f2",
+                drawBorder: false,
+                zeroLineColor: '#eaeaea'
+              },
               ticks: {
                 fontFamily: 'Inter',
                 fontColor: '#888888',
                 fontSize: 10,
+                maxTicksLimit: 5,
                 callback: function(value) {
                   var ranges = [
                       { divider: 1e6, suffix: 'M' },

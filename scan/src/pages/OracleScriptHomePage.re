@@ -4,7 +4,7 @@ module Styles = {
     style([
       backgroundColor(Colors.white),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
-      padding(`px(24)),
+      padding3(~top=`px(24), ~h=`px(24), ~bottom=`px(16)),
       height(`calc((`sub, `percent(100.), `px(24)))),
       marginBottom(`px(24)),
     ]);
@@ -145,7 +145,7 @@ let renderBody =
         {switch (oracleScriptSub) {
          | Data({description}) =>
            let text = Ellipsis.format(~text=description, ~limit=70, ());
-           <Text value=text weight=Text.Medium block=true />;
+           <Text value=text block=true />;
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
@@ -299,7 +299,10 @@ let make = () => {
           <Col.Grid>
             {switch (allSub) {
              | Data((_, oracleScriptsCount)) =>
-               <Heading value={oracleScriptsCount->string_of_int ++ " In total"} size=Heading.H3 />
+               <Heading
+                 value={(oracleScriptsCount |> Format.iPretty) ++ " In total"}
+                 size=Heading.H3
+               />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
