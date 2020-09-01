@@ -145,7 +145,7 @@ let renderBody =
         {switch (oracleScriptSub) {
          | Data({description}) =>
            let text = Ellipsis.format(~text=description, ~limit=70, ());
-           <Text value=text weight=Text.Medium block=true />;
+           <Text value=text block=true />;
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>

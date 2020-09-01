@@ -57,7 +57,7 @@ let renderBody =
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (dataSourcesSub) {
-         | Data({description}) => <Text value=description weight=Text.Medium block=true />
+         | Data({description}) => <Text value=description block=true />
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
