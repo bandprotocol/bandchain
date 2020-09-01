@@ -1,6 +1,6 @@
 type t = {
   depositor: Address.t,
-  amount: Coin.t,
+  amount: list(Coin.t),
   txHash: Hash.t,
 };
 
@@ -15,7 +15,7 @@ type internal_t = {
 
 let toExternal = ({account, amount, transaction}) => {
   depositor: account.address,
-  amount: amount->Belt.List.getExn(0),
+  amount,
   txHash: transaction.hash,
 };
 
