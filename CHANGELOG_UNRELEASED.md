@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
+
 ### Scan
 
 - (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
