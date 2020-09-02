@@ -80,7 +80,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
                weight=Text.Regular
                textAlign=Text.Right
              />
-           | _ => <LoadingCensorBar width=80 height=15/>
+           | _ => <LoadingCensorBar width=80 height=15 />
            }}
         </div>
       </Col.Grid>
@@ -118,9 +118,9 @@ let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(
 module TabButton = {
   [@react.component]
   let make = (~tab, ~active, ~setTab) => {
-    let tabString = tab |> VoteSub.toString;
+    let tabString = tab |> VoteSub.toString(~withSpace=true);
 
-    <div key=tabString className={Styles.buttonContainer(active)} onClick={_ => setTab(_ => tab)}>
+    <div className={Styles.buttonContainer(active)} onClick={_ => setTab(_ => tab)}>
       <Text
         value=tabString
         weight={active ? Text.Semibold : Text.Regular}
@@ -143,7 +143,9 @@ let make = (~proposalID) => {
   <div className=Styles.container>
     <div className={Css.merge([Styles.header, CssHelper.flexBox(~wrap=`nowrap, ())])}>
       {[|VoteSub.Yes, No, NoWithVeto, Abstain|]
-       ->Belt.Array.map(tab => <TabButton tab setTab active={tab == currentTab} />)
+       ->Belt.Array.map(tab =>
+           <TabButton key={tab |> VoteSub.toString} tab setTab active={tab == currentTab} />
+         )
        ->React.array}
     </div>
     <div className=Styles.childrenContainer>

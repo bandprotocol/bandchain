@@ -28,11 +28,11 @@ type vote_t =
   | NoWithVeto
   | Abstain;
 
-let toString =
+let toString = (~withSpace=false) =>
   fun
   | Yes => "Yes"
   | No => "No"
-  | NoWithVeto => "NoWithVeto"
+  | NoWithVeto => withSpace ? "No With Veto" : "NoWithVeto"
   | Abstain => "Abstain";
 
 module MultiConfig = [%graphql
