@@ -103,6 +103,7 @@ module Styles = {
       background(rgba(255, 255, 255, 1.)),
       border(`px(0), `solid, hex("FFFFFF")),
       width(`px(100)),
+      lineHeight(`em(1.41)),
     ]);
 };
 
