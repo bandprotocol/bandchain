@@ -63,12 +63,17 @@ class Handler(object):
     def handle_new_transaction(self, msg):
         related_tx_accounts = msg["related_accounts"]
         del msg["related_accounts"]
-        self.conn.execute(transactions.insert(), msg)
+        self.conn.execute(
+            insert(transactions)
+            .values(**msg)
+            .on_conflict_do_update(constraint="transactions_pkey", set_=msg)
+        )
         tx_id = self.get_transaction_id(msg["hash"])
         for account in related_tx_accounts:
             self.conn.execute(
-                account_transactions.insert(),
-                {"transaction_id": tx_id, "account_id": self.get_account_id(account)},
+                insert(account_transactions)
+                .values({"transaction_id": tx_id, "account_id": self.get_account_id(account)})
+                .on_conflict_do_nothing(constraint="account_transactions_pkey")
             )
 
     def handle_set_account(self, msg):

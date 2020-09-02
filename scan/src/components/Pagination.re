@@ -9,6 +9,7 @@ module Styles = {
       justifyContent(`center),
       minHeight(`px(30)),
       padding2(~v=`px(24), ~h=`zero),
+      Media.mobile([padding2(~v=`px(12), ~h=`zero)]),
     ]);
 
   let innerContainer =
