@@ -225,9 +225,9 @@ let make = (~proposalID) => {
               <Col.Grid col=Col.Six mbSm=24>
                 <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
                 {switch (proposalSub) {
-                 | Data({depositAmount, status}) =>
+                 | Data({totalDeposit, status}) =>
                    switch (status) {
-                   | ProposalSub.Deposit => <ProgressBar.Deposit depositAmount />
+                   | ProposalSub.Deposit => <ProgressBar.Deposit totalDeposit />
                    | _ =>
                      <div className={CssHelper.flexBox()}>
                        <img src=Images.success className=Styles.statusLogo />

@@ -218,22 +218,25 @@ let make = (~schema) => {
         </div>
         <div className=Styles.selectWrapper>
           <TargetPlatformIcon icon=targetPlatform />
-          <select
-            className=Styles.selectContent
-            onChange={event => {
-              let newPlatform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
-              setTargetPlatform(_ => newPlatform);
-              let newLanguage = newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
-              setLanguage(_ => newLanguage);
-            }}>
-            {[|Ethereum|]
-             ->Belt_Array.map(symbol =>
-                 <option value={symbol |> toPlatformString}>
-                   {symbol |> toPlatformString |> React.string}
-                 </option>
-               )
-             |> React.array}
-          </select>
+          <div className={CssHelper.selectWrapper(~pRight=0, ())}>
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newPlatform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
+                setTargetPlatform(_ => newPlatform);
+                let newLanguage =
+                  newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
+                setLanguage(_ => newLanguage);
+              }}>
+              {[|Ethereum|]
+               ->Belt_Array.map(symbol =>
+                   <option value={symbol |> toPlatformString}>
+                     {symbol |> toPlatformString |> React.string}
+                   </option>
+                 )
+               |> React.array}
+            </select>
+          </div>
         </div>
       </Col.Grid>
       <Col.Grid col=Col.Three colSm=Col.Six>
@@ -246,21 +249,23 @@ let make = (~schema) => {
         </div>
         <div className=Styles.selectWrapper>
           <LanguageIcon icon=language />
-          <select
-            className=Styles.selectContent
-            onChange={event => {
-              let newLanguage = ReactEvent.Form.target(event)##value |> toLanguageVariant;
-              setLanguage(_ => newLanguage);
-            }}>
-            {targetPlatform
-             |> getLanguagesByPlatform
-             |> Belt.Array.map(_, symbol =>
-                  <option value={symbol |> toLanguageString}>
-                    {symbol |> toLanguageString |> React.string}
-                  </option>
-                )
-             |> React.array}
-          </select>
+          <div className={CssHelper.selectWrapper(~pRight=0, ())}>
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newLanguage = ReactEvent.Form.target(event)##value |> toLanguageVariant;
+                setLanguage(_ => newLanguage);
+              }}>
+              {targetPlatform
+               |> getLanguagesByPlatform
+               |> Belt.Array.map(_, symbol =>
+                    <option value={symbol |> toLanguageString}>
+                      {symbol |> toLanguageString |> React.string}
+                    </option>
+                  )
+               |> React.array}
+            </select>
+          </div>
         </div>
       </Col.Grid>
     </Row.Grid>

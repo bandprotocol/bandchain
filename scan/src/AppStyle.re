@@ -236,6 +236,20 @@ code {
   padding: 0 12px;
 }
 
+/* Select Input */
+
+select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+}
+
+/* For IE10 */
+select::-ms-expand {
+  display: none;
+}
+
 /* scrolling smooth on ios */
 * {
   -webkit-overflow-scrolling: touch;

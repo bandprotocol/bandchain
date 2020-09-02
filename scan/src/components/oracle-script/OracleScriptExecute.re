@@ -145,21 +145,23 @@ module CountInputs = {
             <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
-        <select
-          className=Styles.input
-          onChange={event => {
-            let newVal = ReactEvent.Form.target(event)##value;
-            setAskCount(_ => newVal);
-          }}>
-          {Belt.Array.makeBy(validatorCount, i => i + 1)
-           |> Belt.Array.map(_, index =>
-                <option
-                  key={(index |> string_of_int) ++ "askCount"} value={index |> string_of_int}>
-                  {index |> string_of_int |> React.string}
-                </option>
-              )
-           |> React.array}
-        </select>
+        <div className={CssHelper.selectWrapper()}>
+          <select
+            className=Styles.input
+            onChange={event => {
+              let newVal = ReactEvent.Form.target(event)##value;
+              setAskCount(_ => newVal);
+            }}>
+            {Belt.Array.makeBy(validatorCount, i => i + 1)
+             |> Belt.Array.map(_, index =>
+                  <option
+                    key={(index |> string_of_int) ++ "askCount"} value={index |> string_of_int}>
+                    {index |> string_of_int |> React.string}
+                  </option>
+                )
+             |> React.array}
+          </select>
+        </div>
       </Col.Grid>
       <Col.Grid col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
@@ -176,21 +178,23 @@ module CountInputs = {
             <Icon name="fal fa-info-circle" size=10 />
           </CTooltip>
         </div>
-        <select
-          className=Styles.input
-          onChange={event => {
-            let newVal = ReactEvent.Form.target(event)##value;
-            setMinCount(_ => newVal);
-          }}>
-          {Belt.Array.makeBy(askCount |> int_of_string, i => i + 1)
-           |> Belt.Array.map(_, index =>
-                <option
-                  key={(index |> string_of_int) ++ "minCount"} value={index |> string_of_int}>
-                  {index |> string_of_int |> React.string}
-                </option>
-              )
-           |> React.array}
-        </select>
+        <div className={CssHelper.selectWrapper()}>
+          <select
+            className=Styles.input
+            onChange={event => {
+              let newVal = ReactEvent.Form.target(event)##value;
+              setMinCount(_ => newVal);
+            }}>
+            {Belt.Array.makeBy(askCount |> int_of_string, i => i + 1)
+             |> Belt.Array.map(_, index =>
+                  <option
+                    key={(index |> string_of_int) ++ "minCount"} value={index |> string_of_int}>
+                    {index |> string_of_int |> React.string}
+                  </option>
+                )
+             |> React.array}
+          </select>
+        </div>
       </Col.Grid>
     </Row.Grid>;
   };
