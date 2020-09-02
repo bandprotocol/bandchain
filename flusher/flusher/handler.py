@@ -319,7 +319,7 @@ class Handler(object):
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
-        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        msg["operator_address"] = msg["validator"]
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
