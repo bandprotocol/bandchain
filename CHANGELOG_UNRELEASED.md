@@ -16,6 +16,8 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
+
 ### Scan
 
 - (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
