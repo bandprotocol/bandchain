@@ -16,6 +16,7 @@
 
 ### Emitter & Flusher
 
+- (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
 - (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
 
 ### Scan
