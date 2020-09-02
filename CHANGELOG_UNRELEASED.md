@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (chore) [\#2602](https://github.com/bandprotocol/bandchain/pull/2602) Add chain docker multistage build
+
 ### Yoda
 
 ### Emitter & Flusher
