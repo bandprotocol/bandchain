@@ -61,13 +61,13 @@ module VoteButton = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
 
     let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
-    let vote = () => SubmitMsg.Vote(proposalID, proposalName)->SubmitTx->OpenModal->dispatchModal;
+    let vote = () => Vote(proposalID, proposalName)->SubmitTx->OpenModal->dispatchModal;
 
     switch (accountOpt) {
     | Some(_) =>
       <button
         className={Css.merge([CssHelper.btn(~px=20, ~py=5, ()), CssHelper.flexBox()])}
-        onClick={_ => {vote()}}>
+        onClick={_ => vote()}>
         <Icon name="fas fa-pencil" size=12 color=Colors.white />
         <HSpacing size=Spacing.sm />
         <Text value="Vote" nowrap=true block=true />
