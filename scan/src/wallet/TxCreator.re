@@ -41,13 +41,20 @@ type msg_request_t = {
   client_id: string,
 };
 
+type msg_vote_t = {
+  proposal_id: string,
+  voter: string,
+  option: string,
+};
+
 type msg_input_t =
   | Send(Address.t, amount_t)
   | Delegate(Address.t, amount_t)
   | Undelegate(Address.t, amount_t)
   | Redelegate(Address.t, Address.t, amount_t)
   | WithdrawReward(Address.t)
-  | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string);
+  | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string)
+  | Vote(ID.Proposal.t, string);
 
 type msg_payload_t = {
   [@bs.as "type"]
@@ -163,6 +170,7 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
     | Redelegate(_) => "cosmos-sdk/MsgBeginRedelegate"
     | WithdrawReward(_) => "cosmos-sdk/MsgWithdrawDelegationReward"
     | Request(_) => "oracle/Request"
+    | Vote(_) => "cosmos-sdk/MsgVote"
     };
 
   let msgValue =
@@ -223,6 +231,14 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
         min_count: minCount,
         sender: sender |> Address.toBech32,
         client_id: clientID,
+      })
+      |> Belt_Option.getExn
+      |> Js.Json.parseExn
+    | Vote(ID.Proposal.ID(proposalID), answer) =>
+      Js.Json.stringifyAny({
+        proposal_id: proposalID |> string_of_int,
+        voter: sender |> Address.toBech32,
+        option: answer,
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn
