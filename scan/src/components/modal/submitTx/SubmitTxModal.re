@@ -113,7 +113,7 @@ module SubmitTxStep = {
        | Redelegate(validator) => <RedelegateMsg address={account.address} validator setMsgsOpt />
        | WithdrawReward(validator) =>
          <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
-       | Vote(proposalID) => <VoteMsg address={account.address} proposalID setMsgsOpt />
+       | Vote(proposalID, proposalName) => <VoteMsg proposalID proposalName setMsgsOpt />
        }}
       <VSpacing size=Spacing.sm />
       <EnhanceTxInput

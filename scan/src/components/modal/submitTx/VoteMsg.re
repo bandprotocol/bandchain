@@ -49,13 +49,8 @@ module VoteInput = {
 };
 
 [@react.component]
-let make = (~address, ~proposalID, ~setMsgsOpt) => {
-  let accountSub = AccountSub.get(address);
-  let proposalSub = ProposalSub.get(proposalID);
+let make = (~proposalID, ~proposalName, ~setMsgsOpt) => {
   let (answerOpt, setAnswerOpt) = React.useState(_ => None);
-
-  let allSub = Sub.all2(proposalSub, accountSub);
-
   React.useEffect1(
     _ => {
       let msgsOpt = {
@@ -71,15 +66,11 @@ let make = (~address, ~proposalID, ~setMsgsOpt) => {
   <>
     <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
       <Text value="Vote To" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
-      {switch (allSub) {
-       | Data(({id, name}, _)) =>
-         <div className={CssHelper.flexBox()}>
-           <TypeID.Proposal id position=TypeID.Subtitle />
-           <HSpacing size=Spacing.sm />
-           <Heading size=Heading.H5 value=name />
-         </div>
-       | _ => <LoadingCensorBar width=270 height=26 />
-       }}
+      <div className={CssHelper.flexBox()}>
+        <TypeID.Proposal id=proposalID position=TypeID.Subtitle />
+        <HSpacing size=Spacing.sm />
+        <Heading size=Heading.H5 value=proposalName />
+      </div>
     </div>
     <VoteInput answerOpt setAnswerOpt />
   </>;

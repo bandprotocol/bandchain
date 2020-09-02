@@ -4,7 +4,7 @@ type t =
   | Undelegate(Address.t)
   | Redelegate(Address.t)
   | WithdrawReward(Address.t)
-  | Vote(ID.Proposal.t);
+  | Vote(ID.Proposal.t, string);
 
 let toString =
   fun

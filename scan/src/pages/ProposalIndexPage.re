@@ -43,18 +43,25 @@ module Styles = {
       height(`px(1)),
       margin2(~v=`px(24), ~h=`auto),
     ]);
+  let voteButton =
+    fun
+    | ProposalSub.Voting => style([visibility(`visible)])
+    | Deposit
+    | Passed
+    | Rejected
+    | Failed => style([visibility(`hidden)]);
 };
 
 module VoteButton = {
   [@react.component]
-  let make = (~proposalID) => {
+  let make = (~proposalID, ~proposalName) => {
     let trackingSub = TrackingSub.use();
 
     let (accountOpt, _) = React.useContext(AccountContext.context);
     let (_, dispatchModal) = React.useContext(ModalContext.context);
 
     let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
-    let vote = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Vote(proposalID))));
+    let vote = () => SubmitMsg.Vote(proposalID, proposalName)->SubmitTx->OpenModal->dispatchModal;
 
     switch (accountOpt) {
     | Some(_) =>
@@ -248,7 +255,17 @@ let make = (~proposalID) => {
                 CssHelper.mb(~size=24, ()),
               ])}>
               <Heading value="Results" size=Heading.H4 />
-              {isMobile ? React.null : <VoteButton proposalID />}
+              {isMobile
+                 ? React.null
+                 : {
+                   switch (proposalSub) {
+                   | Data({name, status}) =>
+                     <div className={Styles.voteButton(status)}>
+                       <VoteButton proposalID proposalName=name />
+                     </div>
+                   | _ => <LoadingCensorBar width=90 height=26 />
+                   };
+                 }}
             </div>
             //TODO: will re-structure when the data is wired up.
             <div className=Styles.resultContainer>
