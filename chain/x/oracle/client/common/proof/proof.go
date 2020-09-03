@@ -92,8 +92,17 @@ type Proof struct {
 	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
-func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc {
+func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, ctx, r)
+		if !ok {
+			return
+		}
+		height := &cliCtx.Height
+		if cliCtx.Height == 0 {
+			height = nil
+		}
+
 		vars := mux.Vars(r)
 		intRequestID, err := strconv.ParseUint(vars[RequestIDTag], 10, 64)
 		if err != nil {
@@ -125,13 +134,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc
 			return
 		}
 
-		specified_height, err := strconv.ParseInt(r.URL.Query().Get("height"), 10, 64)
-		specified_height_ref := &specified_height
-		if err != nil {
-			specified_height_ref = nil
-		}
-
-		commit, err := cliCtx.Client.Commit(specified_height_ref)
+		commit, err := cliCtx.Client.Commit(height)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
