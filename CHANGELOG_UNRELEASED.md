@@ -21,6 +21,7 @@
 
 ### Scan
 
+- (impv) [\#2604](https://github.com/bandprotocol/bandchain/pull/2604) Moved the proposal route to wenchang route
 - (feat) [\#2603](https://github.com/bandprotocol/bandchain/pull/2603) Added `guanyu-poa` on chain id
 - (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
 - (feat) [\#2598](https://github.com/bandprotocol/bandchain/pull/2598) Implemented VoteSub, Vote breakdown table and wire up
