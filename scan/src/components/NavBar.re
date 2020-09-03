@@ -136,6 +136,7 @@ let make = () => {
     ("Validators", ValidatorHomePage),
     ("Blocks", BlockHomePage),
     ("Transactions", TxHomePage),
+    ("Proposals", ProposalHomePage),
   ];
 
   exception WrongNetwork(string);
@@ -148,7 +149,6 @@ let make = () => {
         ("Data Sources", DataSourceHomePage),
         ("Oracle Scripts", OracleScriptHomePage),
         ("Requests", RequestHomePage),
-        ("Proposals", ProposalHomePage),
       ])
     | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
     };
