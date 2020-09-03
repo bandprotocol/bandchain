@@ -125,7 +125,13 @@ func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc
 			return
 		}
 
-		commit, err := cliCtx.Client.Commit(nil)
+		specified_height, err := strconv.ParseInt(r.URL.Query().Get("height"), 10, 64)
+		specified_height_ref := &specified_height
+		if err != nil {
+			specified_height_ref = nil
+		}
+
+		commit, err := cliCtx.Client.Commit(specified_height_ref)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
