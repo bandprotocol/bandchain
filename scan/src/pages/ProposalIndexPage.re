@@ -92,11 +92,59 @@ module VoteButton = {
   };
 };
 
+type answer_t =
+  | Yes
+  | No
+  | NoWithVeto
+  | Abstain;
+
+type t = {
+  id: int,
+  valPower: int,
+  valVote: option(answer_t),
+  delVotes: answer_t => int,
+};
+
 [@react.component]
 let make = (~proposalID) => {
   let proposalSub = ProposalSub.get(proposalID);
-
+  let test = VoteSub.getValidatorVoteByProposalID(proposalID);
   let isMobile = Media.isMobile();
+
+  Js.Console.log(test);
+
+  let a = [|(1, 1000, Yes), (2, 500, No)|];
+  let b = [|(1, 100, Yes), (1, 200, No), (2, 100, Yes), (2, 100, No), (3, 500, No)|];
+  let m =
+    a->Belt_Array.reduce(
+      Belt_MapInt.empty,
+      (acc, x) => {
+        let (id, power, choice) = x;
+        acc->Belt_MapInt.set(
+          id,
+          {id, valPower: power, valVote: Some(choice), delVotes: _ => 0},
+        );
+      },
+    );
+  let n =
+    b
+    ->Belt_Array.reduce(
+        m,
+        (acc, x) => {
+          let (id, power, choice) = x;
+          acc->Belt_MapInt.update(
+            id,
+            v => {
+              let entry =
+                v->Belt_Option.getWithDefault({id, valPower: 0, valVote: None, delVotes: _ => 0});
+              let delVotes = ch => ch == choice ? power : entry.delVotes(ch);
+              // Js.Console.log3(id, delVotes, power);
+              Some({...entry, delVotes: ch => ch == choice ? power : entry.delVotes(ch)});
+            },
+          );
+        },
+      )
+    ->Belt_MapInt.valuesToArray;
 
   <Section pbSm=0>
     <div className=CssHelper.container>
