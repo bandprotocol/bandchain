@@ -19,6 +19,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/emitter/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -32,10 +33,10 @@ type App struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	accsInBlock    map[string]bool // The accounts that need balance update at the end of block.
-	accsInTx       map[string]bool // The accounts related to the current processing transaction.
-	msgs           []Message       // The list of all messages to publish for this block.
-	emitStartState bool            // If emitStartState is true will emit all non historical state to Kafka
+	accsInBlock    map[string]bool  // The accounts that need balance update at the end of block.
+	accsInTx       map[string]bool  // The accounts related to the current processing transaction.
+	msgs           []common.Message // The list of all messages to publish for this block.
+	emitStartState bool             // If emitStartState is true will emit all non historical state to Kafka
 }
 
 // NewBandAppWithEmitter creates a new App instance.
@@ -78,8 +79,8 @@ func (app *App) AddAccountsInTx(accs ...sdk.AccAddress) {
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
-func (app *App) Write(key string, val JsDict) {
-	app.msgs = append(app.msgs, Message{Key: key, Value: val})
+func (app *App) Write(key string, val common.JsDict) {
+	app.msgs = append(app.msgs, common.Message{Key: key, Value: val})
 }
 
 // FlushMessages publishes all pending messages to Kafka. Blocks until completion.
@@ -104,7 +105,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	var genaccountsState auth.GenesisState
 	auth.ModuleCdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &genaccountsState)
 	for _, account := range genaccountsState.Accounts {
-		app.Write("SET_ACCOUNT", JsDict{
+		app.Write("SET_ACCOUNT", common.JsDict{
 			"address": account.GetAddress(),
 			"balance": app.BankKeeper.GetCoins(app.DeliverContext, account.GetAddress()).String(),
 		})
@@ -135,7 +136,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 
 	for _, unbonding := range stakingState.UnbondingDelegations {
 		for _, entry := range unbonding.Entries {
-			app.Write("NEW_UNBONDING_DELEGATION", JsDict{
+			app.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
 				"delegator_address": unbonding.DelegatorAddress,
 				"operator_address":  unbonding.ValidatorAddress,
 				"completion_time":   entry.CompletionTime.UnixNano(),
@@ -146,7 +147,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 
 	for _, redelegate := range stakingState.Redelegations {
 		for _, entry := range redelegate.Entries {
-			app.Write("NEW_REDELEGATION", JsDict{
+			app.Write("NEW_REDELEGATION", common.JsDict{
 				"delegator_address":    redelegate.DelegatorAddress,
 				"operator_src_address": redelegate.ValidatorSrcAddress,
 				"operator_dst_address": redelegate.ValidatorDstAddress,
@@ -172,9 +173,9 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 func (app *App) emitNonHistoricalState() {
 	app.emitAccountModule()
 	app.emitStakingModule()
-	app.Write("COMMIT", JsDict{"height": -1})
+	app.Write("COMMIT", common.JsDict{"height": -1})
 	app.FlushMessages()
-	app.msgs = []Message{}
+	app.msgs = []common.Message{}
 }
 
 // BeginBlock calls into the underlying BeginBlock and emits relevant events to Kafka.
@@ -182,7 +183,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	res := app.BandApp.BeginBlock(req)
 	app.accsInBlock = make(map[string]bool)
 	app.accsInTx = make(map[string]bool)
-	app.msgs = []Message{}
+	app.msgs = []common.Message{}
 	if app.emitStartState {
 		app.emitStartState = false
 		app.emitNonHistoricalState()
@@ -190,7 +191,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		{
 			for _, val := range req.GetLastCommitInfo().Votes {
 				validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
-				app.Write("NEW_VALIDATOR_VOTE", JsDict{
+				app.Write("NEW_VALIDATOR_VOTE", common.JsDict{
 					"consensus_address": validator.GetConsAddr().String(),
 					"block_height":      req.Header.GetHeight() - 1,
 					"voted":             val.GetSignedLastBlock(),
@@ -199,7 +200,7 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 			}
 		}
 	}
-	app.Write("NEW_BLOCK", JsDict{
+	app.Write("NEW_BLOCK", common.JsDict{
 		"height":    req.Header.GetHeight(),
 		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
 		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
@@ -231,7 +232,7 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	if !res.IsOK() {
 		errMsg = &res.Log
 	}
-	txDict := JsDict{
+	txDict := common.JsDict{
 		"hash":         txHash,
 		"block_height": app.DeliverContext.BlockHeight(),
 		"gas_used":     res.GasUsed,
@@ -248,11 +249,11 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 	logs, _ := sdk.ParseABCILogs(res.Log) // Error must always be nil if res.IsOK is true.
 	messages := []map[string]interface{}{}
 	for idx, msg := range tx.GetMsgs() {
-		var extra = make(JsDict)
+		var extra = make(common.JsDict)
 		if res.IsOK() {
 			app.handleMsg(txHash, msg, logs[idx], extra)
 		}
-		messages = append(messages, JsDict{
+		messages = append(messages, common.JsDict{
 			"msg":   msg,
 			"type":  msg.Type(),
 			"extra": extra,
@@ -279,18 +280,18 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	}
 	// Update balances of all affected accounts on this block.
 	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
-	modifiedMsgs := []Message{app.msgs[0]}
+	modifiedMsgs := []common.Message{app.msgs[0]}
 	for accStr, _ := range app.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
-		modifiedMsgs = append(modifiedMsgs, Message{
+		modifiedMsgs = append(modifiedMsgs, common.Message{
 			Key: "SET_ACCOUNT",
-			Value: JsDict{
+			Value: common.JsDict{
 				"address": acc,
 				"balance": app.BankKeeper.GetCoins(app.DeliverContext, acc).String(),
 			}})
 	}
 	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
-	app.Write("COMMIT", JsDict{"height": req.Height})
+	app.Write("COMMIT", common.JsDict{"height": req.Height})
 	return res
 }
 

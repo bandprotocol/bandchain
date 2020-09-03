@@ -3,6 +3,7 @@ package emitter
 import (
 	"time"
 
+	"github.com/bandprotocol/bandchain/chain/emitter/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
@@ -24,7 +25,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	accCommission, _ := app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).TruncateDecimal()
-	app.Write("SET_VALIDATOR", JsDict{
+	app.Write("SET_VALIDATOR", common.JsDict{
 		"operator_address":       addr.String(),
 		"delegator_address":      sdk.AccAddress(addr).String(),
 		"consensus_address":      sdk.ConsAddress(val.ConsPubKey.Address()).String(),
@@ -50,7 +51,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
-	app.Write("UPDATE_VALIDATOR", JsDict{
+	app.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address": addr.String(),
 		"tokens":           val.Tokens.Uint64(),
 		"delegator_shares": val.DelegatorShares.String(),
@@ -62,7 +63,7 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 
 func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
-	app.Write("UPDATE_VALIDATOR", JsDict{
+	app.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address": addr.String(),
 		"status":           status.IsActive,
 		"status_since":     status.Since.UnixNano(),
@@ -71,7 +72,7 @@ func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
 
 func (app *App) emitDelegationAfterWithdrawReward(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
 	_, ratio := app.getCurrentRewardAndCurrentRatio(operatorAddress)
-	app.Write("UPDATE_DELEGATION", JsDict{
+	app.Write("UPDATE_DELEGATION", common.JsDict{
 		"delegator_address": delegatorAddress,
 		"operator_address":  operatorAddress,
 		"last_ratio":        ratio,
@@ -82,14 +83,14 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 	delegation, found := app.StakingKeeper.GetDelegation(app.DeliverContext, delegatorAddress, operatorAddress)
 	if found {
 		_, ratio := app.getCurrentRewardAndCurrentRatio(operatorAddress)
-		app.Write("SET_DELEGATION", JsDict{
+		app.Write("SET_DELEGATION", common.JsDict{
 			"delegator_address": delegatorAddress,
 			"operator_address":  operatorAddress,
 			"shares":            delegation.Shares.String(),
 			"last_ratio":        ratio,
 		})
 	} else {
-		app.Write("REMOVE_DELEGATION", JsDict{
+		app.Write("REMOVE_DELEGATION", common.JsDict{
 			"delegator_address": delegatorAddress,
 			"operator_address":  operatorAddress,
 		})
@@ -98,7 +99,7 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (app *App) handleMsgCreateValidator(
-	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
+	txHash []byte, msg staking.MsgCreateValidator, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.emitSetValidator(msg.ValidatorAddress)
 	app.emitDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
@@ -106,7 +107,7 @@ func (app *App) handleMsgCreateValidator(
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
 func (app *App) handleMsgEditValidator(
-	txHash []byte, msg staking.MsgEditValidator, evMap EvMap, extra JsDict,
+	txHash []byte, msg staking.MsgEditValidator, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.emitSetValidator(msg.ValidatorAddress)
 }
@@ -118,22 +119,22 @@ func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress,
 
 // handleMsgDelegate implements emitter handler for MsgDelegate
 func (app *App) handleMsgDelegate(
-	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
+	txHash []byte, msg staking.MsgDelegate, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
 func (app *App) handleMsgUndelegate(
-	txHash []byte, msg staking.MsgUndelegate, evMap EvMap, extra JsDict,
+	txHash []byte, msg staking.MsgUndelegate, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 	app.emitUnbondingDelegation(msg, evMap)
 }
 
-func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) {
+func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap common.EvMap) {
 	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeUnbond+"."+types.AttributeKeyCompletionTime][0])
-	app.Write("NEW_UNBONDING_DELEGATION", JsDict{
+	app.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
 		"delegator_address": msg.DelegatorAddress,
 		"operator_address":  msg.ValidatorAddress,
 		"creation_height":   app.DeliverContext.BlockHeight(),
@@ -144,16 +145,16 @@ func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) 
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
 func (app *App) handleMsgBeginRedelegate(
-	txHash []byte, msg staking.MsgBeginRedelegate, evMap EvMap, extra JsDict,
+	txHash []byte, msg staking.MsgBeginRedelegate, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorSrcAddress, msg.DelegatorAddress)
 	app.emitUpdateValidatorAndDelegation(msg.ValidatorDstAddress, msg.DelegatorAddress)
 	app.emitUpdateRedelation(msg.ValidatorSrcAddress, msg.ValidatorDstAddress, msg.DelegatorAddress, evMap)
 }
 
-func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorDstAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, evMap EvMap) {
+func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorDstAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, evMap common.EvMap) {
 	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeRedelegate+"."+types.AttributeKeyCompletionTime][0])
-	app.Write("NEW_REDELEGATION", JsDict{
+	app.Write("NEW_REDELEGATION", common.JsDict{
 		"delegator_address":    delegatorAddress.String(),
 		"operator_src_address": operatorSrcAddress.String(),
 		"operator_dst_address": operatorDstAddress.String(),
@@ -162,7 +163,7 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 	})
 }
 
-func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
+func (app *App) handleEventTypeCompleteUnbonding(evMap common.EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
 	app.AddAccountsInBlock(acc)
 }

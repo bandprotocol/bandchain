@@ -22,7 +22,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/emitter"
+	emitter "github.com/bandprotocol/bandchain/chain/emitter/sync"
 )
 
 const (

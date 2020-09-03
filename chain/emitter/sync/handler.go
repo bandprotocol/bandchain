@@ -9,12 +9,13 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	abci "github.com/tendermint/tendermint/abci/types"
 
+	"github.com/bandprotocol/bandchain/chain/emitter/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-func parseEvents(events sdk.StringEvents) EvMap {
-	evMap := make(EvMap)
+func parseEvents(events sdk.StringEvents) common.EvMap {
+	evMap := make(common.EvMap)
 	for _, event := range events {
 		for _, kv := range event.Attributes {
 			key := event.Type + "." + kv.Key
@@ -26,7 +27,7 @@ func parseEvents(events sdk.StringEvents) EvMap {
 
 // handleMsg handles the given message by publishing relevant events and populates accounts
 // that need balance update in 'app.accs'. Also fills in extra info for this message.
-func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra JsDict) {
+func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
 	evMap := parseEvents(log.Events)
 	switch msg := msg.(type) {
 	case oracle.MsgRequestData:
