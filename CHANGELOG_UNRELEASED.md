@@ -21,6 +21,7 @@
 
 ### Scan
 
+- (bugs) [\#2606](https://github.com/bandprotocol/bandchain/pull/2606) Fix overflow text on request index page
 - (impv) [\#2604](https://github.com/bandprotocol/bandchain/pull/2604) Moved the proposal route to wenchang route
 - (feat) [\#2603](https://github.com/bandprotocol/bandchain/pull/2603) Added `guanyu-poa` on chain id
 - (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
