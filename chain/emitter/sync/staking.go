@@ -134,13 +134,13 @@ func (app *App) handleMsgUndelegate(
 
 func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap common.EvMap) {
 	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeUnbond+"."+types.AttributeKeyCompletionTime][0])
-	app.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
-		"delegator_address": msg.DelegatorAddress,
-		"operator_address":  msg.ValidatorAddress,
-		"creation_height":   app.DeliverContext.BlockHeight(),
-		"completion_time":   completeTime.UnixNano(),
-		"amount":            evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0],
-	})
+	common.EmitNewUnbondingDelegation(
+		app,
+		msg.DelegatorAddress,
+		msg.ValidatorAddress,
+		completeTime.UnixNano(),
+		sdk.NewInt(common.Atoi(evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0])),
+	)
 }
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
@@ -154,13 +154,14 @@ func (app *App) handleMsgBeginRedelegate(
 
 func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorDstAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, evMap common.EvMap) {
 	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeRedelegate+"."+types.AttributeKeyCompletionTime][0])
-	app.Write("NEW_REDELEGATION", common.JsDict{
-		"delegator_address":    delegatorAddress.String(),
-		"operator_src_address": operatorSrcAddress.String(),
-		"operator_dst_address": operatorDstAddress.String(),
-		"completion_time":      completeTime.UnixNano(),
-		"amount":               evMap[types.EventTypeRedelegate+"."+sdk.AttributeKeyAmount][0],
-	})
+	common.EmitNewRedelegation(
+		app,
+		delegatorAddress,
+		operatorSrcAddress,
+		operatorDstAddress,
+		completeTime.UnixNano(),
+		sdk.NewInt(common.Atoi(evMap[types.EventTypeRedelegate+"."+sdk.AttributeKeyAmount][0])),
+	)
 }
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap common.EvMap) {
