@@ -59,6 +59,8 @@ func (app *App) handleMsgRequestData(
 		"resolve_status":   types.ResolveStatus_Open,
 		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
 	})
+	common.EmitSetRequestCountPerDay(app, app.DeliverContext.BlockTime().UnixNano())
+	common.EmitUpdateOracleScriptRequest(app, msg.OracleScriptID)
 	for _, raw := range req.RawRequests {
 		app.Write("NEW_RAW_REQUEST", common.JsDict{
 			"request_id":     id,
@@ -66,6 +68,8 @@ func (app *App) handleMsgRequestData(
 			"data_source_id": raw.DataSourceID,
 			"calldata":       common.ParseBytes(raw.Calldata),
 		})
+		common.EmitUpdateDataSourceRequest(app, raw.DataSourceID)
+		common.EmitUpdateRelatedDsOs(app, raw.DataSourceID, msg.OracleScriptID)
 	}
 	for _, val := range req.RequestedValidators {
 		app.Write("NEW_VAL_REQUEST", common.JsDict{
@@ -107,6 +111,7 @@ func (app *App) handleMsgCreateDataSource(
 	id := types.DataSourceID(common.Atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := app.BandApp.OracleKeeper.MustGetDataSource(app.DeliverContext, id)
 	app.emitSetDataSource(id, ds, txHash)
+	common.EmitNewDataSourceRequest(app, id)
 	extra["id"] = id
 }
 
@@ -117,6 +122,7 @@ func (app *App) handleMsgCreateOracleScript(
 	id := types.OracleScriptID(common.Atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := app.BandApp.OracleKeeper.MustGetOracleScript(app.DeliverContext, id)
 	app.emitSetOracleScript(id, os, txHash)
+	common.EmitNewOracleScriptRequest(app, id)
 	extra["id"] = id
 }
 

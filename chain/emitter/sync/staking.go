@@ -44,8 +44,8 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
-		"last_update":            app.DeliverContext.BlockTime().UnixNano(),
 	})
+	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.Uint64(), app.DeliverContext.BlockTime().UnixNano())
 }
 
 func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
@@ -57,8 +57,9 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
-		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
+	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.Uint64(), app.DeliverContext.BlockTime().UnixNano())
+
 }
 
 func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
