@@ -161,10 +161,14 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	var oracleState oracle.GenesisState
 	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 	for idx, ds := range oracleState.DataSources {
-		app.emitSetDataSource(types.DataSourceID(idx+1), ds, nil)
+		id := types.DataSourceID(idx + 1)
+		app.emitSetDataSource(id, ds, nil)
+		common.EmitNewDataSourceRequest(app, id)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		app.emitSetOracleScript(types.OracleScriptID(idx+1), os, nil)
+		id := types.OracleScriptID(idx + 1)
+		app.emitSetOracleScript(id, os, nil)
+		common.EmitNewOracleScriptRequest(app, id)
 	}
 	app.FlushMessages()
 	return res
@@ -265,8 +269,7 @@ func (app *App) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
 		relatedAccounts = append(relatedAccounts, acc)
 	}
-
-	txDict["related_accounts"] = relatedAccounts
+	common.EmitSetRelatedTransaction(app, txHash, relatedAccounts)
 	app.AddAccountsInBlock(relatedAccounts...)
 	txDict["messages"] = messages
 	return res
