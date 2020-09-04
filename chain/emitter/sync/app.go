@@ -133,27 +133,27 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	for _, del := range stakingState.Delegations {
 		app.emitDelegation(del.ValidatorAddress, del.DelegatorAddress)
 	}
-
 	for _, unbonding := range stakingState.UnbondingDelegations {
 		for _, entry := range unbonding.Entries {
-			app.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
-				"delegator_address": unbonding.DelegatorAddress,
-				"operator_address":  unbonding.ValidatorAddress,
-				"completion_time":   entry.CompletionTime.UnixNano(),
-				"amount":            entry.Balance,
-			})
+			common.EmitNewUnbondingDelegation(
+				app,
+				unbonding.DelegatorAddress,
+				unbonding.ValidatorAddress,
+				entry.CompletionTime.UnixNano(),
+				entry.Balance,
+			)
+
 		}
 	}
-
 	for _, redelegate := range stakingState.Redelegations {
 		for _, entry := range redelegate.Entries {
-			app.Write("NEW_REDELEGATION", common.JsDict{
-				"delegator_address":    redelegate.DelegatorAddress,
-				"operator_src_address": redelegate.ValidatorSrcAddress,
-				"operator_dst_address": redelegate.ValidatorDstAddress,
-				"completion_time":      entry.CompletionTime.UnixNano(),
-				"amount":               entry.InitialBalance,
-			})
+			common.EmitNewRedelegation(app,
+				redelegate.DelegatorAddress,
+				redelegate.ValidatorSrcAddress,
+				redelegate.ValidatorDstAddress,
+				entry.CompletionTime.UnixNano(),
+				entry.InitialBalance,
+			)
 		}
 	}
 
@@ -173,7 +173,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 func (app *App) emitNonHistoricalState() {
 	app.emitAccountModule()
 	app.emitStakingModule()
-	app.Write("COMMIT", common.JsDict{"height": -1})
+	common.EmitCommit(app, -1)
 	app.FlushMessages()
 	app.msgs = []common.Message{}
 }
@@ -188,26 +188,26 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		app.emitStartState = false
 		app.emitNonHistoricalState()
 	} else {
-		{
-			for _, val := range req.GetLastCommitInfo().Votes {
-				validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
-				app.Write("NEW_VALIDATOR_VOTE", common.JsDict{
-					"consensus_address": validator.GetConsAddr().String(),
-					"block_height":      req.Header.GetHeight() - 1,
-					"voted":             val.GetSignedLastBlock(),
-				})
-				app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
-			}
+		for _, val := range req.GetLastCommitInfo().Votes {
+			validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+			common.EmitNewValidatorVote(
+				app,
+				validator.GetConsAddr().String(),
+				req.Header.GetHeight()-1,
+				val.GetSignedLastBlock(),
+			)
+			app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
 		}
 	}
-	app.Write("NEW_BLOCK", common.JsDict{
-		"height":    req.Header.GetHeight(),
-		"timestamp": app.DeliverContext.BlockTime().UnixNano(),
-		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
-		"hash":      req.GetHash(),
-		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
-		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
-	})
+	common.EmitNewBlock(
+		app,
+		req.Header.GetHeight(),
+		app.DeliverContext.BlockTime().UnixNano(),
+		sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
+		req.GetHash(),
+		app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
+		app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
+	)
 	for _, event := range res.Events {
 		app.handleBeginBlockEndBlockEvent(event)
 	}
@@ -291,7 +291,7 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 			}})
 	}
 	app.msgs = append(modifiedMsgs, app.msgs[1:]...)
-	app.Write("COMMIT", common.JsDict{"height": req.Height})
+	common.EmitCommit(app, req.Height)
 	return res
 }
 
