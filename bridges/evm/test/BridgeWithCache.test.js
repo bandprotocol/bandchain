@@ -251,4 +251,42 @@ contract("CacheBridge", ([_, owner, alice, bob]) => {
       });
     },
   );
+
+  context("Relay Multiple Requests", () => {
+    beforeEach(async () => {
+      this.templates = [
+        [
+          "from_scan",
+          "2",
+          "0x00000004474f4f4700000010324b4d43424c415a4d3554453256504700000000000003e8",
+          "1",
+          "1",
+        ],
+        [
+          "from_scan",
+          "2",
+          "0x000000044141504c00000010324b4d43424c415a4d3554453256504700000000000003e8",
+          "1",
+          "1",
+        ],
+        [
+          "from_scan",
+          "2",
+          "0x00000002464200000010324b4d43424c415a4d3554453256504700000000000003e8",
+          "1",
+          "1",
+        ],
+      ];
+
+      this.bridge = await Bridge.new([
+        ["0xaAA22E077492CbaD414098EBD98AA8dc1C7AE8D9", 100],
+      ]);
+
+      this.consumer = await BridgeCacheConsumerMock.new(
+        this.cache.address,
+        this.template,
+        { from: alice },
+      );
+    });
+  });
 });
