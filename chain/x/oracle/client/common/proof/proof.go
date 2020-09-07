@@ -378,7 +378,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
-			blockRelay := BlockRelayProof{
+			blockRelay = BlockRelayProof{
 				MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
 				BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(cliCtx.Codec, commit.Header),
 				Signatures:             signatures,
