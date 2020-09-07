@@ -29,8 +29,8 @@ contract CacheBridge is Bridge, ICacheBridge {
     /// @param _request A tuple that represents RequestPacket struct.
     function getLatestResponse(RequestPacket memory _request)
         public
-        view
         override
+        view
         returns (ResponsePacket memory)
     {
         ResponsePacket memory res = requestsCache[_request.getRequestKey()];
@@ -59,5 +59,30 @@ contract CacheBridge is Bridge, ICacheBridge {
         );
 
         requestsCache[requestKey] = res;
+    }
+
+    /// Performs oracle state relay and many times of oracle data verification in one go.
+    /// After that, the results which is an array of Packet will be recorded to the state by using the hash of RequestPacket as key.
+    /// @param _data The encoded data for oracle state relay and an array of data verification.
+    function relayMulti(bytes calldata _data) external {
+        Packet[] memory packets = this.relayAndMultiVerify(_data);
+
+        for (uint256 i = 0; i < packets.length; i++) {
+            Packet memory packet = packets[i];
+            bytes32 requestKey = packet.request.getRequestKey();
+
+            require(
+                packet.response.resolveTime >
+                    requestsCache[requestKey].resolveTime,
+                "FAIL_LATEST_REQUEST_SHOULD_BE_NEWEST"
+            );
+
+            require(
+                packet.response.resolveStatus == 1,
+                "FAIL_REQUEST_IS_NOT_SUCCESSFULLY_RESOLVED"
+            );
+
+            requestsCache[requestKey] = packet.response;
+        }
     }
 }
