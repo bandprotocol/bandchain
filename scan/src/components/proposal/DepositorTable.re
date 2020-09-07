@@ -57,7 +57,7 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
            | Data({amount}) =>
              <Text
                block=true
-               value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
+               value={amount |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
                color=Colors.gray7
              />
            | _ => <LoadingCensorBar width=100 height=15 />
@@ -75,7 +75,7 @@ let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.varia
       values=InfoMobileCard.[
         ("Depositor", Address(depositor, 200, `account)),
         ("TX Hash", TxHash(txHash, 200)),
-        ("Amount", Coin({value: [amount], hasDenom: false})),
+        ("Amount", Coin({value: amount, hasDenom: false})),
       ]
       key={depositor |> Address.toBech32}
       idx={depositor |> Address.toBech32}

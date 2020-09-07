@@ -9,8 +9,13 @@ module Styles = {
       position(`relative),
       Media.mobile([padding(`px(16))]),
     ]);
+  let resultsInfoContainer = style([paddingTop(`px(17))]);
+
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
+
+  let resultsInfoheader =
+    style([paddingBottom(`px(13)), Media.mobile([paddingBottom(`px(16))])]);
 
   let tableContainer =
     style([
@@ -38,11 +43,59 @@ module Styles = {
       height(`px(1)),
       margin2(~v=`px(24), ~h=`auto),
     ]);
+  let voteButton =
+    fun
+    | ProposalSub.Voting => style([visibility(`visible)])
+    | Deposit
+    | Passed
+    | Rejected
+    | Failed => style([visibility(`hidden)]);
+};
+
+module VoteButton = {
+  [@react.component]
+  let make = (~proposalID, ~proposalName) => {
+    let trackingSub = TrackingSub.use();
+
+    let (accountOpt, _) = React.useContext(AccountContext.context);
+    let (_, dispatchModal) = React.useContext(ModalContext.context);
+
+    let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
+    let vote = () => Vote(proposalID, proposalName)->SubmitTx->OpenModal->dispatchModal;
+
+    switch (accountOpt) {
+    | Some(_) =>
+      <button
+        className={Css.merge([CssHelper.btn(~px=20, ~py=5, ()), CssHelper.flexBox()])}
+        onClick={_ => vote()}>
+        <Icon name="fas fa-pencil" size=12 color=Colors.white />
+        <HSpacing size=Spacing.sm />
+        <Text value="Vote" nowrap=true block=true />
+      </button>
+    | None =>
+      switch (trackingSub) {
+      | Data({chainID}) =>
+        <button
+          className={Css.merge([CssHelper.btn(~px=20, ~py=5, ()), CssHelper.flexBox()])}
+          onClick={_ => connect(chainID)}>
+          <Icon name="fas fa-pencil" size=12 color=Colors.white />
+          <HSpacing size=Spacing.sm />
+          <Text value="Vote" nowrap=true block=true />
+        </button>
+      | Error(err) =>
+        // log for err details
+        Js.Console.log(err);
+        <Text value="chain id not found" />;
+      | _ => <LoadingCensorBar width=90 height=26 />
+      }
+    };
+  };
 };
 
 [@react.component]
 let make = (~proposalID) => {
   let proposalSub = ProposalSub.get(proposalID);
+
   let isMobile = Media.isMobile();
 
   <Section pbSm=0>
@@ -193,15 +246,27 @@ let make = (~proposalID) => {
           </div>
         </Col.Grid>
         <Col.Grid col=Col.Six mb=24 mbSm=16>
-          <div className=Styles.infoContainer>
+          <div className={Css.merge([Styles.infoContainer, Styles.resultsInfoContainer])}>
             <div
               className={Css.merge([
-                CssHelper.flexBox(),
+                CssHelper.flexBox(~justify=`spaceBetween, ()),
                 Styles.infoHeader,
+                Styles.resultsInfoheader,
                 CssHelper.mb(~size=24, ()),
               ])}>
-              // TODO: will add the button on the voting issue
-               <Heading value="Results" size=Heading.H4 /> </div>
+              <Heading value="Results" size=Heading.H4 />
+              {isMobile
+                 ? React.null
+                 : {
+                   switch (proposalSub) {
+                   | Data({name, status}) =>
+                     <div className={Styles.voteButton(status)}>
+                       <VoteButton proposalID proposalName=name />
+                     </div>
+                   | _ => <LoadingCensorBar width=90 height=26 />
+                   };
+                 }}
+            </div>
             //TODO: will re-structure when the data is wired up.
             <div className=Styles.resultContainer>
               <ProgressBar.Voting label="Yes" amount=3600000 percent=90 />
@@ -213,6 +278,9 @@ let make = (~proposalID) => {
         </Col.Grid>
       </Row.Grid>
       <Row.Grid marginBottom=24>
+        <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
+      </Row.Grid>
+      <Row.Grid marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
             <Row.Grid>
@@ -222,9 +290,9 @@ let make = (~proposalID) => {
               <Col.Grid col=Col.Six mbSm=24>
                 <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
                 {switch (proposalSub) {
-                 | Data({depositAmount, status}) =>
+                 | Data({totalDeposit, status}) =>
                    switch (status) {
-                   | ProposalSub.Deposit => <ProgressBar.Deposit depositAmount />
+                   | ProposalSub.Deposit => <ProgressBar.Deposit totalDeposit />
                    | _ =>
                      <div className={CssHelper.flexBox()}>
                        <img src=Images.success className=Styles.statusLogo />
