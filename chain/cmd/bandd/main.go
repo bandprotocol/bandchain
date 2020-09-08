@@ -3,10 +3,10 @@ package main
 import (
 	"encoding/json"
 	"io"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -23,13 +23,16 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	banddb "github.com/bandprotocol/bandchain/chain/db"
+	replay "github.com/bandprotocol/bandchain/chain/emitter/replay"
+	sync "github.com/bandprotocol/bandchain/chain/emitter/sync"
 )
 
 const (
-	flagInvCheckPeriod         = "inv-check-period"
-	flagWithDB                 = "with-db"
-	flagUptimeLookBackDuration = "uptime-look-back"
+	flagInvCheckPeriod        = "inv-check-period"
+	flagWithEmitter           = "with-emitter"
+	flagDisableFeelessReports = "disable-feeless-reports"
+	flagEnableFastSync        = "enable-fast-sync"
+	flagReplayMode            = "replay-mode"
 )
 
 var (
@@ -70,10 +73,11 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().String(flagWithDB, "", "[Experimental] Flush blockchain state to SQL database")
-	rootCmd.PersistentFlags().Int64(flagUptimeLookBackDuration, 1000, "[Experimental] Historical node uptime lookback duration")
-	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
-		0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
+	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
+	rootCmd.PersistentFlags().Bool(flagReplayMode, false, "[Experimental] Use emitter replay mode")
+	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -81,23 +85,45 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	if viper.IsSet(flagWithDB) {
-		dbSplit := strings.SplitN(viper.GetString(flagWithDB), ":", 2)
-		if len(dbSplit) != 2 {
-			panic("Invalid DB string format")
+	var cache sdk.MultiStorePersistentCache
+
+	if viper.GetBool(server.FlagInterBlockCache) {
+		cache = store.NewCommitKVStoreCacheManager()
+	}
+
+	skipUpgradeHeights := make(map[int64]bool)
+	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
+		skipUpgradeHeights[int64(h)] = true
+	}
+	pruningOpts, err := server.GetPruningOptionsFromFlags()
+	if err != nil {
+		panic(err)
+	}
+	if viper.IsSet(flagWithEmitter) {
+		if viper.GetBool(flagReplayMode) {
+			return replay.NewBandAppWithEmitter(
+				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+				skipUpgradeHeights, viper.GetString(flags.FlagHome),
+				viper.GetBool(flagDisableFeelessReports),
+				baseapp.SetPruning(pruningOpts),
+				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+				baseapp.SetInterBlockCache(cache),
+			)
+		} else {
+			return sync.NewBandAppWithEmitter(
+				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+				skipUpgradeHeights, viper.GetString(flags.FlagHome),
+				viper.GetBool(flagDisableFeelessReports),
+				viper.GetBool(flagEnableFastSync),
+				baseapp.SetPruning(pruningOpts),
+				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+				baseapp.SetInterBlockCache(cache),
+			)
 		}
-		metadata := map[string]string{
-			banddb.KeyUptimeLookBackDuration: viper.GetString(flagUptimeLookBackDuration),
-		}
-		bandDB, err := banddb.NewDB(dbSplit[0], dbSplit[1], metadata)
-		if err != nil {
-			panic(err)
-		}
-		return app.NewDBBandApp(
-			logger, db, traceStore, true, invCheckPeriod, bandDB,
-			baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(uint64(viper.GetInt(server.FlagHaltHeight))))
 	} else {
 		return app.NewBandApp(
 			logger, db, traceStore, true, invCheckPeriod,
