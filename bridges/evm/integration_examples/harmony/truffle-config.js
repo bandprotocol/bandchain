@@ -16,6 +16,9 @@
 // * phrase from a file you've .gitignored so it doesn't accidentally become public.
 // *
 // */
+
+// For the truffle-config.js we use here, we used an example from
+// https://docs.harmony.one/home/developers/smart-contracts/sample-files.
 require("dotenv").config();
 const { TruffleProvider } = require("@harmony-js/core");
 //Local
