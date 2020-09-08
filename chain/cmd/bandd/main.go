@@ -22,7 +22,8 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	emitter "github.com/bandprotocol/bandchain/chain/emitter/sync"
+	replay "github.com/bandprotocol/bandchain/chain/emitter/replay"
+	sync "github.com/bandprotocol/bandchain/chain/emitter/sync"
 )
 
 const (
@@ -30,6 +31,7 @@ const (
 	flagWithEmitter           = "with-emitter"
 	flagDisableFeelessReports = "disable-feeless-reports"
 	flagEnableFastSync        = "enable-fast-sync"
+	flagReplayMode            = "replay-mode"
 )
 
 var invCheckPeriod uint
@@ -63,6 +65,7 @@ func main() {
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
+	rootCmd.PersistentFlags().Bool(flagReplayMode, false, "[Experimental] Use emitter replay mode")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
@@ -86,17 +89,30 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		panic(err)
 	}
 	if viper.IsSet(flagWithEmitter) {
-		return emitter.NewBandAppWithEmitter(
-			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-			skipUpgradeHeights, viper.GetString(flags.FlagHome),
-			viper.GetBool(flagDisableFeelessReports),
-			viper.GetBool(flagEnableFastSync),
-			baseapp.SetPruning(pruningOpts),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-			baseapp.SetInterBlockCache(cache),
-		)
+		if viper.GetBool(flagReplayMode) {
+			return replay.NewBandAppWithEmitter(
+				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+				skipUpgradeHeights, viper.GetString(flags.FlagHome),
+				viper.GetBool(flagDisableFeelessReports),
+				baseapp.SetPruning(pruningOpts),
+				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+				baseapp.SetInterBlockCache(cache),
+			)
+		} else {
+			return sync.NewBandAppWithEmitter(
+				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+				skipUpgradeHeights, viper.GetString(flags.FlagHome),
+				viper.GetBool(flagDisableFeelessReports),
+				viper.GetBool(flagEnableFastSync),
+				baseapp.SetPruning(pruningOpts),
+				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+				baseapp.SetInterBlockCache(cache),
+			)
+		}
 	} else {
 		return app.NewBandApp(
 			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,

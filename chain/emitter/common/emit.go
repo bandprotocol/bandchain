@@ -5,6 +5,18 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+// EvMap is a type alias for SDK events mapping from Attr.Key to the list of values.
+type EvMap map[string][]string
+
+// JsDict is a type alias for JSON dictionary.
+type JsDict map[string]interface{}
+
+// Message is a simple wrapper data type for each message published to Kafka.
+type Message struct {
+	Key   string
+	Value JsDict
+}
+
 type Emitter interface {
 	Write(key string, val JsDict)
 }

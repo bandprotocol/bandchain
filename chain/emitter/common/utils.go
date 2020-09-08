@@ -2,19 +2,9 @@ package common
 
 import (
 	"strconv"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
-
-// EvMap is a type alias for SDK events mapping from Attr.Key to the list of values.
-type EvMap map[string][]string
-
-// JsDict is a type alias for JSON dictionary.
-type JsDict map[string]interface{}
-
-// Message is a simple wrapper data type for each message published to Kafka.
-type Message struct {
-	Key   string
-	Value JsDict
-}
 
 // Atoi converts the given string into an int64. Panics on errors.
 func Atoi(val string) int64 {
@@ -30,4 +20,15 @@ func ParseBytes(b []byte) []byte {
 		return []byte{}
 	}
 	return b
+}
+
+func ParseEvents(events sdk.StringEvents) EvMap {
+	evMap := make(EvMap)
+	for _, event := range events {
+		for _, kv := range event.Attributes {
+			key := event.Type + "." + kv.Key
+			evMap[key] = append(evMap[key], kv.Value)
+		}
+	}
+	return evMap
 }
