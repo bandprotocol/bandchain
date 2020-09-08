@@ -100,13 +100,13 @@ CREATE VIEW non_validator_vote_proposals_view AS
 SELECT validator_id,
        proposal_id,
        answer,
-       CAST(SUM(shares) AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) AS amount
+       SUM(CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL)) AS amount
 FROM delegations
 JOIN votes ON delegations.delegator_id=votes.voter_id
 JOIN validators ON delegations.validator_id=validators.id
 AND votes.voter_id != validators.account_id
 JOIN accounts ON accounts.id=delegations.delegator_id
-GROUP BY answer, validator_id, proposal_id, delegator_shares, tokens;
+GROUP BY answer, validator_id, proposal_id;
 """
     )
 
@@ -116,15 +116,9 @@ CREATE VIEW validator_vote_proposals_view AS
 SELECT validators.id,
        proposal_id,
        answer,
-       amount
+       tokens AS amount
 FROM votes
 JOIN accounts ON accounts.id = votes.voter_id
-JOIN validators ON accounts.id = validators.account_id
-JOIN
-  (SELECT Sum(Cast(shares AS DECIMAL) * Cast(tokens AS DECIMAL) / Cast(delegator_shares AS DECIMAL)) AS amount,
-          validator_id
-   FROM delegations
-   JOIN validators ON delegations.validator_id = validators.id
-   JOIN accounts ON accounts.id = delegations.delegator_id GROUP  BY validator_id) tt ON tt.validator_id = validators.id;
+JOIN validators ON accounts.id = validators.account_id;
 """
     )
