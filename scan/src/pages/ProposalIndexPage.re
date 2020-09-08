@@ -192,157 +192,180 @@ let make = (~proposalID) => {
           </div>
         </Col.Grid>
       </Row.Grid>
-      <Row.Grid>
-        <Col.Grid col=Col.Six mb=24 mbSm=16>
-          <div className=Styles.infoContainer>
-            <Heading
-              value="Voting Overview"
-              size=Heading.H4
-              style=Styles.infoHeader
-              marginBottom=24
-            />
-            <Row.Grid marginTop=38 alignItems=Row.Center>
-              <Col.Grid col=Col.Seven>
-                <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
-                  {switch (allSub) {
-                   | Data((_, {total}, bondedToken)) =>
-                     let turnoutPercent =
-                       total /. (bondedToken |> Coin.getBandAmountFromCoin) *. 100.;
-                     <TurnoutChart percent=turnoutPercent />;
-                   | _ => React.null
-                   }}
-                  {isMobile
-                     ? <div>
-                         <Heading value="Total" size=Heading.H5 marginBottom=8 />
-                         //TODO: wire up later
+      {switch (allSub) {
+       | Data(({status}, _, _)) =>
+         switch (status) {
+         | Deposit => React.null
+         | Voting
+         | Passed
+         | Rejected
+         | Failed =>
+           <>
+             <Row.Grid>
+               <Col.Grid col=Col.Six mb=24 mbSm=16>
+                 <div className=Styles.infoContainer>
+                   <Heading
+                     value="Voting Overview"
+                     size=Heading.H4
+                     style=Styles.infoHeader
+                     marginBottom=24
+                   />
+                   <Row.Grid marginTop=38 alignItems=Row.Center>
+                     <Col.Grid col=Col.Seven>
+                       <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
                          {switch (allSub) {
-                          | Data((_, {total}, _)) =>
-                            <Text
-                              value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
-                              size=Text.Lg
-                              block=true
-                              color=Colors.gray6
-                            />
-                          | _ => <LoadingCensorBar width=160 height=15 />
+                          | Data((_, {total}, bondedToken)) =>
+                            let turnoutPercent =
+                              total /. (bondedToken |> Coin.getBandAmountFromCoin) *. 100.;
+                            <TurnoutChart percent=turnoutPercent />;
+                          | _ => React.null
                           }}
+                         {isMobile
+                            ? <div>
+                                <Heading value="Total" size=Heading.H5 marginBottom=8 />
+                                //TODO: wire up later
+                                {switch (allSub) {
+                                 | Data((_, {total}, _)) =>
+                                   <Text
+                                     value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
+                                     size=Text.Lg
+                                     block=true
+                                     color=Colors.gray6
+                                   />
+                                 | _ => <LoadingCensorBar width=160 height=15 />
+                                 }}
+                              </div>
+                            : React.null}
                        </div>
-                     : React.null}
-                </div>
-              </Col.Grid>
-              {isMobile ? <Col.Grid> <hr className=Styles.separatorLine /> </Col.Grid> : React.null}
-              <Col.Grid col=Col.Five>
-                <Row.Grid>
-                  {isMobile
-                     ? React.null
-                     : <Col.Grid mb=24>
-                         <Heading value="Total" size=Heading.H5 marginBottom=8 />
-                         {switch (allSub) {
-                          | Data((_, {total}, _)) =>
-                            <Text
-                              value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
-                              size=Text.Lg
-                              block=true
-                              color=Colors.gray6
-                            />
-                          | _ => <LoadingCensorBar width=160 height=15 />
-                          }}
-                       </Col.Grid>}
-                  <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
-                    <Heading value="Voting Start" size=Heading.H5 marginBottom=8 />
-                    {switch (proposalSub) {
-                     | Data({votingStartTime}) =>
-                       <Timestamp.Grid size=Text.Lg time=votingStartTime />
-                     | _ =>
-                       <>
-                         <LoadingCensorBar width=70 height=15 />
-                         <LoadingCensorBar width=80 height=15 mt=5 />
-                       </>
-                     }}
-                  </Col.Grid>
-                  <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
-                    <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
-                    {switch (proposalSub) {
-                     | Data({votingEndTime}) => <Timestamp.Grid size=Text.Lg time=votingEndTime />
-                     | _ =>
-                       <>
-                         <LoadingCensorBar width=70 height=15 />
-                         <LoadingCensorBar width=80 height=15 mt=5 />
-                       </>
-                     }}
-                  </Col.Grid>
-                </Row.Grid>
-              </Col.Grid>
-            </Row.Grid>
-          </div>
-        </Col.Grid>
-        <Col.Grid col=Col.Six mb=24 mbSm=16>
-          <div className={Css.merge([Styles.infoContainer, Styles.resultsInfoContainer])}>
-            <div
-              className={Css.merge([
-                CssHelper.flexBox(~justify=`spaceBetween, ()),
-                Styles.infoHeader,
-                Styles.resultsInfoheader,
-                CssHelper.mb(~size=24, ()),
-              ])}>
-              <Heading value="Results" size=Heading.H4 />
-              {isMobile
-                 ? React.null
-                 : {
-                   switch (proposalSub) {
-                   | Data({name, status}) =>
-                     <div className={Styles.voteButton(status)}>
-                       <VoteButton proposalID proposalName=name />
-                     </div>
-                   | _ => <LoadingCensorBar width=90 height=26 />
-                   };
-                 }}
-            </div>
-            //TODO: will re-structure when the data is wired up.
-            <div className=Styles.resultContainer>
-              {switch (allSub) {
-               | Data((
-                   _,
-                   {
-                     totalYes,
-                     totalYesPercent,
-                     totalNo,
-                     totalNoPercent,
-                     totalNoWithVeto,
-                     totalNoWithVetoPercent,
-                     totalAbstain,
-                     totalAbstainPercent,
-                   },
-                   _,
-                 )) =>
-                 <>
-                   <ProgressBar.Voting label=VoteSub.Yes amount=totalYes percent=totalYesPercent />
-                   <ProgressBar.Voting label=VoteSub.No amount=totalNo percent=totalNoPercent />
-                   <ProgressBar.Voting
-                     label=VoteSub.NoWithVeto
-                     amount=totalNoWithVeto
-                     percent=totalNoWithVetoPercent
-                   />
-                   <ProgressBar.Voting
-                     label=VoteSub.Abstain
-                     amount=totalAbstain
-                     percent=totalAbstainPercent
-                   />
-                 </>
-               | _ =>
-                 <>
-                   <LoadingCensorBar fullWidth=true height=38 />
-                   <LoadingCensorBar fullWidth=true height=38 />
-                   <LoadingCensorBar fullWidth=true height=38 />
-                   <LoadingCensorBar fullWidth=true height=38 />
-                 </>
-               }}
-            </div>
-          </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
-      </Row.Grid>
+                     </Col.Grid>
+                     {isMobile
+                        ? <Col.Grid> <hr className=Styles.separatorLine /> </Col.Grid> : React.null}
+                     <Col.Grid col=Col.Five>
+                       <Row.Grid>
+                         {isMobile
+                            ? React.null
+                            : <Col.Grid mb=24>
+                                <Heading value="Total" size=Heading.H5 marginBottom=8 />
+                                {switch (allSub) {
+                                 | Data((_, {total}, _)) =>
+                                   <Text
+                                     value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
+                                     size=Text.Lg
+                                     block=true
+                                     color=Colors.gray6
+                                   />
+                                 | _ => <LoadingCensorBar width=160 height=15 />
+                                 }}
+                              </Col.Grid>}
+                         <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                           <Heading value="Voting Start" size=Heading.H5 marginBottom=8 />
+                           {switch (proposalSub) {
+                            | Data({votingStartTime}) =>
+                              <Timestamp.Grid size=Text.Lg time=votingStartTime />
+                            | _ =>
+                              <>
+                                <LoadingCensorBar width=70 height=15 />
+                                <LoadingCensorBar width=80 height=15 mt=5 />
+                              </>
+                            }}
+                         </Col.Grid>
+                         <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                           <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
+                           {switch (proposalSub) {
+                            | Data({votingEndTime}) =>
+                              <Timestamp.Grid size=Text.Lg time=votingEndTime />
+                            | _ =>
+                              <>
+                                <LoadingCensorBar width=70 height=15 />
+                                <LoadingCensorBar width=80 height=15 mt=5 />
+                              </>
+                            }}
+                         </Col.Grid>
+                       </Row.Grid>
+                     </Col.Grid>
+                   </Row.Grid>
+                 </div>
+               </Col.Grid>
+               <Col.Grid col=Col.Six mb=24 mbSm=16>
+                 <div className={Css.merge([Styles.infoContainer, Styles.resultsInfoContainer])}>
+                   <div
+                     className={Css.merge([
+                       CssHelper.flexBox(~justify=`spaceBetween, ()),
+                       Styles.infoHeader,
+                       Styles.resultsInfoheader,
+                       CssHelper.mb(~size=24, ()),
+                     ])}>
+                     <Heading value="Results" size=Heading.H4 />
+                     {isMobile
+                        ? React.null
+                        : {
+                          switch (proposalSub) {
+                          | Data({name, status}) =>
+                            <div className={Styles.voteButton(status)}>
+                              <VoteButton proposalID proposalName=name />
+                            </div>
+                          | _ => <LoadingCensorBar width=90 height=26 />
+                          };
+                        }}
+                   </div>
+                   //TODO: will re-structure when the data is wired up.
+                   <div className=Styles.resultContainer>
+                     {switch (allSub) {
+                      | Data((
+                          _,
+                          {
+                            totalYes,
+                            totalYesPercent,
+                            totalNo,
+                            totalNoPercent,
+                            totalNoWithVeto,
+                            totalNoWithVetoPercent,
+                            totalAbstain,
+                            totalAbstainPercent,
+                          },
+                          _,
+                        )) =>
+                        <>
+                          <ProgressBar.Voting
+                            label=VoteSub.Yes
+                            amount=totalYes
+                            percent=totalYesPercent
+                          />
+                          <ProgressBar.Voting
+                            label=VoteSub.No
+                            amount=totalNo
+                            percent=totalNoPercent
+                          />
+                          <ProgressBar.Voting
+                            label=VoteSub.NoWithVeto
+                            amount=totalNoWithVeto
+                            percent=totalNoWithVetoPercent
+                          />
+                          <ProgressBar.Voting
+                            label=VoteSub.Abstain
+                            amount=totalAbstain
+                            percent=totalAbstainPercent
+                          />
+                        </>
+                      | _ =>
+                        <>
+                          <LoadingCensorBar fullWidth=true height=38 />
+                          <LoadingCensorBar fullWidth=true height=38 />
+                          <LoadingCensorBar fullWidth=true height=38 />
+                          <LoadingCensorBar fullWidth=true height=38 />
+                        </>
+                      }}
+                   </div>
+                 </div>
+               </Col.Grid>
+             </Row.Grid>
+             <Row.Grid marginBottom=24>
+               <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
+             </Row.Grid>
+           </>
+         }
+       | _ => React.null
+       }}
       <Row.Grid marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
