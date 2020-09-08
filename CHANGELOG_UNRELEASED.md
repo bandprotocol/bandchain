@@ -62,6 +62,8 @@
 
 ### Oracle Binary Encoding (OBI)
 
+- (feat) [\#2546](https://github.com/bandprotocol/bandchain/pull/2546) Implement encode / decode for fix length array
+
 ### Helpers
 
 - (impv) [\#2577](https://github.com/bandprotocol/bandchain/pull/2577) Wallet module completion
