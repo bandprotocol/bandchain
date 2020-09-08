@@ -100,7 +100,7 @@ CREATE VIEW non_validator_vote_proposals_view AS
 SELECT validator_id,
        proposal_id,
        answer,
-       SUM(CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL)) AS amount
+       SUM(CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL)) AS tokens
 FROM delegations
 JOIN votes ON delegations.delegator_id=votes.voter_id
 JOIN validators ON delegations.validator_id=validators.id
@@ -116,7 +116,7 @@ CREATE VIEW validator_vote_proposals_view AS
 SELECT validators.id,
        proposal_id,
        answer,
-       tokens AS amount
+       tokens
 FROM votes
 JOIN accounts ON accounts.id = votes.voter_id
 JOIN validators ON accounts.id = validators.account_id;
