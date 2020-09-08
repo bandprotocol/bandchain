@@ -23,7 +23,12 @@ module Styles = {
 
 module ProposalCard = {
   [@react.component]
-  let make = (~reserveIndex, ~proposalSub: ApolloHooks.Subscription.variant(ProposalSub.t)) => {
+  let make =
+      (
+        ~reserveIndex,
+        ~proposalSub: ApolloHooks.Subscription.variant(ProposalSub.t),
+        ~turnoutRate,
+      ) => {
     let isMobile = Media.isMobile();
     <Col.Grid key={reserveIndex |> string_of_int} mb=24 mbSm=16>
       <div className=Styles.infoContainer>
@@ -118,7 +123,7 @@ module ProposalCard = {
              }}
           </Col.Grid>
           {switch (proposalSub) {
-           | Data({status, turnout}) =>
+           | Data({status}) =>
              switch (status) {
              | Deposit => React.null
              | Voting
@@ -127,7 +132,7 @@ module ProposalCard = {
              | Failed =>
                <Col.Grid col=Col.Four colSm=Col.Five>
                  <Heading value="Turnout" size=Heading.H5 marginBottom=8 />
-                 <Text value={turnout |> Format.fPercent(~digits=2)} size=Text.Lg />
+                 <Text value={turnoutRate |> Format.fPercent(~digits=2)} size=Text.Lg />
                </Col.Grid>
              }
            | _ =>
@@ -146,36 +151,45 @@ module ProposalCard = {
 let make = () => {
   let pageSize = 10;
   let proposalsSub = ProposalSub.getList(~pageSize, ~page=1, ());
-  let proposalsCountSub = ProposalSub.count();
-  let allSub = Sub.all2(proposalsSub, proposalsCountSub);
+  let voteStatSub = VoteSub.getVoteStat();
+  let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
+
+  let allSub = Sub.all3(proposalsSub, bondedTokenCountSub, voteStatSub);
 
   <Section>
     <div className=CssHelper.container>
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
       </Row.Grid>
-      //TODO: It will be shown after there are more proposals
-      // {switch (allSub) {
-      //  | Data((_, proposalsCount)) =>
-      //    <Heading value={proposalsCount->string_of_int ++ " In total"} size=Heading.H3 />
-      //  | _ => <LoadingCensorBar width=65 height=21 />
-      //  }}
       <Row.Grid>
         {switch (allSub) {
-         | Data((proposals, _)) =>
+         | Data((proposals, bondedTokenCount, voteStatSub)) =>
            proposals
-           ->Belt_Array.mapWithIndex((i, e) =>
+           ->Belt_Array.mapWithIndex((i, proposal) => {
+               let turnoutRate =
+                 (
+                   voteStatSub->Belt_MapInt.get(proposal.id |> ID.Proposal.toInt)
+                   |> Belt_Option.getWithDefault(_, 0.)
+                 )
+                 /. (bondedTokenCount |> Coin.getBandAmountFromCoin)
+                 *. 100.;
                <ProposalCard
                  key={i |> string_of_int}
                  reserveIndex=i
-                 proposalSub={Sub.resolve(e)}
-               />
-             )
+                 proposalSub={Sub.resolve(proposal)}
+                 turnoutRate
+               />;
+             })
            ->React.array
          | _ =>
            Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>
-               <ProposalCard key={i |> string_of_int} reserveIndex=i proposalSub=noData />
+               <ProposalCard
+                 key={i |> string_of_int}
+                 reserveIndex=i
+                 proposalSub=noData
+                 turnoutRate=0.
+               />
              )
            ->React.array
          }}
