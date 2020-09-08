@@ -104,14 +104,14 @@ type MultiProof struct {
 	EVMProofBytes tmbytes.HexBytes `json:"evmProofBytes"`
 }
 
-func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
+func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, ctx, r)
+		ctx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
-		height := &cliCtx.Height
-		if cliCtx.Height == 0 {
+		height := &ctx.Height
+		if ctx.Height == 0 {
 			height = nil
 		}
 
@@ -122,7 +122,7 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 			return
 		}
 		requestID := types.RequestID(intRequestID)
-		bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, requestID))
+		bz, _, err := ctx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, requestID))
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -133,11 +133,11 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 			return
 		}
 		if qResult.Status != http.StatusOK {
-			clientcmn.PostProcessQueryResponse(w, cliCtx, bz)
+			clientcmn.PostProcessQueryResponse(w, ctx, bz)
 			return
 		}
 		var request types.QueryRequestResult
-		if err := cliCtx.Codec.UnmarshalJSON(qResult.Result, &request); err != nil {
+		if err := ctx.Codec.UnmarshalJSON(qResult.Result, &request); err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -146,13 +146,13 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 			return
 		}
 
-		commit, err := cliCtx.Client.Commit(height)
+		commit, err := ctx.Client.Commit(height)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		resp, err := cliCtx.Client.ABCIQueryWithOptions(
+		resp, err := ctx.Client.ABCIQueryWithOptions(
 			"/store/oracle/key",
 			types.ResultStoreKey(requestID),
 			rpcclient.ABCIQueryOptions{Height: commit.Height - 1, Prove: true},
@@ -179,7 +179,7 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 		for _, op := range ops {
 			opType := op.GetType()
 			if opType == "iavl:v" {
-				err := cliCtx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
+				err := ctx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
 				if err != nil {
 					rest.WriteErrorResponse(w, http.StatusInternalServerError,
 						fmt.Sprintf("iavl: %s", err.Error()),
@@ -209,7 +209,7 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 		}
 		blockRelay := BlockRelayProof{
 			MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
-			BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(cliCtx.Codec, commit.Header),
+			BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(ctx.Codec, commit.Header),
 			Signatures:             signatures,
 		}
 		resValue := resp.Response.GetValue()
@@ -254,7 +254,7 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 			return
 		}
 
-		rest.PostProcessResponse(w, cliCtx, Proof{
+		rest.PostProcessResponse(w, ctx, Proof{
 			JsonProof: JsonProof{
 				BlockHeight:     uint64(commit.Height),
 				OracleDataProof: oracleData,
@@ -265,14 +265,14 @@ func GetProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
 	}
 }
 
-func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFunc {
+func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, ctx, r)
+		ctx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
 			return
 		}
-		height := &cliCtx.Height
-		if cliCtx.Height == 0 {
+		height := &ctx.Height
+		if ctx.Height == 0 {
 			height = nil
 		}
 
@@ -291,7 +291,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 				return
 			}
 			requestID := types.RequestID(intRequestID)
-			bz, _, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, requestID))
+			bz, _, err := ctx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, requestID))
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
@@ -302,11 +302,11 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 				return
 			}
 			if qResult.Status != http.StatusOK {
-				clientcmn.PostProcessQueryResponse(w, cliCtx, bz)
+				clientcmn.PostProcessQueryResponse(w, ctx, bz)
 				return
 			}
 			var request types.QueryRequestResult
-			if err := cliCtx.Codec.UnmarshalJSON(qResult.Result, &request); err != nil {
+			if err := ctx.Codec.UnmarshalJSON(qResult.Result, &request); err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
 			}
@@ -315,7 +315,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 				return
 			}
 
-			commit, err := cliCtx.Client.Commit(height)
+			commit, err := ctx.Client.Commit(height)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return
@@ -323,7 +323,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 
 			commitHeight = uint64(commit.Height)
 
-			resp, err := cliCtx.Client.ABCIQueryWithOptions(
+			resp, err := ctx.Client.ABCIQueryWithOptions(
 				"/store/oracle/key",
 				types.ResultStoreKey(requestID),
 				rpcclient.ABCIQueryOptions{Height: commit.Height - 1, Prove: true},
@@ -350,7 +350,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 			for _, op := range ops {
 				opType := op.GetType()
 				if opType == "iavl:v" {
-					err := cliCtx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
+					err := ctx.Codec.UnmarshalBinaryLengthPrefixed(op.GetData(), &iavlProof)
 					if err != nil {
 						rest.WriteErrorResponse(w, http.StatusInternalServerError,
 							fmt.Sprintf("iavl: %s", err.Error()),
@@ -380,7 +380,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 			}
 			blockRelay = BlockRelayProof{
 				MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
-				BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(cliCtx.Codec, commit.Header),
+				BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(ctx.Codec, commit.Header),
 				Signatures:             signatures,
 			}
 			resValue := resp.Response.GetValue()
@@ -429,7 +429,7 @@ func GetMutiProofHandlerFn(ctx context.CLIContext, route string) http.HandlerFun
 			return
 		}
 
-		rest.PostProcessResponse(w, cliCtx, MultiProof{
+		rest.PostProcessResponse(w, ctx, MultiProof{
 			JsonProof: JsonMultiProof{
 				BlockHeight:          commitHeight,
 				OracleDataMultiProof: arrayOfOracleData,
