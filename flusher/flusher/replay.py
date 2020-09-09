@@ -31,12 +31,12 @@ from .handler import Handler
     "-s", "--servers", help="Kafka bootstrap servers.", default="localhost:9092", show_default=True,
 )
 @click.option("-e", "--echo-sqlalchemy", "echo_sqlalchemy", is_flag=True)
-def sync(commit_interval, db, servers, echo_sqlalchemy):
+def replay(commit_interval, db, servers, echo_sqlalchemy):
     """Subscribe to Kafka and push the updates to the database."""
     # Set up Kafka connection
     engine = create_engine("postgresql+psycopg2://" + db, echo=echo_sqlalchemy)
     tracking_info = engine.execute(tracking.select()).fetchone()
-    topic = tracking_info.replay_topic
+    topic = tracking_info.replay
     consumer = KafkaConsumer(topic, bootstrap_servers=servers)
     partitions = consumer.partitions_for_topic(topic)
     if len(partitions) != 1:
@@ -45,11 +45,11 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
     while True:
         consumer.seek_to_end(tp)
         last_offset = consumer.position(tp)
-        if tracking_info.kafka_offset < last_offset:
+        if tracking_info.replay_offset < last_offset:
             break
         logger.info("Waiting emitter sync current emitter offset is {}", last_offset)
         time.sleep(5)
-    consumer.seek(tp, tracking_info.kafka_offset + 1)
+    consumer.seek(tp, tracking_info.replay_offset + 1)
     consumer_iter = iter(consumer)
     # Main loop
     while True:
@@ -60,7 +60,7 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                 value = json.loads(msg.value)
                 if key == "COMMIT":
                     if value["height"] % commit_interval == 0:
-                        conn.execute(tracking.update().values(kafka_offset=msg.offset))
+                        conn.execute(tracking.update().values(replay_offset=msg.offset))
                         logger.info(
                             "Committed at block {} and Kafka offset {}",
                             value["height"],
