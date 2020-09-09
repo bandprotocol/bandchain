@@ -18,7 +18,7 @@ func (app *App) emitGovModule() {
 		return false
 	})
 	app.GovKeeper.IterateAllDeposits(app.DeliverContext, func(deposit types.Deposit) (stop bool) {
-		app.emitSetDeposit(nil, deposit.ProposalID, deposit.Depositor)
+		app.emitSetDeposit(nil, deposit.ProposalID, deposit.Depositor, deposit.Amount)
 		return false
 	})
 	app.GovKeeper.IterateAllVotes(app.DeliverContext, func(vote types.Vote) (stop bool) {
@@ -44,12 +44,11 @@ func (app *App) emitNewProposal(proposal gov.Proposal, proposer sdk.AccAddress) 
 	})
 }
 
-func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
-	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
+func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress, amount sdk.Coins) {
 	app.Write("SET_DEPOSIT", JsDict{
 		"proposal_id": id,
 		"depositor":   depositor,
-		"amount":      deposit.Amount.String(),
+		"amount":      amount.String(),
 		"tx_hash":     txHash,
 	})
 }
@@ -81,14 +80,14 @@ func (app *App) handleMsgSubmitProposal(
 	proposalId := uint64(atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
 	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, proposalId)
 	app.emitNewProposal(proposal, msg.Proposer)
-	app.emitSetDeposit(txHash, proposalId, msg.Proposer)
+	app.emitSetDeposit(txHash, proposalId, msg.Proposer, msg.InitialDeposit)
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
 func (app *App) handleMsgDeposit(
 	txHash []byte, msg gov.MsgDeposit, evMap EvMap, extra JsDict,
 ) {
-	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor)
+	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor, msg.Amount)
 	app.emitUpdateProposalAfterDeposit(msg.ProposalID)
 }
 
