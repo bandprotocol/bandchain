@@ -16,6 +16,7 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2553](https://github.com/bandprotocol/bandchain/pull/2553) fast-sync: emit `unbonding`, `delegation` and `redelegation` from start state
 - (impv) [\#2558](https://github.com/bandprotocol/bandchain/pull/2558) fast-sync: emit all oracle module from start state
 - (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
 - (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
