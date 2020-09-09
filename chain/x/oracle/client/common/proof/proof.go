@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
-	"reflect"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -46,6 +45,10 @@ type BlockRelayProof struct {
 	MultiStoreProof        MultiStoreProof        `json:"multiStoreProof"`
 	BlockHeaderMerkleParts BlockHeaderMerkleParts `json:"blockHeaderMerkleParts"`
 	Signatures             []TMSignature          `json:"signatures"`
+}
+
+func (blockRelay *BlockRelayProof) isEmpty() bool {
+	return len(blockRelay.Signatures) == 0
 }
 
 func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
@@ -353,7 +356,7 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 						)
 						return
 					}
-				} else if opType == "multistore" && reflect.DeepEqual(BlockRelayProof{}, blockRelay) {
+				} else if opType == "multistore" && blockRelay.isEmpty() {
 					mp, err := rootmulti.MultiStoreProofOpDecoder(op)
 					multiStoreProof = mp.(rootmulti.MultiStoreProofOp)
 					if err != nil {
