@@ -16,8 +16,23 @@
 
 ### Emitter & Flusher
 
+- (impv) [\#2558](https://github.com/bandprotocol/bandchain/pull/2558) fast-sync: emit all oracle module from start state
+- (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
+- (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
+
 ### Scan
 
+- (bugs) [\#2606](https://github.com/bandprotocol/bandchain/pull/2606) Fix overflow text on request index page
+- (impv) [\#2604](https://github.com/bandprotocol/bandchain/pull/2604) Moved the proposal route to wenchang route
+- (feat) [\#2603](https://github.com/bandprotocol/bandchain/pull/2603) Added `guanyu-poa` on chain id
+- (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
+- (feat) [\#2598](https://github.com/bandprotocol/bandchain/pull/2598) Implemented VoteSub, Vote breakdown table and wire up
+- (feat) [\#2597](https://github.com/bandprotocol/bandchain/pull/2597) Implemented VoteMsg and modal action
+- (impv) [\#2596](https://github.com/bandprotocol/bandchain/pull/2596) Fix total deposit, deposit amount type
+- (bugs) [\#2595](https://github.com/bandprotocol/bandchain/pull/2595) Handle `client_id` optional case
+- (impv) [\#2593](https://github.com/bandprotocol/bandchain/pull/2593) Polish UI
+- (feat) [\#2592](https://github.com/bandprotocol/bandchain/pull/2592) Added new voting overview and results box to proposal index page
+- (feat) [\#2591](https://github.com/bandprotocol/bandchain/pull/2591) Implemented the deposit overview, depositors table
 - (feat) [\#2578](https://github.com/bandprotocol/bandchain/pull/2578) Implemented the top part for proposal index page, markdown component
 - (bugs) [\#2576](https://github.com/bandprotocol/bandchain/pull/2576) Fix overflow value on History Bonded Token, implement HistoryOracleParser and unit test.
 - (impv) [\#2573](https://github.com/bandprotocol/bandchain/pull/2573) Added tooltip text to each place which is lorem
@@ -48,6 +63,8 @@
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
+
+- (feat) [\#2546](https://github.com/bandprotocol/bandchain/pull/2546) Implement encode / decode for fix length array
 
 ### Helpers
 

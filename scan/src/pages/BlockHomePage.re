@@ -114,7 +114,7 @@ let make = () => {
             <Heading value="All Blocks" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (allSub) {
              | Data((_, blocksCount)) =>
-               <Heading value={blocksCount->string_of_int ++ " In total"} size=Heading.H3 />
+               <Heading value={(blocksCount |> Format.iPretty) ++ " In total"} size=Heading.H3 />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
