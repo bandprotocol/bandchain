@@ -64,7 +64,7 @@ contract CacheBridge is Bridge, ICacheBridge {
     /// Performs oracle state relay and many times of oracle data verification in one go.
     /// After that, the results which is an array of Packet will be recorded to the state by using the hash of RequestPacket as key.
     /// @param _data The encoded data for oracle state relay and an array of data verification.
-    function relayMulti(bytes calldata _data) external {
+    function relayMulti(bytes calldata _data) external override {
         Packet[] memory packets = this.relayAndMultiVerify(_data);
 
         for (uint256 i = 0; i < packets.length; i++) {
