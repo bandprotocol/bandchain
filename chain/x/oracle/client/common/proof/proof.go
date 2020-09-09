@@ -6,7 +6,6 @@ import (
 	"math/big"
 	"net/http"
 	"strconv"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/store/rootmulti"
@@ -276,9 +275,9 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 			height = nil
 		}
 
-		vars := mux.Vars(r)
 		commitHeight := uint64(0)
-		requestIDs := strings.Split(vars[RequestIDTag], ",")
+		requestIDs := r.URL.Query()["id"]
+		fmt.Println(requestIDs)
 		blockRelay := BlockRelayProof{}
 		blockRelayBytes := []byte{}
 		arrayOfOracleDataBytes := [][]byte{}
