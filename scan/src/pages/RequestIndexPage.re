@@ -153,10 +153,10 @@ module KVTableContainer = {
                  <TBody.Grid key={fieldName ++ fieldValue} paddingH={`px(24)}>
                    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
                      <Col.Grid col=Col.Three>
-                       <Text value=fieldName color=Colors.gray7 weight=Text.Thin />
+                       <Text value=fieldName color=Colors.gray7 weight=Text.Thin/>
                      </Col.Grid>
                      <Col.Grid col=Col.Nine>
-                       <Text value=fieldValue color=Colors.gray7 weight=Text.Thin />
+                       <Text value=fieldValue color=Colors.gray7 weight=Text.Thin breakAll=true/>
                      </Col.Grid>
                    </Row.Grid>
                  </TBody.Grid>

@@ -177,6 +177,7 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 func (app *App) emitNonHistoricalState() {
 	app.emitAccountModule()
 	app.emitStakingModule()
+	app.emitOracleModule()
 	common.EmitCommit(app, -1)
 	app.FlushMessages()
 	app.msgs = []common.Message{}
