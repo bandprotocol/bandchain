@@ -21,7 +21,9 @@ func parseEvents(events sdk.StringEvents) common.EvMap {
 // handleMsg handles the given message by publishing relevant events and populates accounts
 // that need balance update in 'app.accs'. Also fills in extra info for this message.
 func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
+	// TODO: handle msg
 }
 
 func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
+	// TODO: handle begin and end block
 }
