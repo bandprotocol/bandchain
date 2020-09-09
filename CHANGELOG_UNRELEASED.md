@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2607](https://github.com/bandprotocol/bandchain/pull/2607) Query proof with specific height parameter
+
 ### Yoda
 
 ### Emitter & Flusher
