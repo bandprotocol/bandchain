@@ -7,4 +7,5 @@ from .pyobi import (
     PyObiStruct,
     PyObiString,
     PyObiBytes,
+    PyObiArray,
 )

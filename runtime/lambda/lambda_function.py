@@ -61,7 +61,8 @@ def lambda_handler(event, context):
 
     if "executable" not in body:
         return bad_request("Missing executable value")
-    if len(body["executable"]) > MAX_EXECUTABLE:
+    executable = base64.b64decode(body["executable"])
+    if len(executable) > MAX_EXECUTABLE:
         return bad_request("Executable exceeds max size")
     if "calldata" not in body:
         return bad_request("Missing calldata value")
@@ -76,7 +77,7 @@ def lambda_handler(event, context):
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(base64.b64decode(body["executable"]).decode())
+        f.write(executable.decode())
 
     os.chmod(path, 0o775)
     try:
