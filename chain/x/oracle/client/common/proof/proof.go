@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
@@ -275,9 +276,13 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 			height = nil
 		}
 
-		commitHeight := uint64(0)
+		commit, err := ctx.Client.Commit(height)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		requestIDs := r.URL.Query()["id"]
-		fmt.Println(requestIDs)
 		blockRelay := BlockRelayProof{}
 		blockRelayBytes := []byte{}
 		arrayOfOracleDataBytes := [][]byte{}
@@ -314,14 +319,6 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 				return
 			}
 
-			commit, err := ctx.Client.Commit(height)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-
-			commitHeight = uint64(commit.Height)
-
 			resp, err := ctx.Client.ABCIQueryWithOptions(
 				"/store/oracle/key",
 				types.ResultStoreKey(requestID),
@@ -356,7 +353,7 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 						)
 						return
 					}
-				} else if opType == "multistore" {
+				} else if opType == "multistore" && reflect.DeepEqual(BlockRelayProof{}, blockRelay) {
 					mp, err := rootmulti.MultiStoreProofOpDecoder(op)
 					multiStoreProof = mp.(rootmulti.MultiStoreProofOp)
 					if err != nil {
@@ -365,6 +362,16 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 						)
 						return
 					}
+					signatures, err := GetSignaturesAndPrefix(&commit.SignedHeader)
+					if err != nil {
+						rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+						return
+					}
+					blockRelay = BlockRelayProof{
+						MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
+						BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(ctx.Codec, commit.Header),
+						Signatures:             signatures,
+					}
 				}
 			}
 			if iavlProof.Proof == nil {
@@ -372,16 +379,6 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 				return
 			}
 			eventHeight := iavlProof.Proof.Leaves[0].Version
-			signatures, err := GetSignaturesAndPrefix(&commit.SignedHeader)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
-				return
-			}
-			blockRelay = BlockRelayProof{
-				MultiStoreProof:        GetMultiStoreProof(multiStoreProof),
-				BlockHeaderMerkleParts: GetBlockHeaderMerkleParts(ctx.Codec, commit.Header),
-				Signatures:             signatures,
-			}
 			resValue := resp.Response.GetValue()
 
 			type result struct {
@@ -417,7 +414,7 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 		// Calculate byte for MultiProofbytes
 		var relayAndVerifyArguments abi.Arguments
 		format := `[{"type":"bytes"},{"type":"bytes[]"}]`
-		err := json.Unmarshal([]byte(format), &relayAndVerifyArguments)
+		err = json.Unmarshal([]byte(format), &relayAndVerifyArguments)
 		if err != nil {
 			panic(err)
 		}
@@ -430,7 +427,7 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 
 		rest.PostProcessResponse(w, ctx, MultiProof{
 			JsonProof: JsonMultiProof{
-				BlockHeight:          commitHeight,
+				BlockHeight:          uint64(commit.Height),
 				OracleDataMultiProof: arrayOfOracleData,
 				BlockRelayProof:      blockRelay,
 			},
