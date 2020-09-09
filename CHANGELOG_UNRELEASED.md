@@ -58,6 +58,8 @@
 
 ### Runtime
 
+- (bugs) [\#2590](https://github.com/bandprotocol/bandchain/pull/2590) Fix verify executable size failed
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
