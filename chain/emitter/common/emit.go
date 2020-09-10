@@ -116,3 +116,11 @@ func EmitSetRequestCountPerDay(e Emitter, date int64) {
 		"date": date,
 	})
 }
+
+func EmitHistoricalValidatorStatus(e Emitter, addr sdk.ValAddress, status bool, timestamp int64) {
+	e.Write("SET_HISTORICAL_VALIDATOR_STATUS", JsDict{
+		"operator_address": addr,
+		"status":           status,
+		"timestamp":        timestamp,
+	})
+}

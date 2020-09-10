@@ -36,7 +36,7 @@ def replay(commit_interval, db, servers, echo_sqlalchemy):
     # Set up Kafka connection
     engine = create_engine("postgresql+psycopg2://" + db, echo=echo_sqlalchemy)
     tracking_info = engine.execute(tracking.select()).fetchone()
-    topic = tracking_info.replay
+    topic = tracking_info.replay_topic
     consumer = KafkaConsumer(topic, bootstrap_servers=servers)
     partitions = consumer.partitions_for_topic(topic)
     if len(partitions) != 1:
@@ -47,7 +47,8 @@ def replay(commit_interval, db, servers, echo_sqlalchemy):
         last_offset = consumer.position(tp)
         if tracking_info.replay_offset < last_offset:
             break
-        logger.info("Waiting emitter sync current emitter offset is {}", last_offset)
+        logger.info(
+            "Waiting emitter sync current emitter offset is {}", last_offset)
         time.sleep(5)
     consumer.seek(tp, tracking_info.replay_offset + 1)
     consumer_iter = iter(consumer)
@@ -60,7 +61,8 @@ def replay(commit_interval, db, servers, echo_sqlalchemy):
                 value = json.loads(msg.value)
                 if key == "COMMIT":
                     if value["height"] % commit_interval == 0:
-                        conn.execute(tracking.update().values(replay_offset=msg.offset))
+                        conn.execute(tracking.update().values(
+                            replay_offset=msg.offset))
                         logger.info(
                             "Committed at block {} and Kafka offset {}",
                             value["height"],

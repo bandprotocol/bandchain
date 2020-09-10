@@ -13,11 +13,13 @@ func (app *App) emitOracleModule() {
 	for idx, ds := range dataSources {
 		id := types.DataSourceID(idx + 1)
 		app.emitSetDataSource(id, ds, nil)
+		common.EmitNewDataSourceRequest(app, id)
 	}
 	oracleScripts := app.OracleKeeper.GetAllOracleScripts(app.DeliverContext)
 	for idx, os := range oracleScripts {
 		id := types.OracleScriptID(idx + 1)
 		app.emitSetOracleScript(id, os, nil)
+		common.EmitNewOracleScriptRequest(app, id)
 	}
 	rqCount := app.OracleKeeper.GetRequestCount(app.DeliverContext)
 	for rid := types.RequestID(1); rid <= types.RequestID(rqCount); rid++ {
@@ -69,11 +71,7 @@ func (app *App) emitSetOracleScript(id types.OracleScriptID, os types.OracleScri
 
 func (app *App) emitHistoricalValidatorStatus(operatorAddress sdk.ValAddress) {
 	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, operatorAddress).IsActive
-	app.Write("SET_HISTORICAL_VALIDATOR_STATUS", common.JsDict{
-		"operator_address": operatorAddress,
-		"status":           status,
-		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
-	})
+	common.EmitHistoricalValidatorStatus(app, operatorAddress, status, app.DeliverContext.BlockTime().UnixNano())
 }
 
 func (app *App) emitRawRequestAndValRequest(requestID types.RequestID, req types.Request) {
@@ -140,7 +138,6 @@ func (app *App) handleMsgRequestData(
 		"sender":           msg.Sender.String(),
 		"client_id":        msg.ClientID,
 		"resolve_status":   types.ResolveStatus_Open,
-		"timestamp":        app.DeliverContext.BlockTime().UnixNano(),
 	})
 	app.emitRawRequestAndValRequest(id, req)
 	common.EmitSetRequestCountPerDay(app, app.DeliverContext.BlockTime().UnixNano())
