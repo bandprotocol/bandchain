@@ -36,6 +36,7 @@
 ### Bridges
 
 - (feat) [\#2632](https://github.com/bandprotocol/bandchain/pull/2632) Add aggregator contract for ICON bridge
+- (impv) [\#2626](https://github.com/bandprotocol/bandchain/pull/2626) Icon bridge fixed from auditing process
 
 ### Runtime
 
