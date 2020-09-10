@@ -183,7 +183,7 @@ contract Bridge is IBridge, Ownable {
     function relayAndMultiVerify(bytes calldata _data)
         external
         override
-        returns (Packet[] memory)
+        returns (RequestPacket[] memory, ResponsePacket[] memory)
     {
         (bytes memory relayData, bytes[] memory manyVerifyData) = abi.decode(
             _data,
@@ -194,7 +194,12 @@ contract Bridge is IBridge, Ownable {
         );
         require(relayOk, "RELAY_ORACLE_STATE_FAILED");
 
-        Packet[] memory packets = new Packet[](manyVerifyData.length);
+        RequestPacket[] memory requests = new RequestPacket[](
+            manyVerifyData.length
+        );
+        ResponsePacket[] memory responses = new ResponsePacket[](
+            manyVerifyData.length
+        );
         for (uint256 i = 0; i < manyVerifyData.length; i++) {
             (bool verifyOk, bytes memory verifyResult) = address(this)
                 .staticcall(
@@ -204,12 +209,12 @@ contract Bridge is IBridge, Ownable {
                 )
             );
             require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
-            (packets[i].request, packets[i].response) = abi.decode(
+            (requests[i], responses[i]) = abi.decode(
                 verifyResult,
                 (RequestPacket, ResponsePacket)
             );
         }
 
-        return packets;
+        return (requests, responses);
     }
 }

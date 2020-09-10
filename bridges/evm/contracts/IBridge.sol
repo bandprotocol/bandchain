@@ -24,12 +24,6 @@ interface IBridge {
         bytes result;
     }
 
-    /// Packet helps to combine RequestPacket and ResponsePacket into one struct.
-    struct Packet {
-        RequestPacket request;
-        ResponsePacket response;
-    }
-
     /// Performs oracle state relay and oracle data verification in one go. The caller submits
     /// the encoded proof and receives back the decoded data, ready to be validated and used.
     /// @param _data The encoded data for oracle state relay and data verification.
@@ -42,5 +36,5 @@ interface IBridge {
     /// @param _data The encoded data for oracle state relay and an array of data verification.
     function relayAndMultiVerify(bytes calldata _data)
         external
-        returns (Packet[] memory);
+        returns (RequestPacket[] memory, ResponsePacket[] memory);
 }

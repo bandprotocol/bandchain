@@ -53,7 +53,7 @@ contract ProxyBridge is IBridge, ICacheBridge, Ownable {
     function relayAndMultiVerify(bytes calldata _data)
         external
         override
-        returns (Packet[] memory)
+        returns (RequestPacket[] memory, ResponsePacket[] memory)
     {
         return bridge.relayAndMultiVerify(_data);
     }

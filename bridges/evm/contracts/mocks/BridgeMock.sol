@@ -21,7 +21,8 @@ contract BridgeMock is Bridge {
 contract ReceiverMock {
     Bridge.RequestPacket public latestReq;
     Bridge.ResponsePacket public latestRes;
-    Bridge.Packet[] public latestPackets;
+    Bridge.RequestPacket[] public latestRequests;
+    Bridge.ResponsePacket[] public latestResponses;
     IBridge public bridge;
 
     constructor(IBridge _bridge) public {
@@ -33,10 +34,15 @@ contract ReceiverMock {
     }
 
     function relayAndMultiSafe(bytes calldata _data) external {
-        Bridge.Packet[] memory packets = bridge.relayAndMultiVerify(_data);
-        delete latestPackets;
-        for (uint256 i = 0; i < packets.length; i++) {
-            latestPackets.push(packets[i]);
+        (
+            Bridge.RequestPacket[] memory requests,
+            Bridge.ResponsePacket[] memory responses
+        ) = bridge.relayAndMultiVerify(_data);
+        delete latestRequests;
+        delete latestResponses;
+        for (uint256 i = 0; i < requests.length; i++) {
+            latestRequests.push(requests[i]);
+            latestResponses.push(responses[i]);
         }
     }
 }
