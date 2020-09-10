@@ -16,6 +16,7 @@
 
 ### Yoda
 
+- (impv) [\#2607](https://github.com/bandprotocol/bandchain/pull/2607) Added jwt in yoda rest mode
 - (impv) [\#2631](https://github.com/bandprotocol/bandchain/pull/2631) Add request timeout for each data source execution
 
 ### Emitter & Flusher
