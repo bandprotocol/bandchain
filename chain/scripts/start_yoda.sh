@@ -20,6 +20,9 @@ yoda config rpc-poll-interval "1s"
 # setup max-try to yoda config
 yoda config max-try 5
 
+# setup jwt-secret-key to yoda config
+yoda config jwt-secret-key "X8ZV1Wm1Iz57Lut9NwbS"
+
 echo "y" | bandcli tx oracle activate --from $1 --keyring-backend test
 
 # wait for activation transaction success

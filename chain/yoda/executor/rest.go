@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"time"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/levigross/grequests"
 )
 
@@ -23,13 +24,20 @@ type externalExecutionResponse struct {
 	Version    string `json:"version"`
 }
 
-func (e *RestExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
+func (e *RestExec) Exec(code []byte, arg string, jwtSecretKey string, env interface{}) (ExecResult, error) {
 	executable := base64.StdEncoding.EncodeToString(code)
+	mySigningKey := []byte(jwtSecretKey)
+	claims := &jwt.StandardClaims{
+		ExpiresAt: time.Now().Add(time.Minute * 10).Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, _ := token.SignedString(mySigningKey)
 	resp, err := grequests.Post(
 		e.url,
 		&grequests.RequestOptions{
 			Headers: map[string]string{
-				"Content-Type": "application/json",
+				"Content-Type":  "application/json",
+				"Authorization": tokenString,
 			},
 			JSON: map[string]interface{}{
 				"executable": executable,

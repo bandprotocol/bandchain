@@ -23,6 +23,7 @@ const (
 	flagRPCPollInterval  = "rpc-poll-interval"
 	flagMaxTry           = "max-try"
 	flagMaxReport        = "max-report"
+	flagJWTSecretKey     = "jwt-secret-key"
 )
 
 // Config data structure for yoda daemon.
@@ -37,6 +38,7 @@ type Config struct {
 	RPCPollInterval  string `mapstructure:"rpc-poll-interval"` // The duration of rpc poll interval
 	MaxTry           uint64 `mapstructure:"max-try"`           // The maximum number of tries to submit a report transaction
 	MaxReport        uint64 `mapstructure:"max-report"`        // The maximum number of reports in one transaction
+	JWTSecretKey     string `mapstructure:"jwt-secret-key"`    // The secret key use to sign token
 }
 
 // Global instances.

@@ -108,7 +108,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
 			}
 
-			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
+			result, err := c.executor.Exec(exec, req.calldata, cfg.JWTSecretKey, map[string]interface{}{
 				"BAND_CHAIN_ID":    vmsg.ChainID,
 				"BAND_VALIDATOR":   vmsg.Validator.String(),
 				"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),

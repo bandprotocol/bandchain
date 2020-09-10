@@ -110,7 +110,7 @@ func runCmd(c *Context) *cobra.Command {
 				return err
 			}
 			l := NewLogger(allowLevel)
-			c.executor, err = executor.NewExecutor(cfg.Executor)
+			c.executor, err = executor.NewExecutor(cfg.Executor, cfg.JWTSecretKey)
 			if err != nil {
 				return err
 			}
@@ -144,6 +144,7 @@ func runCmd(c *Context) *cobra.Command {
 	cmd.Flags().String(flagLogLevel, "info", "set the logger level")
 	cmd.Flags().String(flagBroadcastTimeout, "5m", "The time that Yoda will wait for tx commit")
 	cmd.Flags().String(flagRPCPollInterval, "1s", "The duration of rpc poll interval")
+	cmd.Flags().String(flagJWTSecretKey, "", "The secret key use to sign token")
 	cmd.Flags().Uint64(flagMaxTry, 5, "The maximum number of tries to submit a report transaction")
 	cmd.Flags().Uint64(flagMaxReport, 10, "The maximum number of reports in one transaction")
 	viper.BindPFlag(flags.FlagChainID, cmd.Flags().Lookup(flags.FlagChainID))
@@ -156,5 +157,6 @@ func runCmd(c *Context) *cobra.Command {
 	viper.BindPFlag(flagRPCPollInterval, cmd.Flags().Lookup(flagRPCPollInterval))
 	viper.BindPFlag(flagMaxTry, cmd.Flags().Lookup(flagMaxTry))
 	viper.BindPFlag(flagMaxReport, cmd.Flags().Lookup(flagMaxReport))
+	viper.BindPFlag(flagJWTSecretKey, cmd.Flags().Lookup(flagJWTSecretKey))
 	return cmd
 }

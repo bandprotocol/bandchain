@@ -11,6 +11,9 @@ lambda:
 	rm $(CURRENT_DIR)/lambda/requirements.txt
 	mv $(CURRENT_DIR)/lambda/lambda_function.bak $(CURRENT_DIR)/lambda/lambda_function.py
 
+lambda-auth:
+	docker run --rm -v $(CURRENT_DIR)/lambda-authorizer:/pack amazonlinux:latest ./pack/pack.sh
+
 docker-build:
 	cp $(CURRENT_DIR)/requirements.txt $(CURRENT_DIR)/docker
 	docker build docker -t bandprotocol/runtime:$(VERSION)
