@@ -559,22 +559,37 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       let expects = [
         [
           `["from_scan","2","0x00000002464200000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","1","1","1599498073","1599498076","1","0x000000000004506a"]`,
+          `["from_scan","1","1",1599498073,1599498076,"1","0x000000000004506a"]`,
         ],
         [
           `["from_scan","2","0x00000004474f4f4700000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","2","1","1599498262","1599498265","1","0x0000000000184700"]`,
+          `["from_scan","2","1",1599498262,1599498265,"1","0x0000000000184700"]`,
         ],
         [
           `["from_scan","2","0x000000044141504c00000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","3","1","1599498404","1599498407","1","0x000000000001d880"]`,
+          `["from_scan","3","1",1599498404,1599498407,"1","0x000000000001d880"]`,
         ],
       ];
 
       for (let i = 0; i < expects.length; i++) {
-        let { request, response } = await this.receiver.latestPackets(i);
-        JSON.stringify(request).should.eq(expects[i][0]);
-        JSON.stringify(response).should.eq(expects[i][1]);
+        const req = await this.receiver.latestRequests(i);
+        const res = await this.receiver.latestResponses(i);
+        JSON.stringify([
+          req["clientId"],
+          req["oracleScriptId"],
+          req["params"],
+          req["askCount"],
+          req["minCount"],
+        ]).should.eq(expects[i][0]);
+        JSON.stringify([
+          res["clientId"],
+          res["requestId"],
+          res["ansCount"],
+          Number(res["requestTime"]),
+          Number(res["resolveTime"]),
+          res["resolveStatus"],
+          res["result"],
+        ]).should.eq(expects[i][1]);
       }
     });
 
@@ -591,22 +606,37 @@ contract("Bridge", ([_, owner, alice, bob]) => {
       let expects = [
         [
           `["from_scan","2","0x00000004474f4f4700000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","1","1","1599503672","1599503675","1","0x0000000000184700"]`,
+          `["from_scan","1","1",1599503672,1599503675,"1","0x0000000000184700"]`,
         ],
         [
           `["from_scan","2","0x000000044141504c00000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","2","1","1599503675","1599503678","1","0x000000000001d880"]`,
+          `["from_scan","2","1",1599503675,1599503678,"1","0x000000000001d880"]`,
         ],
         [
           `["from_scan","2","0x00000002464200000010324b4d43424c415a4d3554453256504700000000000003e8","1","1"]`,
-          `["from_scan","3","1","1599503680","1599503681","1","0x000000000004506a"]`,
+          `["from_scan","3","1",1599503680,1599503681,"1","0x000000000004506a"]`,
         ],
       ];
 
       for (let i = 0; i < expects.length; i++) {
-        let { request, response } = await this.receiver.latestPackets(i);
-        JSON.stringify(request).should.eq(expects[i][0]);
-        JSON.stringify(response).should.eq(expects[i][1]);
+        const req = await this.receiver.latestRequests(i);
+        const res = await this.receiver.latestResponses(i);
+        JSON.stringify([
+          req["clientId"],
+          req["oracleScriptId"],
+          req["params"],
+          req["askCount"],
+          req["minCount"],
+        ]).should.eq(expects[i][0]);
+        JSON.stringify([
+          res["clientId"],
+          res["requestId"],
+          res["ansCount"],
+          Number(res["requestTime"]),
+          Number(res["resolveTime"]),
+          res["resolveStatus"],
+          res["result"],
+        ]).should.eq(expects[i][1]);
       }
     });
 
