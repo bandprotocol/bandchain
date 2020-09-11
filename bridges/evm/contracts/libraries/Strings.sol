@@ -3,7 +3,7 @@
 
 pragma solidity ^0.6.0;
 
-library strings {
+library Strings {
     struct slice {
         uint256 _len;
         uint256 _ptr;
@@ -53,23 +53,23 @@ library strings {
     function len(bytes32 self) internal pure returns (uint256) {
         uint256 ret;
         if (self == 0) return 0;
-        if (self & hex'ffffffffffffffffffffffffffffffff' == 0) {
+        if (self & hex"ffffffffffffffffffffffffffffffff" == 0) {
             ret += 16;
             self = bytes32(uint256(self) / 0x100000000000000000000000000000000);
         }
-        if (self & hex'ffffffffffffffff' == 0) {
+        if (self & hex"ffffffffffffffff" == 0) {
             ret += 8;
             self = bytes32(uint256(self) / 0x10000000000000000);
         }
-        if (self & hex'ffffffff' == 0) {
+        if (self & hex"ffffffff" == 0) {
             ret += 4;
             self = bytes32(uint256(self) / 0x100000000);
         }
-        if (self & hex'ffff' == 0) {
+        if (self & hex"ffff" == 0) {
             ret += 2;
             self = bytes32(uint256(self) / 0x10000);
         }
-        if (self & hex'ff' == 0) {
+        if (self & hex"ff" == 0) {
             ret += 1;
         }
         return 32 - ret;
@@ -789,7 +789,7 @@ library strings {
         pure
         returns (string memory)
     {
-        if (parts.length == 0) return '';
+        if (parts.length == 0) return "";
 
         uint256 length = self._len * (parts.length - 1);
         for (uint256 i = 0; i < parts.length; i++) length += parts[i]._len;

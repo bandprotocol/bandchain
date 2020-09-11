@@ -7,7 +7,6 @@ import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {IProxyBridge} from "./interfaces/IProxyBridge.sol";
 import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 
-
 contract ProxyBridge is IProxyBridge, Ownable {
     ICacheBridge public bridge;
 
@@ -42,7 +41,10 @@ contract ProxyBridge is IProxyBridge, Ownable {
     function relayAndVerify(bytes calldata _data)
         external
         override
-        returns (ICacheBridge.RequestPacket memory, ICacheBridge.ResponsePacket memory)
+        returns (
+            ICacheBridge.RequestPacket memory,
+            ICacheBridge.ResponsePacket memory
+        )
     {
         return bridge.relayAndVerify(_data);
     }
@@ -53,7 +55,10 @@ contract ProxyBridge is IProxyBridge, Ownable {
     function relayAndMultiVerify(bytes calldata _data)
         external
         override
-        returns (ICacheBridge.RequestPacket[] memory, ICacheBridge.ResponsePacket[] memory)
+        returns (
+            ICacheBridge.RequestPacket[] memory,
+            ICacheBridge.ResponsePacket[] memory
+        )
     {
         return bridge.relayAndMultiVerify(_data);
     }

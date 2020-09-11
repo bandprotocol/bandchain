@@ -9,19 +9,19 @@ interface IBandStandard {
         uint8 calldataID;
         uint8 rateID;
     }
-    
+
     struct DataUpdate {
         uint256 base;
         uint256 quote;
     }
-    
+
     struct ReferenceData {
         uint256 rate;
         DataUpdate lastUpdated;
     }
-    
+
     function getReferenceData(string[] memory pairs)
-    external
-    view
-    returns (ReferenceData[] memory);
+        external
+        view
+        returns (ReferenceData[] memory);
 }
