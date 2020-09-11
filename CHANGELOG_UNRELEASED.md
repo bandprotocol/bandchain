@@ -56,6 +56,7 @@
 
 ### Bridges
 
+- (feat) [\#2620](https://github.com/bandprotocol/bandchain/pull/2620) Bridge & CacheBridge with relay multiple
 - (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
 
