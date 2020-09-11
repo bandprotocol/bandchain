@@ -3,6 +3,7 @@ from .pyobi import *
 
 TAG = "Aggregator"
 
+# obi
 REQUEST_PACKET = PyObi(
     "{client_id:string,oracle_script_id:u64,calldata:bytes,ask_count:u64,min_count:u64}"
 )
@@ -10,6 +11,7 @@ RATES = PyObi("[u64]")
 PAIRS = PyObi("[string]")
 CALLDATA = PyObi("{symbols:[string],multiplier:u64}")
 
+# const
 MULTIPLIER = 1000000000
 ORACLE_SCRIPT_IDS = [8, 8, 8, 8, 9, 8]
 SYMBOLS = [
@@ -187,16 +189,23 @@ class Aggregator(IconScoreBase):
     def on_update(self) -> None:
         super().on_update()
 
+    # A pure function that receive a symbol and then return
+    # index of symbol's group and index of symbol inside its group.
+    # @param sybbol, a string that represent an asset.
     def symbol_to_indexes(self, symbol: str) -> (int, int):
         for i, symbols in enumerate(SYMBOLS):
             if symbol in symbols:
                 return (i, symbols.index(symbol))
         self.revert("UNKNOWN_SYMBOL")
 
+    # Get bridge address from storage.
     @external(readonly=True)
     def get_bridge_address(self) -> Address:
         return self.bridge_address.get()
 
+    # This function receives a symbol and asks the bridge
+    # for the USD exchange rate of that symbol multiplied by 1e9.
+    # @param sybbol, a string that represent an asset.
     @external(readonly=True)
     def get_rate_from_symbol(self, symbol: str) -> int:
         if symbol == "USD":
@@ -215,6 +224,9 @@ class Aggregator(IconScoreBase):
             res = bridge.get_latest_response(REQUEST_PACKET.encode(req))
             return RATES.decode(res["result"])[inner_idx]
 
+    # This function receives an encoded array of pairs
+    # and then return an array of relative prices.
+    # @param encoded_pairs, an obi encode of array of pairs. For example ["BTC/DAI"].
     @external(readonly=True)
     def get_reference_data(self, encoded_pairs: bytes) -> list:
         pairs = PAIRS.decode(encoded_pairs)
