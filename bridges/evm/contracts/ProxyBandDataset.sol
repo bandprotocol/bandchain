@@ -7,7 +7,7 @@ import {IBandDataset} from "./interfaces/IBandDataset.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 
 contract BandDatasetProxy is IBandDataset, Ownable {
-    IBandDataset public dataset;
+    IBandDataset dataset;
 
     constructor(IBandDataset _dataset) public {
         dataset = _dataset;
