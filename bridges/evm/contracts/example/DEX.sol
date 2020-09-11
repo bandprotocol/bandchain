@@ -5,7 +5,7 @@ pragma experimental ABIEncoderV2;
 
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {IBridge} from "../IBridge.sol";
+import {IBridge} from "../interfaces/IBridge.sol";
 
 
 contract DEX is Ownable {

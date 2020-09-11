@@ -4,7 +4,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {BandChainLib} from "../BandChainLib.sol";
-import {IBridge} from "../IBridge.sol";
+import {IBridge} from "../interfaces/IBridge.sol";
 
 
 contract SimplePriceDatabase {

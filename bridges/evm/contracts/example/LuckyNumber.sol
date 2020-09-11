@@ -4,7 +4,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {IBridge} from "../IBridge.sol";
+import {IBridge} from "../interfaces/IBridge.sol";
 
 
 contract LuckyNumber is Ownable {
