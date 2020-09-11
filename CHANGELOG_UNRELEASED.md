@@ -16,6 +16,8 @@
 
 ### Yoda
 
+- (impv) [\#2631](https://github.com/bandprotocol/bandchain/pull/2631) Add request timeout for each data source execution
+
 ### Emitter & Flusher
 
 - (impv) [\#2553](https://github.com/bandprotocol/bandchain/pull/2553) fast-sync: emit `unbonding`, `delegation` and `redelegation` from start state
