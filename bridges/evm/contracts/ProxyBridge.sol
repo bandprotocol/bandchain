@@ -25,11 +25,11 @@ contract ProxyBridge is ICacheBridge, Ownable {
     /// Returns the ResponsePacket for a given RequestPacket.
     /// Reverts if can't find the related response in the mapping.
     /// @param _request A tuple that represents RequestPacket struct.
-    function getLatestResponse(ICacheBridge.RequestPacket memory _request)
+    function getLatestResponse(RequestPacket memory _request)
         external
         override
         view
-        returns (ICacheBridge.ResponsePacket memory)
+        returns (ResponsePacket memory)
     {
         return bridge.getLatestResponse(_request);
     }
@@ -41,8 +41,8 @@ contract ProxyBridge is ICacheBridge, Ownable {
         external
         override
         returns (
-            ICacheBridge.RequestPacket memory,
-            ICacheBridge.ResponsePacket memory
+            RequestPacket memory,
+            ResponsePacket memory
         )
     {
         return bridge.relayAndVerify(_data);
@@ -55,8 +55,8 @@ contract ProxyBridge is ICacheBridge, Ownable {
         external
         override
         returns (
-            ICacheBridge.RequestPacket[] memory,
-            ICacheBridge.ResponsePacket[] memory
+            RequestPacket[] memory,
+            ResponsePacket[] memory
         )
     {
         return bridge.relayAndMultiVerify(_data);
