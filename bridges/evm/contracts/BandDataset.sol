@@ -20,6 +20,12 @@ contract BandDataset is IBandDataset, Ownable {
 
     ICacheBridge bridge;
 
+    struct SymbolData {
+        uint64 oracleScriptID;
+        uint8 calldataID;
+        uint8 rateID;
+    }
+
     mapping(string => SymbolData) dataFromSymbol;
 
     bytes[] calldataArray = new bytes[](6);
@@ -773,7 +779,8 @@ contract BandDataset is IBandDataset, Ownable {
         ResultDecoder.Result memory decodedResult;
 
         for (uint256 i = 0; i < pairs.length; i++) {
-            DataUpdate memory updateTimes;
+            uint256 lastUpdatedBase;
+            uint256 lastUpdatedQuote;
 
             Strings.slice memory s = pairs[i].toSlice();
             Strings.slice memory delim = "/".toSlice();
@@ -785,7 +792,7 @@ contract BandDataset is IBandDataset, Ownable {
                 keccak256(abi.encodePacked(base)) ==
                 keccak256(abi.encodePacked("USD"))
             ) {
-                updateTimes.base = 0;
+                lastUpdatedBase = 0;
                 basePrice = 1e9;
             } else {
                 req.oracleScriptId = dataFromSymbol[base].oracleScriptID;
@@ -793,7 +800,7 @@ contract BandDataset is IBandDataset, Ownable {
 
                 latestResponse = bridge.getLatestResponse(req);
                 decodedResult = latestResponse.result.decodeResult();
-                updateTimes.base = latestResponse.resolveTime;
+                lastUpdatedBase = latestResponse.resolveTime;
 
                 basePrice = decodedResult.rates[dataFromSymbol[base].rateID];
             }
@@ -805,7 +812,7 @@ contract BandDataset is IBandDataset, Ownable {
                 keccak256(abi.encodePacked(quote)) ==
                 keccak256(abi.encodePacked("USD"))
             ) {
-                updateTimes.quote = 0;
+                lastUpdatedQuote = 0;
                 quotePrice = 1e9;
             } else {
                 req.oracleScriptId = dataFromSymbol[quote].oracleScriptID;
@@ -813,13 +820,14 @@ contract BandDataset is IBandDataset, Ownable {
 
                 latestResponse = bridge.getLatestResponse(req);
                 decodedResult = latestResponse.result.decodeResult();
-                updateTimes.quote = latestResponse.resolveTime;
+                lastUpdatedQuote = latestResponse.resolveTime;
 
                 quotePrice = decodedResult.rates[dataFromSymbol[quote].rateID];
             }
 
             result[i].rate = (uint256(basePrice) * 1e18) / uint256(quotePrice);
-            result[i].lastUpdated = updateTimes;
+            result[i].lastUpdatedBase = lastUpdatedBase;
+            result[i].lastUpdatedQuote = lastUpdatedQuote;
         }
         return result;
     }

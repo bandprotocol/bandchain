@@ -4,20 +4,10 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 interface IBandDataset {
-    struct SymbolData {
-        uint64 oracleScriptID;
-        uint8 calldataID;
-        uint8 rateID;
-    }
-
-    struct DataUpdate {
-        uint256 base;
-        uint256 quote;
-    }
-
     struct ReferenceData {
         uint256 rate;
-        DataUpdate lastUpdated;
+        uint256 lastUpdatedBase;
+        uint256 lastUpdatedQuote;
     }
 
     function getReferenceData(string[] memory pairs)
