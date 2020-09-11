@@ -122,8 +122,9 @@ class Handler(object):
     def handle_new_request(self, msg):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        self.handle_set_request_count_per_days({"date": msg["timestamp"]})
-        del msg["timestamp"]
+        if "timestamp" in msg:
+            self.handle_set_request_count_per_days({"date": msg["timestamp"]})
+            del msg["timestamp"]
         self.conn.execute(requests.insert(), msg)
         self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
 
@@ -150,7 +151,6 @@ class Handler(object):
             }
         )
         self.conn.execute(raw_requests.insert(), msg)
-        self.handle_set_data_source_request({"data_source_id": msg["data_source_id"]})
 
     def handle_new_val_request(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["validator"])
@@ -158,7 +158,8 @@ class Handler(object):
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
-        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        if msg["tx_hash"] is not None:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
@@ -249,6 +250,13 @@ class Handler(object):
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
+    def handle_remove_unbonding(self, msg):
+        self.conn.execute(
+            unbonding_delegations.delete().where(
+                unbonding_delegations.c.completion_time <= msg["timestamp"]
+            )
+        )
+
     def handle_new_redelegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
@@ -257,6 +265,11 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_remove_redelegation(self, msg):
+        self.conn.execute(
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
+        )
 
     def handle_new_proposal(self, msg):
         msg["proposer_id"] = self.get_account_id(msg["proposer"])

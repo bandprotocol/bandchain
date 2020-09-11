@@ -46,7 +46,6 @@ type t = {
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
   proposerAddress: Address.t,
-  turnout: float,
   proposalType: string,
   totalDeposit: list(Coin.t),
 };
@@ -78,8 +77,6 @@ let toExternal =
   proposerAddress: account.address,
   proposalType,
   totalDeposit,
-  //TODO: To remove mock data after we got the actual one
-  turnout: 50.5,
 };
 
 module MultiConfig = [%graphql
