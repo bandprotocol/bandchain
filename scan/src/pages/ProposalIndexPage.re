@@ -180,7 +180,21 @@ let make = (~proposalID) => {
         </Col.Grid>
       </Row.Grid>
       {switch (allSub) {
-       | Data(({status}, _, _)) =>
+       | Data((
+           {status, name, votingStartTime, votingEndTime},
+           {
+             total,
+             totalYes,
+             totalYesPercent,
+             totalNo,
+             totalNoPercent,
+             totalNoWithVeto,
+             totalNoWithVetoPercent,
+             totalAbstain,
+             totalAbstainPercent,
+           },
+           bondedToken,
+         )) =>
          switch (status) {
          | Deposit => React.null
          | Voting
@@ -200,26 +214,18 @@ let make = (~proposalID) => {
                    <Row.Grid marginTop=38 alignItems=Row.Center>
                      <Col.Grid col=Col.Seven>
                        <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
-                         {switch (allSub) {
-                          | Data((_, {total}, bondedToken)) =>
-                            let turnoutPercent =
-                              total /. (bondedToken |> Coin.getBandAmountFromCoin) *. 100.;
-                            <TurnoutChart percent=turnoutPercent />;
-                          | _ => React.null
-                          }}
+                         {let turnoutPercent =
+                            total /. (bondedToken |> Coin.getBandAmountFromCoin) *. 100.;
+                          <TurnoutChart percent=turnoutPercent />}
                          {isMobile
                             ? <div>
                                 <Heading value="Total" size=Heading.H5 marginBottom=8 />
-                                {switch (allSub) {
-                                 | Data((_, {total}, _)) =>
-                                   <Text
-                                     value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
-                                     size=Text.Lg
-                                     block=true
-                                     color=Colors.gray6
-                                   />
-                                 | _ => <LoadingCensorBar width=160 height=15 />
-                                 }}
+                                <Text
+                                  value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
+                                  size=Text.Lg
+                                  block=true
+                                  color=Colors.gray6
+                                />
                               </div>
                             : React.null}
                        </div>
@@ -232,40 +238,20 @@ let make = (~proposalID) => {
                             ? React.null
                             : <Col.Grid mb=24>
                                 <Heading value="Total" size=Heading.H5 marginBottom=8 />
-                                {switch (allSub) {
-                                 | Data((_, {total}, _)) =>
-                                   <Text
-                                     value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
-                                     size=Text.Lg
-                                     block=true
-                                     color=Colors.gray6
-                                   />
-                                 | _ => <LoadingCensorBar width=160 height=15 />
-                                 }}
+                                <Text
+                                  value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
+                                  size=Text.Lg
+                                  block=true
+                                  color=Colors.gray6
+                                />
                               </Col.Grid>}
                          <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
                            <Heading value="Voting Start" size=Heading.H5 marginBottom=8 />
-                           {switch (proposalSub) {
-                            | Data({votingStartTime}) =>
-                              <Timestamp.Grid size=Text.Lg time=votingStartTime />
-                            | _ =>
-                              <>
-                                <LoadingCensorBar width=70 height=15 />
-                                <LoadingCensorBar width=80 height=15 mt=5 />
-                              </>
-                            }}
+                           <Timestamp.Grid size=Text.Lg time=votingStartTime />
                          </Col.Grid>
                          <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
                            <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
-                           {switch (proposalSub) {
-                            | Data({votingEndTime}) =>
-                              <Timestamp.Grid size=Text.Lg time=votingEndTime />
-                            | _ =>
-                              <>
-                                <LoadingCensorBar width=70 height=15 />
-                                <LoadingCensorBar width=80 height=15 mt=5 />
-                              </>
-                            }}
+                           <Timestamp.Grid size=Text.Lg time=votingEndTime />
                          </Col.Grid>
                        </Row.Grid>
                      </Col.Grid>
@@ -284,62 +270,33 @@ let make = (~proposalID) => {
                      <Heading value="Results" size=Heading.H4 />
                      {isMobile
                         ? React.null
-                        : {
-                          switch (proposalSub) {
-                          | Data({name, status}) =>
-                            <div className={Styles.voteButton(status)}>
-                              <VoteButton proposalID proposalName=name />
-                            </div>
-                          | _ => <LoadingCensorBar width=90 height=26 />
-                          };
-                        }}
+                        : <div className={Styles.voteButton(status)}>
+                            <VoteButton proposalID proposalName=name />
+                          </div>}
                    </div>
                    <div className=Styles.resultContainer>
-                     {switch (allSub) {
-                      | Data((
-                          _,
-                          {
-                            totalYes,
-                            totalYesPercent,
-                            totalNo,
-                            totalNoPercent,
-                            totalNoWithVeto,
-                            totalNoWithVetoPercent,
-                            totalAbstain,
-                            totalAbstainPercent,
-                          },
-                          _,
-                        )) =>
-                        <>
-                          <ProgressBar.Voting
-                            label=VoteSub.Yes
-                            amount=totalYes
-                            percent=totalYesPercent
-                          />
-                          <ProgressBar.Voting
-                            label=VoteSub.No
-                            amount=totalNo
-                            percent=totalNoPercent
-                          />
-                          <ProgressBar.Voting
-                            label=VoteSub.NoWithVeto
-                            amount=totalNoWithVeto
-                            percent=totalNoWithVetoPercent
-                          />
-                          <ProgressBar.Voting
-                            label=VoteSub.Abstain
-                            amount=totalAbstain
-                            percent=totalAbstainPercent
-                          />
-                        </>
-                      | _ =>
-                        <>
-                          <LoadingCensorBar fullWidth=true height=38 />
-                          <LoadingCensorBar fullWidth=true height=38 />
-                          <LoadingCensorBar fullWidth=true height=38 />
-                          <LoadingCensorBar fullWidth=true height=38 />
-                        </>
-                      }}
+                     <>
+                       <ProgressBar.Voting
+                         label=VoteSub.Yes
+                         amount=totalYes
+                         percent=totalYesPercent
+                       />
+                       <ProgressBar.Voting
+                         label=VoteSub.No
+                         amount=totalNo
+                         percent=totalNoPercent
+                       />
+                       <ProgressBar.Voting
+                         label=VoteSub.NoWithVeto
+                         amount=totalNoWithVeto
+                         percent=totalNoWithVetoPercent
+                       />
+                       <ProgressBar.Voting
+                         label=VoteSub.Abstain
+                         amount=totalAbstain
+                         percent=totalAbstainPercent
+                       />
+                     </>
                    </div>
                  </div>
                </Col.Grid>

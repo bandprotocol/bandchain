@@ -151,7 +151,7 @@ module ProposalCard = {
 let make = () => {
   let pageSize = 10;
   let proposalsSub = ProposalSub.getList(~pageSize, ~page=1, ());
-  let voteStatSub = VoteSub.getVoteStat();
+  let voteStatSub = VoteSub.getVoteStats();
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
 
   let allSub = Sub.all3(proposalsSub, bondedTokenCountSub, voteStatSub);

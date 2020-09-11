@@ -151,7 +151,7 @@ module DelegatorVoteByProposalIDConfig = [%graphql
   |}
 ];
 
-module ValidatorVoteConfig = [%graphql
+module ValidatorVotesConfig = [%graphql
   {|
     subscription ValidatorVoteByProposalID {
       validator_vote_proposals_view @bsRecord {
@@ -164,7 +164,7 @@ module ValidatorVoteConfig = [%graphql
   |}
 ];
 
-module DelegatorVoteConfig = [%graphql
+module DelegatorVotesConfig = [%graphql
   {|
     subscription DelegatorVoteByProposalID {
       non_validator_vote_proposals_view @bsRecord {
@@ -303,6 +303,8 @@ let getVoteStatByProposalID = proposalID => {
   let parsedData =
     parse(valVotes##validator_vote_proposals_view, delVotes##non_validator_vote_proposals_view);
 
+  let delegatorData = delVotes##non_validator_vote_proposals_view;
+
   let validatorPower =
     parsedData->Belt_Array.reduce(0., (a, {validatorPower}) => a +. validatorPower);
 
@@ -312,35 +314,29 @@ let getVoteStatByProposalID = proposalID => {
 
   let totalPower = validatorPower +. delegatorPower;
 
-  let totalYesPower =
-    parsedData->getValVote(Yes) +. delVotes##non_validator_vote_proposals_view->getDelVote(Yes);
-  let totalNoPower =
-    parsedData->getValVote(No) +. delVotes##non_validator_vote_proposals_view->getDelVote(No);
+  let totalYesPower = parsedData->getValVote(Yes) +. delegatorData->getDelVote(Yes);
+  let totalNoPower = parsedData->getValVote(No) +. delegatorData->getDelVote(No);
   let totalNoWithVetoPower =
-    parsedData->getValVote(NoWithVeto)
-    +. delVotes##non_validator_vote_proposals_view->getDelVote(NoWithVeto);
-  let totalAbstainPower =
-    parsedData->getValVote(Abstain)
-    +. delVotes##non_validator_vote_proposals_view->getDelVote(Abstain);
+    parsedData->getValVote(NoWithVeto) +. delegatorData->getDelVote(NoWithVeto);
+  let totalAbstainPower = parsedData->getValVote(Abstain) +. delegatorData->getDelVote(Abstain);
 
   Sub.resolve({
     proposalID,
     totalYes: totalYesPower,
-    totalYesPercent: totalYesPower != 0. ? totalYesPower /. totalPower *. 100. : 0.,
+    totalYesPercent: totalYesPower /. totalPower *. 100.,
     totalNo: totalNoPower,
-    totalNoPercent: totalNoPower != 0. ? totalNoPower /. totalPower *. 100. : 0.,
+    totalNoPercent: totalNoPower /. totalPower *. 100.,
     totalNoWithVeto: totalNoWithVetoPower,
-    totalNoWithVetoPercent:
-      totalNoWithVetoPower != 0. ? totalNoWithVetoPower /. totalPower *. 100. : 0.,
+    totalNoWithVetoPercent: totalNoWithVetoPower /. totalPower *. 100.,
     totalAbstain: totalAbstainPower,
-    totalAbstainPercent: totalAbstainPower != 0. ? totalAbstainPower /. totalPower *. 100. : 0.,
+    totalAbstainPercent: totalAbstainPower /. totalPower *. 100.,
     total: totalPower,
   });
 };
 
-let getVoteStat = () => {
-  let (validatorVotes, _) = ApolloHooks.useSubscription(ValidatorVoteConfig.definition);
-  let (delegatorVotes, _) = ApolloHooks.useSubscription(DelegatorVoteConfig.definition);
+let getVoteStats = () => {
+  let (validatorVotes, _) = ApolloHooks.useSubscription(ValidatorVotesConfig.definition);
+  let (delegatorVotes, _) = ApolloHooks.useSubscription(DelegatorVotesConfig.definition);
 
   let%Sub valVotes = validatorVotes;
   let%Sub delVotes = delegatorVotes;
