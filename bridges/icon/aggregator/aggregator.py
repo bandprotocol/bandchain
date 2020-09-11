@@ -11,6 +11,7 @@ PAIRS = PyObi("[string]")
 CALLDATA = PyObi("{symbols:[string],multiplier:u64}")
 
 MULTIPLIER = 1000000000
+ORACLE_SCRIPT_IDS = [8, 8, 8, 8, 9, 8]
 SYMBOLS = [
     [
         "BTC",
@@ -166,8 +167,6 @@ SYMBOLS = [
         "STORJ",
     ],
 ]
-
-ORACLE_SCRIPT_IDS = [8, 8, 8, 8, 9, 8]
 
 
 class IBridgeCache(InterfaceScore):
