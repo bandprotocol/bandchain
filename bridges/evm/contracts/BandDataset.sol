@@ -7,11 +7,11 @@ import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Strings} from "./libraries/Strings.sol";
 import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
-import {IBandStandard} from "./interfaces/IBandStandard.sol";
+import {IBandDataset} from "./interfaces/IBandDataset.sol";
 import {ParamsDecoder} from "./libraries/BandStandardParamsDecoder.sol";
 import {ResultDecoder} from "./libraries/BandStandardResultDecoder.sol";
 
-contract BandStandard is IBandStandard, Ownable {
+contract BandDataset is IBandDataset, Ownable {
     using Strings for *;
     using SafeMath for uint256;
 

@@ -3,18 +3,18 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import {IBandStandard} from "./interfaces/IBandStandard.sol";
+import {IBandDataset} from "./interfaces/IBandDataset.sol";
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 
-contract BandOracleAggregatorProxy is IBandStandard, Ownable {
-    IBandStandard public aggregator;
+contract BandDatasetProxy is IBandDataset, Ownable {
+    IBandDataset public dataset;
 
-    constructor(IBandStandard _aggregator) public {
-        aggregator = _aggregator;
+    constructor(IBandDataset _dataset) public {
+        dataset = _dataset;
     }
 
-    function setAggregator(IBandStandard _aggregator) public onlyOwner {
-        aggregator = _aggregator;
+    function setAggregator(IBandDataset _dataset) public onlyOwner {
+        dataset = _dataset;
     }
 
     function getReferenceData(string[] memory pairs)
@@ -23,6 +23,6 @@ contract BandOracleAggregatorProxy is IBandStandard, Ownable {
         view
         returns (ReferenceData[] memory)
     {
-        return aggregator.getReferenceData(pairs);
+        return dataset.getReferenceData(pairs);
     }
 }

@@ -3,7 +3,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-interface IBandStandard {
+interface IBandDataset {
     struct SymbolData {
         uint64 oracleScriptID;
         uint8 calldataID;
