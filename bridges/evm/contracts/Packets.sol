@@ -4,7 +4,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Utils} from "./Utils.sol";
-import {IBridge} from "./IBridge.sol";
+import {IBridge} from "./interfaces/IBridge.sol";
 
 
 library Packets {
