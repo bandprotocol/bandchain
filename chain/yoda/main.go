@@ -71,7 +71,7 @@ func Main() {
 		Short: "BandChain oracle daemon to subscribe and response to oracle requests",
 	}
 
-	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx), version.Cmd)
+	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx), authorizerCmd(ctx), version.Cmd)
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		home, err := rootCmd.PersistentFlags().GetString(flags.FlagHome)
 		if err != nil {
