@@ -4,10 +4,9 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {IProxyBridge} from "./interfaces/IProxyBridge.sol";
 import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 
-contract ProxyBridge is IProxyBridge, Ownable {
+contract ProxyBridge is ICacheBridge, Ownable {
     ICacheBridge public bridge;
 
     /// @notice Contract constructor
@@ -19,7 +18,7 @@ contract ProxyBridge is IProxyBridge, Ownable {
 
     /// Set the address of the bridge contract to use
     /// @param _bridge The address of the bridge to use
-    function setBridge(ICacheBridge _bridge) external override onlyOwner {
+    function setBridge(ICacheBridge _bridge) external onlyOwner {
         bridge = _bridge;
     }
 

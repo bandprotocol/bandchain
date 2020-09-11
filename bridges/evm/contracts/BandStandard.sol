@@ -3,28 +3,29 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
+import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
 import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Strings} from "./libraries/Strings.sol";
-import {IProxyBridge} from "./interfaces/IProxyBridge.sol";
+import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 import {IBandStandard} from "./interfaces/IBandStandard.sol";
 import {ParamsDecoder} from "./libraries/BandStandardParamsDecoder.sol";
 import {ResultDecoder} from "./libraries/BandStandardResultDecoder.sol";
 
-contract BandStandard is IBandStandard {
+contract BandStandard is IBandStandard, Ownable {
     using Strings for *;
     using SafeMath for uint256;
 
     using ResultDecoder for bytes;
     using ParamsDecoder for bytes;
 
-    IProxyBridge bridge;
+    ICacheBridge bridge;
 
     mapping(string => SymbolData) dataFromSymbol;
 
     bytes[] calldataArray = new bytes[](6);
 
-    constructor(IProxyBridge bridge_) public {
-        bridge = bridge_;
+    constructor(ICacheBridge _bridge) public {
+        bridge = _bridge;
 
         // ["BTC","ETH","USDT","XRP","LINK","DOT","BCH","LTC","ADA","BSV","CRO","BNB","EOS","XTZ","TRX","XLM","ATOM","XMR","OKB","USDC","NEO","XEM","LEO","HT","VET"]
         calldataArray[0] = hex"000000190000000342544300000003455448000000045553445400000003585250000000044c494e4b00000003444f5400000003424348000000034c544300000003414441000000034253560000000343524f00000003424e4200000003454f530000000358545a0000000354525800000003584c4d0000000441544f4d00000003584d52000000034f4b420000000455534443000000034e454f0000000358454d000000034c454f00000002485400000003564554000000003b9aca00";
@@ -752,19 +753,23 @@ contract BandStandard is IBandStandard {
         });
     }
 
+    function setBridge(ICacheBridge _bridge) external onlyOwner {
+        bridge = _bridge;
+    }
+
     function getReferenceData(string[] memory pairs)
         external
         override
         view
         returns (ReferenceData[] memory)
     {
-        IProxyBridge.RequestPacket memory req;
+        ICacheBridge.RequestPacket memory req;
         req.clientId = "bandteam";
         req.askCount = 4;
         req.minCount = 3;
         ReferenceData[] memory result = new ReferenceData[](pairs.length);
 
-        IProxyBridge.ResponsePacket memory latestResponse;
+        ICacheBridge.ResponsePacket memory latestResponse;
         ResultDecoder.Result memory decodedResult;
 
         for (uint256 i = 0; i < pairs.length; i++) {
