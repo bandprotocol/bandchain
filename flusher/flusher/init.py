@@ -105,7 +105,6 @@ FROM delegations
 JOIN votes ON delegations.delegator_id=votes.voter_id
 JOIN validators ON delegations.validator_id=validators.id
 AND votes.voter_id != validators.account_id
-JOIN accounts ON accounts.id=delegations.delegator_id
 GROUP BY answer, validator_id, proposal_id;
 """
     )
