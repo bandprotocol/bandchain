@@ -769,66 +769,54 @@ contract BandDataset is IBandDataset, Ownable {
         view
         returns (ReferenceData[] memory)
     {
-        ICacheBridge.RequestPacket memory req;
-        req.clientId = "bandteam";
-        req.askCount = 4;
-        req.minCount = 3;
-        ReferenceData[] memory result = new ReferenceData[](pairs.length);
-
-        ICacheBridge.ResponsePacket memory latestResponse;
-        ResultDecoder.Result memory decodedResult;
+        ReferenceData[] memory results = new ReferenceData[](pairs.length);
 
         for (uint256 i = 0; i < pairs.length; i++) {
-            uint256 lastUpdatedBase;
-            uint256 lastUpdatedQuote;
-
             Strings.slice memory s = pairs[i].toSlice();
             Strings.slice memory delim = "/".toSlice();
 
             // Base Symbol
-            uint64 basePrice;
-            string memory base = s.split(delim).toString();
-            if (
-                keccak256(abi.encodePacked(base)) ==
-                keccak256(abi.encodePacked("USD"))
-            ) {
-                lastUpdatedBase = 0;
-                basePrice = 1e9;
-            } else {
-                req.oracleScriptId = dataFromSymbol[base].oracleScriptID;
-                req.params = calldataArray[dataFromSymbol[base].calldataID];
-
-                latestResponse = bridge.getLatestResponse(req);
-                decodedResult = latestResponse.result.decodeResult();
-                lastUpdatedBase = latestResponse.resolveTime;
-
-                basePrice = decodedResult.rates[dataFromSymbol[base].rateID];
-            }
-
+            (uint64 basePrice, uint64 lastUpdatedBase) = getRate(
+                s.split(delim).toString()
+            );
             // Quote Symbol
-            uint64 quotePrice;
-            string memory quote = s.split(delim).toString();
-            if (
-                keccak256(abi.encodePacked(quote)) ==
-                keccak256(abi.encodePacked("USD"))
-            ) {
-                lastUpdatedQuote = 0;
-                quotePrice = 1e9;
-            } else {
-                req.oracleScriptId = dataFromSymbol[quote].oracleScriptID;
-                req.params = calldataArray[dataFromSymbol[quote].calldataID];
+            (uint64 quotePrice, uint64 lastUpdatedBase) = getRate(
+                s.split(delim).toString()
+            );
 
-                latestResponse = bridge.getLatestResponse(req);
-                decodedResult = latestResponse.result.decodeResult();
-                lastUpdatedQuote = latestResponse.resolveTime;
-
-                quotePrice = decodedResult.rates[dataFromSymbol[quote].rateID];
-            }
-
-            result[i].rate = (uint256(basePrice) * 1e18) / uint256(quotePrice);
-            result[i].lastUpdatedBase = lastUpdatedBase;
-            result[i].lastUpdatedQuote = lastUpdatedQuote;
+            results[i].rate = uint256(basePrice).mul(1e18).div(
+                uint256(quotePrice)
+            );
+            results[i].lastUpdatedBase = uint256(lastUpdatedBase);
+            results[i].lastUpdatedQuote = uint256(lastUpdatedQuote);
         }
-        return result;
+        return results;
+    }
+
+    function getRate(string memory symbol)
+        internal
+        view
+        returns (uint64, uint64)
+    {
+        ICacheBridge.RequestPacket memory req;
+        req.clientId = "bandteam";
+        req.askCount = 4;
+        req.minCount = 3;
+
+        if (
+            keccak256(abi.encodePacked(symbol)) ==
+            keccak256(abi.encodePacked("USD"))
+        ) {
+            return (1e9, 0);
+        } else {
+            SymbolData storage data = dataFromSymbol[symbol];
+            req.oracleScriptId = data.oracleScriptID;
+            req.params = calldataArray[data.calldataID];
+
+            ICacheBridge.ResponsePacket memory packet = bridge
+                .getLatestResponse(req);
+            ResultDecoder.Result memory result = packet.result.decodeResult();
+            return (result.rates[data.rateID], packet.resolveTime);
+        }
     }
 }
