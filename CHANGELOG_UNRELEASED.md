@@ -56,6 +56,7 @@
 
 ### Bridges
 
+- (feat) [\#2629](https://github.com/bandprotocol/bandchain/pull/2629) Add contracts and interfaces for Band Standard dataset. Refactored `bridges/evm/` directory to me interface and library files into their own subfolders
 - (feat) [\#2620](https://github.com/bandprotocol/bandchain/pull/2620) Bridge & CacheBridge with relay multiple
 - (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
