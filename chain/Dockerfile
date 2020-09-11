@@ -17,7 +17,6 @@ WORKDIR ${WORKDIR}
 
 COPY --from=builder /go-owasm /go-owasm
 COPY --from=builder /chain/docker-config ${WORKDIR}/docker-config
-COPY --from=builder /chain/scripts ${WORKDIR}/scripts
 COPY --from=builder /go/bin/ /usr/local/bin/
 
 RUN cp ${WORKDIR}/docker-config/run.sh ${WORKDIR}/run.sh && chmod +x ${WORKDIR}/run.sh
