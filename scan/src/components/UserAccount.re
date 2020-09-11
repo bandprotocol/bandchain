@@ -198,7 +198,8 @@ let make = () => {
       <VSpacing size=Spacing.md />
       <Row justify=Row.Right>
         <Col> <Balance address /> </Col>
-        <Col> <HSpacing size={`px(65)} /> </Col>
+        <Col> <HSpacing size={`px(5)} /> </Col>
+        <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
         <Col> <SendBtn send /> </Col>
       </Row>
     </>
