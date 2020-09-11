@@ -92,19 +92,6 @@ module VoteButton = {
   };
 };
 
-type answer_t =
-  | Yes
-  | No
-  | NoWithVeto
-  | Abstain;
-
-type t = {
-  id: int,
-  valPower: int,
-  valVote: option(answer_t),
-  delVotes: answer_t => int,
-};
-
 [@react.component]
 let make = (~proposalID) => {
   let proposalSub = ProposalSub.get(proposalID);
@@ -223,7 +210,6 @@ let make = (~proposalID) => {
                          {isMobile
                             ? <div>
                                 <Heading value="Total" size=Heading.H5 marginBottom=8 />
-                                //TODO: wire up later
                                 {switch (allSub) {
                                  | Data((_, {total}, _)) =>
                                    <Text
@@ -308,7 +294,6 @@ let make = (~proposalID) => {
                           };
                         }}
                    </div>
-                   //TODO: will re-structure when the data is wired up.
                    <div className=Styles.resultContainer>
                      {switch (allSub) {
                       | Data((

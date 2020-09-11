@@ -333,7 +333,7 @@ let getVoteStatByProposalID = proposalID => {
     totalNoWithVetoPercent:
       totalNoWithVetoPower != 0. ? totalNoWithVetoPower /. totalPower *. 100. : 0.,
     totalAbstain: totalAbstainPower,
-    totalAbstainPercent: totalNoPower != 0. ? totalAbstainPower /. totalPower *. 100. : 0.,
+    totalAbstainPercent: totalAbstainPower != 0. ? totalAbstainPower /. totalPower *. 100. : 0.,
     total: totalPower,
   });
 };
