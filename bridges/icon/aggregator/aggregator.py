@@ -6,14 +6,9 @@ TAG = "Aggregator"
 REQUEST_PACKET = PyObi(
     "{client_id:string,oracle_script_id:u64,calldata:bytes,ask_count:u64,min_count:u64}"
 )
-RESPONSE_PACKET = PyObi(
-    "{client_id:string,request_id:u64,ans_count:u64,request_time:u64,resolve_time:u64,resolve_status:u32,result:bytes}"
-)
-PARAMS = PyObi("{symbol:string,multiplier:u64}")
 RATES = PyObi("[u64]")
 PAIRS = PyObi("[string]")
 CALLDATA = PyObi("{symbols:[string],multiplier:u64}")
-SYMBOL_DATA = PyObi("{oracle_script_id:u64,calldata_id:u8,rate_id:u8}")
 
 MULTIPLIER = 1000000000
 SYMBOLS = [
