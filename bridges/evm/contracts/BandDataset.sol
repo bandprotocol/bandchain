@@ -8,8 +8,8 @@ import {SafeMath} from "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import {Strings} from "./libraries/Strings.sol";
 import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 import {IBandDataset} from "./interfaces/IBandDataset.sol";
-import {ParamsDecoder} from "./libraries/BandStandardParamsDecoder.sol";
-import {ResultDecoder} from "./libraries/BandStandardResultDecoder.sol";
+import {ParamsDecoder} from "./libraries/BandDatasetParamsDecoder.sol";
+import {ResultDecoder} from "./libraries/BandDatasetResultDecoder.sol";
 
 contract BandDataset is IBandDataset, Ownable {
     using Strings for *;
