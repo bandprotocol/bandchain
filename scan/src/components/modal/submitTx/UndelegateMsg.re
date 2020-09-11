@@ -21,7 +21,7 @@ module Styles = {
 [@react.component]
 let make = (~address, ~validator, ~setMsgsOpt) => {
   let validatorInfoSub = ValidatorSub.get(validator);
-  let delegationSub = DelegationSub.getStakeByValiator(address, validator);
+  let delegationSub = DelegationSub.getStakeByValidator(address, validator);
 
   let allSub = Sub.all2(validatorInfoSub, delegationSub);
 
