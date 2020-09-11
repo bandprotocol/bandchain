@@ -12,10 +12,13 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2607](https://github.com/bandprotocol/bandchain/pull/2607) Query proof with specific height parameter
+
 ### Yoda
 
 ### Emitter & Flusher
 
+- (impv) [\#2553](https://github.com/bandprotocol/bandchain/pull/2553) fast-sync: emit `unbonding`, `delegation` and `redelegation` from start state
 - (impv) [\#2558](https://github.com/bandprotocol/bandchain/pull/2558) fast-sync: emit all oracle module from start state
 - (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
 - (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
@@ -53,6 +56,7 @@
 
 ### Bridges
 
+- (feat) [\#2620](https://github.com/bandprotocol/bandchain/pull/2620) Bridge & CacheBridge with relay multiple
 - (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
 

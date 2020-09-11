@@ -176,4 +176,45 @@ contract Bridge is IBridge, Ownable {
         require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
         return abi.decode(verifyResult, (RequestPacket, ResponsePacket));
     }
+
+    /// Performs oracle state relay and many times of oracle data verification in one go. The caller submits
+    /// the encoded proof and receives back the decoded data, ready to be validated and used.
+    /// @param _data The encoded data for oracle state relay and an array of data verification.
+    function relayAndMultiVerify(bytes calldata _data)
+        external
+        override
+        returns (RequestPacket[] memory, ResponsePacket[] memory)
+    {
+        (bytes memory relayData, bytes[] memory manyVerifyData) = abi.decode(
+            _data,
+            (bytes, bytes[])
+        );
+        (bool relayOk, ) = address(this).call(
+            abi.encodePacked(this.relayOracleState.selector, relayData)
+        );
+        require(relayOk, "RELAY_ORACLE_STATE_FAILED");
+
+        RequestPacket[] memory requests = new RequestPacket[](
+            manyVerifyData.length
+        );
+        ResponsePacket[] memory responses = new ResponsePacket[](
+            manyVerifyData.length
+        );
+        for (uint256 i = 0; i < manyVerifyData.length; i++) {
+            (bool verifyOk, bytes memory verifyResult) = address(this)
+                .staticcall(
+                abi.encodePacked(
+                    this.verifyOracleData.selector,
+                    manyVerifyData[i]
+                )
+            );
+            require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
+            (requests[i], responses[i]) = abi.decode(
+                verifyResult,
+                (RequestPacket, ResponsePacket)
+            );
+        }
+
+        return (requests, responses);
+    }
 }
