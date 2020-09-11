@@ -780,7 +780,7 @@ contract BandDataset is IBandDataset, Ownable {
                 s.split(delim).toString()
             );
             // Quote Symbol
-            (uint64 quotePrice, uint64 lastUpdatedBase) = getRate(
+            (uint64 quotePrice, uint64 lastUpdatedQuote) = getRate(
                 s.split(delim).toString()
             );
 
