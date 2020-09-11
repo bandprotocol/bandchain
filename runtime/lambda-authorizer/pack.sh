@@ -13,4 +13,4 @@ zip -r9 ${OLDPWD}/lambda-authorizer.zip .
 cd ${OLDPWD}
 deactivate
 rm -r venv
-zip -g lambda-authorizer.zip authorizer.py
+zip -g lambda-authorizer.zip lambda_function.py
