@@ -5,9 +5,9 @@ pragma experimental ABIEncoderV2;
 
 import {Packets} from "./Packets.sol";
 import {Bridge} from "./Bridge.sol";
-import {ICacheBridge} from "./ICacheBridge.sol";
+import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 import {BridgeUtils} from "./BridgeUtils.sol";
-import {IBridge} from "./IBridge.sol";
+import {IBridge} from "./interfaces/IBridge.sol";
 
 /// @title CacheBridge <3 BandChain
 /// @author Band Protocol Team

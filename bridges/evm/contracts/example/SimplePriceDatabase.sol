@@ -4,8 +4,7 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {BandChainLib} from "../BandChainLib.sol";
-import {IBridge} from "../IBridge.sol";
-
+import {IBridge} from "../interfaces/IBridge.sol";
 
 contract SimplePriceDatabase {
     using BandChainLib for bytes;
@@ -17,9 +16,11 @@ contract SimplePriceDatabase {
 
     IBridge public bridge;
 
-    constructor(uint64 _oracleScriptId, bytes memory _params, IBridge _bridge)
-        public
-    {
+    constructor(
+        uint64 _oracleScriptId,
+        bytes memory _params,
+        IBridge _bridge
+    ) public {
         oracleScriptId = _oracleScriptId;
         params = _params;
         bridge = _bridge;

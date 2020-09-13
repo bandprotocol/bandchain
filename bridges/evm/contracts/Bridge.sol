@@ -10,7 +10,7 @@ import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
 import {Packets} from "./Packets.sol";
-import {IBridge} from "./IBridge.sol";
+import {IBridge} from "./interfaces/IBridge.sol";
 
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team

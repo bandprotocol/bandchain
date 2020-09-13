@@ -37,6 +37,7 @@ func (e *RestExec) Exec(code []byte, arg string, env interface{}) (ExecResult, e
 				"timeout":    e.timeout.Milliseconds(),
 				"env":        env,
 			},
+			RequestTimeout: e.timeout,
 		},
 	)
 
