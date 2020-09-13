@@ -4,11 +4,9 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {Packets} from "./Packets.sol";
-import {IBridge} from "./IBridge.sol";
-import {ICacheBridge} from "./ICacheBridge.sol";
+import {ICacheBridge} from "./interfaces/ICacheBridge.sol";
 
-contract ProxyBridge is IBridge, ICacheBridge, Ownable {
+contract ProxyBridge is ICacheBridge, Ownable {
     ICacheBridge public bridge;
 
     /// @notice Contract constructor

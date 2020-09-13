@@ -27,6 +27,7 @@
 
 ### Scan
 
+- (impv) [\#2621](https://github.com/bandprotocol/bandchain/pull/2621) Wired up data for proposal vote
 - (bugs) [\#2606](https://github.com/bandprotocol/bandchain/pull/2606) Fix overflow text on request index page
 - (impv) [\#2604](https://github.com/bandprotocol/bandchain/pull/2604) Moved the proposal route to wenchang route
 - (feat) [\#2603](https://github.com/bandprotocol/bandchain/pull/2603) Added `guanyu-poa` on chain id
@@ -58,6 +59,7 @@
 
 ### Bridges
 
+- (feat) [\#2629](https://github.com/bandprotocol/bandchain/pull/2629) Add contracts and interfaces for Band Standard dataset. Refactored `bridges/evm/` directory to me interface and library files into their own subfolders
 - (feat) [\#2620](https://github.com/bandprotocol/bandchain/pull/2620) Bridge & CacheBridge with relay multiple
 - (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
