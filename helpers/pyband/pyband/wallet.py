@@ -69,6 +69,14 @@ class PrivateKey:
         )
         return self
 
+    @classmethod
+    def from_hex(cls, priv: str) -> PrivateKey:
+        self = cls(_error_do_not_use_init_directly=True)
+        self.signing_key = SigningKey.from_string(
+            bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256,
+        )
+        return self
+
     def to_hex(self) -> str:
         """
         Return a hex representation of signing key.
