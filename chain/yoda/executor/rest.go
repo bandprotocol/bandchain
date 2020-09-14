@@ -24,13 +24,14 @@ type externalExecutionResponse struct {
 	Version    string `json:"version"`
 }
 
-func (e *RestExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
+func (e *RestExec) Exec(code []byte, arg string, jwtSecretKey string, env interface{}) (ExecResult, error) {
 	executable := base64.StdEncoding.EncodeToString(code)
 	resp, err := grequests.Post(
 		e.url,
 		&grequests.RequestOptions{
 			Headers: map[string]string{
-				"Content-Type": "application/json",
+				"Content-Type":  "application/json",
+				"Authorization": GetSingedToken(jwtSecretKey),
 			},
 			JSON: map[string]interface{}{
 				"executable": executable,

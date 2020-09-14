@@ -3,3 +3,6 @@
 /lambda/requirements.txt
 /lambda/venv
 /lambda/lambda-yoda.zip
+
+/lambda-authorizer/lambda-authorizer.zip
+/lambda/venv

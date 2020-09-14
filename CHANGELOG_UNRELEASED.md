@@ -16,6 +16,7 @@
 
 ### Yoda
 
+- (impv) [\#2627](https://github.com/bandprotocol/bandchain/pull/2627) Implemented signed token for getting permission from AWS lambda authorizer
 - (impv) [\#2638](https://github.com/bandprotocol/bandchain/pull/2631) Check timeout error from request + [\#2631](https://github.com/bandprotocol/bandchain/pull/2631) Add request timeout for each data source execution
 
 ### Emitter & Flusher

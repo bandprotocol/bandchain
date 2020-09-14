@@ -24,13 +24,13 @@ type ExecResult struct {
 }
 
 type Executor interface {
-	Exec(exec []byte, arg string, env interface{}) (ExecResult, error)
+	Exec(exec []byte, arg string, jwtSecretKey string, env interface{}) (ExecResult, error)
 }
 
 var testProgram []byte = []byte("#!/usr/bin/env python3\nimport os\nimport sys\nprint(sys.argv[1], os.getenv('BAND_CHAIN_ID'))")
 
 // NewExecutor returns executor by name and executor URL
-func NewExecutor(executor string) (exec Executor, err error) {
+func NewExecutor(executor string, jwtSecretKey string) (exec Executor, err error) {
 	name, base, timeout, err := parseExecutor(executor)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func NewExecutor(executor string) (exec Executor, err error) {
 	}
 
 	// TODO: Remove hardcode in test execution
-	res, err := exec.Exec(testProgram, "TEST_ARG", map[string]interface{}{
+	res, err := exec.Exec(testProgram, "TEST_ARG", jwtSecretKey, map[string]interface{}{
 		"BAND_CHAIN_ID":    "test-chain-id",
 		"BAND_VALIDATOR":   "test-validator",
 		"BAND_REQUEST_ID":  "test-request-id",

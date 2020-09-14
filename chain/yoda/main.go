@@ -23,6 +23,7 @@ const (
 	flagRPCPollInterval  = "rpc-poll-interval"
 	flagMaxTry           = "max-try"
 	flagMaxReport        = "max-report"
+	flagJWTSecretKey     = "jwt-secret-key"
 )
 
 // Config data structure for yoda daemon.
@@ -37,6 +38,7 @@ type Config struct {
 	RPCPollInterval  string `mapstructure:"rpc-poll-interval"` // The duration of rpc poll interval
 	MaxTry           uint64 `mapstructure:"max-try"`           // The maximum number of tries to submit a report transaction
 	MaxReport        uint64 `mapstructure:"max-report"`        // The maximum number of reports in one transaction
+	JWTSecretKey     string `mapstructure:"jwt-secret-key"`    // The secret key use to sign token
 }
 
 // Global instances.
@@ -69,7 +71,7 @@ func Main() {
 		Short: "BandChain oracle daemon to subscribe and response to oracle requests",
 	}
 
-	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx), version.Cmd)
+	rootCmd.AddCommand(configCmd(), keysCmd(ctx), runCmd(ctx), authorizerCmd(ctx), version.Cmd)
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		home, err := rootCmd.PersistentFlags().GetString(flags.FlagHome)
 		if err != nil {
