@@ -150,6 +150,43 @@ class TestTest(IconIntegrateTestBase):
         response = self.process_call(call, self.icon_service)
         self.assertEqual(self._bridge_address, response)
 
+    def test_aggregator_set_bridge(self):
+        print(dir(self))
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._aggregator)
+            .method("get_bridge_address")
+            .build()
+        )
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(self._bridge_address, response)
+
+        transaction = (
+            CallTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(self._aggregator)
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .method("set_bridge")
+            .params({"bridge_address": self._test1.get_address()})
+            .build()
+        )
+        signed_transaction = SignedTransaction(transaction, self._test1)
+        tx_result = self.process_transaction(signed_transaction, self.icon_service)
+        self.assertEqual(True, tx_result["status"])
+
+        call = (
+            CallBuilder()
+            .from_(self._test1.get_address())
+            .to(self._aggregator)
+            .method("get_bridge_address")
+            .build()
+        )
+        response = self.process_call(call, self.icon_service)
+        self.assertEqual(self._test1.get_address(), response)
+
     def test_relay_1(self):
         request_key = bytes.fromhex(
             "0000000862616e647465616d0000000000000008000000c5000000190000000652454e4254430000000457425443000000034449410000000342544d00000004494f545800000003464554000000034a5354000000034d434f000000034b4d440000000342545300000003514b430000000559414d563200000003585a4300000003554f5300000004414b524f00000003484e5400000003484f54000000034b4149000000034f474e00000003575258000000034b4441000000034f524e00000003464f52000000034153540000000553544f524a000000003b9aca0000000000000000040000000000000003"
