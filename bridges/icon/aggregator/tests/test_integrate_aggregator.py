@@ -151,7 +151,6 @@ class TestTest(IconIntegrateTestBase):
         self.assertEqual(self._bridge_address, response)
 
     def test_aggregator_set_bridge(self):
-        print(dir(self))
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
