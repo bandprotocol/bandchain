@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name="pyband",
     packages=["pyband"],
-    version="0.0.3",
+    version="0.0.4",
     license="MIT",
     description="Python library for BandChain",
     author="Band Protocol",
