@@ -2,6 +2,7 @@ package executor
 
 import (
 	"encoding/base64"
+	"net/url"
 	"time"
 
 	"github.com/levigross/grequests"
@@ -43,7 +44,12 @@ func (e *RestExec) Exec(code []byte, arg string, jwtSecretKey string, env interf
 	)
 
 	if err != nil {
-		return ExecResult{}, err
+		urlErr, ok := err.(*url.Error)
+		if !ok || !urlErr.Timeout() {
+			return ExecResult{}, err
+		}
+		// Return timeout code
+		return ExecResult{Output: []byte{}, Code: 111}, nil
 	}
 
 	if resp.Ok != true {
