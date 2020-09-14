@@ -229,17 +229,15 @@ class Aggregator(IconScoreBase):
     # @param encoded_pairs, an obi encode of array of pairs. For example ["BTC/DAI"].
     @external(readonly=True)
     def get_reference_data(self, encoded_pairs: bytes) -> list:
-        pairs = PAIRS.decode(encoded_pairs)
         result = []
 
-        for pair in pairs:
+        for pair in PAIRS.decode(encoded_pairs):
             [base, quote] = pair.split("/")
-            [base_price, quote_price] = [
-                self.get_rate_from_symbol(base),
-                self.get_rate_from_symbol(quote),
-            ]
 
-            result.append((base_price * MULTIPLIER * MULTIPLIER) // quote_price)
+            result.append(
+                (self.get_rate_from_symbol(base) * MULTIPLIER * MULTIPLIER)
+                // self.get_rate_from_symbol(quote)
+            )
 
         return result
 
