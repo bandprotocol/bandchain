@@ -11,6 +11,13 @@ class Client(object):
     def _get(self, path, **kwargs):
         return requests.get(self.rpc_url + path, **kwargs).json()["result"]
 
+    def get_chain_id(self) -> str:
+        genesis = self._get("/bandchain/genesis")
+        return genesis["chain_id"]
+
+    def get_latest_block(self) -> dict:
+        return self._get("/blocks/latest")
+
     def get_data_source(self, id: int) -> DataSource:
         return from_dict(
             data_class=DataSource,
@@ -49,3 +56,5 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
+    def get_reporters(self, validator: str) -> list:
+        return self._get("/oracle/reporters/{}".format(validator))
