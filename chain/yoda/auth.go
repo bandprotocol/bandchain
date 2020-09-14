@@ -5,7 +5,6 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 )
 
 const (
@@ -19,7 +18,6 @@ func authorizerCmd(c *Context) *cobra.Command {
 		Short:   "Manage key held by the oracle process",
 	}
 	cmd.AddCommand(singedTokenCmd(c))
-	cmd.AddCommand(addSecretKey(c))
 	return cmd
 }
 
@@ -33,17 +31,5 @@ func singedTokenCmd(c *Context) *cobra.Command {
 		},
 	}
 
-	return cmd
-}
-
-func addSecretKey(c *Context) *cobra.Command {
-	cmd := &cobra.Command{
-		Use:   "add-key",
-		Short: "Add secret key",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			viper.Set(JWTSecretKey, args[0])
-			return viper.WriteConfig()
-		},
-	}
 	return cmd
 }
