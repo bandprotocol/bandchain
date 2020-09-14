@@ -7,7 +7,7 @@ import {IStdReference} from "./IStdReference.sol";
 import {IBridge} from "../interfaces/IBridge.sol";
 import {Obi} from "../obi/Obi.sol";
 
-contract StdReferenceProxy is Ownable, IStdReference {
+contract StdReference is Ownable, IStdReference {
     using Obi for Obi.Data;
 
     struct RefData {
@@ -84,8 +84,8 @@ contract StdReferenceProxy is Ownable, IStdReference {
         // TODO: Check response status
         Obi.Data memory reqData = Obi.from(_req.params);
         Obi.Data memory resData = Obi.from(_res.result);
-        uint256 symbolLen = uint256(reqData.decodeU64());
-        uint256 rateLen = uint256(resData.decodeU64());
+        uint256 symbolLen = uint256(reqData.decodeU32());
+        uint256 rateLen = uint256(resData.decodeU32());
         require(symbolLen == rateLen, "INCONSISTENT_REQ_RES");
         for (uint256 idx = 0; idx < symbolLen; idx++) {
             string memory symbol = reqData.decodeString();
