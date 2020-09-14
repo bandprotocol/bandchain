@@ -10,7 +10,7 @@ import {IAVLMerklePath} from "./IAVLMerklePath.sol";
 import {TMSignature} from "./TMSignature.sol";
 import {Utils} from "./Utils.sol";
 import {Packets} from "./Packets.sol";
-import {IBridge} from "./IBridge.sol";
+import {IBridge} from "./interfaces/IBridge.sol";
 
 /// @title Bridge <3 BandChain D3N
 /// @author Band Protocol Team
@@ -21,17 +21,17 @@ contract Bridge is IBridge, Ownable {
     using TMSignature for TMSignature.Data;
     using SafeMath for uint256;
 
+    struct ValidatorWithPower {
+        address addr;
+        uint256 power;
+    }
+
     /// Mapping from block height to the hash of "zoracle" iAVL Merkle tree.
     mapping(uint256 => bytes32) public oracleStates;
     /// Mapping from an address to its voting power.
     mapping(address => uint256) public validatorPowers;
     /// The total voting power of active validators currently on duty.
     uint256 public totalValidatorPower;
-
-    struct ValidatorWithPower {
-        address addr;
-        uint256 power;
-    }
 
     /// Initializes an oracle bridge to BandChain.
     /// @param _validators The initial set of BandChain active validators.
@@ -50,7 +50,7 @@ contract Bridge is IBridge, Ownable {
     /// Update validator powers by owner.
     /// @param _validators The changed set of BandChain validators.
     function updateValidatorPowers(ValidatorWithPower[] memory _validators)
-        public
+        external
         onlyOwner
     {
         for (uint256 idx = 0; idx < _validators.length; ++idx) {
@@ -175,5 +175,46 @@ contract Bridge is IBridge, Ownable {
         );
         require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
         return abi.decode(verifyResult, (RequestPacket, ResponsePacket));
+    }
+
+    /// Performs oracle state relay and many times of oracle data verification in one go. The caller submits
+    /// the encoded proof and receives back the decoded data, ready to be validated and used.
+    /// @param _data The encoded data for oracle state relay and an array of data verification.
+    function relayAndMultiVerify(bytes calldata _data)
+        external
+        override
+        returns (RequestPacket[] memory, ResponsePacket[] memory)
+    {
+        (bytes memory relayData, bytes[] memory manyVerifyData) = abi.decode(
+            _data,
+            (bytes, bytes[])
+        );
+        (bool relayOk, ) = address(this).call(
+            abi.encodePacked(this.relayOracleState.selector, relayData)
+        );
+        require(relayOk, "RELAY_ORACLE_STATE_FAILED");
+
+        RequestPacket[] memory requests = new RequestPacket[](
+            manyVerifyData.length
+        );
+        ResponsePacket[] memory responses = new ResponsePacket[](
+            manyVerifyData.length
+        );
+        for (uint256 i = 0; i < manyVerifyData.length; i++) {
+            (bool verifyOk, bytes memory verifyResult) = address(this)
+                .staticcall(
+                abi.encodePacked(
+                    this.verifyOracleData.selector,
+                    manyVerifyData[i]
+                )
+            );
+            require(verifyOk, "VERIFY_ORACLE_DATA_FAILED");
+            (requests[i], responses[i]) = abi.decode(
+                verifyResult,
+                (RequestPacket, ResponsePacket)
+            );
+        }
+
+        return (requests, responses);
     }
 }

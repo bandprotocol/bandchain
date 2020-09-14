@@ -87,6 +87,48 @@ video {
   vertical-align: baseline;
 }
 
+/* Markdown Initial */
+
+/* Typography */
+
+p {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 24px;
+}
+h2 {
+  font-size: 20px;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 12px;
+}
+
+
+/* List */
+
+ul > li + li {
+  margin-top: 8px;
+}
+
+
 input {
   border: 0;
   margin: 0;
@@ -145,7 +187,7 @@ table {
 a,
 a:hover,
 a:active {
-  color: #7a35d4;
+  color: #5269FF;
 }
 
 a:not(:hover) {
@@ -192,6 +234,20 @@ code {
   max-width: 984px;
   margin: 0 auto;
   padding: 0 12px;
+}
+
+/* Select Input */
+
+select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+}
+
+/* For IE10 */
+select::-ms-expand {
+  display: none;
 }
 
 /* scrolling smooth on ios */

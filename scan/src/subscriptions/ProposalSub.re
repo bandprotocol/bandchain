@@ -20,6 +20,8 @@ let parseProposalStatus = json => {
 
 type account_t = {address: Address.t};
 
+type deposit_t = {amount: list(Coin.t)};
+
 type internal_t = {
   id: ID.Proposal.t,
   title: string,
@@ -30,6 +32,8 @@ type internal_t = {
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
   account: account_t,
+  proposalType: string,
+  totalDeposit: list(Coin.t),
 };
 
 type t = {
@@ -42,7 +46,8 @@ type t = {
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
   proposerAddress: Address.t,
-  turnout: float,
+  proposalType: string,
+  totalDeposit: list(Coin.t),
 };
 
 let toExternal =
@@ -57,6 +62,8 @@ let toExternal =
         votingStartTime,
         votingEndTime,
         account,
+        proposalType,
+        totalDeposit,
       },
     ) => {
   id,
@@ -68,8 +75,8 @@ let toExternal =
   votingStartTime,
   votingEndTime,
   proposerAddress: account.address,
-  //TODO: To remove mock data after we got the actual one
-  turnout: 50.5,
+  proposalType,
+  totalDeposit,
 };
 
 module MultiConfig = [%graphql
@@ -84,9 +91,11 @@ module MultiConfig = [%graphql
       depositEndTime: deposit_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
+      proposalType: type
       account @bsRecord {
-          address @bsDecoder(fn: "Address.fromBech32")
+        address @bsDecoder(fn: "Address.fromBech32")
       }
+      totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
     }
   }
 |}
@@ -104,9 +113,11 @@ module SingleConfig = [%graphql
       depositEndTime: deposit_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
+      proposalType: type
       account @bsRecord {
           address @bsDecoder(fn: "Address.fromBech32")
       }
+      totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
     }
   }
 |}
@@ -140,6 +151,7 @@ let get = id => {
       SingleConfig.definition,
       ~variables=SingleConfig.makeVariables(~id=id |> ID.Proposal.toInt, ()),
     );
+
   let%Sub x = result;
   switch (x##proposals_by_pk) {
   | Some(data) => Sub.resolve(data |> toExternal)

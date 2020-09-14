@@ -131,12 +131,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             {switch (allSub) {
              | Data(({isActive}, _, _)) =>
                <div className={CssHelper.flexBox()}>
-                 <div
-                   className={Css.merge([
-                     CssHelper.flexBox(~justify=`center, ()),
-                     Styles.statusBox(isActive),
-                   ])}>
-                   <Icon name={isActive ? "fas fa-bolt" : "fas fa-moon"} color=Colors.white />
+                 <div className={CssHelper.flexBox(~justify=`center, ())}>
+                   <img
+                     src={isActive ? Images.activeValidatorLogo : Images.inactiveValidatorLogo}
+                   />
                  </div>
                  <HSpacing size=Spacing.sm />
                  <Text value={isActive ? "Active" : "Inactive"} />
@@ -270,14 +268,13 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
             <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
             <Row.Grid marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
-                <div className={CssHelper.flexBox()}>
+                <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Operator Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
                   <CTooltip tooltipText="The address used to show the validator's entity status">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
-                <VSpacing size=Spacing.sm />
                 {switch (allSub) {
                  | Data(({operatorAddress}, _, _)) =>
                    <AddressRender
@@ -287,28 +284,27 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      clickable=false
                      wordBreak=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
-                <div className={CssHelper.flexBox()}>
+                <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
                   <CTooltip tooltipText="The validator entity's unique address">
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
-                <VSpacing size=Spacing.sm />
                 {switch (allSub) {
                  | Data(({operatorAddress}, _, _)) =>
                    <AddressRender address=operatorAddress position=AddressRender.Subtitle />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
             <Row.Grid marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
-                <div className={CssHelper.flexBox()}>
+                <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Commission Max Change" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
                   <CTooltip
@@ -316,7 +312,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
-                <VSpacing size=Spacing.sm />
                 {switch (allSub) {
                  | Data(({commissionMaxChange}, _, _)) =>
                    <Text
@@ -324,11 +319,11 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      size=Text.Lg
                      block=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
               <Col.Grid col=Col.Six>
-                <div className={CssHelper.flexBox()}>
+                <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Commission Max Rate" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
                   <CTooltip
@@ -336,7 +331,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                     <Icon name="fal fa-info-circle" size=10 />
                   </CTooltip>
                 </div>
-                <VSpacing size=Spacing.sm />
                 {switch (allSub) {
                  | Data(({commissionMaxRate}, _, _)) =>
                    <Text
@@ -344,29 +338,29 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                      size=Text.Lg
                      block=true
                    />
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
             <Row.Grid marginBottom=24>
               <Col.Grid>
-                <Heading value="Website" size=Heading.H5 marginBottom=16 />
+                <Heading value="Website" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({website}, _, _)) =>
                    <a href=website target="_blank" className=Styles.link>
                      <Text value=website size=Text.Lg color=Colors.bandBlue block=true />
                    </a>
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
-            <Row.Grid marginBottom=24>
+            <Row.Grid>
               <Col.Grid>
-                <Heading value="Description" size=Heading.H5 marginBottom=16 />
+                <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({details}, _, _)) =>
                    <p> <Text value=details size=Text.Lg color=Colors.gray7 block=true /> </p>
-                 | _ => <LoadingCensorBar width=284 height=15 />
+                 | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
             </Row.Grid>
