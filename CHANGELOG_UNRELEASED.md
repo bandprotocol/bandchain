@@ -76,7 +76,7 @@
 
 ### Helpers
 
-- (feat) [\#2588](https://github.com/bandprotocol/bandchain/pull/2577) pyband: Auth module implementation
+- (feat) [\#2588](https://github.com/bandprotocol/bandchain/pull/2588) pyband: Auth module implementation
 - (impv) [\#2577](https://github.com/bandprotocol/bandchain/pull/2577) Wallet module completion
 
 ### MISC
