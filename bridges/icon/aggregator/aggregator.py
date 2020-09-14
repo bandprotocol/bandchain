@@ -184,7 +184,7 @@ class Aggregator(IconScoreBase):
 
     def on_install(self, bridge_address: Address) -> None:
         super().on_install()
-        self.bridge_address.set(bridge_address)
+        self.set_bridge(bridge_address)
 
     def on_update(self) -> None:
         super().on_update()
@@ -207,7 +207,7 @@ class Aggregator(IconScoreBase):
     # for the USD exchange rate of that symbol multiplied by 1e9.
     # @param sybbol, a string that represent an asset.
     @external(readonly=True)
-    def get_rate_from_symbol(self, symbol: str) -> int:
+    def get_rate(self, symbol: str) -> int:
         if symbol == "USD":
             return MULTIPLIER
         else:
@@ -233,11 +233,16 @@ class Aggregator(IconScoreBase):
 
         for pair in PAIRS.decode(encoded_pairs):
             [base, quote] = pair.split("/")
-
-            result.append(
-                (self.get_rate_from_symbol(base) * MULTIPLIER * MULTIPLIER)
-                // self.get_rate_from_symbol(quote)
-            )
+            result.append((self.get_rate(base) * MULTIPLIER * MULTIPLIER) // self.get_rate(quote))
 
         return result
+
+    # Set reference of the bridge contract
+    # @param bridge_address, an address of the bridge contract.
+    @external
+    def set_bridge(self, bridge_address: Address) -> None:
+        if self.msg.sender != self.owner:
+            self.revert("NOT_AUTHORIZED")
+
+        self.bridge_address.set(bridge_address)
 

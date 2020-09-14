@@ -266,7 +266,7 @@ class TestTest(IconIntegrateTestBase):
             self.process_call(call, self.icon_service),
         )
 
-    def test_get_rate_from_symbol(self):
+    def test_get_rate(self):
         self.test_relay_1()
         self.test_relay_2()
 
@@ -275,7 +275,7 @@ class TestTest(IconIntegrateTestBase):
                 CallBuilder()
                 .from_(self._test1.get_address())
                 .to(self._aggregator)
-                .method("get_rate_from_symbol")
+                .method("get_rate")
                 .params({"symbol": symbol})
                 .build()
             )
