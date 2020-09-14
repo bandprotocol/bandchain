@@ -13,6 +13,7 @@
 ### Chain (Non-consensus)
 
 - (impv) [\#2607](https://github.com/bandprotocol/bandchain/pull/2607) Query proof with specific height parameter
+- (chore) [\#2602](https://github.com/bandprotocol/bandchain/pull/2602) Add chain docker multistage build
 
 ### Yoda
 

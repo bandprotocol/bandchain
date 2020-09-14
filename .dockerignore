@@ -11,4 +11,5 @@
 /scripts
 /spec
 /helpers
-
+/chain/Dockerfile
+.dockerignore
