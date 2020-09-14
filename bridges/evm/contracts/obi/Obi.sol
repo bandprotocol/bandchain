@@ -117,6 +117,14 @@ library Obi {
         }
     }
 
+    function decodeString(Data memory data)
+        internal
+        pure
+        returns (string memory value)
+    {
+        return string(decodeBytes(data));
+    }
+
     function decodeBytes32(Data memory data)
         internal
         pure
