@@ -22,7 +22,8 @@ def init(chain_id, topic, db):
     engine = create_engine("postgresql+psycopg2://" + db, echo=True)
     metadata.create_all(engine)
     engine.execute(tracking.insert(), {"chain_id": chain_id, "topic": topic, "kafka_offset": -1})
-    engine.execute('''CREATE VIEW delegations_view AS
+    engine.execute(
+        """CREATE VIEW delegations_view AS
             SELECT CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL) as amount,
             CAST(shares AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) * 100 as share_percentage,
             CAST(shares AS DECIMAL) * CAST(current_reward AS DECIMAL) /  CAST(delegator_shares AS DECIMAL) + (CAST(current_ratio AS DECIMAL) - CAST(last_ratio AS DECIMAL)) * CAST(shares AS DECIMAL) as reward,
@@ -31,20 +32,53 @@ def init(chain_id, topic, db):
             accounts.address AS delegator_address,
             identity
             FROM delegations JOIN validators ON delegations.validator_id=validators.id
-            JOIN accounts ON accounts.id=delegations.delegator_id;''')
-    engine.execute('''CREATE VIEW validator_last_250_votes AS
+            JOIN accounts ON accounts.id=delegations.delegator_id;"""
+    )
+    engine.execute(
+        """CREATE VIEW validator_last_250_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 251
-			GROUP BY consensus_address, voted;''')
-    engine.execute('''CREATE VIEW validator_last_1000_votes AS
+			GROUP BY consensus_address, voted;"""
+    )
+    engine.execute(
+        """CREATE VIEW validator_last_1000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 1001
-			GROUP BY consensus_address, voted;''')
-    engine.execute('''CREATE VIEW validator_last_10000_votes AS
+			GROUP BY consensus_address, voted;"""
+    )
+    engine.execute(
+        """CREATE VIEW validator_last_10000_votes AS
 			SELECT COUNT(*), consensus_address, voted
-			FROM validator_votes 
+			FROM validator_votes
 			WHERE block_height > (SELECT MAX(height) from blocks) - 10000
-			GROUP BY consensus_address, voted;''')
+			GROUP BY consensus_address, voted;"""
+    )
+    engine.execute(
+        """
+CREATE VIEW non_validator_vote_proposals_view AS
+SELECT validator_id,
+       proposal_id,
+       answer,
+       SUM(CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL)) AS tokens
+FROM delegations
+JOIN votes ON delegations.delegator_id=votes.voter_id
+JOIN validators ON delegations.validator_id=validators.id
+AND votes.voter_id != validators.account_id
+GROUP BY answer, validator_id, proposal_id;
+"""
+    )
 
+    engine.execute(
+        """
+CREATE VIEW validator_vote_proposals_view AS
+SELECT validators.id,
+       proposal_id,
+       answer,
+       tokens
+FROM votes
+JOIN accounts ON accounts.id = votes.voter_id
+JOIN validators ON accounts.id = validators.account_id;
+"""
+    )
