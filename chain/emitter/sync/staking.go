@@ -19,6 +19,34 @@ func (app *App) emitStakingModule() {
 		app.emitSetValidator(val.GetOperator())
 		return false
 	})
+
+	app.StakingKeeper.IterateAllDelegations(app.DeliverContext, func(delegation types.Delegation) (stop bool) {
+		app.emitDelegation(delegation.ValidatorAddress, delegation.DelegatorAddress)
+		return false
+	})
+	app.StakingKeeper.IterateRedelegations(app.DeliverContext, func(_ int64, red types.Redelegation) (stop bool) {
+		for _, entry := range red.Entries {
+			app.Write("NEW_REDELEGATION", common.JsDict{
+				"delegator_address":    red.DelegatorAddress,
+				"operator_src_address": red.ValidatorSrcAddress,
+				"operator_dst_address": red.ValidatorDstAddress,
+				"completion_time":      entry.CompletionTime.UnixNano(),
+				"amount":               entry.SharesDst.String(),
+			})
+		}
+		return false
+	})
+	app.StakingKeeper.IterateUnbondingDelegations(app.DeliverContext, func(_ int64, ubd types.UnbondingDelegation) (stop bool) {
+		for _, entry := range ubd.Entries {
+			app.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
+				"delegator_address": ubd.DelegatorAddress,
+				"operator_address":  ubd.ValidatorAddress,
+				"completion_time":   entry.CompletionTime.UnixNano(),
+				"amount":            entry.Balance.String(),
+			})
+		}
+		return false
+	})
 }
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
@@ -167,5 +195,10 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap common.EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	app.Write("REMOVE_UNBONDING", common.JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 	app.AddAccountsInBlock(acc)
+}
+
+func (app *App) handEventTypeCompleteRedelegation(evMap common.EvMap) {
+	app.Write("REMOVE_REDELEGATION", common.JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 }
