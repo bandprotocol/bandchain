@@ -60,8 +60,9 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                 handler = Handler(conn)
                 key = msg.key.decode()
                 value = json.loads(msg.value)
+                print("->", int(value["height"]), start_flusher)
                 if key == "COMMIT":
-                    if value["height"] == start_height:
+                    if int(value["height"]) == start_height:
                         start_flusher = True
                     if value["height"] % commit_interval == 0:
                         conn.execute(tracking.update().values(kafka_offset=msg.offset))
