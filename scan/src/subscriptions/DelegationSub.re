@@ -139,7 +139,7 @@ let getTotalStakeByDelegator = delegatorAddress => {
   {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
-let getStakeByValiator = (delegatorAddress, operatorAddress) => {
+let getStakeByValidator = (delegatorAddress, operatorAddress) => {
   let (result, _) = {
     ApolloHooks.useSubscription(
       StakeByValidatorConfig.definition,

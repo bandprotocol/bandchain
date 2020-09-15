@@ -80,7 +80,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
         tooltipPlacement=Text.AlignBottomStart
       />
     </Col>
-    <Col size=0.6>
+    <Col size=2.0>
       <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
         <div className={CssHelper.flexBox()}>
           {isCountup
@@ -204,8 +204,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let send = chainID => {
     switch (accountOpt) {
     | Some({address: sender}) =>
-      let openSendModal = () =>
-        Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+      let openSendModal = () => Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
       if (sender == address) {
         Window.confirm("Are you sure you want to send tokens to yourself?")
           ? openSendModal() : ();

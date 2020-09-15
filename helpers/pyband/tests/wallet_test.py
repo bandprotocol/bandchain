@@ -1,4 +1,4 @@
-from .wallet import PrivateKey, PublicKey, Address
+from pyband.wallet import PrivateKey, PublicKey, Address
 
 TEST_MNEMONIC = "coach pond canoe lake solution empty vacuum term pave toe burst top violin purpose umbrella color disease thrive diamond found track need filter wait"
 

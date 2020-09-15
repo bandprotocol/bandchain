@@ -127,7 +127,7 @@ module StakingInfo = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
 
     let infoSub = React.useContext(GlobalContext.context);
-    let balanceAtStakeSub = DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
+    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
     let unbondingSub =
       UnbondingSub.getUnbondingBalanceByValidator(
         delegatorAddress,
