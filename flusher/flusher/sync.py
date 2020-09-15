@@ -52,7 +52,7 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
     consumer.seek(tp, tracking_info.kafka_offset + 1)
     consumer_iter = iter(consumer)
     start_flusher = False
-    start_height = 20486
+    start_height = 3306834
     # Main loop
     while True:
         with engine.begin() as conn:
@@ -62,7 +62,7 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                 value = json.loads(msg.value)
                 if key == "COMMIT":
                     print("->", int(value["height"]), start_flusher)
-                    if int(value["height"]) == start_height:
+                    if int(value["height"]) >= start_height:
                         start_flusher = True
                     if value["height"] % commit_interval == 0:
                         conn.execute(tracking.update().values(kafka_offset=msg.offset))
