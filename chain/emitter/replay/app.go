@@ -34,15 +34,12 @@ type App struct {
 	msgs        []common.Message // The list of all messages to publish for this block.
 }
 
-// NewBandAppWithEmitter creates a new App instance.
 func NewBandAppWithEmitter(
 	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
 ) *App {
 	app := bandapp.NewBandApp(
-		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-		home, disableFeelessReports, baseAppOptions...,
+		logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...,
 	)
 	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &App{

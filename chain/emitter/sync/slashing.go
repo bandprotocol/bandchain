@@ -13,7 +13,7 @@ func (app *App) handleEventSlash(event common.EvMap) {
 		validator, _ := app.StakingKeeper.GetValidatorByConsAddr(app.DeliverContext, consAddress)
 		app.Write("UPDATE_VALIDATOR", common.JsDict{
 			"operator_address": validator.OperatorAddress.String(),
-			"tokens":           validator.Tokens.Uint64(),
+			"tokens":           validator.Tokens.BigInt().Int64(),
 			"jailed":           validator.Jailed,
 		})
 	}

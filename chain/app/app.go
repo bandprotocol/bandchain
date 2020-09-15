@@ -98,7 +98,7 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 	config.SetCoinType(Bip44CoinType)
 }
 
-type bandApp struct {
+type BandApp struct {
 	*bam.BaseApp
 	cdc *codec.Codec
 
@@ -130,11 +130,11 @@ type bandApp struct {
 	mm *module.Manager
 }
 
-// NewBandApp is a constructor function for bandApp
+// NewBandApp is a constructor function for BandApp
 func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, baseAppOptions ...func(*bam.BaseApp),
-) *bandApp {
+) *BandApp {
 
 	// First define the top level codec that will be shared by the different modules
 	cdc := MakeCodec()
@@ -153,7 +153,7 @@ func NewBandApp(
 	tkeys := sdk.NewTransientStoreKeys(staking.TStoreKey, params.TStoreKey)
 
 	// Here you initialize your application with the store keys it requires
-	var app = &bandApp{
+	var app = &BandApp{
 		BaseApp:        bApp,
 		cdc:            cdc,
 		invCheckPeriod: invCheckPeriod,
@@ -339,27 +339,28 @@ func NewBandApp(
 	return app
 }
 
-func (app *bandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
+func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
+	app.DeliverContext = ctx
 	return app.mm.InitGenesis(ctx, genesisState)
 }
 
-func (app *bandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
+func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.DeliverContext = ctx
 	return app.mm.BeginBlock(ctx, req)
 }
 
-func (app *bandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
+func (app *BandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return app.mm.EndBlock(ctx, req)
 }
 
-func (app *bandApp) Commit() (res abci.ResponseCommit) {
+func (app *BandApp) Commit() (res abci.ResponseCommit) {
 	app.DeliverContext = sdk.Context{}
 	return app.BaseApp.Commit()
 }
 
-// func (app *bandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
+// func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) (res abci.ResponseDeliverTx) {
 // 	response := app.BaseApp.DeliverTx(req)
 
 // 	if response.IsOK() {
@@ -394,16 +395,21 @@ func (app *bandApp) Commit() (res abci.ResponseCommit) {
 // 	return response
 // }
 
-func (app *bandApp) LoadHeight(height int64) error {
+func (app *BandApp) LoadHeight(height int64) error {
 	return app.LoadVersion(height, app.keys[bam.MainStoreKey])
 }
 
 // ModuleAccountAddrs returns all the app's module account addresses.
-func (app *bandApp) ModuleAccountAddrs() map[string]bool {
+func (app *BandApp) ModuleAccountAddrs() map[string]bool {
 	modAccAddrs := make(map[string]bool)
 	for acc := range maccPerms {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
 	}
 
 	return modAccAddrs
+}
+
+// Codec returns the application's sealed codec.
+func (app *BandApp) Codec() *codec.Codec {
+	return app.cdc
 }

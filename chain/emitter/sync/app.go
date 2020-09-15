@@ -10,6 +10,7 @@ import (
 	bam "github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
+	"github.com/cosmos/cosmos-sdk/x/genaccounts"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/segmentio/kafka-go"
@@ -20,8 +21,6 @@ import (
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/emitter/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // App extends the standard Band Cosmos-SDK application with Kafka emitter
@@ -39,15 +38,12 @@ type App struct {
 	emitStartState bool             // If emitStartState is true will emit all non historical state to Kafka
 }
 
-// NewBandAppWithEmitter creates a new App instance.
 func NewBandAppWithEmitter(
 	kafkaURI string, logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
-	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	disableFeelessReports bool, enableFastSync bool, baseAppOptions ...func(*bam.BaseApp),
+	invCheckPeriod uint, enableFastSync bool, baseAppOptions ...func(*bam.BaseApp),
 ) *App {
 	app := bandapp.NewBandApp(
-		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
-		home, disableFeelessReports, baseAppOptions...,
+		logger, db, traceStore, loadLatest, invCheckPeriod, baseAppOptions...,
 	)
 	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &App{
@@ -102,12 +98,12 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 	var genesisState bandapp.GenesisState
 	app.Codec().MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	// Auth module
-	var genaccountsState auth.GenesisState
-	auth.ModuleCdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &genaccountsState)
-	for _, account := range genaccountsState.Accounts {
+	var genaccountsState genaccounts.GenesisState
+	auth.ModuleCdc.MustUnmarshalJSON(genesisState[genaccounts.ModuleName], &genaccountsState)
+	for _, account := range genaccountsState {
 		app.Write("SET_ACCOUNT", common.JsDict{
-			"address": account.GetAddress(),
-			"balance": app.BankKeeper.GetCoins(app.DeliverContext, account.GetAddress()).String(),
+			"address": account.Address,
+			"balance": app.BankKeeper.GetCoins(app.DeliverContext, account.Address).String(),
 		})
 	}
 	// GenUtil module for create validator genesis transactions.
@@ -157,19 +153,6 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 		}
 	}
 
-	// Oracle module
-	var oracleState oracle.GenesisState
-	app.Codec().MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
-	for idx, ds := range oracleState.DataSources {
-		id := types.DataSourceID(idx + 1)
-		app.emitSetDataSource(id, ds, nil)
-		common.EmitNewDataSourceRequest(app, id)
-	}
-	for idx, os := range oracleState.OracleScripts {
-		id := types.OracleScriptID(idx + 1)
-		app.emitSetOracleScript(id, os, nil)
-		common.EmitNewOracleScriptRequest(app, id)
-	}
 	app.FlushMessages()
 	return res
 }

@@ -57,7 +57,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"operator_address":       addr.String(),
 		"delegator_address":      sdk.AccAddress(addr).String(),
 		"consensus_address":      sdk.ConsAddress(val.ConsPubKey.Address()).String(),
-		"consensus_pubkey":       sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeConsPub, val.ConsPubKey),
+		"consensus_pubkey":       sdk.MustBech32ifyConsPub(val.ConsPubKey),
 		"moniker":                val.Description.Moniker,
 		"identity":               val.Description.Identity,
 		"website":                val.Description.Website,
@@ -66,14 +66,14 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"commission_max_rate":    val.Commission.MaxRate.String(),
 		"commission_max_change":  val.Commission.MaxChangeRate.String(),
 		"min_self_delegation":    val.MinSelfDelegation.String(),
-		"tokens":                 val.Tokens.Uint64(),
+		"tokens":                 val.Tokens.BigInt().Uint64(),
 		"jailed":                 val.Jailed,
 		"delegator_shares":       val.DelegatorShares.String(),
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
 	})
-	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.Uint64(), app.DeliverContext.BlockTime().UnixNano())
+	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.BigInt().Uint64(), app.DeliverContext.BlockTime().UnixNano())
 }
 
 func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
@@ -81,22 +81,13 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	app.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address": addr.String(),
-		"tokens":           val.Tokens.Uint64(),
+		"tokens":           val.Tokens.BigInt().Uint64(),
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
 	})
-	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.Uint64(), app.DeliverContext.BlockTime().UnixNano())
+	common.EmitSetHistoricalBondedTokenOnValidator(app, addr, val.Tokens.BigInt().Uint64(), app.DeliverContext.BlockTime().UnixNano())
 
-}
-
-func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
-	status := app.OracleKeeper.GetValidatorStatus(app.DeliverContext, addr)
-	app.Write("UPDATE_VALIDATOR", common.JsDict{
-		"operator_address": addr.String(),
-		"status":           status.IsActive,
-		"status_since":     status.Since.UnixNano(),
-	})
 }
 
 func (app *App) emitDelegationAfterWithdrawReward(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {

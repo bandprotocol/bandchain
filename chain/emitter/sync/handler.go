@@ -10,8 +10,6 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/emitter/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // handleMsg handles the given message by publishing relevant events and populates accounts
@@ -19,24 +17,6 @@ import (
 func (app *App) handleMsg(txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
 	evMap := common.ParseEvents(log.Events)
 	switch msg := msg.(type) {
-	case oracle.MsgRequestData:
-		app.handleMsgRequestData(txHash, msg, evMap, extra)
-	case oracle.MsgReportData:
-		app.handleMsgReportData(txHash, msg, evMap, extra)
-	case oracle.MsgCreateDataSource:
-		app.handleMsgCreateDataSource(txHash, msg, evMap, extra)
-	case oracle.MsgCreateOracleScript:
-		app.handleMsgCreateOracleScript(txHash, msg, evMap, extra)
-	case oracle.MsgEditDataSource:
-		app.handleMsgEditDataSource(txHash, msg, evMap, extra)
-	case oracle.MsgEditOracleScript:
-		app.handleMsgEditOracleScript(txHash, msg, evMap, extra)
-	case oracle.MsgAddReporter:
-		app.handleMsgAddReporter(txHash, msg, evMap, extra)
-	case oracle.MsgRemoveReporter:
-		app.handleMsgRemoveReporter(txHash, msg, evMap, extra)
-	case oracle.MsgActivate:
-		app.handleMsgActivate(txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		app.handleMsgCreateValidator(txHash, msg, evMap, extra)
 	case staking.MsgEditValidator:
@@ -72,12 +52,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := common.ParseEvents(events)
 	switch event.Type {
-	case types.EventTypeResolve:
-		app.handleEventRequestExecute(evMap)
 	case slashing.EventTypeSlash:
 		app.handleEventSlash(evMap)
-	case types.EventTypeDeactivate:
-		app.handleEventDeactivate(evMap)
 	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
 	case EventTypeInactiveProposal:

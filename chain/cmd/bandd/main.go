@@ -6,7 +6,6 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	"github.com/cosmos/cosmos-sdk/store"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -24,15 +23,14 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	replay "github.com/bandprotocol/bandchain/chain/emitter/replay"
-	sync "github.com/bandprotocol/bandchain/chain/emitter/sync"
+	syncemitter "github.com/bandprotocol/bandchain/chain/emitter/sync"
 )
 
 const (
-	flagInvCheckPeriod        = "inv-check-period"
-	flagWithEmitter           = "with-emitter"
-	flagDisableFeelessReports = "disable-feeless-reports"
-	flagEnableFastSync        = "enable-fast-sync"
-	flagReplayMode            = "replay-mode"
+	flagInvCheckPeriod = "inv-check-period"
+	flagWithEmitter    = "with-emitter"
+	flagEnableFastSync = "enable-fast-sync"
+	flagReplayMode     = "replay-mode"
 )
 
 var (
@@ -73,11 +71,12 @@ func main() {
 
 	// prepare and add flags
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
-	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod,
+		0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
-	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
-	rootCmd.PersistentFlags().Bool(flagReplayMode, false, "[Experimental] Use emitter replay mode")
-	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
+	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "")
+	rootCmd.PersistentFlags().Bool(flagReplayMode, false, "")
+
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -85,43 +84,20 @@ func main() {
 }
 
 func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application {
-	var cache sdk.MultiStorePersistentCache
-
-	if viper.GetBool(server.FlagInterBlockCache) {
-		cache = store.NewCommitKVStoreCacheManager()
-	}
-
-	skipUpgradeHeights := make(map[int64]bool)
-	for _, h := range viper.GetIntSlice(server.FlagUnsafeSkipUpgrades) {
-		skipUpgradeHeights[int64(h)] = true
-	}
-	pruningOpts, err := server.GetPruningOptionsFromFlags()
-	if err != nil {
-		panic(err)
-	}
 	if viper.IsSet(flagWithEmitter) {
 		if viper.GetBool(flagReplayMode) {
 			return replay.NewBandAppWithEmitter(
 				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-				skipUpgradeHeights, viper.GetString(flags.FlagHome),
-				viper.GetBool(flagDisableFeelessReports),
-				baseapp.SetPruning(pruningOpts),
+				baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-				baseapp.SetInterBlockCache(cache),
 			)
 		} else {
-			return sync.NewBandAppWithEmitter(
-				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-				skipUpgradeHeights, viper.GetString(flags.FlagHome),
-				viper.GetBool(flagDisableFeelessReports),
-				viper.GetBool(flagEnableFastSync),
-				baseapp.SetPruning(pruningOpts),
+			return syncemitter.NewBandAppWithEmitter(
+				viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod, viper.GetBool(flagEnableFastSync),
+				baseapp.SetPruning(store.NewPruningOptionsFromString(viper.GetString("pruning"))),
 				baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 				baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-				baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-				baseapp.SetInterBlockCache(cache),
 			)
 		}
 	} else {
