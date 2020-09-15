@@ -168,17 +168,15 @@ func (app *App) BeginBlock(req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 		"inflation": app.MintKeeper.GetMinter(app.DeliverContext).Inflation.String(),
 		"supply":    app.SupplyKeeper.GetSupply(app.DeliverContext).GetTotal().String(),
 	})
-	/*
-		for _, val := range req.GetLastCommitInfo().Votes {
-			validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
-			app.Write("NEW_VALIDATOR_VOTE", JsDict{
-				"consensus_address": validator.GetConsAddr().String(),
-				"block_height":      req.Header.GetHeight() - 1,
-				"voted":             val.GetSignedLastBlock(),
-			})
-			app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
-		}
-	*/
+	for _, val := range req.GetLastCommitInfo().Votes {
+		validator := app.StakingKeeper.ValidatorByConsAddr(app.DeliverContext, val.GetValidator().Address)
+		app.Write("NEW_VALIDATOR_VOTE", JsDict{
+			"consensus_address": validator.GetConsAddr().String(),
+			"block_height":      req.Header.GetHeight() - 1,
+			"voted":             val.GetSignedLastBlock(),
+		})
+		app.emitUpdateValidatorRewardAndAccumulatedCommission(validator.GetOperator())
+	}
 
 	for _, event := range res.Events {
 		app.handleBeginBlockEndBlockEvent(event)
