@@ -3,14 +3,14 @@ from distutils.core import setup
 setup(
     name="pyband",
     packages=["pyband"],
-    version="0.0.4",
+    version="0.0.6",
     license="MIT",
     description="Python library for BandChain",
     author="Band Protocol",
     author_email="dev@bandprotocol.com",
     url="https://github.com/bandprotocol/bandchain",
     keywords=["BAND", "BLOCKCHAIN", "ORACLE"],
-    install_requires=["requests", "dacite"],
+    install_requires=["requests", "dacite", "bech32", "bip32", "ecdsa", "mnemonic"],
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Developers",
