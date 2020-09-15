@@ -60,8 +60,8 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                 handler = Handler(conn)
                 key = msg.key.decode()
                 value = json.loads(msg.value)
-                print("->", int(value["height"]), start_flusher)
                 if key == "COMMIT":
+                    print("->", int(value["height"]), start_flusher)
                     if int(value["height"]) == start_height:
                         start_flusher = True
                     if value["height"] % commit_interval == 0:
