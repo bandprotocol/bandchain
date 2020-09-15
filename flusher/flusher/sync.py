@@ -51,6 +51,7 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
         time.sleep(5)
     consumer.seek(tp, tracking_info.kafka_offset + 1)
     consumer_iter = iter(consumer)
+    updated = False
     # Main loop
     while True:
         with engine.begin() as conn:
@@ -68,5 +69,12 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                         )
                         break
                     continue
-                getattr(handler, "handle_" + key.lower())(value)
-
+                if key == "NEW_BLOCK":
+                    try:
+                        getattr(handler, "handle_" + key.lower())(value)
+                        updated = False
+                    except:
+                        updated = True
+                else:
+                    if not updated:
+                        getattr(handler, "handle_" + key.lower())(value)
