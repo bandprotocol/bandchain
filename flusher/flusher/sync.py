@@ -69,12 +69,4 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
                         )
                         break
                     continue
-                if key == "NEW_BLOCK":
-                    try:
-                        getattr(handler, "handle_" + key.lower())(value)
-                        updated = False
-                    except:
-                        updated = True
-                else:
-                    if not updated:
-                        getattr(handler, "handle_" + key.lower())(value)
+                getattr(handler, "handle_" + key.lower())(value)
