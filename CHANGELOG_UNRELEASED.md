@@ -28,4 +28,6 @@
 
 ### Helpers
 
+- (bugs) [\#2643](https://github.com/bandprotocol/bandchain/pull/2643) update reports and result type can be null
+
 ### MISC

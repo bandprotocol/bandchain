@@ -86,8 +86,8 @@ class Result(object):
 @dataclass
 class RequestInfo(object):
     request: Request
-    reports: List[Report]
-    result: Result
+    reports: Optional[List[Report]]
+    result: Optional[Result]
 
 
 @dataclass
