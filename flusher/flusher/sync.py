@@ -36,7 +36,7 @@ def sync(commit_interval, db, servers, echo_sqlalchemy):
     # Set up Kafka connection
     engine = create_engine("postgresql+psycopg2://" + db, echo=echo_sqlalchemy)
     tracking_info = engine.execute(tracking.select()).fetchone()
-    topic = tracking_info.replay_topic
+    topic = tracking_info.topic
     consumer = KafkaConsumer(topic, bootstrap_servers=servers)
     partitions = consumer.partitions_for_topic(topic)
     if len(partitions) != 1:

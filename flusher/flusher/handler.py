@@ -116,6 +116,9 @@ class Handler(object):
         self.conn.execute(requests.insert(), msg)
 
     def handle_update_request(self, msg):
+        if "tx_hash" in msg:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+            del msg["tx_hash"]
         condition = True
         for col in requests.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
@@ -137,13 +140,27 @@ class Handler(object):
         self.conn.execute(val_requests.insert(), msg)
 
     def handle_new_report(self, msg):
-        msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        if msg["tx_hash"] is not None:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         msg["validator_id"] = self.get_validator_id(msg["validator"])
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
         self.conn.execute(reports.insert(), msg)
+
+    def handle_update_report(self, msg):
+        if msg["tx_hash"] is not None:
+            msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
+        del msg["tx_hash"]
+        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        del msg["validator"]
+        msg["reporter_id"] = self.get_account_id(msg["reporter"])
+        del msg["reporter"]
+        condition = True
+        for col in reports.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(reports.update().where(condition).values(**msg))
 
     def handle_new_raw_report(self, msg):
         msg["validator_id"] = self.get_validator_id(msg["validator"])
@@ -209,6 +226,13 @@ class Handler(object):
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
+    def handle_remove_unbonding(self, msg):
+        self.conn.execute(
+            unbonding_delegations.delete().where(
+                unbonding_delegations.c.completion_time <= msg["timestamp"]
+            )
+        )
+
     def handle_new_redelegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
@@ -217,6 +241,11 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_remove_redelegation(self, msg):
+        self.conn.execute(
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
+        )
 
     def handle_new_proposal(self, msg):
         msg["proposer_id"] = self.get_account_id(msg["proposer"])

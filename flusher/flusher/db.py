@@ -167,12 +167,12 @@ requests = sa.Table(
     "requests",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
     Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id")),
     Column("calldata", CustomBase64),
     Column("ask_count", sa.Integer),
     Column("min_count", sa.Integer),
-    Column("sender", sa.String),
+    Column("sender", sa.String, nullable=True),
     Column("client_id", sa.String),
     Column("request_time", sa.Integer, nullable=True),
     Column("resolve_status", CustomResolveStatus),
@@ -201,9 +201,9 @@ reports = sa.Table(
     "reports",
     metadata,
     Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
-    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id")),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
-    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id")),
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), nullable=True),
 )
 
 raw_reports = sa.Table(
