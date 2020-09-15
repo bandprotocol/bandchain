@@ -9,7 +9,8 @@ import (
 )
 
 var (
-	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
+	EventTypeCompleteUnbonding    = types.EventTypeCompleteUnbonding
+	EventTypeCompleteRedelegation = types.EventTypeCompleteRedelegation
 )
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
@@ -35,6 +36,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
+		"last_update":            app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -47,6 +49,7 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
+		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -145,5 +148,10 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	app.Write("REMOVE_UNBONDING", JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 	app.AddAccountsInBlock(acc)
+}
+
+func (app *App) handEventTypeCompleteRedelegation(evMap EvMap) {
+	app.Write("REMOVE_REDELEGATION", JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 }
