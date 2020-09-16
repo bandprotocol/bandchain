@@ -194,7 +194,11 @@ class Handler(object):
         self.conn.execute(delegations.delete().where(condition))
 
     def handle_new_validator_vote(self, msg):
-        self.conn.execute(insert(validator_votes).values(**msg))
+        self.conn.execute(
+            insert(validator_votes)
+            .values(**msg)
+            .on_conflict_do_update(constraint="validator_votes_pkey", set_=msg)
+        )
 
     def handle_new_unbonding_delegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
