@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2646](https://github.com/bandprotocol/bandchain/pull/2646) Modify max block gas and bytes on migrate command
+
 ### Yoda
 
 ### Emitter & Flusher
