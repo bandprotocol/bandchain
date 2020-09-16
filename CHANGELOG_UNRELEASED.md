@@ -18,6 +18,8 @@
 
 ### Scan
 
+- (impv) [\#2644](https://github.com/bandprotocol/bandchain/pull/2644) Added `netlify.toml` configuration
+
 ### Bridges
 
 ### Runtime
