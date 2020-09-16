@@ -122,7 +122,7 @@ module LoginMethod = {
 
 [@react.component]
 let make = (~chainID) => {
-  let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
+  let (loginMethod, setLoginMethod) = React.useState(_ => LedgerWithCosmos);
   <div className=Styles.container>
     <div className=Styles.bg />
     <div className=Styles.innerContainer>
@@ -150,7 +150,7 @@ let make = (~chainID) => {
               weight=Text.Medium
               color=Colors.gray7
             />
-            {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
+            {[|LedgerWithCosmos, LedgerWithBandChain|]
              ->Belt_Array.map(method =>
                  <React.Fragment key={method |> toLoginMethodString}>
                    <VSpacing size=Spacing.lg />
@@ -167,7 +167,7 @@ let make = (~chainID) => {
         <Col> <div className=Styles.seperatedLongLine /> </Col>
         <Col size=1.>
           {switch (loginMethod) {
-           | Mnemonic => <ConnectWithMnemonic chainID />
+           //  | Mnemonic => <ConnectWithMnemonic chainID />
            | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
            | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
            }}
