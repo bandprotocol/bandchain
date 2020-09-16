@@ -63,7 +63,7 @@ module ValidatorReport = {
               }
               reportDetails: raw_reports @bsRecord {
                 externalID: external_id @bsDecoder (fn:"GraphQLParser.string")
-                exitCode: exit_code  @bsDecoder (fn:"GraphQLParser.string")
+                exitCode: exit_code @bsDecoder (fn:"string_of_int")
                 data @bsDecoder (fn: "GraphQLParser.buffer")
                 rawRequest: raw_request @bsRecord {
                   calldata @bsDecoder(fn: "GraphQLParser.buffer")

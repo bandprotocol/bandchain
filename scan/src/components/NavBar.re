@@ -2,6 +2,8 @@ module RenderDesktop = {
   module Styles = {
     open Css;
 
+    let container = style([selector("div + div", [marginLeft(`px(20))])]);
+
     let nav = isActive =>
       style([
         padding2(~v=`px(16), ~h=`zero),
@@ -19,7 +21,7 @@ module RenderDesktop = {
   let make = (~routes) => {
     let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
 
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+    <div className={Css.merge([Styles.container, CssHelper.flexBox()])}>
       {routes
        ->Belt.List.map(((v, route)) =>
            <div key=v className={CssHelper.flexBox(~justify=`spaceBetween, ())}>

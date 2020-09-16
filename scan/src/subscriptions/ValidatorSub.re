@@ -237,17 +237,17 @@ module SingleLast100VotedConfig = [%graphql
 |}
 ];
 
-module HistoricalOracleStatusesConfig = [%graphql
-  {|
-  subscription HistoricalOracleStatuses($operatorAddress: String!, $greater: timestamp) {
-    historical_oracle_statuses(where: {operator_address: {_eq: $operatorAddress}, timestamp: {_gte: $greater}}) {
-      operator_address
-      status
-      timestamp
-    }
-  }
-|}
-];
+// module HistoricalOracleStatusesConfig = [%graphql
+//   {|
+//   subscription HistoricalOracleStatuses($operatorAddress: String!, $greater: timestamp) {
+//     historical_oracle_statuses(where: {operator_address: {_eq: $operatorAddress}, timestamp: {_gte: $greater}}) {
+//       operator_address
+//       status
+//       timestamp
+//     }
+//   }
+// |}
+// ];
 
 let get = operator_address => {
   let (result, _) =
@@ -388,37 +388,38 @@ let getBlockUptimeByValidator = consensusAddress => {
 };
 
 let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
-  let (result, _) =
-    ApolloHooks.useSubscription(
-      HistoricalOracleStatusesConfig.definition,
-      ~variables=
-        HistoricalOracleStatusesConfig.makeVariables(
-          ~operatorAddress=operatorAddress |> Address.toOperatorBech32,
-          ~greater=greater |> MomentRe.Moment.format(Config.timestampUseFormat) |> Js.Json.string,
-          (),
-        ),
-    );
-  let%Sub x = result;
-
-  let startDate = greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix;
-
-  let oracleStatusReports =
-    x##historical_oracle_statuses->Belt.Array.size > 0
-      ? x##historical_oracle_statuses
-        ->Belt.Array.map(each =>
-            {
-              HistoryOracleParser.status: each##status,
-              timestamp: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
-            }
-          )
-        ->Belt.List.fromArray
-      : [{timestamp: startDate, status: oracleStatus}];
-
-  let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
-
+  // let (result, _) =
+  //   ApolloHooks.useSubscription(
+  //     HistoricalOracleStatusesConfig.definition,
+  //     ~variables=
+  //       HistoricalOracleStatusesConfig.makeVariables(
+  //         ~operatorAddress=operatorAddress |> Address.toOperatorBech32,
+  //         ~greater=greater |> MomentRe.Moment.format(Config.timestampUseFormat) |> Js.Json.string,
+  //         (),
+  //       ),
+  //   );
+  // let%Sub x = result;
+  // let startDate = greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix;
+  // let oracleStatusReports =
+  //   x##historical_oracle_statuses->Belt.Array.size > 0
+  //     ? x##historical_oracle_statuses
+  //       ->Belt.Array.map(each =>
+  //           {
+  //             HistoryOracleParser.status: each##status,
+  //             timestamp: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
+  //           }
+  //         )
+  //       ->Belt.List.fromArray
+  //     : [{timestamp: startDate, status: oracleStatus}];
+  // let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
+  // Sub.resolve({
+  //   oracleStatusReports: parsedReports,
+  //   uptimeCount: parsedReports->Belt.Array.keep(({status}) => status)->Belt.Array.size,
+  //   downtimeCount: parsedReports->Belt.Array.keep(({status}) => !status)->Belt.Array.size,
+  // });
   Sub.resolve({
-    oracleStatusReports: parsedReports,
-    uptimeCount: parsedReports->Belt.Array.keep(({status}) => status)->Belt.Array.size,
-    downtimeCount: parsedReports->Belt.Array.keep(({status}) => !status)->Belt.Array.size,
+    oracleStatusReports: [||],
+    uptimeCount: 0,
+    downtimeCount: 0,
   });
 };

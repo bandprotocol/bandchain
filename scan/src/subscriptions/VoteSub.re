@@ -131,7 +131,7 @@ module ValidatorVoteByProposalIDConfig = [%graphql
       validator_vote_proposals_view(where: {proposal_id: {_eq: $proposal_id}}) @bsRecord {
         validatorID: id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -144,7 +144,7 @@ module DelegatorVoteByProposalIDConfig = [%graphql
       non_validator_vote_proposals_view(where: {proposal_id: {_eq: $proposal_id}}) @bsRecord {
         validatorID: validator_id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -157,7 +157,7 @@ module ValidatorVotesConfig = [%graphql
       validator_vote_proposals_view @bsRecord {
         validatorID: id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -170,7 +170,7 @@ module DelegatorVotesConfig = [%graphql
       non_validator_vote_proposals_view @bsRecord {
         validatorID: validator_id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }

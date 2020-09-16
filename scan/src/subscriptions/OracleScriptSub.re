@@ -19,9 +19,6 @@ type internal_t = {
   schema: string,
   sourceCodeURL: string,
   transaction: option(transaction_t),
-  relatedDataSources: array(related_data_sources),
-  requestStat: option(request_stat_t),
-  responsesLast1Day: array(response_last_1_day_t),
 };
 
 type t = {
@@ -37,21 +34,7 @@ type t = {
   responseTime: option(float),
 };
 
-let toExternal =
-    (
-      {
-        id,
-        owner,
-        name,
-        description,
-        schema,
-        sourceCodeURL,
-        transaction: txOpt,
-        relatedDataSources,
-        requestStat: requestStatOpt,
-        responsesLast1Day,
-      },
-    ) => {
+let toExternal = ({id, owner, name, description, schema, sourceCodeURL, transaction: txOpt}) => {
   id,
   owner,
   name,
@@ -62,18 +45,16 @@ let toExternal =
     let%Opt tx = txOpt;
     Some(tx.block.timestamp);
   },
-  relatedDataSources:
-    relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
+  relatedDataSources: [],
   // Note: requestCount can't be nullable value.
-  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
-  responseTime:
-    responsesLast1Day->Belt.Array.map(({responseTime}) => responseTime)->Belt.Array.get(0),
+  requestCount: 0,
+  responseTime: None,
 };
 
 module MultiConfig = [%graphql
   {|
   subscription OracleScripts($limit: Int!, $offset: Int!, $searchTerm: String!) {
-    oracle_scripts(limit: $limit, offset: $offset,where: {name: {_ilike: $searchTerm}}, order_by: {request_stat: {count: desc}, transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
+    oracle_scripts(limit: $limit, offset: $offset,where: {name: {_ilike: $searchTerm}}, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.OracleScript.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
@@ -84,19 +65,6 @@ module MultiConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
-      }
-      relatedDataSources: related_data_source_oracle_scripts @bsRecord {
-        dataSource: data_source @bsRecord {
-          dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
-          dataSourceName: name
-        }
-      }
-      requestStat: request_stat @bsRecord {
-        count
-      }
-      responsesLast1Day: response_last_1_day(where: {resolve_status: {_eq: "Success"}}) @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   }
@@ -117,19 +85,6 @@ module SingleConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
-      }
-      relatedDataSources: related_data_source_oracle_scripts @bsRecord {
-        dataSource: data_source @bsRecord {
-          dataSourceID: id  @bsDecoder(fn: "ID.DataSource.fromInt")
-          dataSourceName: name
-        }
-      }
-      requestStat: request_stat @bsRecord {
-        count
-      }
-      responsesLast1Day: response_last_1_day @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   },

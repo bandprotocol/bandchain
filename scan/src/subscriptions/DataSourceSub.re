@@ -8,7 +8,6 @@ type internal_t = {
   description: string,
   executable: JsBuffer.t,
   transaction: option(transaction_t),
-  requestStat: option(request_stat_t),
 };
 
 type t = {
@@ -21,8 +20,7 @@ type t = {
   requestCount: int,
 };
 
-let toExternal =
-    ({id, owner, name, description, executable, transaction: txOpt, requestStat: requestStatOpt}) => {
+let toExternal = ({id, owner, name, description, executable, transaction: txOpt}) => {
   id,
   owner,
   name,
@@ -33,7 +31,7 @@ let toExternal =
     Some(tx.block.timestamp);
   },
   // Note: requestCount can't be nullable value.
-  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
+  requestCount: 0,
 };
 
 module MultiConfig = [%graphql
@@ -49,9 +47,6 @@ module MultiConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
-      }
-      requestStat: request_stat @bsRecord {
-        count
       }
     }
   }
@@ -71,9 +66,6 @@ module SingleConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
-      }
-      requestStat: request_stat @bsRecord {
-        count
       }
     }
   },

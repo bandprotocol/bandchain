@@ -441,7 +441,7 @@ module SingleRequestConfig = [%graphql
           }
           reportDetails: raw_reports(order_by: {external_id: asc}) @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
-            exitCode: exit_code @bsDecoder (fn: "GraphQLParser.string")
+            exitCode: exit_code @bsDecoder (fn:"string_of_int")
             data @bsDecoder(fn: "GraphQLParser.buffer")
           }
           reportValidator: validator @bsRecord {
@@ -509,7 +509,7 @@ module MultiRequestConfig = [%graphql
           }
           reportDetails: raw_reports(order_by: {external_id: asc}) @bsRecord {
             externalID: external_id @bsDecoder (fn: "GraphQLParser.string")
-            exitCode: exit_code @bsDecoder (fn: "GraphQLParser.string")
+            exitCode: exit_code @bsDecoder (fn:"string_of_int")
             data @bsDecoder(fn: "GraphQLParser.buffer")
           }
           reportValidator: validator @bsRecord {

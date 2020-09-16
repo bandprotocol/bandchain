@@ -43,98 +43,100 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.One>
-        {switch (validatorSub) {
-         | Data(_) => <Text value={rank |> string_of_int} color=Colors.gray7 block=true />
-         | _ => <LoadingCensorBar width=20 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        {switch (validatorSub) {
-         | Data({operatorAddress, moniker, identity}) =>
-           <ValidatorMonikerLink
-             validatorAddress=operatorAddress
-             moniker
-             identity
-             width={`px(180)}
-           />
-         | _ => <LoadingCensorBar width=150 height=15 />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        {switch (validatorSub) {
-         | Data({tokens}) =>
-           <div>
+
+      <Row.Grid alignItems=Row.Center>
+        <Col.Grid col=Col.One>
+          {switch (validatorSub) {
+           | Data(_) => <Text value={rank |> string_of_int} color=Colors.gray7 block=true />
+           | _ => <LoadingCensorBar width=20 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Three>
+          {switch (validatorSub) {
+           | Data({operatorAddress, moniker, identity}) =>
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`px(180)}
+             />
+           | _ => <LoadingCensorBar width=150 height=15 />
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Two>
+          {switch (validatorSub) {
+           | Data({tokens}) =>
+             <div>
+               <Text
+                 value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
+                 color=Colors.gray7
+                 block=true
+                 align=Text.Right
+               />
+               <VSpacing size=Spacing.sm />
+               <Text
+                 value={"(" ++ (votingPower |> Format.fPercent(~digits=2)) ++ ")"}
+                 color=Colors.gray6
+                 block=true
+                 align=Text.Right
+               />
+             </div>
+           | _ =>
+             <>
+               <LoadingCensorBar width=100 height=15 isRight=true />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=40 height=15 isRight=true />
+             </>
+           }}
+        </Col.Grid>
+        <Col.Grid col=Col.Two>
+          {switch (validatorSub) {
+           | Data({commission}) =>
              <Text
-               value={tokens |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=0)}
+               value={commission |> Format.fPercent(~digits=2)}
                color=Colors.gray7
                block=true
                align=Text.Right
              />
-             <VSpacing size=Spacing.sm />
-             <Text
-               value={"(" ++ (votingPower |> Format.fPercent(~digits=2)) ++ ")"}
-               color=Colors.gray6
-               block=true
-               align=Text.Right
-             />
-           </div>
-         | _ =>
-           <>
-             <LoadingCensorBar width=100 height=15 isRight=true />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=40 height=15 isRight=true />
-           </>
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        {switch (validatorSub) {
-         | Data({commission}) =>
-           <Text
-             value={commission |> Format.fPercent(~digits=2)}
-             color=Colors.gray7
-             block=true
-             align=Text.Right
-           />
-         | _ => <LoadingCensorBar width=70 height=15 isRight=true />
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
-        {switch (validatorSub) {
-         | Data({uptime}) =>
-           switch (uptime) {
-           | Some(uptime') =>
-             <>
-               <Text
-                 value={uptime' |> Format.fPercent(~digits=2)}
-                 color=Colors.gray7
-                 block=true
-               />
-               <VSpacing size=Spacing.sm />
-               <ProgressBar.Uptime percent=uptime' />
-             </>
-           | None => <Text value="N/A" color=Colors.gray7 block=true />
-           }
-         | _ =>
-           <>
-             <LoadingCensorBar width=50 height=15 />
-             <VSpacing size=Spacing.sm />
-             <LoadingCensorBar width=130 height=15 />
-           </>
-         }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        <div className=Styles.oracleStatus>
-          {switch (validatorSub) {
-           | Data({oracleStatus}) =>
-             <img src={oracleStatus ? Images.success : Images.fail} className=Styles.logo />
-           | _ => <LoadingCensorBar width=20 height=20 radius=50 />
+           | _ => <LoadingCensorBar width=70 height=15 isRight=true />
            }}
-        </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+        </Col.Grid>
+        <Col.Grid col=Col.One> <HSpacing size=Spacing.sm /> </Col.Grid>
+        <Col.Grid col=Col.Three>
+          {switch (validatorSub) {
+           | Data({uptime}) =>
+             switch (uptime) {
+             | Some(uptime') =>
+               <>
+                 <Text
+                   value={uptime' |> Format.fPercent(~digits=2)}
+                   color=Colors.gray7
+                   block=true
+                 />
+                 <VSpacing size=Spacing.sm />
+                 <ProgressBar.Uptime percent=uptime' />
+               </>
+             | None => <Text value="N/A" color=Colors.gray7 block=true />
+             }
+           | _ =>
+             <>
+               <LoadingCensorBar width=50 height=15 />
+               <VSpacing size=Spacing.sm />
+               <LoadingCensorBar width=130 height=15 />
+             </>
+           }}
+        </Col.Grid>
+      </Row.Grid>
+    </TBody.Grid>;
+    // <Col.Grid col=Col.Two>
+    //   <div className=Styles.oracleStatus>
+    //     {switch (validatorSub) {
+    //      | Data({oracleStatus}) =>
+    //        <img src={oracleStatus ? Images.success : Images.fail} className=Styles.logo />
+    //      | _ => <LoadingCensorBar width=20 height=20 radius=50 />
+    //      }}
+    //   </div>
+    // </Col.Grid>
 };
 
 let renderBodyMobile =
@@ -330,7 +332,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
              <Col.Grid col=Col.One>
                <Text block=true value="Rank" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
-             <Col.Grid col=Col.Two>
+             <Col.Grid col=Col.Three>
                <SortableTHead
                  title="Validator"
                  asc=NameAsc
@@ -360,6 +362,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  tooltipItem="Validator service fees charged to delegators"
                />
              </Col.Grid>
+             <Col.Grid col=Col.One> <HSpacing size=Spacing.sm /> </Col.Grid>
              <Col.Grid col=Col.Three>
                <SortableTHead
                  title="Uptime (%)"
@@ -371,18 +374,19 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  tooltipItem="Percentage of the blocks that the validator is active for out of the last 250"
                />
              </Col.Grid>
-             <Col.Grid col=Col.Two>
-               <Text
-                 block=true
-                 color=Colors.gray7
-                 weight=Text.Semibold
-                 value="Oracle Status"
-                 align=Text.Center
-                 tooltipItem={"The validator's Oracle status" |> React.string}
-               />
-             </Col.Grid>
            </Row.Grid>
-         </THead.Grid>}
+         </THead.Grid>
+       //  <Col.Grid col=Col.Two>
+       //    <Text
+       //      block=true
+       //      color=Colors.gray7
+       //      weight=Text.Semibold
+       //      value="Oracle Status"
+       //      align=Text.Center
+       //      tooltipItem={"The validator's Oracle status" |> React.string}
+       //    />
+       //  </Col.Grid>
+}
     {switch (allSub) {
      | ApolloHooks.Subscription.Data((
          (_, _, bondedTokenCount: Coin.t, _, _),
