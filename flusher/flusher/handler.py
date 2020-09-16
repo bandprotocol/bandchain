@@ -255,3 +255,25 @@ class Handler(object):
                 constraint="historical_bonded_token_on_validators_pkey", set_=msg
             )
         )
+
+    def handle_remove_delegation(self, msg):
+        msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
+        del msg["delegator_address"]
+        msg["validator_id"] = self.get_validator_id(msg["operator_address"])
+        del msg["operator_address"]
+        condition = True
+        for col in delegations.primary_key.columns.values():
+            condition = (col == msg[col.name]) & condition
+        self.conn.execute(delegations.delete().where(condition))
+
+    def handle_remove_unbonding(self, msg):
+        self.conn.execute(
+            unbonding_delegations.delete().where(
+                unbonding_delegations.c.completion_time <= msg["timestamp"]
+            )
+        )
+
+    def handle_remove_redelegation(self, msg):
+        self.conn.execute(
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
+        )
