@@ -88,7 +88,7 @@ let getLink =
   | WenchangTestnet => "https://wenchang-testnet3.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
-  | GuanYuTestnet => "https://guanyu-testnet2.cosmoscan.io/"
+  | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
   | Unknown => "";
 
@@ -126,7 +126,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|WenchangTestnet, WenchangMainnet, GuanYuPOA|]
+        {[|WenchangMainnet, GuanYuPOA, GuanYuTestnet|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
