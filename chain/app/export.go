@@ -60,6 +60,10 @@ func (app *BandApp) prepForZeroHeightGenesis(ctx sdk.Context, jailWhiteList []st
 
 	// withdraw all validator commission
 	app.StakingKeeper.IterateValidators(ctx, func(_ int64, val staking.ValidatorI) (stop bool) {
+		accumCommission := app.DistrKeeper.GetValidatorAccumulatedCommission(ctx, val.GetOperator())
+		if accumCommission.IsZero() {
+			return false
+		}
 		_, err := app.DistrKeeper.WithdrawValidatorCommission(ctx, val.GetOperator())
 		if err != nil {
 			log.Fatal(err)
