@@ -28,6 +28,8 @@
 
 ### Owasm
 
+- (chore) [\#2647](https://github.com/bandprotocol/bandchain/pull/2647) Fixed error typo
+
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
