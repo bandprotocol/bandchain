@@ -85,7 +85,7 @@ let parseChainID =
 
 let getLink =
   fun
-  | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
+  | WenchangTestnet => "https://wenchang-testnet3.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet2.cosmoscan.io/"
