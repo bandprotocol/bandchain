@@ -8,6 +8,12 @@
 
 # Changelog
 
+## [v1.2.6](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.6)
+
+### Chain (Non-consensus)
+
+- (bugs) [\#2649](https://github.com/bandprotocol/bandchain/pull/2649) Add commission check before withdraw when export
+
 ## [v1.2.5](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.5)
 
 ### Chain (Non-consensus)

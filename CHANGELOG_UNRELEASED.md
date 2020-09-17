@@ -12,8 +12,6 @@
 
 ### Chain (Non-consensus)
 
-- (bugs) [\#2649](https://github.com/bandprotocol/bandchain/pull/2649) Add commission check before withdraw when export
-
 ### Yoda
 
 ### Emitter & Flusher
