@@ -126,7 +126,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|WenchangTestnet, WenchangMainnet, GuanYuDevnet, GuanYuTestnet, GuanYuPOA|]
+        {[|WenchangTestnet, WenchangMainnet, GuanYuPOA|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
