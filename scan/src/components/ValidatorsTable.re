@@ -150,8 +150,8 @@ let renderBodyMobile =
         ("Voting\nPower", VotingPower(tokens, votingPower)),
         ("Commission", Float(commission, Some(2))),
         ("Uptime (%)", Uptime(uptime)),
-        ("Oracle Status", Status(oracleStatus)),
       ]
+      // ("Oracle Status", Status(oracleStatus)),
       key={rank |> string_of_int}
       idx={rank |> string_of_int}
     />
@@ -163,8 +163,8 @@ let renderBodyMobile =
         ("Voting\nPower", Loading(166)),
         ("Commission", Loading(136)),
         ("Uptime (%)", Loading(200)),
-        ("Oracle Status", Loading(20)),
       ]
+      // ("Oracle Status", Loading(20)),
       key={rank |> string_of_int}
       idx={rank |> string_of_int}
     />

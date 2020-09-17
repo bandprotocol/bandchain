@@ -111,8 +111,8 @@ module MobileRender = {
   let make = () => {
     <header className=Styles.header>
       <Row.Grid>
-        <Col.Grid colSm=Col.Six>
-          <div className={CssHelper.flexBox()}>
+        <Col.Grid colSm=Col.Five>
+          <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
             <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
             <HSpacing size=Spacing.sm />
             <LinkToHome>
@@ -137,7 +137,7 @@ module MobileRender = {
             </LinkToHome>
           </div>
         </Col.Grid>
-        <Col.Grid colSm=Col.Six>
+        <Col.Grid colSm=Col.Seven>
           <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
             <ChainIDBadge />
             <NavBar />
