@@ -110,7 +110,7 @@ func VerifyRequest(
 		}
 	}
 	if !isReporter {
-		return nil, 0, fmt.Errorf("Invalid reporter")
+		return nil, 0, fmt.Errorf("%s is not an authorized report of %s", reporter, validator)
 	}
 
 	request, height, err := queryRequest(route, cliCtx, fmt.Sprintf("%d", requestID))
@@ -127,7 +127,7 @@ func VerifyRequest(
 		}
 	}
 	if !assigned {
-		return nil, 0, fmt.Errorf("Validator has not been assigned in this request")
+		return nil, 0, fmt.Errorf("%s is not assigned for request ID %d", validator, requestID)
 	}
 
 	// Verify this request need this external id
@@ -139,7 +139,7 @@ func VerifyRequest(
 		}
 	}
 	if dataSourceID == types.DataSourceID(0) {
-		return nil, 0, fmt.Errorf("External id has not been required in this request")
+		return nil, 0, fmt.Errorf("Invalid external ID %d for request ID %d", externalID, requestID)
 	}
 
 	// Verify validator hasn't reported on the request.
@@ -152,7 +152,9 @@ func VerifyRequest(
 	}
 
 	if reported {
-		return nil, 0, fmt.Errorf("Validator has reported on this request")
+		return nil, 0, fmt.Errorf(
+			"Validator %s already submitted data report for this request", validator,
+		)
 	}
 
 	// Verify request has not been expired
@@ -162,7 +164,7 @@ func VerifyRequest(
 	}
 
 	if request.Request.RequestHeight+int64(params.ExpirationBlockCount) < height {
-		return nil, 0, fmt.Errorf("Request has been expired")
+		return nil, 0, fmt.Errorf("Request #%d is already expired", requestID)
 	}
 	bz, err := types.QueryOK(VerificationResult{
 		ChainID:      chainID,
