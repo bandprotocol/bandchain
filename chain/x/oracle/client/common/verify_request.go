@@ -71,9 +71,9 @@ func (msg VerificationMessage) GetSignBytes() []byte {
 type VerificationResult struct {
 	ChainID      string             `json:"chain_id"`
 	Validator    sdk.ValAddress     `json:"validator"`
-	RequestID    types.RequestID    `json:"request_id"`
-	ExternalID   types.ExternalID   `json:"external_id"`
-	DataSourceID types.DataSourceID `json:"data_source_id"`
+	RequestID    types.RequestID    `json:"request_id,string"`
+	ExternalID   types.ExternalID   `json:"external_id,string"`
+	DataSourceID types.DataSourceID `json:"data_source_id,string"`
 }
 
 func VerifyRequest(

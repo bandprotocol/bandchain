@@ -178,8 +178,8 @@ func getActiveValidatorsHandler(cliCtx context.CLIContext, route string) http.Ha
 type requestDetail struct {
 	ChainID    string           `json:"chain_id"`
 	Validator  sdk.ValAddress   `json:"validator"`
-	RequestID  types.RequestID  `json:"request_id"`
-	ExternalID types.ExternalID `json:"external_id"`
+	RequestID  types.RequestID  `json:"request_id,string"`
+	ExternalID types.ExternalID `json:"external_id,string"`
 	Reporter   string           `json:"reporter"`
 	Signature  []byte           `json:"signature"`
 }
