@@ -108,13 +108,13 @@ module Uptime = {
 
 module Deposit = {
   [@react.component]
-  let make = (~depositAmount) => {
+  let make = (~totalDeposit) => {
     // TODO: remove hard-coded later.
     let minDeposit = 1000.;
-    let depositAmount_ = depositAmount |> Coin.getBandAmountFromCoin;
-    let percent = depositAmount_ /. minDeposit *. 100.;
+    let totalDeposit_ = totalDeposit |> Coin.getBandAmountFromCoins;
+    let percent = totalDeposit_ /. minDeposit *. 100.;
     let formatedMinDeposit = minDeposit |> Format.fPretty(~digits=0);
-    let formatedDepositAmount = depositAmount_ |> Format.fPretty(~digits=0);
+    let formatedTotalDeposit = totalDeposit_ |> Format.fPretty(~digits=0);
 
     <div>
       <div
@@ -124,7 +124,7 @@ module Deposit = {
         ])}>
         <Text value={j|Min Deposit $formatedMinDeposit BAND|j} color=Colors.gray7 size=Text.Lg />
         <Text
-          value={j|$formatedDepositAmount / $formatedMinDeposit|j}
+          value={j|$formatedTotalDeposit / $formatedMinDeposit|j}
           color=Colors.gray7
           size=Text.Lg
         />
@@ -145,19 +145,15 @@ module Voting = {
           CssHelper.flexBox(~justify=`spaceBetween, ()),
           CssHelper.mb(~size=8, ()),
         ])}>
-        <Heading value=label size=Heading.H4 />
+        <Heading value={VoteSub.toString(label, ~withSpace=true)} size=Heading.H4 />
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
-          <Text
-            value={percent |> float_of_int |> Format.fPercent(~digits=2)}
-            size=Text.Lg
-            block=true
-          />
+          <Text value={percent |> Format.fPercent(~digits=2)} size=Text.Lg block=true />
           {Media.isMobile()
              ? React.null
              : <>
                  <HSpacing size=Spacing.sm />
                  <Text
-                   value={"(" ++ (amount |> Format.iPretty) ++ " BAND)"}
+                   value={"(" ++ (amount |> Format.fPretty(~digits=2)) ++ " BAND)"}
                    size=Text.Lg
                    block=true
                    color=Colors.gray6
@@ -166,7 +162,7 @@ module Voting = {
         </div>
       </div>
       <div className=Styles.progressOuter>
-        <div className={Styles.progressInner(percent |> float_of_int, true)} />
+        <div className={Styles.progressInner(percent, true)} />
       </div>
     </div>;
   };

@@ -96,7 +96,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
                          idx={externalID ++ exitCode}
                          styles=Styles.mobileCard
                        />
-                     : <Row.Grid alignItems=Row.Center marginBottom=16 key=externalID>
+                     : <Row.Grid alignItems=Row.Start marginBottom=16 key=externalID>
                          <Col.Grid col=Col.Three>
                            <Text value=externalID weight=Text.Medium />
                          </Col.Grid>
@@ -104,7 +104,11 @@ let make = (~reports: array(RequestSub.report_t)) => {
                            <Text value=exitCode weight=Text.Medium />
                          </Col.Grid>
                          <Col.Grid col=Col.Six>
-                           <Text value={data |> JsBuffer.toUTF8} weight=Text.Medium />
+                           <Text
+                             value={data |> JsBuffer.toUTF8}
+                             weight=Text.Medium
+                             breakAll=true
+                           />
                          </Col.Grid>
                        </Row.Grid>
                  })

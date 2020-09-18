@@ -33,7 +33,7 @@ type internal_t = {
   votingEndTime: MomentRe.Moment.t,
   account: account_t,
   proposalType: string,
-  deposits: array(deposit_t),
+  totalDeposit: list(Coin.t),
 };
 
 type t = {
@@ -46,9 +46,8 @@ type t = {
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
   proposerAddress: Address.t,
-  turnout: float,
   proposalType: string,
-  depositAmount: Coin.t,
+  totalDeposit: list(Coin.t),
 };
 
 let toExternal =
@@ -64,7 +63,7 @@ let toExternal =
         votingEndTime,
         account,
         proposalType,
-        deposits,
+        totalDeposit,
       },
     ) => {
   id,
@@ -77,15 +76,7 @@ let toExternal =
   votingEndTime,
   proposerAddress: account.address,
   proposalType,
-  depositAmount: {
-    let totalDepositAmount =
-      deposits->Belt.Array.reduce(0., (acc, {amount}) =>
-        acc +. amount->Coin.getUBandAmountFromCoins
-      );
-    Coin.newUBANDFromAmount(totalDepositAmount);
-  },
-  //TODO: To remove mock data after we got the actual one
-  turnout: 50.5,
+  totalDeposit,
 };
 
 module MultiConfig = [%graphql
@@ -104,9 +95,7 @@ module MultiConfig = [%graphql
       account @bsRecord {
         address @bsDecoder(fn: "Address.fromBech32")
       }
-      deposits @bsRecord {
-        amount @bsDecoder(fn: "GraphQLParser.coins")
-      }
+      totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
     }
   }
 |}
@@ -128,9 +117,7 @@ module SingleConfig = [%graphql
       account @bsRecord {
           address @bsDecoder(fn: "Address.fromBech32")
       }
-      deposits @bsRecord {
-        amount @bsDecoder(fn: "GraphQLParser.coins")
-      }
+      totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
     }
   }
 |}

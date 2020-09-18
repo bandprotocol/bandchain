@@ -55,7 +55,7 @@ let make = (~percent) => {
         CssHelper.flexBox(~justify=`center, ~direction=`column, ()),
       ])}>
       <Heading size=Heading.H4 value="Turnout" align=Heading.Center marginBottom=8 />
-      <Text size=Text.Xxxl value={percent |> Format.fPercent(~digits=0)} block=true />
+      <Text size=Text.Xxxl value={percent |> Format.fPercent(~digits=2)} block=true />
     </div>
   </div>;
 };

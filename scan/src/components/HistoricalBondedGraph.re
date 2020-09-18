@@ -12,7 +12,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       backgroundColor(white),
-    ])
+    ]);
 
   let chart = show => style([important(display(show ? `block : `none))]);
 };
@@ -74,10 +74,17 @@ function(data) {
           ],
           yAxes: [
             {
+              gridLines: {
+                display: true,
+                color: "#f2f2f2",
+                drawBorder: false,
+                zeroLineColor: '#eaeaea'
+              },
               ticks: {
                 fontFamily: 'Inter',
                 fontColor: '#888888',
                 fontSize: 10,
+                maxTicksLimit: 5,
                 stepSize: 100000,
                 callback: function(value) {
                   var ranges = [

@@ -99,7 +99,7 @@ module DstValidatorSelection = {
 let make = (~address, ~validator, ~setMsgsOpt) => {
   let validatorInfoSub = ValidatorSub.get(validator);
   let validatorsSub = ValidatorSub.getList(~isActive=true, ());
-  let delegationSub = DelegationSub.getStakeByValiator(address, validator);
+  let delegationSub = DelegationSub.getStakeByValidator(address, validator);
 
   let allSub = Sub.all3(validatorInfoSub, validatorsSub, delegationSub);
 

@@ -12,6 +12,7 @@ chardet==3.0.4
 click==7.1.2
 coincurve==13.0.0
 colorama==0.4.3
+coverage==5.2.1
 dacite==1.5.1
 docutils==0.16
 ecdsa==0.15
@@ -30,6 +31,7 @@ pycparser==2.20
 Pygments==2.6.1
 pyparsing==2.4.7
 pytest==6.0.1
+pytest-cov==2.10.1
 readme-renderer==26.0
 regex==2020.7.14
 requests==2.24.0

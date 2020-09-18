@@ -73,3 +73,26 @@ let px = (~size=0, ()) => {
 let pxSm = (~size=0, ()) => {
   style([Media.mobile([paddingLeft(`px(size)), paddingRight(`px(size))])]);
 };
+
+// Angle Icon on select input
+
+let selectWrapper = (~size=14, ~pRight=16, ~pRightSm=pRight, ~mW=500, ()) => {
+  style([
+    position(`relative),
+    width(`percent(100.)),
+    maxWidth(`px(mW)),
+    after([
+      contentRule(`text("\f107")),
+      fontFamily(`custom("'Font Awesome 5 Pro'")),
+      fontSize(`px(size)),
+      lineHeight(`px(1)),
+      display(`block),
+      position(`absolute),
+      pointerEvents(`none),
+      top(`percent(50.)),
+      right(`px(pRight)),
+      transform(`translateY(`percent(-50.))),
+      Media.mobile([right(`px(pRightSm))]),
+    ]),
+  ]);
+};

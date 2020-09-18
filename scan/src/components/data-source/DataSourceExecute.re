@@ -124,7 +124,7 @@ let resultRender = result => {
   | Error(err) =>
     <>
       <VSpacing size=Spacing.lg />
-      <div className=Styles.resultWrapper> <Text value=err /> </div>
+      <div className=Styles.resultWrapper> <Text value=err breakAll=true /> </div>
     </>
   | Success({returncode, stdout, stderr}) =>
     <div className=Styles.resultContainer>

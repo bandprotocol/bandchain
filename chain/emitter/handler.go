@@ -90,6 +90,8 @@ func (app *App) handleBeginBlockEndBlockEvent(event abci.Event) {
 		app.handleEventDeactivate(evMap)
 	case EventTypeCompleteUnbonding:
 		app.handleEventTypeCompleteUnbonding(evMap)
+	case EventTypeCompleteRedelegation:
+		app.handEventTypeCompleteRedelegation(evMap)
 	case EventTypeInactiveProposal:
 		app.handleEventInactiveProposal(evMap)
 	case EventTypeActiveProposal:
