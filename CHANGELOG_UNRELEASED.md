@@ -28,6 +28,6 @@
 
 ### Helpers
 
-- (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get lastest box
+- (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get latest block
 
 ### MISC
