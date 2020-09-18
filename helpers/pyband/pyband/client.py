@@ -68,3 +68,4 @@ class Client(object):
 
     def get_reporters(self, validator: str) -> list:
         return self._get("/oracle/reporters/{}".format(validator))
+
