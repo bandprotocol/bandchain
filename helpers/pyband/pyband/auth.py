@@ -86,7 +86,7 @@ class Auth:
             base64.b64decode(signature),
         ):
             return False, "Invalid signature"
-        reporter = PublicKey.from_acc_bech32().to_address().to_acc_bech32()
+        reporter = PublicKey.from_acc_bech32(reporter_pubkey).to_address().to_acc_bech32()
         return self.client.verify_request(chain_id, validator, request_id, external_id, reporter)
 
     def verify_chain_id(self, chain_id: str) -> bool:
