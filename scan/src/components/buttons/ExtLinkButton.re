@@ -9,7 +9,7 @@ module Styles = {
       width(`px(110)),
       borderRadius(`px(6)),
       cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, `num(0.2)))),
     ]);
 
   let withHeight = style([maxHeight(`px(12))]);

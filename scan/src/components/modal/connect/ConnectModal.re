@@ -67,8 +67,8 @@ module Styles = {
       backgroundColor(Colors.white),
       boxShadow(
         active
-          ? Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(11, 29, 142, 0.1))
-          : Shadow.box(~x=`zero, ~y=`px(0), ~blur=`px(0), Css.rgba(0, 0, 0, 0.)),
+          ? Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(11, 29, 142, `num(0.1)))
+          : Shadow.box(~x=`zero, ~y=`px(0), ~blur=`px(0), Css.rgba(0, 0, 0, `num(0.))),
       ),
       cursor(`pointer),
       overflow(`hidden),

@@ -3,7 +3,9 @@ module Styles = {
 
   let container = (pv, ph) =>
     style([
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, `num(0.05))),
+      ),
       backgroundColor(white),
       marginBottom(`px(1)),
       display(`flex),
@@ -13,7 +15,9 @@ module Styles = {
     ]);
   let containerBase = (pv, ph) =>
     style([
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, `num(0.05))),
+      ),
       backgroundColor(white),
       marginBottom(`px(1)),
       padding2(~v=pv, ~h=ph),
