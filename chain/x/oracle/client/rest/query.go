@@ -198,6 +198,7 @@ func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
 		}
 		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
