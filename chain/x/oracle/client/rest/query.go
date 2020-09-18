@@ -180,7 +180,8 @@ type requestDetail struct {
 	Validator  sdk.ValAddress   `json:"validator"`
 	RequestID  types.RequestID  `json:"request_id"`
 	ExternalID types.ExternalID `json:"external_id"`
-	Reporter   sdk.AccAddress   `json:"reporter"`
+	Reporter   string           `json:"reporter"`
+	Signature  []byte           `json:"signature"`
 }
 
 func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
@@ -191,9 +192,14 @@ func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
+		reporterPubkey, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeAccPub, detail.Reporter)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
 		bz, height, err := clientcmn.VerifyRequest(
-			route, cliCtx, detail.ChainID, detail.Reporter,
-			detail.Validator, detail.RequestID, detail.ExternalID,
+			route, cliCtx, detail.ChainID, detail.RequestID, detail.ExternalID,
+			detail.Validator, reporterPubkey, detail.Signature,
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

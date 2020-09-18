@@ -6,6 +6,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/tendermint/tendermint/crypto"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -44,13 +45,54 @@ func queryParams(route string, cliCtx context.CLIContext) (types.Params, int64, 
 	return params, height, nil
 }
 
+// TODO: Refactor this code with yoda
+type VerificationMessage struct {
+	ChainID    string           `json:"chain_id"`
+	Validator  sdk.ValAddress   `json:"validator"`
+	RequestID  types.RequestID  `json:"request_id"`
+	ExternalID types.ExternalID `json:"external_id"`
+}
+
+func NewVerificationMessage(
+	chainID string, validator sdk.ValAddress, requestID types.RequestID, externalID types.ExternalID,
+) VerificationMessage {
+	return VerificationMessage{
+		ChainID:    chainID,
+		Validator:  validator,
+		RequestID:  requestID,
+		ExternalID: externalID,
+	}
+}
+
+func (msg VerificationMessage) GetSignBytes() []byte {
+	return sdk.MustSortJSON(types.ModuleCdc.MustMarshalJSON(msg))
+}
+
+type VerificationResult struct {
+	ChainID      string             `json:"chain_id"`
+	Validator    sdk.ValAddress     `json:"validator"`
+	RequestID    types.RequestID    `json:"request_id"`
+	ExternalID   types.ExternalID   `json:"external_id"`
+	DataSourceID types.DataSourceID `json:"data_source_id"`
+}
+
 func VerifyRequest(
-	route string, cliCtx context.CLIContext, chainID string, reporter sdk.AccAddress,
-	validator sdk.ValAddress, requestID types.RequestID, externalID types.ExternalID,
+	route string, cliCtx context.CLIContext, chainID string, requestID types.RequestID,
+	externalID types.ExternalID, validator sdk.ValAddress, reporterPubkey crypto.PubKey, signature []byte,
 ) ([]byte, int64, error) {
 	// Verify chain id
 	if cliCtx.ChainID != chainID {
-		return nil, 0, fmt.Errorf("Chain id doesn't match")
+		return nil, 0, fmt.Errorf("Invalid Chain ID; expect %s, got %s", cliCtx.ChainID, chainID)
+	}
+
+	// Verify signature
+	if !reporterPubkey.VerifyBytes(
+		NewVerificationMessage(
+			chainID, validator, requestID, externalID,
+		).GetSignBytes(),
+		signature,
+	) {
+		return nil, 0, fmt.Errorf("Signature verification failed")
 	}
 
 	// Check reporters
@@ -58,6 +100,8 @@ func VerifyRequest(
 	if err != nil {
 		return nil, 0, err
 	}
+
+	reporter := sdk.AccAddress(reporterPubkey.Address())
 
 	isReporter := false
 	for _, r := range reporters {
@@ -87,14 +131,14 @@ func VerifyRequest(
 	}
 
 	// Verify this request need this external id
-	requiredExternalData := false
+	dataSourceID := types.DataSourceID(0)
 	for _, rawRequest := range request.Request.RawRequests {
 		if rawRequest.ExternalID == externalID {
-			requiredExternalData = true
+			dataSourceID = rawRequest.DataSourceID
 			break
 		}
 	}
-	if !requiredExternalData {
+	if dataSourceID == types.DataSourceID(0) {
 		return nil, 0, fmt.Errorf("External id has not been required in this request")
 	}
 
@@ -120,6 +164,12 @@ func VerifyRequest(
 	if request.Request.RequestHeight+int64(params.ExpirationBlockCount) < height {
 		return nil, 0, fmt.Errorf("Request has been expired")
 	}
-	bz, err := types.QueryOK(true)
+	bz, err := types.QueryOK(VerificationResult{
+		ChainID:      chainID,
+		Validator:    validator,
+		RequestID:    requestID,
+		ExternalID:   externalID,
+		DataSourceID: dataSourceID,
+	})
 	return bz, height, err
 }

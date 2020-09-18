@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
+
 ### Yoda
 
 ### Emitter & Flusher
