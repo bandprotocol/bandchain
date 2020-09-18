@@ -1,10 +1,12 @@
 package rest
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
@@ -168,6 +170,34 @@ func getActiveValidatorsHandler(cliCtx context.CLIContext, route string) http.Ha
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+type requestDetail struct {
+	ChainID    string           `json:"chain_id"`
+	Validator  sdk.ValAddress   `json:"validator"`
+	RequestID  types.RequestID  `json:"request_id"`
+	ExternalID types.ExternalID `json:"external_id"`
+	Reporter   string           `json:"reporter"`
+	Signature  []byte           `json:"signature"`
+}
+
+func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var detail requestDetail
+		err := json.NewDecoder(r.Body).Decode(&detail)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		bz, height, err := clientcmn.VerifyRequest(
+			route, cliCtx, detail.ChainID, detail.Reporter, detail.Validator,
+			detail.RequestID, detail.ExternalID, detail.Signature,
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 		}
 		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
