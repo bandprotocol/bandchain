@@ -31,6 +31,6 @@
 
 ### Helpers
 
-- (bugs) [\#2643](https://github.com/bandprotocol/bandchain/pull/2643) update reports and result type can be null
+- (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get latest block
 
 ### MISC
