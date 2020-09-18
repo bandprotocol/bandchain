@@ -63,7 +63,7 @@ class Auth:
         external_id: str,
         reporter_pubkey: str,
         signature: str,
-    ) -> (bool, str):
+    ) -> bool:
         """
         Verify report infomation using reporter signature and on-chain request status
 
@@ -74,8 +74,7 @@ class Auth:
         :param reporter_pubkey: a chain id that request come from
         :param signature: validator address of this verify meassage
 
-        :return: verification result True if the validator has been assigned to report data. False otherwise
-        :return: reason why verification failed
+        :return: True if the validator has been assigned to report data. False otherwise
         """
         if not Auth.verify_verification_message_signature(
             chain_id,
@@ -85,9 +84,23 @@ class Auth:
             reporter_pubkey,
             base64.b64decode(signature),
         ):
-            return False, "Invalid signature"
-        reporter = PublicKey.from_acc_bech32(reporter_pubkey).to_address().to_acc_bech32()
-        return self.client.verify_request(chain_id, validator, request_id, external_id, reporter)
+            return False
+        if not self.verify_chain_id(chain_id):
+            return False
+
+        if not self.is_reporter(validator, reporter_pubkey):
+            return False
+
+        requestInfo = self.client.get_request_by_id(request_id)
+
+        if not self.verify_non_expired_request(requestInfo.request):
+            return False
+        if not self.verify_requested_validator(requestInfo.request, validator):
+            return False
+        if not self.verify_unsubmitted_report(requestInfo.reports, validator):
+            return False
+
+        return True
 
     def verify_chain_id(self, chain_id: str) -> bool:
         """
