@@ -44,50 +44,13 @@ func queryParams(route string, cliCtx context.CLIContext) (types.Params, int64, 
 	return params, height, nil
 }
 
-// TODO: Refactor this code with yoda
-type VerificationMessage struct {
-	ChainID    string           `json:"chain_id"`
-	Validator  sdk.ValAddress   `json:"validator"`
-	RequestID  types.RequestID  `json:"request_id"`
-	ExternalID types.ExternalID `json:"external_id"`
-}
-
-func NewVerificationMessage(
-	chainID string, validator sdk.ValAddress, requestID types.RequestID, externalID types.ExternalID,
-) VerificationMessage {
-	return VerificationMessage{
-		ChainID:    chainID,
-		Validator:  validator,
-		RequestID:  requestID,
-		ExternalID: externalID,
-	}
-}
-
-func (msg VerificationMessage) GetSignBytes() []byte {
-	return sdk.MustSortJSON(types.ModuleCdc.MustMarshalJSON(msg))
-}
-
 func VerifyRequest(
-	route string, cliCtx context.CLIContext, chainID string, reporter string,
-	validator sdk.ValAddress, requestID types.RequestID, externalID types.ExternalID, signature []byte,
+	route string, cliCtx context.CLIContext, chainID string, reporter sdk.AccAddress,
+	validator sdk.ValAddress, requestID types.RequestID, externalID types.ExternalID,
 ) ([]byte, int64, error) {
 	// Verify chain id
 	if cliCtx.ChainID != chainID {
 		return nil, 0, fmt.Errorf("Chain id doesn't match")
-	}
-
-	// Verify signature
-	reporterPub, err := sdk.GetPubKeyFromBech32(sdk.Bech32PubKeyTypeAccPub, reporter)
-	if err != nil {
-		return nil, 0, err
-	}
-	if !reporterPub.VerifyBytes(
-		NewVerificationMessage(
-			chainID, validator, requestID, externalID,
-		).GetSignBytes(),
-		signature,
-	) {
-		return nil, 0, fmt.Errorf("Signature verification failed")
 	}
 
 	// Check reporters
@@ -95,11 +58,10 @@ func VerifyRequest(
 	if err != nil {
 		return nil, 0, err
 	}
-	reporterAddr := sdk.AccAddress(reporterPub.Address())
 
 	isReporter := false
-	for _, reporter := range reporters {
-		if reporterAddr.Equals(reporter) {
+	for _, r := range reporters {
+		if reporter.Equals(r) {
 			isReporter = true
 		}
 	}

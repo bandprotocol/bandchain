@@ -68,3 +68,21 @@ class Client(object):
 
     def get_reporters(self, validator: str) -> list:
         return self._get("/oracle/reporters/{}".format(validator))
+
+    def verify_request(
+        self, chain_id: str, validator: str, request_id: str, external_id: str, reporter: str,
+    ) -> (bool,str):
+        res = requests.post(
+            self.rpc_url + "/oracle/verify_request",
+            json={
+                "chain_id": chain_id,
+                "validator": validator,
+                "request_id": request_id,
+                "external_id": external_id,
+                "reporter": reporter,
+            },
+        )
+        if res.status_code == 200:
+            return True, ""
+        elif res.status_code == 400:
+            return False,  res.json()["error"]

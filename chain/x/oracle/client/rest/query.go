@@ -180,8 +180,7 @@ type requestDetail struct {
 	Validator  sdk.ValAddress   `json:"validator"`
 	RequestID  types.RequestID  `json:"request_id"`
 	ExternalID types.ExternalID `json:"external_id"`
-	Reporter   string           `json:"reporter"`
-	Signature  []byte           `json:"signature"`
+	Reporter   sdk.AccAddress   `json:"reporter"`
 }
 
 func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
@@ -193,8 +192,8 @@ func verifyRequest(cliCtx context.CLIContext, route string) http.HandlerFunc {
 			return
 		}
 		bz, height, err := clientcmn.VerifyRequest(
-			route, cliCtx, detail.ChainID, detail.Reporter, detail.Validator,
-			detail.RequestID, detail.ExternalID, detail.Signature,
+			route, cliCtx, detail.ChainID, detail.Reporter,
+			detail.Validator, detail.RequestID, detail.ExternalID,
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
