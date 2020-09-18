@@ -135,7 +135,8 @@ class Auth:
         """
         latest_block = self.client.get_latest_block()
         return (
-            latest_block["block"]["header"]["height"] - request.request_height <= REQUEST_DURATION
+            int(latest_block["block"]["header"]["height"]) - request.request_height
+            <= REQUEST_DURATION
         )
 
     def verify_requested_validator(self, request: Request, validator: str) -> bool:
@@ -162,4 +163,3 @@ class Auth:
             if report.validator == validator:
                 return False
         return True
-
