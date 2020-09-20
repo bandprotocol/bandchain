@@ -1,12 +1,12 @@
 import os
-
+import json
 from iconsdk.builder.call_builder import CallBuilder
 from iconsdk.builder.transaction_builder import DeployTransactionBuilder, CallTransactionBuilder
 from iconsdk.libs.in_memory_zip import gen_deploy_data_content
 from iconsdk.signed_transaction import SignedTransaction
 from tbears.libs.icon_integrate_test import IconIntegrateTestBase, SCORE_INSTALL_ADDRESS
 from iconservice.base.exception import IconScoreException
-from ..pyobi import *
+
 
 DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -61,9 +61,7 @@ class TestTest(IconIntegrateTestBase):
             .method("relay")
             .params(
                 {
-                    "_encoded_data_list": PyObi(
-                        "[{symbol:string,rate:u64,resolve_time:u64}]"
-                    ).encode(
+                    "_json_data_list": json.dumps(
                         [
                             {"symbol": s, "rate": r, "resolve_time": rt}
                             for (s, r, rt) in list(zip(symbols, rates, resolve_times))
@@ -136,7 +134,7 @@ class TestTest(IconIntegrateTestBase):
                 .method("get_reference_data_bulk")
                 .params(
                     {
-                        "_encoded_pairs": PyObi("[{base:string,quote:string}]").encode(
+                        "_json_pairs": json.dumps(
                             [
                                 {"base": b, "quote": q}
                                 for (b, q) in list(zip(symbols, symbols[1:] + symbols[:1]))
@@ -160,7 +158,7 @@ class TestTest(IconIntegrateTestBase):
             .method("get_reference_data_bulk")
             .params(
                 {
-                    "_encoded_pairs": PyObi("[{base:string,quote:string}]").encode(
+                    "_json_pairs": json.dumps(
                         [
                             {"base": b, "quote": q}
                             for (b, q) in list(zip(symbols, symbols[1:] + symbols[:1]))
