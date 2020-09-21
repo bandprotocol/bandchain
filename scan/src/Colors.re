@@ -44,6 +44,7 @@ let yellow7 = Css.hex("B87D14");
 let yellow8 = Css.hex("8E5F0B");
 
 let yellowAccent1 = Css.hex("FEF5CD");
+let yellowAccent2 = Css.hex("F4D23E");
 let yellowAccent7 = Css.hex("937906");
 
 let orange1 = Css.hex("FFF1EB");
@@ -64,6 +65,9 @@ let blue5 = Css.hex("475DEB");
 let blue6 = Css.hex("243CDB");
 let blue7 = Css.hex("142AB8");
 let blue8 = Css.hex("0B1D8E");
+let blue9 = Css.hex("0017AE");
+let blue10 = Css.hex("D7E1FF");
+let blue11 = Css.hex("99A7FF");
 
 let blueGray1 = Css.hex("F8FAFF");
 let blueGray2 = Css.hex("E2E3E9");
@@ -82,10 +86,16 @@ let gray5 = Css.hex("A4A4A4");
 let gray6 = Css.hex("888888");
 let gray7 = Css.hex("555555");
 let gray8 = Css.hex("333333");
+let gray9 = Css.hex("EAEAEA");
 
 let white = Css.hex("ffffff");
+let black = Css.hex("000000");
 
 let chartBalanceAtStake = Css.hex("ABB6FF");
 let chartReward = Css.hex("000C5C");
+let highlightBg = Css.hex("EBF1FF");
+let bg = Css.hex("FCFCFC");
+let profileBG = Css.hex("F9FAFF");
+let connectBG = Css.hex("EFF2FF");
 
 let transparent = Css.rgba(0, 0, 0, 0.);

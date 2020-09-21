@@ -9,24 +9,32 @@ module type RawIDSig = {
 module RawDataSourceID = {
   type tab_t = Route.data_source_tab_t;
   let prefix = "#D";
-  let color = Colors.yellow5;
+  let color = Colors.bandBlue;
   let route = (id, tab) => Route.DataSourceIndexPage(id, tab);
-  let defaultTab = Route.DataSourceExecute;
+  let defaultTab = Route.DataSourceRequests;
 };
 
 module RawOracleScriptID = {
   type tab_t = Route.oracle_script_tab_t;
   let prefix = "#O";
-  let color = Colors.pink5;
+  let color = Colors.bandBlue;
   let route = (id, tab) => Route.OracleScriptIndexPage(id, tab);
-  let defaultTab = Route.OracleScriptExecute;
+  let defaultTab = Route.OracleScriptRequests;
 };
 
 module RawRequestID = {
   type tab_t = unit;
   let prefix = "#R";
-  let color = Colors.orange5;
+  let color = Colors.bandBlue;
   let route = (id, _) => Route.RequestIndexPage(id);
+  let defaultTab = ();
+};
+
+module RawProposalID = {
+  type tab_t = unit;
+  let prefix = "#P";
+  let color = Colors.bandBlue;
+  let route = (id, _) => Route.ProposalIndexPage(id);
   let defaultTab = ();
 };
 
@@ -61,9 +69,15 @@ module IDCreator = (RawID: RawIDSig) => {
     fun
     | ID(id) => RawID.prefix ++ string_of_int(id);
 
+  let toInt =
+    fun
+    | ID(id) => id;
+
   let fromJson = json => ID(json |> Js.Json.decodeNumber |> Belt.Option.getExn |> int_of_float);
 
   let fromInt = x => ID(x);
+
+  let fromIntExn = x => ID(x |> Belt.Option.getExn);
 
   let toJson =
     fun
@@ -73,4 +87,5 @@ module IDCreator = (RawID: RawIDSig) => {
 module DataSource = IDCreator(RawDataSourceID);
 module OracleScript = IDCreator(RawOracleScriptID);
 module Request = IDCreator(RawRequestID);
+module Proposal = IDCreator(RawProposalID);
 module Block = IDCreator(RawBlock);

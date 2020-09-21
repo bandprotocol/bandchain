@@ -9,7 +9,10 @@ import (
 
 // nolint
 const (
-	DefaultParamspace              = ModuleName
+	// DefaultParamspace is the parameter namespace key for this module - "oracle"
+	DefaultParamspace = ModuleName
+	// Each value below is the default value for each parameter when generating the default
+	// genesis file. See comments in types.proto for explanation for each parameter.
 	DefaultMaxRawRequestCount      = uint64(12)
 	DefaultMaxAskCount             = uint64(16)
 	DefaultExpirationBlockCount    = uint64(100)
@@ -22,6 +25,8 @@ const (
 
 // nolint
 var (
+	// Each value below is the key to store the respective oracle module parameter. See comments
+	// in types.proto for explanation for each parameter.
 	KeyMaxRawRequestCount      = []byte("MaxRawRequestCount")
 	KeyMaxAskCount             = []byte("MaxAskCount")
 	KeyExpirationBlockCount    = []byte("ExpirationBlockCount")

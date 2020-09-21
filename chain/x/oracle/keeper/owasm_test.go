@@ -15,26 +15,26 @@ import (
 
 func TestGetRandomValidatorsSuccessActivateAll(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
-	// Getting 3 validators using ROLLING_SEED_1
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
 	vals, err := k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
-	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
 	// Getting 3 validators using ROLLING_SEED_A
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A"))
-	vals, err = k.GetRandomValidators(ctx, 3, 1)
-	require.NoError(t, err)
-	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
-	// Getting 3 validators using ROLLING_SEED_1 again should return the same result as the first one.
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_A_WITH_LONG_ENOUGH_ENTROPY"))
 	vals, err = k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
 	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
-	// Getting 3 validators using ROLLING_SEED_1 but for a different request ID.
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1"))
-	vals, err = k.GetRandomValidators(ctx, 3, 2)
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY again should return the same result as the first one.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
+	vals, err = k.GetRandomValidators(ctx, 3, 1)
 	require.NoError(t, err)
 	require.Equal(t, []sdk.ValAddress{testapp.Validator3.ValAddress, testapp.Validator1.ValAddress, testapp.Validator2.ValAddress}, vals)
+	// Getting 3 validators using ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY but for a different request ID.
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_1_WITH_LONG_ENOUGH_ENTROPY"))
+	vals, err = k.GetRandomValidators(ctx, 3, 42)
+	require.NoError(t, err)
+	require.Equal(t, []sdk.ValAddress{testapp.Validator1.ValAddress, testapp.Validator3.ValAddress, testapp.Validator2.ValAddress}, vals)
 }
 
 func TestGetRandomValidatorsTooBigSize(t *testing.T) {
@@ -53,7 +53,7 @@ func TestGetRandomValidatorsTooBigSize(t *testing.T) {
 
 func TestGetRandomValidatorsWithActivate(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(false)
-	k.SetRollingSeed(ctx, []byte("ROLLING_SEED"))
+	k.SetRollingSeed(ctx, []byte("ROLLING_SEED_WITH_LONG_ENOUGH_ENTROPY"))
 	// If no validators are active, you must not be able to get random validators
 	_, err := k.GetRandomValidators(ctx, 1, 1)
 	require.Error(t, err)
@@ -100,6 +100,7 @@ func TestPrepareRequestSuccessBasic(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyCalldata, hex.EncodeToString(BasicCalldata)),
 		sdk.NewAttribute(types.AttributeKeyAskCount, "1"),
 		sdk.NewAttribute(types.AttributeKeyMinCount, "1"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "785"),
 		sdk.NewAttribute(types.AttributeKeyValidator, testapp.Validator1.ValAddress.String()),
 	), sdk.NewEvent(
 		types.EventTypeRawRequest,
@@ -263,6 +264,7 @@ func TestResolveRequestSuccess(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "62656562"), // hex of "beeb"
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "260"),
 	)}, ctx.EventManager().Events())
 }
 
@@ -310,6 +312,7 @@ func TestResolveRequestSuccessComplex(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "000000206265656264317631626565626431763262656562643276316265656264327632"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "8738"),
 	)}, ctx.EventManager().Events())
 }
 
@@ -357,6 +360,7 @@ func TestResolveReadNilExternalData(t *testing.T) {
 		sdk.NewAttribute(types.AttributeKeyID, "42"),
 		sdk.NewAttribute(types.AttributeKeyResolveStatus, "1"),
 		sdk.NewAttribute(types.AttributeKeyResult, "0000001062656562643176326265656264327631"),
+		sdk.NewAttribute(types.AttributeKeyGasUsed, "7757"),
 	)}, ctx.EventManager().Events())
 }
 

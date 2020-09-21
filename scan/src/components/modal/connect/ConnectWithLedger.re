@@ -103,6 +103,7 @@ module Styles = {
       background(rgba(255, 255, 255, 1.)),
       border(`px(0), `solid, hex("FFFFFF")),
       width(`px(100)),
+      lineHeight(`em(1.41)),
     ]);
 };
 
@@ -165,25 +166,27 @@ let make = (~chainID, ~ledgerApp) => {
     <Text value="1. Select HD Derivation Path" weight=Text.Semibold />
     <VSpacing size=Spacing.sm />
     <div className=Styles.selectWrapper>
-      <select
-        className=Styles.selectContent
-        onChange={event => {
-          let newAccountIndex = ReactEvent.Form.target(event)##value |> int_of_string;
-          setAccountIndex(_ => newAccountIndex);
-        }}>
-        {[|0, 1, 2, 3, 4, 5|]
-         |> Belt.Array.map(_, index =>
-              <option key={index |> string_of_int} value={index |> string_of_int}>
-                {let prefixPath =
-                   switch (ledgerApp) {
-                   | Ledger.Cosmos => "44/118/0/0/"
-                   | BandChain => "44/494/0/0/"
-                   };
-                 prefixPath ++ (index |> string_of_int) |> React.string}
-              </option>
-            )
-         |> React.array}
-      </select>
+      <div className={CssHelper.selectWrapper(~pRight=8, ~mW=100, ~size=10, ())}>
+        <select
+          className=Styles.selectContent
+          onChange={event => {
+            let newAccountIndex = ReactEvent.Form.target(event)##value |> int_of_string;
+            setAccountIndex(_ => newAccountIndex);
+          }}>
+          {[|0, 1, 2, 3, 4, 5, 6, 7, 8, 9|]
+           |> Belt.Array.map(_, index =>
+                <option key={index |> string_of_int} value={index |> string_of_int}>
+                  {let prefixPath =
+                     switch (ledgerApp) {
+                     | Ledger.Cosmos => "44/118/0/0/"
+                     | BandChain => "44/494/0/0/"
+                     };
+                   prefixPath ++ (index |> string_of_int) |> React.string}
+                </option>
+              )
+           |> React.array}
+        </select>
+      </div>
     </div>
     <VSpacing size=Spacing.sm />
     <Text value="2. On Your Ledger" weight=Text.Semibold />

@@ -30,9 +30,9 @@ let letterSpacing =
 module Styles = {
   open Css;
 
-  let container =
+  let container = display_ =>
     style([
-      display(`flex),
+      display(display_),
       maxWidth(`px(360)),
       justifyContent(`flexEnd),
       wordBreak(`breakAll),
@@ -40,17 +40,16 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~pubKey, ~position=Text) => {
+let make = (~pubKey, ~position=Text, ~alignLeft=false, ~display=`flex) => {
   let noPrefixAddress = pubKey |> PubKey.toBech32 |> Js.String.sliceToEnd(~from=14);
 
-  <div className=Styles.container>
+  <div className={Styles.container(display)}>
     <Text
       value="bandvalconspub"
       size={position |> prefixFontSize}
       weight=Text.Semibold
       code=true
       spacing={position |> letterSpacing}
-      block=true
       nowrap=true
     />
     <Text
@@ -59,8 +58,7 @@ let make = (~pubKey, ~position=Text) => {
       weight=Text.Regular
       spacing={position |> letterSpacing}
       code=true
-      block=true
-      align=Text.Right
+      align=?{alignLeft ? None : Some(Text.Right)}
     />
   </div>;
 };

@@ -1,5 +1,6 @@
 type block_t = {timestamp: MomentRe.Moment.t};
 type transaction_t = {block: block_t};
+type request_stat_t = {count: int};
 type internal_t = {
   id: ID.DataSource.t,
   owner: Address.t,
@@ -7,6 +8,7 @@ type internal_t = {
   description: string,
   executable: JsBuffer.t,
   transaction: option(transaction_t),
+  requestStat: option(request_stat_t),
 };
 
 type t = {
@@ -15,27 +17,29 @@ type t = {
   name: string,
   description: string,
   executable: JsBuffer.t,
-  timestamp: MomentRe.Moment.t,
+  timestamp: option(MomentRe.Moment.t),
+  requestCount: int,
 };
 
-let toExternal = ({id, owner, name, description, executable, transaction}) => {
+let toExternal =
+    ({id, owner, name, description, executable, transaction: txOpt, requestStat: requestStatOpt}) => {
   id,
   owner,
   name,
   description,
   executable,
-  timestamp:
-    switch (transaction) {
-    | Some({block}) => block.timestamp
-    // TODO: Please revisit again.
-    | _ => MomentRe.momentNow()
-    },
+  timestamp: {
+    let%Opt tx = txOpt;
+    Some(tx.block.timestamp);
+  },
+  // Note: requestCount can't be nullable value.
+  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
 };
 
 module MultiConfig = [%graphql
   {|
-  subscription DataSources($limit: Int!, $offset: Int!) {
-    data_sources(limit: $limit, offset: $offset, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
+  subscription DataSources($limit: Int!, $offset: Int!, $searchTerm: String!) {
+    data_sources(limit: $limit, offset: $offset, where: {name: {_ilike: $searchTerm}}, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
       name
@@ -45,6 +49,9 @@ module MultiConfig = [%graphql
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
+      }
+      requestStat: request_stat @bsRecord {
+        count
       }
     }
   }
@@ -65,6 +72,9 @@ module SingleConfig = [%graphql
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
         }
       }
+      requestStat: request_stat @bsRecord {
+        count
+      }
     }
   },
 |}
@@ -72,8 +82,8 @@ module SingleConfig = [%graphql
 
 module DataSourcesCountConfig = [%graphql
   {|
-  subscription DataSourcesCount {
-    data_sources_aggregate{
+  subscription DataSourcesCount($searchTerm: String!) {
+    data_sources_aggregate(where: {name: {_ilike: $searchTerm}}){
       aggregate{
         count @bsDecoder(fn: "Belt_Option.getExn")
       }
@@ -83,11 +93,10 @@ module DataSourcesCountConfig = [%graphql
 ];
 
 let get = id => {
-  let ID.DataSource.ID(id_) = id;
   let (result, _) =
     ApolloHooks.useSubscription(
       SingleConfig.definition,
-      ~variables=SingleConfig.makeVariables(~id=id_, ()),
+      ~variables=SingleConfig.makeVariables(~id=id |> ID.DataSource.toInt, ()),
     );
   let%Sub x = result;
   switch (x##data_sources_by_pk) {
@@ -96,18 +105,24 @@ let get = id => {
   };
 };
 
-let getList = (~page, ~pageSize, ()) => {
+let getList = (~page, ~pageSize, ~searchTerm, ()) => {
   let offset = (page - 1) * pageSize;
+  let keyword = {j|%$searchTerm%|j};
   let (result, _) =
     ApolloHooks.useSubscription(
       MultiConfig.definition,
-      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
+      ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ~searchTerm=keyword, ()),
     );
   result |> Sub.map(_, x => x##data_sources->Belt_Array.map(toExternal));
 };
 
-let count = () => {
-  let (result, _) = ApolloHooks.useSubscription(DataSourcesCountConfig.definition);
+let count = (~searchTerm, ()) => {
+  let keyword = {j|%$searchTerm%|j};
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      DataSourcesCountConfig.definition,
+      ~variables=DataSourcesCountConfig.makeVariables(~searchTerm=keyword, ()),
+    );
   result
   |> Sub.map(_, x => x##data_sources_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };

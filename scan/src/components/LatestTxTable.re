@@ -1,169 +1,49 @@
 module Styles = {
   open Css;
 
-  let topicBar =
-    style([
-      width(`percent(100.)),
-      display(`flex),
-      flexDirection(`row),
-      justifyContent(`spaceBetween),
-    ]);
-  let seeAll =
-    style([
-      display(`flex),
-      flexDirection(`row),
-      cursor(`pointer),
-      Media.mobile([
-        flexDirection(`column),
-        justifyContent(`spaceBetween),
-        alignItems(`flexEnd),
-        selector("> *", [display(`block)]),
-      ]),
-    ]);
-  let cFlex =
-    style([display(`flex), flexDirection(`column), Media.mobile([marginTop(`px(10))])]);
-  let rightArrow =
-    style([
-      width(`px(25)),
-      marginTop(`px(17)),
-      marginLeft(`px(16)),
-      Media.mobile([margin(`zero)]),
-    ]);
-
-  let hScale = 20;
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
-  let blockContainer = style([minWidth(`px(60))]);
-  let statusContainer =
-    style([
-      minWidth(`percent(100.)),
-      display(`flex),
-      flexDirection(`row),
-      alignItems(`center),
-      justifyContent(`center),
-    ]);
-
-  let logo = style([width(`px(20))]);
-};
-
-let renderTitle = allSub => {
-  <div className=Styles.topicBar>
-    <Text
-      value="Latest Transactions"
-      size=Text.Xxl
-      weight=Text.Bold
-      block=true
-      color=Colors.gray8
-    />
-    <Link className=Styles.seeAll route=Route.TxHomePage>
-      <div className=Styles.cFlex>
-        {switch (allSub) {
-         | ApolloHooks.Subscription.Data((_, totalCount)) =>
-           <Text
-             value={totalCount |> Format.iPretty}
-             size=Text.Xxl
-             color=Colors.gray8
-             height={Text.Px(24)}
-             weight=Text.Bold
-           />
-         | _ => <LoadingCensorBar width=90 height=18 />
-         }}
-        <VSpacing size=Spacing.xs />
-        <Text
-          value="ALL TRANSACTIONS"
-          size=Text.Sm
-          color=Colors.bandBlue
-          spacing={Text.Em(0.05)}
-          weight=Text.Medium
-        />
-      </div>
-      <img src=Images.rightArrow className=Styles.rightArrow />
-    </Link>
-  </div>;
-};
-
-let renderMobileTitle = allSub => {
-  <div className=Styles.topicBar>
-    <div>
-      <Text
-        value="Latest Transactions"
-        size=Text.Xxl
-        weight=Text.Bold
-        block=true
-        color=Colors.gray8
-      />
-      <div className=Styles.cFlex>
-        {switch (allSub) {
-         | ApolloHooks.Subscription.Data((_, totalCount)) =>
-           <Text
-             value={totalCount |> Format.iPretty}
-             size=Text.Xxl
-             color=Colors.gray8
-             height={Text.Px(18)}
-             weight=Text.Bold
-           />
-         | _ => <LoadingCensorBar width=90 height=18 />
-         }}
-      </div>
-    </div>
-    <Link className=Styles.seeAll route=Route.TxHomePage>
-      <img src=Images.rightArrow className=Styles.rightArrow />
-      <Text
-        value="ALL TRANSACTIONS"
-        size=Text.Sm
-        color=Colors.bandBlue
-        spacing={Text.Em(0.05)}
-        height={Text.Px(14)}
-        weight=Text.Medium
-      />
-    </Link>
-  </div>;
+  let statusImg = style([width(`px(20)), marginTop(`px(-3))]);
 };
 
 let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
-  <TBody
+  <TBody.Grid
     key={
       switch (txSub) {
       | Data({txHash}) => txHash |> Hash.toHex
       | _ => reserveIndex |> string_of_int
       }
-    }>
-    <Row minHeight={`px(30)} alignItems=`flexStart>
-      <Col> <HSpacing size={`px(12)} /> </Col>
-      <Col size=1.2>
-        <VSpacing size=Spacing.sm />
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Start>
+      <Col.Grid col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=110 />
-         | _ => <LoadingCensorBar width=100 height=10 />
+         | _ => <LoadingCensorBar width=60 height=15 />
          }}
-      </Col>
-      <Col size=0.68>
-        <VSpacing size=Spacing.sm />
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
         {switch (txSub) {
-         | Data({blockHeight}) =>
-           <div className=Styles.blockContainer> <TypeID.Block id=blockHeight /> </div>
-         | _ => <LoadingCensorBar width=50 height=10 />
+         | Data({blockHeight}) => <TypeID.Block id=blockHeight />
+         | _ => <LoadingCensorBar width=50 height=15 />
          }}
-      </Col>
-      <Col size=1.>
-        <VSpacing size=Spacing.xs />
-        <div className=Styles.statusContainer>
+      </Col.Grid>
+      <Col.Grid col=Col.One>
+        <div className={CssHelper.flexBox(~justify=`center, ~align=`center, ())}>
           {switch (txSub) {
            | Data({success}) =>
-             <img src={success ? Images.success : Images.fail} className=Styles.logo />
+             <img src={success ? Images.success : Images.fail} className=Styles.statusImg />
            | _ => <LoadingCensorBar width=20 height=20 radius=20 />
            }}
         </div>
-      </Col>
-      <Col size=3.8>
+      </Col.Grid>
+      <Col.Grid col=Col.Seven>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
-           <TxMessages txHash messages success errMsg width=360 />
-         | _ => <> <VSpacing size=Spacing.sm /> <LoadingCensorBar width=360 height=10 /> </>
+           <TxMessages txHash messages success errMsg width=320 />
+         | _ => <LoadingCensorBar width=320 height=15 />
          }}
-      </Col>
-      <Col> <HSpacing size={`px(12)} /> </Col>
-    </Row>
-  </TBody>;
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
 let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
@@ -171,20 +51,27 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
   | Data({txHash, blockHeight, success, messages, errMsg}) =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", TxHash(txHash, 200)),
+        ("TX HASH", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
         ("BLOCK", Height(blockHeight)),
         ("ACTIONS", Messages(txHash, messages, success, errMsg)),
       ]
-      key={blockHeight |> ID.Block.toString}
-      idx={blockHeight |> ID.Block.toString}
+      key={txHash |> Hash.toHex}
+      idx={txHash |> Hash.toHex}
       status=success
     />
   | _ =>
     <MobileCard
       values=InfoMobileCard.[
-        ("TX HASH", Loading(200)),
-        ("BLOCK", Loading(18)),
-        ("ACTIONS", Loading(230)),
+        ("TX HASH", Loading(Media.isSmallMobile() ? 170 : 200)),
+        ("BLOCK", Loading(70)),
+        (
+          "ACTIONS",
+          Loading(
+            {
+              Media.isSmallMobile() ? 160 : 230;
+            },
+          ),
+        ),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -196,64 +83,70 @@ let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(Tx
 let make = () => {
   let isMobile = Media.isMobile();
   let txCount = isMobile ? 5 : 10;
-  let allSub = Sub.all2(TxSub.getList(~page=1, ~pageSize=txCount, ()), TxSub.count());
+  let txsSub = TxSub.getList(~page=1, ~pageSize=txCount, ());
+
   <>
-    {isMobile ? renderMobileTitle(allSub) : renderTitle(allSub)}
-    <VSpacing size=Spacing.lg />
+    <div className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}>
+      <div>
+        <Text
+          value="Latest Transactions"
+          size=Text.Lg
+          block=true
+          color=Colors.gray7
+          weight=Text.Medium
+        />
+        <VSpacing size={`px(4)} />
+        {switch (txsSub) {
+         | ApolloHooks.Subscription.Data(requests) =>
+           <Text
+             value={
+               requests
+               ->Belt.Array.get(0)
+               ->Belt.Option.mapWithDefault(0, ({id}) => id)
+               ->Format.iPretty
+             }
+             size=Text.Lg
+             color=Colors.gray7
+             weight=Text.Medium
+           />
+         | _ => <LoadingCensorBar width=90 height=18 />
+         }}
+      </div>
+      <Link className={CssHelper.flexBox(~align=`center, ())} route=Route.TxHomePage>
+        <Text value="All Transactions" color=Colors.bandBlue weight=Text.Medium />
+        <HSpacing size=Spacing.md />
+        <Icon name="fal fa-angle-right" color=Colors.bandBlue />
+      </Link>
+    </div>
+    <VSpacing size={`px(16)} />
     {isMobile
        ? React.null
-       : <THead>
-           <Row>
-             <Col> <HSpacing size={`px(12)} /> </Col>
-             <Col size=1.2>
-               <div className=Styles.fullWidth>
-                 <Text
-                   value="TX HASH"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
+       : <THead.Grid height=30>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Two>
+               <div className={CssHelper.flexBox()}>
+                 <Text value="TX Hash" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col>
-             <Col size=0.68>
-               <div className={Css.merge([Styles.fullWidth, Styles.blockContainer])}>
-                 <Text
-                   value="BLOCK"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
+             </Col.Grid>
+             <Col.Grid col=Col.Two>
+               <div className={CssHelper.flexBox()}>
+                 <Text value="Block" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col>
-             <Col size=1.>
-               <div className=Styles.statusContainer>
-                 <Text
-                   value="STATUS"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
+             </Col.Grid>
+             <Col.Grid col=Col.One>
+               <div className={CssHelper.flexBox(~justify=`center, ~align=`center, ())}>
+                 <Text value="Status" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col>
-             <Col size=3.8>
-               <div className=Styles.fullWidth>
-                 <Text
-                   value="ACTIONS"
-                   size=Text.Sm
-                   weight=Text.Semibold
-                   color=Colors.gray6
-                   spacing={Text.Em(0.05)}
-                 />
+             </Col.Grid>
+             <Col.Grid col=Col.Seven>
+               <div className={CssHelper.flexBox()}>
+                 <Text value="Actions" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col>
-             <Col> <HSpacing size={`px(12)} /> </Col>
-           </Row>
-         </THead>}
-    {switch (allSub) {
-     | Data((txs, _)) =>
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
+    {switch (txsSub) {
+     | Data(txs) =>
        txs
        ->Belt_Array.mapWithIndex((i, e) =>
            isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))

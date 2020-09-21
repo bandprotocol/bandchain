@@ -2,6 +2,7 @@
 [@bs.module] external dataRequest: string = "./data-request.png";
 [@bs.module] external newScript: string = "./new-script.png";
 [@bs.module] external searchIcon: string = "./search-icon.png";
+[@bs.module] external searchGray: string = "./search-gray.svg";
 [@bs.module] external rightArrow: string = "./right-arrow.svg";
 [@bs.module] external telegramLogo: string = "./telegram-logo.svg";
 [@bs.module] external twitterLogo: string = "./twitter-logo.svg";
@@ -44,8 +45,6 @@
 [@bs.module] external requestLogo: string = "./requestLogo.svg";
 [@bs.module] external showProofArrow: string = "./showProofArrow.svg";
 [@bs.module] external noReport: string = "./noReport.svg";
-[@bs.module] external connectIcon: string = "./connect-icon.svg";
-[@bs.module] external disconnectIcon: string = "./disconnect-icon.svg";
 [@bs.module] external ethereumIcon: string = "./ethereum.svg";
 [@bs.module] external cosmosIBCIcon: string = "./cosmosibc.svg";
 [@bs.module] external kadenaIcon: string = "./kadena.svg";
@@ -70,3 +69,14 @@
 [@bs.module] external closeButton: string = "./closeButton.svg";
 [@bs.module] external whiteCheck: string = "./white-check.svg";
 [@bs.module] external whiteClose: string = "./white-close.svg";
+[@bs.module] external close: string = "./close.svg";
+[@bs.module] external menu: string = "./menu.svg";
+[@bs.module] external mobileSortAsc: string = "./mobile-sort-asc-icon.svg";
+[@bs.module] external mobileSortDesc: string = "./mobile-sort-desc-icon.svg";
+[@bs.module] external mobileSortAscActive: string = "./mobile-sort-asc-active-icon.svg";
+[@bs.module] external mobileSortDescActive: string = "./mobile-sort-desc-active-icon.svg";
+[@bs.module] external cmcLogo: string = "./coinmarketcap.svg";
+[@bs.module] external infoIcon: string = "./information-icon.svg";
+[@bs.module] external noBlock: string = "./no-block.svg";
+[@bs.module] external noAccount: string = "./no-account.svg";
+[@bs.module] external noSource: string = "./no-source.svg";

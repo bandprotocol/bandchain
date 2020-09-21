@@ -1,10 +1,7 @@
 module Styles = {
   open Css;
 
-  let vFlex = align => style([display(`flex), flexDirection(`row), alignItems(align)]);
-
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-
+  let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
   let icon = style([width(`px(80)), height(`px(80))]);
   let iconWrapper =
     style([
@@ -13,91 +10,82 @@ module Styles = {
       flexDirection(`column),
       alignItems(`center),
     ]);
-
-  let withWidth = w => style([width(`px(w))]);
-
-  let fillLeft = style([marginLeft(`auto)]);
-  let pagination = style([height(`px(30))]);
+  let emptyContainer =
+    style([
+      height(`px(300)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(white),
+    ]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-module Header = {
-  [@react.component]
-  let make = () => {
-    <THead>
-      <Row>
-        <Col> <HSpacing size=Spacing.lg /> </Col>
-        <Col size=1.4>
-          <Text
-            block=true
-            value="DELEGATOR"
-            size=Text.Sm
-            weight=Text.Semibold
-            color=Colors.gray6
-            spacing={Text.Em(0.05)}
-          />
-        </Col>
-        <Col size=1.45>
-          <div className={Styles.vFlex(`flexEnd)}>
-            <div className=Styles.fillLeft />
-            <Text
-              block=true
-              value="SHARE (%)"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col size=1.45>
-          <div className={Styles.vFlex(`flexEnd)}>
-            <div className=Styles.fillLeft />
-            <Text
-              block=true
-              value="AMOUNT (BAND)"
-              size=Text.Sm
-              weight=Text.Semibold
-              color=Colors.gray6
-              spacing={Text.Em(0.05)}
-            />
-          </div>
-        </Col>
-        <Col> <HSpacing size=Spacing.lg /> </Col>
-      </Row>
-    </THead>;
-  };
+let renderBody =
+    (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+  <TBody.Grid
+    key={
+      switch (delegatorSub) {
+      | Data({delegatorAddress}) => delegatorAddress |> Address.toBech32
+      | _ => reserveIndex |> string_of_int
+      }
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+      <Col.Grid col=Col.Six>
+        {switch (delegatorSub) {
+         | Data({delegatorAddress}) => <AddressRender address=delegatorAddress />
+         | _ => <LoadingCensorBar width=300 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Four>
+        {switch (delegatorSub) {
+         | Data({sharePercentage}) =>
+           <Text block=true value={sharePercentage |> Format.fPretty} color=Colors.gray7 />
+         | _ => <LoadingCensorBar width=100 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (delegatorSub) {
+           | Data({amount}) =>
+             <Text
+               block=true
+               value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
+               color=Colors.gray7
+             />
+           | _ => <LoadingCensorBar width=100 height=15 />
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
 };
 
-module Loading = {
-  [@react.component]
-  let make = () => {
-    <>
-      <Header />
-      {Belt_Array.make(
-         10,
-         <Row>
-           <Col> <HSpacing size=Spacing.lg /> </Col>
-           <Col size=1.4> <LoadingCensorBar width=300 height=16 /> </Col>
-           <Col size=1.30>
-             <div className={Styles.vFlex(`flexEnd)}>
-               <div className=Styles.fillLeft />
-               <LoadingCensorBar width=70 height=16 />
-             </div>
-           </Col>
-           <Col size=1.45>
-             <div className={Styles.vFlex(`flexEnd)}>
-               <div className=Styles.fillLeft />
-               <LoadingCensorBar width=70 height=16 />
-             </div>
-           </Col>
-           <Col> <HSpacing size=Spacing.lg /> </Col>
-         </Row>,
-       )
-       ->Belt.Array.mapWithIndex((i, e) => {<TBody key={i |> string_of_int}> e </TBody>})
-       ->React.array}
-      <VSpacing size=Spacing.lg />
-      <div className=Styles.pagination />
-    </>;
+let renderBodyMobile =
+    (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
+  switch (delegatorSub) {
+  | Data({amount, sharePercentage, delegatorAddress}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Delegator", Address(delegatorAddress, 149, `account)),
+        ("Shares (%)", Float(sharePercentage, Some(4))),
+        ("Amount\n(BAND)", Coin({value: [amount], hasDenom: false})),
+      ]
+      key={delegatorAddress |> Address.toBech32}
+      idx={delegatorAddress |> Address.toBech32}
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Delegator", Loading(150)),
+        ("Shares (%)", Loading(60)),
+        ("Amount\n(BAND)", Loading(80)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
   };
 };
 
@@ -109,82 +97,97 @@ let make = (~address) => {
   let delegatorsSub = DelegationSub.getDelegatorsByValidator(address, ~pageSize, ~page, ());
   let delegatorCountSub = DelegationSub.getDelegatorCountByValidator(address);
 
-  let allSub = Sub.all2(delegatorCountSub, delegatorsSub);
+  let allSub = Sub.all2(delegatorsSub, delegatorCountSub);
+
+  let isMobile = Media.isMobile();
 
   <div className=Styles.tableWrapper>
-    <Row>
-      <HSpacing size={`px(25)} />
-      {switch (allSub) {
-       | Data((delegatorCount, _)) =>
-         <>
-           <Text value={delegatorCount |> string_of_int} weight=Text.Bold />
-           <HSpacing size={`px(5)} />
-           <Text value="Delegators" />
-         </>
-       | _ => <LoadingCensorBar width=100 height=20 />
-       }}
-    </Row>
-    <VSpacing size=Spacing.lg />
+    {isMobile
+       ? <Row.Grid marginBottom=16>
+           <Col.Grid>
+             {switch (allSub) {
+              | Data((_, delegatorCount)) =>
+                <div className={CssHelper.flexBox()}>
+                  <Text
+                    block=true
+                    value={delegatorCount |> string_of_int}
+                    weight=Text.Semibold
+                    color=Colors.gray7
+                  />
+                  <HSpacing size=Spacing.xs />
+                  <Text block=true value="Delegators" weight=Text.Semibold color=Colors.gray7 />
+                </div>
+              | _ => <LoadingCensorBar width=100 height=15 />
+              }}
+           </Col.Grid>
+         </Row.Grid>
+       : <THead.Grid>
+           <Row.Grid alignItems=Row.Center>
+             <Col.Grid col=Col.Six>
+               {switch (allSub) {
+                | Data((_, delegatorCount)) =>
+                  <div className={CssHelper.flexBox()}>
+                    <Text
+                      block=true
+                      value={delegatorCount |> string_of_int}
+                      weight=Text.Semibold
+                      color=Colors.gray7
+                    />
+                    <HSpacing size=Spacing.xs />
+                    <Text block=true value="Delegators" weight=Text.Semibold color=Colors.gray7 />
+                  </div>
+                | _ => <LoadingCensorBar width=100 height=15 />
+                }}
+             </Col.Grid>
+             <Col.Grid col=Col.Four>
+               <Text block=true value="Share(%)" weight=Text.Semibold color=Colors.gray7 />
+             </Col.Grid>
+             <Col.Grid col=Col.Two>
+               <Text
+                 block=true
+                 value="Amount"
+                 weight=Text.Semibold
+                 color=Colors.gray7
+                 align=Text.Right
+               />
+             </Col.Grid>
+           </Row.Grid>
+         </THead.Grid>}
     {switch (allSub) {
-     | Data((delegatorCount, delegators)) =>
+     | Data((delegators, delegatorCount)) =>
        let pageCount = Page.getPageCount(delegatorCount, pageSize);
-       delegators->Belt_Array.length > 0
-         ? <>
-             <Header />
-             {delegators
-              ->Belt.Array.map(({amount, sharePercentage, delegatorAddress}) => {
-                  <TBody key={delegatorAddress |> Address.toBech32}>
-                    <Row>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                      <Col size=1.4> <AddressRender address=delegatorAddress /> </Col>
-                      <Col size=1.30>
-                        <div className={Styles.vFlex(`flexEnd)}>
-                          <div className=Styles.fillLeft />
-                          <Text
-                            block=true
-                            value={sharePercentage |> Format.fPretty}
-                            size=Text.Md
-                            weight=Text.Regular
-                            color=Colors.gray7
-                            spacing={Text.Em(0.05)}
-                            code=true
-                          />
-                        </div>
-                      </Col>
-                      <Col size=1.45>
-                        <div className={Styles.vFlex(`flexEnd)}>
-                          <div className=Styles.fillLeft />
-                          <Text
-                            block=true
-                            value={amount |> Coin.getBandAmountFromCoin |> Format.fPretty}
-                            size=Text.Md
-                            weight=Text.Regular
-                            color=Colors.gray7
-                            spacing={Text.Em(0.05)}
-                            code=true
-                          />
-                        </div>
-                      </Col>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                    </Row>
-                  </TBody>
-                })
-              ->React.array}
-             <VSpacing size=Spacing.lg />
-             <Pagination
-               currentPage=page
-               pageCount
-               onPageChange={newPage => setPage(_ => newPage)}
-             />
-           </>
-         : <div className=Styles.iconWrapper>
-             <VSpacing size={`px(30)} />
-             <img src=Images.noRequestIcon className=Styles.icon />
-             <VSpacing size={`px(40)} />
-             <Text block=true value="NO DELEGATORS" weight=Text.Regular color=Colors.blue4 />
-             <VSpacing size={`px(15)} />
-           </div>;
-     | _ => <Loading />
+       <>
+         {delegatorCount > 0
+            ? delegators
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array
+            : <div className=Styles.emptyContainer>
+                <img src=Images.noBlock className=Styles.noDataImage />
+                <Heading
+                  size=Heading.H4
+                  value="No Delegators"
+                  align=Heading.Center
+                  weight=Heading.Regular
+                  color=Colors.bandBlue
+                />
+              </div>}
+         {isMobile
+            ? React.null
+            : <Pagination
+                currentPage=page
+                pageCount
+                onPageChange={newPage => setPage(_ => newPage)}
+              />}
+       </>;
+     | _ =>
+       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       ->Belt_Array.mapWithIndex((i, noData) =>
+           isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+         )
+       ->React.array
      }}
   </div>;
 };

@@ -1,113 +1,104 @@
 module Styles = {
   open Css;
-
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
-
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
-
-  let seperatedLine =
+  let infoContainer =
     style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
+      backgroundColor(Colors.white),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      padding(`px(24)),
+      Media.mobile([padding(`px(16))]),
     ]);
+  let infoHeader =
+    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
 [@react.component]
-let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) =>
-  {
-    let%Sub dataSource = DataSourceSub.get(dataSourceID);
-
-    <>
-      <div className=Styles.vFlex>
-        <img src=Images.dataSourceLogo className=Styles.logo />
-        <Text
-          value="DATA SOURCE"
-          weight=Text.Medium
-          size=Text.Md
-          spacing={Text.Em(0.06)}
-          height={Text.Px(15)}
-          nowrap=true
-          color=Colors.gray7
-          block=true
-        />
-      </div>
-      // <div className=Styles.seperatedLine />
-      //
-      //
-      // <TimeAgos
-      //   time={dataSource.timestamp}
-      //   prefix="Last updated "
-      //   size=Text.Md
-      //   weight=Text.Thin
-      //   spacing={Text.Em(0.06)}
-      //   height={Text.Px(18)}
-      //   upper=true
-      // />
-      <>
-        <VSpacing size=Spacing.md />
-        <VSpacing size=Spacing.sm />
-        <div className=Styles.vFlex>
-          <TypeID.DataSource id={dataSource.id} position=TypeID.Title />
-          <HSpacing size=Spacing.md />
-          <Text
-            value={dataSource.name}
-            size=Text.Xxl
-            height={Text.Px(22)}
-            weight=Text.Bold
-            nowrap=true
-          />
-        </div>
-        <VSpacing size=Spacing.xl />
-        <Row>
-          <Col size=1.>
-            <InfoHL header="OWNER" info={InfoHL.Address(dataSource.owner, 380)} />
-          </Col>
-        </Row>
-        // <Col size=0.8>
-        //   <InfoHL
-        //     info={InfoHL.Fee(dataSource.fee->Coin.getBandAmountFromCoins)}
-        //     header="REQUEST FEE"
-        //   />
-        // </Col>
-        <VSpacing size=Spacing.sm />
-        <Row>
-          <Col size=1.>
-            <InfoHL header="DESCRIPTION" info={InfoHL.Description(dataSource.description)} />
-          </Col>
-        </Row>
-        <VSpacing size=Spacing.xl />
-        <Tab
-          tabs=[|
-            {
-              name: "EXECUTION",
-              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
-            },
-            {
-              name: "CODE",
-              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
-            },
-            {
-              name: "REQUESTS",
-              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
-            },
-            // {
-            //   name: "REVISIONS",
-            //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
-            // },
-          |]
-          currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
-          {switch (hashtag) {
-           | DataSourceExecute => <DataSourceExecute executable={dataSource.executable} />
-           | DataSourceCode => <DataSourceCode executable={dataSource.executable} />
-           | DataSourceRequests => <DataSourceRequestTable dataSourceID />
-           | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
+let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
+  let dataSourceSub = DataSourceSub.get(dataSourceID);
+  <Section pbSm=0>
+    <div className=CssHelper.container>
+      <Row.Grid marginBottom=40 marginBottomSm=16>
+        <Col.Grid>
+          <Heading value="Data Source" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
+          {switch (dataSourceSub) {
+           | Data({id, name}) =>
+             <div className={CssHelper.flexBox()}>
+               <TypeID.DataSource id position=TypeID.Title />
+               <HSpacing size=Spacing.sm />
+               <Heading size=Heading.H3 value=name />
+             </div>
+           | _ => <LoadingCensorBar width=270 height=15 />
            }}
-        </Tab>
-      </>
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+        </Col.Grid>
+      </Row.Grid>
+      <Row.Grid marginBottom=24>
+        <Col.Grid>
+          <div className=Styles.infoContainer>
+            <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
+            <div className={CssHelper.flexBox()}>
+              <Heading value="Owner" size=Heading.H5 />
+              <HSpacing size=Spacing.xs />
+              <CTooltip tooltipText="The owner of the data source">
+                <Icon name="fal fa-info-circle" size=10 />
+              </CTooltip>
+            </div>
+            <VSpacing size=Spacing.sm />
+            {switch (dataSourceSub) {
+             | Data({owner}) => <AddressRender address=owner position=AddressRender.Subtitle />
+             | _ => <LoadingCensorBar width=284 height=15 />
+             }}
+            <VSpacing size=Spacing.lg />
+            <Heading value="Description" size=Heading.H5 marginBottom=16 />
+            {switch (dataSourceSub) {
+             | Data({description}) =>
+               <p>
+                 <Text
+                   value=description
+                   weight=Text.Regular
+                   size=Text.Lg
+                   color=Colors.gray7
+                   block=true
+                 />
+               </p>
+             | _ => <LoadingCensorBar width=284 height=15 />
+             }}
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <Tab
+        tabs=[|
+          {
+            name: "Requests",
+            route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRequests),
+          },
+          {
+            name: "Code",
+            route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
+          },
+          {
+            name: "Test Execution",
+            route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
+          },
+          // {
+          //   name: "REVISIONS",
+          //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
+          // },
+        |]
+        currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
+        {switch (hashtag) {
+         | DataSourceExecute =>
+           switch (dataSourceSub) {
+           | Data({executable}) => <DataSourceExecute executable />
+           | _ => <LoadingCensorBar fullWidth=true height=400 />
+           }
+         | DataSourceCode =>
+           switch (dataSourceSub) {
+           | Data({executable}) => <DataSourceCode executable />
+           | _ => <LoadingCensorBar fullWidth=true height=300 />
+           }
+         | DataSourceRequests => <DataSourceRequestTable dataSourceID />
+         | DataSourceRevisions => <DataSourceRevisionTable id=dataSourceID />
+         }}
+      </Tab>
+    </div>
+  </Section>;
+};

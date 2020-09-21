@@ -43,6 +43,7 @@ type t = {
   completedRequestCount: int,
   missedRequestCount: int,
   uptime: option(float),
+  oracleReports: int,
 };
 
 let toExternal =
@@ -84,12 +85,36 @@ let toExternal =
   completedRequestCount: 23459,
   missedRequestCount: 20,
   uptime: None,
+  oracleReports: 3000,
+};
+
+type validator_voted_status_t =
+  | Missed
+  | Signed
+  | Proposed;
+
+type validator_single_uptime_t = {
+  blockHeight: ID.Block.t,
+  status: validator_voted_status_t,
+};
+
+type validator_single_uptime_status_t = {
+  validatorVotes: array(validator_single_uptime_t),
+  proposedCount: int,
+  missedCount: int,
+  signedCount: int,
 };
 
 type validator_vote_t = {
   consensusAddress: Address.t,
   count: int,
   voted: bool,
+};
+
+type historical_oracle_statuses_count_t = {
+  oracleStatusReports: array(HistoryOracleParser.t),
+  uptimeCount: int,
+  downtimeCount: int,
 };
 
 module SingleConfig = [%graphql
@@ -197,6 +222,33 @@ module MultiLast250VotedConfig = [%graphql
 |}
 ];
 
+module SingleLast100VotedConfig = [%graphql
+  {|
+  subscription SingleLast100Voted($consensusAddress: String!) {
+    validator_votes(limit: 100, where: {validator: {consensus_address: {_eq: $consensusAddress}}}, order_by: {block_height: desc}) {
+    block_height
+    consensus_address
+    voted
+      block {
+        proposer
+      }
+    }
+  }
+|}
+];
+
+module HistoricalOracleStatusesConfig = [%graphql
+  {|
+  subscription HistoricalOracleStatuses($operatorAddress: String!, $greater: timestamp) {
+    historical_oracle_statuses(where: {operator_address: {_eq: $operatorAddress}, timestamp: {_gte: $greater}}) {
+      operator_address
+      status
+      timestamp
+    }
+  }
+|}
+];
+
 let get = operator_address => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -298,4 +350,75 @@ let getListVotesBlock = () => {
         }
       );
   Sub.resolve(validatorVotes);
+};
+
+let getBlockUptimeByValidator = consensusAddress => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      SingleLast100VotedConfig.definition,
+      ~variables=
+        SingleLast100VotedConfig.makeVariables(
+          ~consensusAddress=consensusAddress |> Address.toHex,
+          (),
+        ),
+    );
+  let%Sub x = result;
+  let validatorVotes =
+    x##validator_votes
+    ->Belt.Array.map(each =>
+        {
+          blockHeight: each##block_height |> ID.Block.fromInt,
+          status:
+            switch (each##voted, each##block##proposer == consensusAddress->Address.toHex) {
+            | (false, _) => Missed
+            | (true, false) => Signed
+            | (true, true) => Proposed
+            },
+        }
+      );
+  Sub.resolve({
+    validatorVotes,
+    proposedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Proposed)->Belt.Array.size,
+    signedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Signed)->Belt.Array.size,
+    missedCount:
+      validatorVotes->Belt.Array.keep(({status}) => status == Missed)->Belt.Array.size,
+  });
+};
+
+let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      HistoricalOracleStatusesConfig.definition,
+      ~variables=
+        HistoricalOracleStatusesConfig.makeVariables(
+          ~operatorAddress=operatorAddress |> Address.toOperatorBech32,
+          ~greater=greater |> MomentRe.Moment.format(Config.timestampUseFormat) |> Js.Json.string,
+          (),
+        ),
+    );
+  let%Sub x = result;
+
+  let startDate = greater |> MomentRe.Moment.startOf(`day) |> MomentRe.Moment.toUnix;
+
+  let oracleStatusReports =
+    x##historical_oracle_statuses->Belt.Array.size > 0
+      ? x##historical_oracle_statuses
+        ->Belt.Array.map(each =>
+            {
+              HistoryOracleParser.status: each##status,
+              timestamp: each##timestamp |> GraphQLParser.timestamp |> MomentRe.Moment.toUnix,
+            }
+          )
+        ->Belt.List.fromArray
+      : [{timestamp: startDate, status: oracleStatus}];
+
+  let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
+
+  Sub.resolve({
+    oracleStatusReports: parsedReports,
+    uptimeCount: parsedReports->Belt.Array.keep(({status}) => status)->Belt.Array.size,
+    downtimeCount: parsedReports->Belt.Array.keep(({status}) => !status)->Belt.Array.size,
+  });
 };

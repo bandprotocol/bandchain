@@ -1446,13 +1446,24 @@ func (m *ValidatorStatus) GetSince() time.Time {
 
 // Params is the data structure that keeps the parameters of the oracle module.
 type Params struct {
-	MaxRawRequestCount      uint64 `protobuf:"varint,1,opt,name=max_raw_request_count,json=maxRawRequestCount,proto3" json:"max_raw_request_count,omitempty"`
-	MaxAskCount             uint64 `protobuf:"varint,2,opt,name=max_ask_count,json=maxAskCount,proto3" json:"max_ask_count,omitempty"`
-	ExpirationBlockCount    uint64 `protobuf:"varint,3,opt,name=expiration_block_count,json=expirationBlockCount,proto3" json:"expiration_block_count,omitempty"`
-	BaseRequestGas          uint64 `protobuf:"varint,4,opt,name=base_request_gas,json=baseRequestGas,proto3" json:"base_request_gas,omitempty"`
-	PerValidatorRequestGas  uint64 `protobuf:"varint,5,opt,name=per_validator_request_gas,json=perValidatorRequestGas,proto3" json:"per_validator_request_gas,omitempty"`
-	SamplingTryCount        uint64 `protobuf:"varint,6,opt,name=sampling_try_count,json=samplingTryCount,proto3" json:"sampling_try_count,omitempty"`
-	OracleRewardPercentage  uint64 `protobuf:"varint,7,opt,name=oracle_reward_percentage,json=oracleRewardPercentage,proto3" json:"oracle_reward_percentage,omitempty"`
+	// MaxRawRequestCount is the maximum number of data source raw requests a request can make.
+	MaxRawRequestCount uint64 `protobuf:"varint,1,opt,name=max_raw_request_count,json=maxRawRequestCount,proto3" json:"max_raw_request_count,omitempty"`
+	// MaxAskCount is the maximum number of validators a request can target.
+	MaxAskCount uint64 `protobuf:"varint,2,opt,name=max_ask_count,json=maxAskCount,proto3" json:"max_ask_count,omitempty"`
+	// ExpirationBlockCount is the number of blocks a request stays valid before it gets
+	// expired due to insufficient reports.
+	ExpirationBlockCount uint64 `protobuf:"varint,3,opt,name=expiration_block_count,json=expirationBlockCount,proto3" json:"expiration_block_count,omitempty"`
+	// BaseRequestGas is the base amount of Cosmos-SDK gas charged for an oracle request.
+	BaseRequestGas uint64 `protobuf:"varint,4,opt,name=base_request_gas,json=baseRequestGas,proto3" json:"base_request_gas,omitempty"`
+	// PerValidatorRequestGas is the amount of Cosmos-SDK gas charged per requested validator.
+	PerValidatorRequestGas uint64 `protobuf:"varint,5,opt,name=per_validator_request_gas,json=perValidatorRequestGas,proto3" json:"per_validator_request_gas,omitempty"`
+	// SamplingTryCount the number of validator sampling tries to pick the highest voting power
+	// subset of validators to perform an oracle task.
+	SamplingTryCount uint64 `protobuf:"varint,6,opt,name=sampling_try_count,json=samplingTryCount,proto3" json:"sampling_try_count,omitempty"`
+	// OracleRewardPercentage is the percentage of block rewards allocated to active oracle validators.
+	OracleRewardPercentage uint64 `protobuf:"varint,7,opt,name=oracle_reward_percentage,json=oracleRewardPercentage,proto3" json:"oracle_reward_percentage,omitempty"`
+	// InactivePenaltyDuration is the duration period where a validator cannot activate back
+	// after missing an oracle report.
 	InactivePenaltyDuration uint64 `protobuf:"varint,8,opt,name=inactive_penalty_duration,json=inactivePenaltyDuration,proto3" json:"inactive_penalty_duration,omitempty"`
 }
 

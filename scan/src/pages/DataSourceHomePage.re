@@ -1,153 +1,268 @@
-module Styles = {
-  open Css;
+type sort_by_t =
+  | MostRequested
+  | LatestUpdate;
 
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+let getName =
+  fun
+  | MostRequested => "Most Requested"
+  | LatestUpdate => "Latest Update";
 
-  let seperatedLine =
-    style([
-      width(`px(13)),
-      height(`px(1)),
-      marginLeft(`px(10)),
-      marginRight(`px(10)),
-      backgroundColor(Colors.gray7),
-    ]);
+let defaultCompare = (a: DataSourceSub.t, b: DataSourceSub.t) =>
+  if (a.timestamp != b.timestamp) {
+    compare(b.id |> ID.DataSource.toInt, a.id |> ID.DataSource.toInt);
+  } else {
+    compare(b.requestCount, a.requestCount);
+  };
 
-  let textContainer = style([paddingLeft(Spacing.lg), display(`flex)]);
+let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
+  dataSources
+  ->Belt.List.fromArray
+  ->Belt.List.sort((a, b) => {
+      let result = {
+        switch (sortedBy) {
+        | MostRequested => compare(b.requestCount, a.requestCount)
+        | LatestUpdate => compare(b.timestamp, a.timestamp)
+        };
+      };
+      if (result != 0) {
+        result;
+      } else {
+        defaultCompare(a, b);
+      };
+    })
+  ->Belt.List.toArray;
+};
 
-  let logo = style([width(`px(50)), marginRight(`px(10))]);
+let renderBody =
+    (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
+  <TBody.Grid
+    key={
+      switch (dataSourcesSub) {
+      | Data({id}) => id |> ID.DataSource.toString
+      | _ => reserveIndex |> string_of_int
+      }
+    }
+    paddingH={`px(24)}>
+    <Row.Grid alignItems=Row.Center>
+      <Col.Grid col=Col.Five>
+        {switch (dataSourcesSub) {
+         | Data({id, name}) =>
+           <div className={CssHelper.flexBox()}>
+             <TypeID.DataSource id />
+             <HSpacing size=Spacing.sm />
+             <Text value=name ellipsis=true />
+           </div>
+         | _ => <LoadingCensorBar width=300 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Four>
+        {switch (dataSourcesSub) {
+         | Data({description}) => <Text value=description block=true />
+         | _ => <LoadingCensorBar width=270 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.One>
+        {switch (dataSourcesSub) {
+         | Data({requestCount}) =>
+           <div>
+             <Text
+               value={requestCount |> Format.iPretty}
+               weight=Text.Medium
+               block=true
+               ellipsis=true
+             />
+           </div>
+         | _ => <LoadingCensorBar width=70 height=15 />
+         }}
+      </Col.Grid>
+      <Col.Grid col=Col.Two>
+        <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          {switch (dataSourcesSub) {
+           | Data({timestamp: timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp') =>
+               <Timestamp.Grid
+                 time=timestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Genesis" />
+             }
+           | _ =>
+             <>
+               <LoadingCensorBar width=70 height=15 />
+               <LoadingCensorBar width=80 height=15 mt=5 />
+             </>
+           }}
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+  </TBody.Grid>;
+};
 
-  let proposerBox = style([maxWidth(`px(270)), display(`flex), flexDirection(`column)]);
-
-  let fullWidth = style([width(`percent(100.0)), display(`flex)]);
-
-  // let feeContainer = style([display(`flex), justifyContent(`flexEnd), maxWidth(`px(150))]);
-  let loadingContainer =
-    style([
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      height(`px(200)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
-      backgroundColor(white),
-    ]);
+let renderBodyMobile =
+    (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
+  switch (dataSourcesSub) {
+  | Data({id, timestamp: timestampOpt, description, name, requestCount}) =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Data Source", DataSource(id, name)),
+        ("Description", Text(description)),
+        ("Requests", Count(requestCount)),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp') => Timestamp(timestamp')
+          | None => Text("Genesis")
+          },
+        ),
+      ]
+      key={id |> ID.DataSource.toString}
+      idx={id |> ID.DataSource.toString}
+    />
+  | _ =>
+    <MobileCard
+      values=InfoMobileCard.[
+        ("Data Source", Loading(70)),
+        ("Description", Loading(136)),
+        ("Requests", Loading(20)),
+        ("Timestamp", Loading(166)),
+      ]
+      key={reserveIndex |> string_of_int}
+      idx={reserveIndex |> string_of_int}
+    />
+  };
 };
 
 [@react.component]
-let make = () =>
-  {
-    let (page, setPage) = React.useState(_ => 1);
-    let pageSize = 10;
+let make = () => {
+  let (page, setPage) = React.useState(_ => 1);
+  let (searchTerm, setSearchTerm) = React.useState(_ => "");
+  let (sortedBy, setSortedBy) = React.useState(_ => LatestUpdate);
+  let pageSize = 10;
 
-    let dataSourcesCountSub = DataSourceSub.count();
-    let dataSourcesSub = DataSourceSub.getList(~pageSize, ~page, ());
+  let dataSourcesCountSub = DataSourceSub.count(~searchTerm, ());
+  let dataSourcesSub = DataSourceSub.getList(~pageSize, ~page, ~searchTerm, ());
 
-    let%Sub dataSourcesCount = dataSourcesCountSub;
-    let%Sub dataSources = dataSourcesSub;
+  let allSub = Sub.all2(dataSourcesSub, dataSourcesCountSub);
+  let isMobile = Media.isMobile();
 
-    let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
+  React.useEffect1(
+    () => {
+      if (searchTerm != "") {
+        setPage(_ => 1);
+      };
+      None;
+    },
+    [|searchTerm|],
+  );
 
-    <>
-      <Row>
-        <Col>
-          <div className=Styles.vFlex>
-            <img src=Images.dataSourceLogo className=Styles.logo />
-            <Text
-              value="ALL SOURCES"
-              weight=Text.Medium
-              size=Text.Md
-              spacing={Text.Em(0.06)}
-              height={Text.Px(15)}
-              nowrap=true
-              color=Colors.gray7
-              block=true
-            />
-            <div className=Styles.seperatedLine />
-            <Text
-              value={dataSourcesCount->string_of_int ++ " In total"}
-              size=Text.Md
-              weight=Text.Thin
-              spacing={Text.Em(0.06)}
-              color=Colors.gray7
-              nowrap=true
-            />
-          </div>
-        </Col>
-      </Row>
-      <VSpacing size=Spacing.xl />
-      <>
-        <THead>
-          <Row>
-            <Col> <HSpacing size=Spacing.xl /> </Col>
-            <Col size=0.5>
-              <div className=TElement.Styles.hashContainer>
-                <Text
-                  block=true
-                  value="NAME"
-                  size=Text.Sm
-                  weight=Text.Semibold
-                  color=Colors.gray5
-                  spacing={Text.Em(0.1)}
-                />
-              </div>
-            </Col>
-            <Col size=0.5>
-              <Text
-                block=true
-                value="TIMESTAMP"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
+  <Section>
+    <div className=CssHelper.container>
+      <div className=CssHelper.mobileSpacing>
+        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col.Grid col=Col.Twelve>
+            <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+            {switch (allSub) {
+             | Data((_, dataSourcesCount)) =>
+               <Heading
+                 value={(dataSourcesCount |> Format.iPretty) ++ " In total"}
+                 size=Heading.H3
+               />
+             | _ => <LoadingCensorBar width=65 height=21 />
+             }}
+          </Col.Grid>
+        </Row.Grid>
+        <Row.Grid alignItems=Row.Center marginBottom=16>
+          <Col.Grid col=Col.Six colSm=Col.Eight>
+            <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
+          </Col.Grid>
+          <Col.Grid col=Col.Six colSm=Col.Four>
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <SortableDropdown
+                sortedBy
+                setSortedBy
+                sortList=[
+                  (MostRequested, getName(MostRequested)),
+                  (LatestUpdate, getName(LatestUpdate)),
+                ]
               />
-            </Col>
-            <Col size=1.>
-              <Text
-                block=true
-                value="OWNER"
-                size=Text.Sm
-                weight=Text.Semibold
-                color=Colors.gray5
-                spacing={Text.Em(0.1)}
-              />
-            </Col>
-            // <Col size=0.4>
-            //   <div className=Styles.feeContainer>
-            //     <Text
-            //       block=true
-            //       value="REQUEST FEE (BAND)"
-            //       size=Text.Sm
-            //       weight=Text.Semibold
-            //       color=Colors.gray5
-            //       spacing={Text.Em(0.1)}
-            //     />
-            //   </div>
-            // </Col>
-            <Col> <HSpacing size=Spacing.xl /> </Col>
-          </Row>
-        </THead>
-        {dataSources
-         ->Belt_Array.map(({id, name, timestamp, owner}) => {
-             <TBody key=name>
-               <div className=Styles.fullWidth>
-                 <Row>
-                   <Col> <HSpacing size=Spacing.xl /> </Col>
-                   <Col size=0.5> <TElement elementType={TElement.DataSource(id, name)} /> </Col>
-                   <Col size=0.5> <TElement elementType={timestamp->TElement.Timestamp} /> </Col>
-                   <Col size=1.> <TElement elementType={owner->TElement.Address} /> </Col>
-                   //  <Col size=0.4>
-                   //    <TElement elementType={fee->Coin.getBandAmountFromCoins->TElement.Fee} />
-                   //  </Col>
-                   <Col> <HSpacing size=Spacing.xl /> </Col>
-                 </Row>
-               </div>
-             </TBody>
-           })
-         ->React.array}
-      </>
-      <VSpacing size=Spacing.lg />
-      <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-      <VSpacing size=Spacing.lg />
-    </>
-    |> Sub.resolve;
-  }
-  |> Sub.default(_, React.null);
+            </div>
+          </Col.Grid>
+        </Row.Grid>
+        {isMobile
+           ? React.null
+           : <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Five>
+                   <div className=TElement.Styles.hashContainer>
+                     <Text
+                       block=true
+                       value="Data Source"
+                       size=Text.Md
+                       weight=Text.Semibold
+                       color=Colors.gray7
+                     />
+                   </div>
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text
+                     block=true
+                     value="Description"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text
+                     block=true
+                     value="Requests"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                   />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Two>
+                   <Text
+                     block=true
+                     value="Timestamp"
+                     size=Text.Md
+                     weight=Text.Semibold
+                     color=Colors.gray7
+                     align=Text.Right
+                   />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>}
+        {switch (allSub) {
+         | Data((dataSources, dataSourcesCount)) =>
+           let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
+           <>
+             {dataSources
+              ->sorting(sortedBy)
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile
+                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                )
+              ->React.array}
+             {isMobile
+                ? React.null
+                : <Pagination
+                    currentPage=page
+                    pageCount
+                    onPageChange={newPage => setPage(_ => newPage)}
+                  />}
+           </>;
+         | _ =>
+           Belt_Array.make(10, ApolloHooks.Subscription.NoData)
+           ->Belt_Array.mapWithIndex((i, noData) =>
+               isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+             )
+           ->React.array
+         }}
+      </div>
+    </div>
+  </Section>;
+};

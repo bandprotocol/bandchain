@@ -8,9 +8,20 @@ module Styles = {
       width(`percent(100.)),
       justifyContent(`center),
       minHeight(`px(30)),
+      padding2(~v=`px(24), ~h=`zero),
+      Media.mobile([padding2(~v=`px(12), ~h=`zero)]),
     ]);
 
-  let innerContainer = style([display(`inlineFlex), alignItems(`center)]);
+  let innerContainer =
+    style([
+      display(`flex),
+      alignItems(`center),
+      Media.mobile([
+        width(`percent(100.)),
+        justifyContent(`spaceBetween),
+        padding2(~v=`zero, ~h=`px(5)),
+      ]),
+    ]);
 
   let angle = isFlip =>
     style([
@@ -61,19 +72,25 @@ let make = (~currentPage, ~pageCount, ~onPageChange: int => unit) =>
           active={currentPage != 1}
           onClick={_ => onPageChange(currentPage < 1 ? 1 : currentPage - 1)}
         />
-        <HSpacing size=Spacing.md />
-        <Text value="Page" spacing={Text.Em(0.03)} />
-        <HSpacing size=Spacing.sm />
-        <Text
-          value={currentPage |> Format.iPretty}
-          spacing={Text.Em(0.03)}
-          weight=Text.Semibold
-        />
-        <HSpacing size=Spacing.sm />
-        <Text value="of" spacing={Text.Em(0.03)} />
-        <HSpacing size=Spacing.sm />
-        <Text value={pageCount |> Format.iPretty} spacing={Text.Em(0.03)} weight=Text.Semibold />
-        <HSpacing size=Spacing.md />
+        <div className=Styles.flex>
+          <HSpacing size=Spacing.md />
+          <Text value="Page" spacing={Text.Em(0.03)} />
+          <HSpacing size=Spacing.sm />
+          <Text
+            value={currentPage |> Format.iPretty}
+            spacing={Text.Em(0.03)}
+            weight=Text.Semibold
+          />
+          <HSpacing size=Spacing.sm />
+          <Text value="of" spacing={Text.Em(0.03)} />
+          <HSpacing size=Spacing.sm />
+          <Text
+            value={pageCount |> Format.iPretty}
+            spacing={Text.Em(0.03)}
+            weight=Text.Semibold
+          />
+          <HSpacing size=Spacing.md />
+        </div>
         <ClickableSymbol
           isPrevious=false
           active={currentPage != pageCount}

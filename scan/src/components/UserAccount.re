@@ -1,73 +1,65 @@
 module Styles = {
   open Css;
 
-  let withWH = (w, h) =>
-    style([
-      width(w),
-      height(h),
-      display(`flex),
-      justifyContent(`flexEnd),
-      alignItems(`center),
-    ]);
+  let container = style([position(`relative)]);
 
-  let connectBtn =
+  let loading = style([width(`px(65)), height(`px(20))]);
+
+  let oval =
     style([
-      backgroundColor(Colors.green1),
-      padding2(~h=`px(8), ~v=`px(2)),
       display(`flex),
+      width(`px(24)),
+      height(`px(24)),
       justifyContent(`center),
       alignItems(`center),
-      borderRadius(`px(10)),
-      cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(17, 85, 78, 0.1))),
+      padding(`px(5)),
+      backgroundColor(Colors.bandBlue),
+      borderRadius(`percent(50.)),
     ]);
 
-  let disconnectBtn =
+  let logo = style([width(`px(12))]);
+
+  let profileCard = show =>
     style([
-      backgroundColor(Colors.yellowAccent1),
-      padding2(~h=`px(8), ~v=`px(2)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      borderRadius(`px(10)),
-      cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(99, 81, 3, 0.1))),
+      position(`absolute),
+      backgroundColor(Colors.white),
+      top(`px(30)),
+      right(`px(-10)),
+      borderRadius(`px(4)),
+      padding(`px(16)),
+      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      transition(~duration=200, "all"),
+      opacity(show ? 1. : 0.),
+      pointerEvents(show ? `auto : `none),
+      zIndex(5),
     ]);
 
-  let faucetBtn =
-    style([
-      backgroundColor(Colors.blue1),
-      padding2(~h=`px(8), ~v=`px(2)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      borderRadius(`px(10)),
-      cursor(`pointer),
-      height(`px(16)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, 0.1))),
-    ]);
+  let innerProfileCard = style([padding(`px(16)), backgroundColor(Colors.profileBG)]);
 
-  let logo = style([width(`px(10))]);
-
-  let balanceContainer = style([display(`flex), alignItems(`center)]);
+  let connect = style([padding2(~v=`px(10), ~h=`zero)]);
+  let disconnect = style([paddingTop(`px(16))]);
 };
 
 module ConnectBtn = {
   [@react.component]
   let make = (~connect) => {
-    <div className=Styles.connectBtn onClick={_ => connect()}>
+    <div
+      className={Css.merge([
+        CssHelper.flexBox(~justify=`center, ~align=`center, ()),
+        CssHelper.clickable,
+        Styles.connect,
+      ])}
+      onClick={_ => connect()}>
       <Text
-        value="connect"
-        size=Text.Xs
+        value="Connect"
         weight=Text.Medium
-        color=Colors.green7
+        color=Colors.bandBlue
         nowrap=true
-        height={Text.Px(10)}
         spacing={Text.Em(0.03)}
         block=true
       />
       <HSpacing size=Spacing.sm />
-      <img src=Images.connectIcon className=Styles.logo />
+      <div className=Styles.oval> <Icon name="fal fa-link" color=Colors.white /> </div>
     </div>;
   };
 };
@@ -75,57 +67,37 @@ module ConnectBtn = {
 module DisconnectBtn = {
   [@react.component]
   let make = (~disconnect) => {
-    <div className=Styles.disconnectBtn onClick={_ => disconnect()}>
-      <Text
-        value="disconnect"
-        size=Text.Xs
-        weight=Text.Medium
-        color=Colors.yellowAccent7
-        nowrap=true
-        height={Text.Px(10)}
-        spacing={Text.Em(0.03)}
-        block=true
-      />
-      <HSpacing size=Spacing.sm />
-      <img src=Images.disconnectIcon className=Styles.logo />
+    <div
+      className={Css.merge([
+        CssHelper.flexBox(~justify=`center, ~align=`center, ()),
+        CssHelper.clickable,
+        Styles.disconnect,
+      ])}
+      onClick={_ => disconnect()}>
+      <Text value="Disconnect" weight=Text.Medium color=Colors.bandBlue nowrap=true block=true />
     </div>;
   };
 };
 
 module FaucetBtn = {
-  let loadingRender = (wDiv, wImg, h) => {
-    <div className={Styles.withWH(wDiv, h)}>
-      <img src=Images.loadingCircles className={Styles.withWH(wImg, h)} />
-    </div>;
-  };
-
   [@react.component]
   let make = (~address) => {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
-      ? loadingRender(`pxFloat(98.5), `px(65), `px(16))
+      ? <img src=Images.loadingCircles className=Styles.loading />
       : <div
-          className=Styles.faucetBtn
+          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
           onClick={_ => {
             setIsRequest(_ => true);
             let _ =
-              AxiosFaucet.request({address, amount: 10_000_000})
+              AxiosFaucet.request({address: address |> Address.toBech32, amount: 10_000_000})
               |> Js.Promise.then_(_ => {
                    setIsRequest(_ => false);
                    Js.Promise.resolve();
                  });
             ();
           }}>
-          <Text
-            value="get 10 testnet BAND"
-            size=Text.Xs
-            weight=Text.Medium
-            color=Colors.blue7
-            nowrap=true
-            height={Text.Px(10)}
-            spacing={Text.Em(0.03)}
-            block=true
-          />
+          <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
         </div>;
   };
 };
@@ -133,48 +105,35 @@ module FaucetBtn = {
 module SendBtn = {
   [@react.component]
   let make = (~send) => {
-    <div className=Styles.faucetBtn onClick={_ => {send()}}>
-      <Text
-        value="SEND"
-        size=Text.Xs
-        weight=Text.Medium
-        color=Colors.blue7
-        nowrap=true
-        height={Text.Px(10)}
-        spacing={Text.Em(0.03)}
-        block=true
-      />
+    <div className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => {send()}}>
+      <Text value="Send" weight=Text.Medium nowrap=true block=true />
     </div>;
   };
 };
 
 module Balance = {
   [@react.component]
-  let make = (~address) =>
-    {
-      let accountSub = AccountSub.get(address);
-      let%Sub account = accountSub;
+  let make = (~address) => {
+    let accountSub = AccountSub.get(address);
 
-      <div className=Styles.balanceContainer>
+    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+      <Text value="Balance" weight=Text.Medium />
+      <div className={CssHelper.flexBox()}>
         <Text
-          value={account.balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
+          value={
+            switch (accountSub) {
+            | Data(account) =>
+              account.balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)
+            | _ => "0"
+            }
+          }
           code=true
-          size=Text.Sm
-          height={Text.Px(13)}
         />
         <HSpacing size=Spacing.sm />
-        <Text value="BAND" size=Text.Sm height={Text.Px(13)} weight=Text.Thin />
+        <Text value="BAND" weight=Text.Thin />
       </div>
-      |> Sub.resolve;
-    }
-    |> Sub.default(
-         _,
-         <div className=Styles.balanceContainer>
-           <Text value="0" code=true size=Text.Sm height={Text.Px(13)} />
-           <HSpacing size=Spacing.sm />
-           <Text value="BAND" size=Text.Sm height={Text.Px(13)} weight=Text.Thin />
-         </div>,
-       );
+    </div>;
+  };
 };
 
 [@react.component]
@@ -182,35 +141,49 @@ let make = () => {
   let trackingSub = TrackingSub.use();
   let (accountOpt, dispatchAccount) = React.useContext(AccountContext.context);
   let (_, dispatchModal) = React.useContext(ModalContext.context);
+  let (show, setShow) = React.useState(_ => false);
 
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
-  let disconnect = () => dispatchAccount(Disconnect);
+  let disconnect = () => {
+    dispatchAccount(Disconnect);
+    setShow(_ => false);
+  };
   let send = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(None))));
 
   switch (accountOpt) {
   | Some({address}) =>
-    <>
-      <Row justify=Row.Right>
-        <Col> <AddressRender address position=AddressRender.Nav /> </Col>
-        <Col> <HSpacing size={`px(27)} /> </Col>
-        <Col> <DisconnectBtn disconnect /> </Col>
-      </Row>
-      <VSpacing size=Spacing.md />
-      <Row justify=Row.Right>
-        <Col> <Balance address /> </Col>
-        <Col> <HSpacing size={`px(5)} /> </Col>
-        <Col> <SendBtn send /> </Col>
-        <Col> <FaucetBtn address={address->Address.toBech32} /> </Col>
-      </Row>
-    </>
+    <div className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.container])}>
+      <div
+        className={Css.merge([CssHelper.flexBox(), CssHelper.clickable])}
+        onClick={_ => setShow(prev => !prev)}>
+        <div className=Styles.oval> <Icon name="fal fa-user" color=Colors.white /> </div>
+        <HSpacing size=Spacing.sm />
+        <Icon name="fas fa-caret-down" color=Colors.bandBlue />
+      </div>
+      <div className={Styles.profileCard(show)}>
+        <AddressRender address position=AddressRender.Text />
+        <VSpacing size={`px(16)} />
+        <div className=Styles.innerProfileCard>
+          <Balance address />
+          <VSpacing size={`px(16)} />
+          <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
+            <FaucetBtn address />
+            <SendBtn send />
+          </div>
+        </div>
+        <DisconnectBtn disconnect />
+      </div>
+    </div>
   | None =>
-    switch (trackingSub) {
-    | Data({chainID}) => <Col> <ConnectBtn connect={_ => connect(chainID)} /> </Col>
-    | Error(err) =>
-      // log for err details
-      Js.Console.log(err);
-      <Text value="chain id not found" />;
-    | _ => <LoadingCensorBar width=60 height=18 />
-    }
+    <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+      {switch (trackingSub) {
+       | Data({chainID}) => <ConnectBtn connect={_ => connect(chainID)} />
+       | Error(err) =>
+         // log for err details
+         Js.Console.log(err);
+         <Text value="chain id not found" />;
+       | _ => <LoadingCensorBar width=80 height=18 />
+       }}
+    </div>
   };
 };

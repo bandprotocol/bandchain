@@ -1,5 +1,5 @@
-use crate::error::Error;
 use crate::span::Span;
+use owasm::core::error::Error;
 
 #[repr(C)]
 pub struct env_t {
@@ -24,4 +24,9 @@ pub struct EnvDispatcher {
 pub struct Env {
     pub env: *mut env_t,
     pub dis: EnvDispatcher,
+}
+
+#[repr(C)]
+pub struct RunOutput {
+    pub gas_used: u32,
 }

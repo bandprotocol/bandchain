@@ -3,7 +3,6 @@ package executor
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"os"
@@ -16,27 +15,16 @@ import (
 )
 
 type DockerExec struct {
-	image string
+	image   string
+	timeout time.Duration
 }
 
-var testProgram []byte = []byte("#!/usr/bin/env python3\nimport sys\nprint(sys.argv[1])")
-
-func NewDockerExec(image string) *DockerExec {
-	exec := &DockerExec{image: image}
-	res, err := exec.Exec(5*time.Second, testProgram, "TEST_ARG")
-	if err != nil {
-		panic(fmt.Sprintf("NewDockerExec: failed to run test program: %s", err.Error()))
-	}
-	if res.Code != 0 {
-		panic(fmt.Sprintf("NewDockerExec: test program returned nonzero code: %d", res.Code))
-	}
-	if string(res.Output) != "TEST_ARG\n" {
-		panic(fmt.Sprintf("NewDockerExec: test program returned wrong output: %s", res.Output))
-	}
-	return exec
+func NewDockerExec(image string, timeout time.Duration) *DockerExec {
+	return &DockerExec{image: image, timeout: timeout}
 }
 
-func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecResult, error) {
+func (e *DockerExec) Exec(code []byte, arg string, env interface{}) (ExecResult, error) {
+	// TODO: Handle env if we are to revive Docker
 	dir, err := ioutil.TempDir("/tmp", "executor")
 	if err != nil {
 		return ExecResult{}, err
@@ -58,7 +46,7 @@ func (e *DockerExec) Exec(timeout time.Duration, code []byte, arg string) (ExecR
 		e.image,
 		"/scratch/exec",
 	}, args...)
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), e.timeout)
 	defer cancel()
 	cmd := exec.CommandContext(ctx, "docker", dockerArgs...)
 	var buf bytes.Buffer

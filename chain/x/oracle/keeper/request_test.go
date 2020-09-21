@@ -128,9 +128,9 @@ func TestProcessExpiredRequests(t *testing.T) {
 	k.AddReport(ctx, 2, types.NewReport(testapp.Validator2.ValAddress, true, rawReports))
 	k.AddReport(ctx, 4, types.NewReport(testapp.Validator2.ValAddress, true, rawReports))
 	// Request 1, 2 and 4 gets resolved. Request 3 does not.
-	k.ResolveSuccess(ctx, 1, BasicResult)
+	k.ResolveSuccess(ctx, 1, BasicResult, 1234)
 	k.ResolveFailure(ctx, 2, "ARBITRARY_REASON")
-	k.ResolveSuccess(ctx, 4, BasicResult)
+	k.ResolveSuccess(ctx, 4, BasicResult, 1234)
 	// Initially, last expired request ID should be 0.
 	require.Equal(t, types.RequestID(0), k.GetRequestLastExpired(ctx))
 	// At block 7, nothing should happen.

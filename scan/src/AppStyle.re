@@ -87,10 +87,55 @@ video {
   vertical-align: baseline;
 }
 
+/* Markdown Initial */
+
+/* Typography */
+
+p {
+  font-size: 14px;
+  line-height: 1.3;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.3;
+}
+
+h1 {
+  font-size: 24px;
+}
+h2 {
+  font-size: 20px;
+}
+h3 {
+  font-size: 18px;
+}
+h4 {
+  font-size: 14px;
+}
+h5 {
+  font-size: 12px;
+}
+
+
+/* List */
+
+ul > li + li {
+  margin-top: 8px;
+}
+
+
 input {
   border: 0;
   margin: 0;
   padding: 0;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -142,7 +187,7 @@ table {
 a,
 a:hover,
 a:active {
-  color: #7a35d4;
+  color: #5269FF;
 }
 
 a:not(:hover) {
@@ -153,15 +198,9 @@ a:not(:hover) {
   box-sizing: border-box;
 }
 
-html {
-  overflow: hidden;
-}
-
 html,
 body {
-  height: 100%;
   max-width: 100vw;
-  overflow: hidden;
 }
 
 body {
@@ -170,7 +209,6 @@ body {
   color: #555;
   display: flex;
   flex-direction: column;
-  overflow: auto;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -189,6 +227,27 @@ code {
   align-items: center;
   justify-content: center;
   height: 100%;
+}
+
+.container {
+  width: 100%;
+  max-width: 984px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+/* Select Input */
+
+select {
+  /* for Firefox */
+  -moz-appearance: none;
+  /* for Chrome */
+  -webkit-appearance: none;
+}
+
+/* For IE10 */
+select::-ms-expand {
+  display: none;
 }
 
 /* scrolling smooth on ios */

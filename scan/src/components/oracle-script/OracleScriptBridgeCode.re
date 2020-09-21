@@ -1,11 +1,12 @@
 module Styles = {
   open Css;
 
-  let tableLowerContainer = style([padding(`px(8))]);
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-  let codeImage = style([width(`px(20)), marginRight(`px(10))]);
-  let vFlex = style([display(`flex), flexDirection(`row), alignItems(`center)]);
+  let tableLowerContainer = style([position(`relative)]);
+  let tableWrapper =
+    style([padding(`px(24)), Media.mobile([padding2(~v=`px(20), ~h=`zero)])]);
 
+  let codeImage = style([width(`px(20)), marginRight(`px(10))]);
+  let titleSpacing = style([marginBottom(`px(8))]);
   let scriptContainer =
     style([
       fontSize(`px(12)),
@@ -27,35 +28,36 @@ module Styles = {
 
   let selectWrapper =
     style([
+      backgroundColor(Colors.white),
+      border(`px(1), `solid, Colors.gray9),
+      borderRadius(`px(4)),
       display(`flex),
       flexDirection(`row),
-      padding2(~v=`px(3), ~h=`px(8)),
-      position(`static),
-      width(`px(169)),
-      height(`px(30)),
-      left(`zero),
-      top(`px(32)),
-      background(rgba(255, 255, 255, 1.)),
-      borderRadius(`px(100)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
-      float(`left),
+      padding2(~v=`px(10), ~h=`px(16)),
+      width(`percent(100.)),
+      maxWidth(`px(200)),
+      minHeight(`px(37)),
+      Media.mobile([padding2(~v=`px(10), ~h=`px(8))]),
     ]);
 
   let selectContent =
     style([
-      background(rgba(255, 255, 255, 1.)),
-      border(`px(0), `solid, hex("FFFFFF")),
-      width(`px(169)),
-      float(`right),
+      backgroundColor(Colors.transparent),
+      borderStyle(`none),
+      color(Colors.gray7),
+      width(`percent(100.)),
+      outlineStyle(`none),
     ]);
 
-  let iconWrapper = style([display(`flex), alignItems(`center), justifyContent(`center)]);
-
   let iconBody = style([width(`px(20)), height(`px(20))]);
-
-  let languageOption = style([display(`flex), flexDirection(`row), alignContent(`center)]);
-
-  let languageText = style([alignItems(`center), display(`flex)]);
+  let copyContainer =
+    style([
+      position(`absolute),
+      top(`px(10)),
+      right(`px(10)),
+      zIndex(2),
+      Media.mobile([right(`zero), top(`px(-35))]),
+    ]);
 };
 
 let renderCode = content => {
@@ -116,7 +118,7 @@ let getLanguagesByPlatform =
 module TargetPlatformIcon = {
   [@react.component]
   let make = (~icon) => {
-    <div className=Styles.iconWrapper>
+    <div className={CssHelper.flexBox(~justify=`center, ())}>
       <img
         className=Styles.iconBody
         src={
@@ -134,7 +136,7 @@ module TargetPlatformIcon = {
 module LanguageIcon = {
   [@react.component]
   let make = (~icon) => {
-    <div className=Styles.iconWrapper>
+    <div className={CssHelper.flexBox(~justify=`center, ())}>
       <img
         className=Styles.iconBody
         src={
@@ -153,14 +155,14 @@ module LanguageIcon = {
 let getFileNameFromLanguage = (~language, ~dataType) => {
   let dataTypeString = dataType |> Obi.dataTypeToString;
   switch (language) {
-  | Solidity => {j|$(dataTypeString)Decoder.sol|j}
+  | Solidity => "Decoders.sol"
   | Go => {j|$(dataTypeString)Decoder.go|j}
   };
 };
 
 let getCodeFromSchema = (~schema, ~language, ~dataType) => {
   switch (language) {
-  | Solidity => Obi.generateDecoderSolidity(schema, dataType)
+  | Solidity => Obi.generateDecoderSolidity(schema)
   | Go => Obi.generateDecoderGo("main", schema, dataType)
   };
 };
@@ -168,22 +170,33 @@ let getCodeFromSchema = (~schema, ~language, ~dataType) => {
 module GenerateDecodeCode = {
   [@react.component]
   let make = (~language, ~schema, ~dataType) => {
-    <div className=Styles.tableLowerContainer>
-      <div className=Styles.vFlex>
-        <img src=Images.code className=Styles.codeImage />
-        <Text
-          value={getFileNameFromLanguage(~language, ~dataType)}
-          size=Text.Lg
-          color=Colors.gray7
-        />
+    let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
+    let code =
+      switch (codeOpt) {
+      | Some(code) => code
+      | _ => "Code is not available."
+      };
+    <>
+      <Row.Grid marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
+        <Col.Grid>
+          <div className={CssHelper.flexBox()}>
+            <Icon name="fal fa-file" size=16 />
+            <HSpacing size=Spacing.sm />
+            <Text
+              value={getFileNameFromLanguage(~language, ~dataType)}
+              weight=Text.Semibold
+              size=Text.Lg
+              block=true
+              color=Colors.gray7
+            />
+          </div>
+        </Col.Grid>
+      </Row.Grid>
+      <div className=Styles.tableLowerContainer>
+        <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>
+        {code |> renderCode}
       </div>
-      <VSpacing size=Spacing.lg />
-      {let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
-       switch (codeOpt) {
-       | Some(code) => code->renderCode
-       | None => {j|"Code is not available."|j}->renderCode
-       }}
-    </div>;
+    </>;
   };
 };
 
@@ -192,28 +205,30 @@ let make = (~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
-    <VSpacing size={`px(10)} />
-    <Row>
-      <HSpacing size={`px(15)} />
-      <Col> <div> <Text value="Target Platform" /> </div> </Col>
-      <HSpacing size={`px(370)} />
-    </Row>
-    <Row>
-      <Col size=1.>
-        <VSpacing size={`px(5)} />
+    <Row.Grid marginBottom=24>
+      <Col.Grid col=Col.Three colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Heading size=Heading.H5 value="Target Platform" />
+          <HSpacing size=Spacing.xs />
+          <CTooltip
+            tooltipPlacementSm=CTooltip.BottomLeft
+            tooltipText="The target platform to which to generate the code for">
+            <Icon name="fal fa-info-circle" size=10 />
+          </CTooltip>
+        </div>
         <div className=Styles.selectWrapper>
           <TargetPlatformIcon icon=targetPlatform />
-          <select
-            className=Styles.selectContent
-            onChange={event => {
-              let newPlatform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
-              setTargetPlatform(_ => newPlatform);
-              let newLanguage = newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
-              setLanguage(_ => newLanguage);
-            }}>
-            // TODO: Add back Kadena
-
-              {[|Ethereum, CosmosIBC|]
+          <div className={CssHelper.selectWrapper(~pRight=0, ())}>
+            <select
+              className=Styles.selectContent
+              onChange={event => {
+                let newPlatform = ReactEvent.Form.target(event)##value |> toPlatformVariant;
+                setTargetPlatform(_ => newPlatform);
+                let newLanguage =
+                  newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
+                setLanguage(_ => newLanguage);
+              }}>
+              {[|Ethereum|]
                ->Belt_Array.map(symbol =>
                    <option value={symbol |> toPlatformString}>
                      {symbol |> toPlatformString |> React.string}
@@ -221,14 +236,20 @@ let make = (~schema) => {
                  )
                |> React.array}
             </select>
+          </div>
         </div>
-      </Col>
-      <Col size=1.>
-        <div className=Styles.languageOption>
-          <div className=Styles.languageText> <Text value="Language" /> </div>
-          <HSpacing size={`px(15)} />
-          <div className=Styles.selectWrapper>
-            <LanguageIcon icon=language />
+      </Col.Grid>
+      <Col.Grid col=Col.Three colSm=Col.Six>
+        <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
+          <Heading size=Heading.H5 value="Language" />
+          <HSpacing size=Spacing.xs />
+          <CTooltip tooltipText="The programming language">
+            <Icon name="fal fa-info-circle" size=10 />
+          </CTooltip>
+        </div>
+        <div className=Styles.selectWrapper>
+          <LanguageIcon icon=language />
+          <div className={CssHelper.selectWrapper(~pRight=0, ())}>
             <select
               className=Styles.selectContent
               onChange={event => {
@@ -246,19 +267,27 @@ let make = (~schema) => {
             </select>
           </div>
         </div>
-      </Col>
-    </Row>
-    <VSpacing size={`px(35)} />
-    /*     <div className=Styles.tableLowerContainer>
-             <div className=Styles.vFlex>
-               <Text value="Description" size=Text.Lg color=Colors.gray7 spacing={Text.Em(0.03)} />
-             </div>
-             <VSpacing size=Spacing.lg />
-             <Text value=description size=Text.Lg weight=Text.Thin spacing={Text.Em(0.03)} />
-           </div>
-           <VSpacing size={`px(35)} /> */
+      </Col.Grid>
+    </Row.Grid>
+    <Row.Grid marginBottom=24 marginBottomSm=12>
+      <Col.Grid>
+        <div className={CssHelper.flexBox()}>
+          <Icon name="fal fa-file" size=16 />
+          <HSpacing size=Spacing.sm />
+          <Text
+            value="Oracle Script Schema"
+            weight=Text.Semibold
+            size=Text.Lg
+            block=true
+            color=Colors.gray7
+          />
+        </div>
+      </Col.Grid>
+    </Row.Grid>
+    <div className=Styles.tableLowerContainer>
+      <div className=Styles.copyContainer> <CopyButton data=schema title="Copy Code" /> </div>
+      {schema |> renderCode}
+    </div>
     <GenerateDecodeCode language schema dataType=Obi.Params />
-    <VSpacing size=Spacing.md />
-    <GenerateDecodeCode language schema dataType=Obi.Result />
   </div>;
 };

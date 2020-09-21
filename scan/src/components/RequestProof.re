@@ -1,12 +1,29 @@
 module Styles = {
   open Css;
 
-  let hFlex = style([display(`flex), alignItems(`center)]);
+  let emptyContainer =
+    style([
+      height(`px(130)),
+      display(`flex),
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      backgroundColor(Colors.blueGray1),
+    ]);
 
-  let withWidth = w => style([width(`px(w))]);
-
-  let topicContainer = h =>
-    style([display(`flex), alignItems(`center), width(`percent(100.)), height(`px(h))]);
+  let proofContainer =
+    style([
+      padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
+      Media.mobile([padding4(~top=`zero, ~left=`px(12), ~right=`px(12), ~bottom=`px(24))]),
+      selector(
+        "> div + div",
+        [
+          marginLeft(`px(24)),
+          Media.mobile([marginLeft(`px(16))]),
+          Media.smallMobile([marginLeft(`px(10))]),
+        ],
+      ),
+    ]);
 
   let scriptContainer =
     style([
@@ -26,12 +43,15 @@ module Styles = {
     ]);
 
   let padding = style([padding(`px(20))]);
+
+  let loading = style([width(`px(65)), height(`px(20)), marginBottom(`px(16))]);
 };
 
 [@react.component]
-let make = (~requestID: ID.Request.t, ~requestOpt: option(RequestSub.t)) => {
-  let (proofOpt, reload) = ProofHook.get(requestID);
+let make = (~request: RequestSub.t) => {
+  let (proofOpt, reload) = ProofHook.get(request.id);
   let (showProof, setShowProof) = React.useState(_ => false);
+  let isMobile = Media.isMobile();
 
   React.useEffect1(
     () => {
@@ -51,54 +71,43 @@ let make = (~requestID: ID.Request.t, ~requestOpt: option(RequestSub.t)) => {
   switch (proofOpt) {
   | Some(proof) =>
     <>
-      <VSpacing size=Spacing.lg />
-      <div className={Styles.topicContainer(40)}>
-        <Col size=1.>
-          <Text
-            value="PROOF OF VALIDITY"
-            size=Text.Sm
-            weight=Text.Semibold
-            spacing={Text.Em(0.06)}
-            color=Colors.gray6
-          />
-        </Col>
-      </div>
-      <div className={Styles.topicContainer(20)}>
-        <Col size=1.>
-          <div className={Styles.withWidth(700)}>
-            <div className=Styles.hFlex>
-              <ShowProofButton showProof setShowProof />
-              <HSpacing size=Spacing.md />
-              <CopyButton data={proof.evmProofBytes} title="Copy EVM proof" width=115 />
-              <HSpacing size=Spacing.md />
-              <CopyButton
-                data={
-                  switch (requestOpt) {
-                  | Some({result: Some(_)}) =>
-                    NonEVMProof.Request(requestOpt->Belt_Option.getExn)->NonEVMProof.createProof
-                  | _ => "" |> JsBuffer.fromHex
-                  }
-                }
-                title="Copy non-EVM proof"
-                width=130
-              />
-              <HSpacing size=Spacing.md />
-              <ExtLinkButton link="https://docs.bandchain.org/" description="What is proof ?" />
-            </div>
-          </div>
-        </Col>
+      <div className={Css.merge([CssHelper.flexBox(), Styles.proofContainer])}>
+        <ShowProofButton showProof setShowProof />
+        <CopyButton
+          data={proof.evmProofBytes |> JsBuffer.toHex(~with0x=false)}
+          title={isMobile ? "EVM" : "Copy EVM proof"}
+          py=12
+          px=20
+          pySm=10
+          pxSm=12
+        />
+        <CopyButton
+          data={proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)}
+          title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
+          py=12
+          px=20
+          pySm=10
+          pxSm=12
+        />
       </div>
       {showProof
-         ? <>
-             <VSpacing size=Spacing.lg />
-             <div className=Styles.scriptContainer>
-               <ReactHighlight className=Styles.padding>
-                 {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
-               </ReactHighlight>
-             </div>
-           </>
+         ? <div className=Styles.scriptContainer>
+             <ReactHighlight className=Styles.padding>
+               {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
+             </ReactHighlight>
+           </div>
          : React.null}
     </>
-  | None => React.null
+  | None =>
+    <div className=Styles.emptyContainer>
+      <img src=Images.loadingCircles className=Styles.loading />
+      <Heading
+        size=Heading.H4
+        value="Waiting for proof"
+        align=Heading.Center
+        weight=Heading.Regular
+        color=Colors.bandBlue
+      />
+    </div>
   };
 };

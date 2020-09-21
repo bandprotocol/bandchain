@@ -1,5 +1,7 @@
 let int64 = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> int_of_string;
 let string = json => json |> Js.Json.decodeString |> Belt.Option.getExn;
+let jsonToStringExn = jsonOpt =>
+  jsonOpt |> Belt.Option.getExn |> Js.Json.decodeString |> Belt.Option.getExn;
 let stringExn = (stringOpt: option(string)) => stringOpt |> Belt_Option.getExn;
 let buffer = json =>
   json
@@ -99,6 +101,8 @@ let numberWithDefault = jsonOpt =>
   jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.0);
 
 let floatWithDefault = jsonOpt =>
-  jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.);
+  jsonOpt
+  |> Belt_Option.flatMap(_, Js.Json.decodeString)
+  |> Belt.Option.mapWithDefault(_, 0., float_of_string);
 
 let floatString = json => json |> Js.Json.decodeString |> Belt.Option.getExn |> float_of_string;

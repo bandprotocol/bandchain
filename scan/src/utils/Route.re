@@ -20,7 +20,8 @@ type account_tab_t =
 type validator_tab_t =
   | ProposedBlocks
   | Delegators
-  | Reports;
+  | Reports
+  | Reporters;
 
 type t =
   | NotFound
@@ -38,53 +39,73 @@ type t =
   | AccountIndexPage(Address.t, account_tab_t)
   | ValidatorHomePage
   | ValidatorIndexPage(Address.t, validator_tab_t)
+  | ProposalHomePage
+  | ProposalIndexPage(int)
   | IBCHomePage;
 
 let fromUrl = (url: ReasonReactRouter.url) =>
+  // TODO: We'll handle the NotFound case for Datasources and Oraclescript later
   switch (url.path, url.hash) {
   | (["data-sources"], _) => DataSourceHomePage
-  | (["data-source", dataSourceID], "code") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceCode)
-  | (["data-source", dataSourceID], "requests") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRequests)
-  | (["data-source", dataSourceID], "revisions") =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceRevisions)
-  | (["data-source", dataSourceID], _) =>
-    DataSourceIndexPage(dataSourceID |> int_of_string, DataSourceExecute)
+  | (["data-source", dataSourceID], hash) =>
+    let urlHash = (
+      fun
+      | "code" => DataSourceCode
+      | "execute" => DataSourceExecute
+      | "revisions" => DataSourceRevisions
+      | _ => DataSourceRequests
+    );
+    DataSourceIndexPage(dataSourceID |> int_of_string, urlHash(hash));
   | (["oracle-scripts"], _) => OracleScriptHomePage
-  | (["oracle-script", oracleScriptID], "code") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptCode)
-  | (["oracle-script", oracleScriptID], "bridge") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptBridgeCode)
-  | (["oracle-script", oracleScriptID], "requests") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRequests)
-  | (["oracle-script", oracleScriptID], "revisions") =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptRevisions)
-  | (["oracle-script", oracleScriptID], _) =>
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, OracleScriptExecute)
+  | (["oracle-script", oracleScriptID], hash) =>
+    let urlHash = (
+      fun
+      | "code" => OracleScriptCode
+      | "bridge" => OracleScriptBridgeCode
+      | "execute" => OracleScriptExecute
+      | "revisions" => OracleScriptRequests
+      | _ => OracleScriptRequests
+    );
+    OracleScriptIndexPage(oracleScriptID |> int_of_string, urlHash(hash));
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
   | (["blocks"], _) => BlockHomePage
   | (["block", blockHeight], _) =>
     let blockHeightIntOpt = blockHeight |> int_of_string_opt;
-    BlockIndexPage(blockHeightIntOpt->Belt_Option.getWithDefault(0));
+    switch (blockHeightIntOpt) {
+    | Some(block) => BlockIndexPage(block)
+    | None => NotFound
+    };
+
   | (["requests"], _) => RequestHomePage
   | (["request", reqID], _) => RequestIndexPage(reqID |> int_of_string)
-  | (["account", address], "delegations") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountDelegations)
-  | (["account", address], "unbonding") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountUnbonding)
-  | (["account", address], "redelegate") =>
-    AccountIndexPage(address |> Address.fromBech32, AccountRedelegate)
-  | (["account", address], _) =>
-    AccountIndexPage(address |> Address.fromBech32, AccountTransactions)
-  | (["validator", address], "delegators") =>
-    ValidatorIndexPage(address |> Address.fromBech32, Delegators)
-  | (["validator", address], "reports") =>
-    ValidatorIndexPage(address |> Address.fromBech32, Reports)
-  | (["validator", address], _) =>
-    ValidatorIndexPage(address |> Address.fromBech32, ProposedBlocks)
+  | (["account", address], hash) =>
+    let urlHash = (
+      fun
+      | "delegations" => AccountDelegations
+      | "unbonding" => AccountUnbonding
+      | "redelegate" => AccountRedelegate
+      | _ => AccountTransactions
+    );
+    switch (address |> Address.fromBech32Opt) {
+    | Some(address) => AccountIndexPage(address, urlHash(hash))
+    | None => NotFound
+    };
+  | (["validator", address], hash) =>
+    let urlHash = (
+      fun
+      | "delegators" => Delegators
+      | "reporters" => Reporters
+      | "proposed-blocks" => ProposedBlocks
+      | _ => Reports
+    );
+    switch (address |> Address.fromBech32Opt) {
+    | Some(address) => ValidatorIndexPage(address, urlHash(hash))
+    | None => NotFound
+    };
+  | (["proposals"], _) => ProposalHomePage
+  | (["proposal", proposalID], _) => ProposalIndexPage(proposalID |> int_of_string)
   | (["ibcs"], _) => IBCHomePage
   | ([], _) => HomePage
   | (_, _) => NotFound
@@ -93,15 +114,15 @@ let fromUrl = (url: ReasonReactRouter.url) =>
 let toString =
   fun
   | DataSourceHomePage => "/data-sources"
-  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID|j}
   | DataSourceIndexPage(dataSourceID, DataSourceCode) => {j|/data-source/$dataSourceID#code|j}
-  | DataSourceIndexPage(dataSourceID, DataSourceRequests) => {j|/data-source/$dataSourceID#requests|j}
+  | DataSourceIndexPage(dataSourceID, DataSourceExecute) => {j|/data-source/$dataSourceID#execute|j}
   | DataSourceIndexPage(dataSourceID, DataSourceRevisions) => {j|/data-source/$dataSourceID#revisions|j}
   | OracleScriptHomePage => "/oracle-scripts"
-  | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptCode) => {j|/oracle-script/$oracleScriptID#code|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptBridgeCode) => {j|/oracle-script/$oracleScriptID#bridge|j}
-  | OracleScriptIndexPage(oracleScriptID, OracleScriptRequests) => {j|/oracle-script/$oracleScriptID#requests|j}
+  | OracleScriptIndexPage(oracleScriptID, OracleScriptExecute) => {j|/oracle-script/$oracleScriptID#execute|j}
   | OracleScriptIndexPage(oracleScriptID, OracleScriptRevisions) => {j|/oracle-script/$oracleScriptID#revisions|j}
   | TxHomePage => "/txs"
   | TxIndexPage(txHash) => {j|/tx/$txHash|j}
@@ -134,10 +155,16 @@ let toString =
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#reports|j};
     }
+  | ValidatorIndexPage(validatorAddress, Reporters) => {
+      let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
+      {j|/validator/$validatorAddressBech32#reporters|j};
+    }
   | ValidatorIndexPage(validatorAddress, ProposedBlocks) => {
       let validatorAddressBech32 = validatorAddress |> Address.toOperatorBech32;
       {j|/validator/$validatorAddressBech32#proposed-blocks|j};
     }
+  | ProposalHomePage => "/proposals"
+  | ProposalIndexPage(proposalID) => {j|/proposal/$proposalID|j}
   | IBCHomePage => "/ibcs"
   | HomePage => "/"
   | NotFound => "/notfound";

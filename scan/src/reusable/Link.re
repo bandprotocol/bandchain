@@ -5,7 +5,7 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~route, ~className, ~children) => {
+let make = (~route, ~className, ~onClick=() => (), ~isTab=false, ~children) => {
   <a
     href={route->Route.toString}
     className={Css.merge([Styles.a, className])}
@@ -16,8 +16,10 @@ let make = (~route, ~className, ~children) => {
           && !event->ReactEvent.Mouse.ctrlKey
           && !event->ReactEvent.Mouse.metaKey
           && !event->ReactEvent.Mouse.shiftKey) {
+        onClick();
         event->ReactEvent.Mouse.preventDefault;
         route->Route.redirect;
+        !isTab ? Window.scrollTo(0, 0) : ();
       }
     }>
     children

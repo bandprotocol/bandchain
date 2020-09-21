@@ -2,13 +2,14 @@ package yoda
 
 import (
 	"strconv"
-	"time"
+	"sync"
 
+	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	otypes "github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
@@ -31,13 +32,13 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 			continue
 		}
 
-		if messageType == (otypes.MsgRequestData{}).Type() {
+		if messageType == (types.MsgRequestData{}).Type() {
 			go handleRequestLog(c, l, log)
 		} else {
 			l.Debug(":ghost: Skipping non-{request/packet} type: %s", messageType)
 		} /*else if messageType == (ibc.MsgPacket{}).Type() {
 			// Try to get request id from packet. If not then return error.
-			_, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
+			_, err := GetEventValue(log, types.EventTypeRequest, types.AttributeKeyID)
 			if err != nil {
 				l.Debug(":ghost: Skipping non-request packet")
 				return
@@ -48,7 +49,7 @@ func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 }
 
 func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
-	idStr, err := GetEventValue(log, otypes.EventTypeRequest, otypes.AttributeKeyID)
+	idStr, err := GetEventValue(log, types.EventTypeRequest, types.AttributeKeyID)
 	if err != nil {
 		l.Error(":cold_sweat: Failed to parse request id with error: %s", err.Error())
 		return
@@ -63,7 +64,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	l = l.With("rid", id)
 
 	// Skip if not related to this validator
-	validators := GetEventValues(log, otypes.EventTypeRequest, otypes.AttributeKeyValidator)
+	validators := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyValidator)
 	hasMe := false
 	for _, validator := range validators {
 		if validator == c.validator.String() {
@@ -84,36 +85,65 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Failed to parse raw requests with error: %s", err.Error())
 	}
 
-	reportsChan := make(chan otypes.RawReport, len(reqs))
+	keyIndex := c.nextKeyIndex()
+	key := c.keys[keyIndex]
+
+	reportsChan := make(chan types.RawReport, len(reqs))
+	var version sync.Map
 	for _, req := range reqs {
 		go func(l *Logger, req rawRequest) {
 			exec, err := GetExecutable(c, l, req.dataSourceHash)
 			if err != nil {
 				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(
+				reportsChan <- types.NewRawReport(
 					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
 				)
 				return
 			}
-			// TODO: Make timeout can configurable.
-			result, err := c.executor.Exec(10*time.Second, exec, req.calldata)
+
+			vmsg := NewVerificationMessage(cfg.ChainID, c.validator, types.RequestID(id), req.externalID)
+			sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
+			if err != nil {
+				l.Error(":skull: Failed to sign verify message: %s", err.Error())
+				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
+			}
+
+			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
+				"BAND_CHAIN_ID":    vmsg.ChainID,
+				"BAND_VALIDATOR":   vmsg.Validator.String(),
+				"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
+				"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
+				"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
+				"BAND_SIGNATURE":   sig,
+			})
+
 			if err != nil {
 				l.Error(":skull: Failed to execute data source script: %s", err.Error())
-				reportsChan <- otypes.NewRawReport(req.externalID, 255, nil)
+				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
 			} else {
 				l.Debug(
 					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
 					req.calldata, result.Output, result.Code,
 				)
-				reportsChan <- otypes.NewRawReport(req.externalID, result.Code, result.Output)
+				version.Store(result.Version, true)
+				reportsChan <- types.NewRawReport(req.externalID, result.Code, result.Output)
 			}
 		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
 	}
 
-	reports := make([]otypes.RawReport, 0)
+	reports := make([]types.RawReport, 0)
+	execVersions := make([]string, 0)
 	for range reqs {
 		reports = append(reports, <-reportsChan)
 	}
+	version.Range(func(key, value interface{}) bool {
+		execVersions = append(execVersions, key.(string))
+		return true
+	})
 
-	SubmitReport(c, l, otypes.RequestID(id), reports)
+	c.pendingMsgs <- ReportMsgWithKey{
+		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
+		execVersion: execVersions,
+		keyIndex:    keyIndex,
+	}
 }

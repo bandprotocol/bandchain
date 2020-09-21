@@ -5,12 +5,49 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
+	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 	types "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var (
-	EventTypeCompleteUnbonding = types.EventTypeCompleteUnbonding
+	EventTypeCompleteUnbonding    = types.EventTypeCompleteUnbonding
+	EventTypeCompleteRedelegation = types.EventTypeCompleteRedelegation
 )
+
+func (app *App) emitStakingModule() {
+	app.StakingKeeper.IterateValidators(app.DeliverContext, func(_ int64, val exported.ValidatorI) (stop bool) {
+		app.emitSetValidator(val.GetOperator())
+		return false
+	})
+
+	app.StakingKeeper.IterateAllDelegations(app.DeliverContext, func(delegation types.Delegation) (stop bool) {
+		app.emitDelegation(delegation.ValidatorAddress, delegation.DelegatorAddress)
+		return false
+	})
+	app.StakingKeeper.IterateRedelegations(app.DeliverContext, func(_ int64, red types.Redelegation) (stop bool) {
+		for _, entry := range red.Entries {
+			app.Write("NEW_REDELEGATION", JsDict{
+				"delegator_address":    red.DelegatorAddress,
+				"operator_src_address": red.ValidatorSrcAddress,
+				"operator_dst_address": red.ValidatorDstAddress,
+				"completion_time":      entry.CompletionTime.UnixNano(),
+				"amount":               entry.SharesDst.String(),
+			})
+		}
+		return false
+	})
+	app.StakingKeeper.IterateUnbondingDelegations(app.DeliverContext, func(_ int64, ubd types.UnbondingDelegation) (stop bool) {
+		for _, entry := range ubd.Entries {
+			app.Write("NEW_UNBONDING_DELEGATION", JsDict{
+				"delegator_address": ubd.DelegatorAddress,
+				"operator_address":  ubd.ValidatorAddress,
+				"completion_time":   entry.CompletionTime.UnixNano(),
+				"amount":            entry.Balance.String(),
+			})
+		}
+		return false
+	})
+}
 
 func (app *App) emitSetValidator(addr sdk.ValAddress) {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
@@ -35,6 +72,7 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
+		"last_update":            app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -47,6 +85,7 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
+		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
 }
 
@@ -154,5 +193,10 @@ func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operator
 
 func (app *App) handleEventTypeCompleteUnbonding(evMap EvMap) {
 	acc, _ := sdk.AccAddressFromBech32(evMap[types.EventTypeCompleteUnbonding+"."+types.AttributeKeyDelegator][0])
+	app.Write("REMOVE_UNBONDING", JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 	app.AddAccountsInBlock(acc)
+}
+
+func (app *App) handEventTypeCompleteRedelegation(evMap EvMap) {
+	app.Write("REMOVE_REDELEGATION", JsDict{"timestamp": app.DeliverContext.BlockTime().UnixNano()})
 }

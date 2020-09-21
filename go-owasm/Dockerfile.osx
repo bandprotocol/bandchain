@@ -36,23 +36,23 @@ RUN chmod -R +rx /opt/osxcross/target/bin
 
 # PRE-FETCH MANY DEPS
 WORKDIR /scratch
-COPY Cargo.toml /scratch/
-COPY Cargo.lock /scratch/
-COPY src /scratch/src
-RUN cargo fetch
+COPY owasm /scratch/owasm
+COPY go-owasm /scratch/go-owasm
+RUN cd go-owasm && cargo fetch
 # allow non-root user to download more deps later
 RUN chmod -R 777 /usr/local/cargo
+RUN chmod -R 777 /usr/local/rustup
 
 ## COPY BUILD SCRIPTS
 
 WORKDIR /code
 RUN rm -rf /scratch
 
-COPY build/*.sh /opt/
+COPY go-owasm/build/*.sh /opt/
 RUN chmod +x /opt/*.sh
 
 RUN mkdir /.cargo
 RUN chmod +rx /.cargo
-COPY build/cargo-config /.cargo/config
+COPY go-owasm/build/cargo-config /.cargo/config
 
 CMD ["/opt/build_osx.sh"]

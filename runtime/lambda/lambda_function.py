@@ -11,13 +11,21 @@ HEADERS = {
     "access-control-allow-methods": "OPTIONS, POST",
 }
 
+runtime_version = "${RUNTIME_VERSION}"
+
 
 def success(returncode, stdout, stderr, err):
     return {
         "statusCode": 200,
         "headers": HEADERS,
         "body": json.dumps(
-            {"returncode": returncode, "stdout": stdout, "stderr": stderr, "error": err}
+            {
+                "returncode": returncode,
+                "stdout": stdout,
+                "stderr": stderr,
+                "error": err,
+                "version": runtime_version,
+            }
         ),
     }
 
@@ -53,7 +61,8 @@ def lambda_handler(event, context):
 
     if "executable" not in body:
         return bad_request("Missing executable value")
-    if len(body["executable"]) > MAX_EXECUTABLE:
+    executable = base64.b64decode(body["executable"])
+    if len(executable) > MAX_EXECUTABLE:
         return bad_request("Executable exceeds max size")
     if "calldata" not in body:
         return bad_request("Missing calldata value")
@@ -68,12 +77,15 @@ def lambda_handler(event, context):
 
     path = "/tmp/execute.sh"
     with open(path, "w") as f:
-        f.write(base64.b64decode(body["executable"]).decode())
+        f.write(executable.decode())
 
     os.chmod(path, 0o775)
     try:
         env = os.environ.copy()
         env["PYTHONPATH"] = os.getcwd()
+        for key, value in body.get("env", {}).items():
+            env[key] = value
+
         proc = subprocess.Popen(
             [path] + shlex.split(body["calldata"]),
             env=env,
@@ -90,4 +102,3 @@ def lambda_handler(event, context):
         return success(126, "", "", "Execution fail")
     except subprocess.TimeoutExpired:
         return success(111, "", "", "Execution time limit exceeded")
-

@@ -54,8 +54,8 @@ module StakeByValidatorConfig = [%graphql
   {|
   subscription StakeByValidator($delegator_address: String!, $operator_address: String!) {
     delegations_view(where: {_and: {delegator_address: {_eq: $delegator_address}, operator_address: {_eq: $operator_address}}}) @bsRecord {
-          amount @bsDecoder(fn: "GraphQLParser.coinExn")
-          reward @bsDecoder(fn: "GraphQLParser.coinExn")
+      amount @bsDecoder(fn: "GraphQLParser.coinExn")
+      reward @bsDecoder(fn: "GraphQLParser.coinExn")
     }
   }
 |}
@@ -116,6 +116,7 @@ let getStakeList = (delegatorAddress, ~page, ~pageSize, ()) => {
     );
   result |> Sub.map(_, x => x##delegations_view);
 };
+
 let getTotalStakeByDelegator = delegatorAddress => {
   let (result, _) =
     ApolloHooks.useSubscription(
@@ -138,7 +139,7 @@ let getTotalStakeByDelegator = delegatorAddress => {
   {amount: delegatorInfo##amount, reward: delegatorInfo##reward} |> Sub.resolve;
 };
 
-let getStakeByValiator = (delegatorAddress, operatorAddress) => {
+let getStakeByValidator = (delegatorAddress, operatorAddress) => {
   let (result, _) = {
     ApolloHooks.useSubscription(
       StakeByValidatorConfig.definition,

@@ -43,6 +43,7 @@ var (
 	ErrOBIDecode                = sdkerrors.Register(ModuleName, 37, "obi decode failed")
 	ErrUncompressionFailed      = sdkerrors.Register(ModuleName, 38, "uncompression failed")
 	ErrRequestAlreadyExpired    = sdkerrors.Register(ModuleName, 39, "request already expired")
+	ErrBadDrbgInitialization    = sdkerrors.Register(ModuleName, 40, "bad drbg initialization")
 )
 
 // WrapMaxError wraps an error message with additional info of the current and max values.

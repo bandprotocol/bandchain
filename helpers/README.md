@@ -7,4 +7,5 @@ A collection of tools that simplify interactions with BandChain. Note that this 
 | Tool                              | Status         |
 | --------------------------------- | -------------- |
 | [`bandchain.js 🌎`](bandchain.js) | ✅ Completed   |
+| [`pyband 🐍`](pyband)             | ✅ Completed   |
 | [`cron-requester ⏰`](#)          | ⚙️ In Progress |

@@ -16,7 +16,8 @@ type weight =
 
 type align =
   | Center
-  | Right;
+  | Right
+  | Left;
 
 type spacing =
   | Unset
@@ -25,6 +26,12 @@ type spacing =
 type lineHeight =
   | Px(int)
   | PxFloat(float);
+
+type transform =
+  | Uppercase
+  | Capitalize
+  | Lowercase
+  | Normal;
 
 type placement =
   | AlignBottomEnd
@@ -63,15 +70,46 @@ module Styles = {
   let fontSize =
     mapWithDefault(
       _,
-      style([fontSize(px(12)), lineHeight(`px(16))]),
+      style([
+        fontSize(`px(12)),
+        lineHeight(`px(16)),
+        Media.smallMobile([fontSize(`px(10))]),
+      ]),
       fun
-      | Xs => style([fontSize(px(8)), letterSpacing(`em(0.07))])
-      | Sm => style([fontSize(px(10)), letterSpacing(`em(0.05))])
-      | Md => style([fontSize(px(12)), lineHeight(`px(16))])
-      | Lg => style([fontSize(px(14)), lineHeight(`px(18))])
-      | Xl => style([fontSize(px(16)), lineHeight(`px(18))])
-      | Xxl => style([fontSize(px(18))])
-      | Xxxl => style([fontSize(px(24))]),
+      | Xs =>
+        style([
+          fontSize(`px(8)),
+          letterSpacing(`em(0.07)),
+          lineHeight(`em(1.14)),
+          Media.smallMobile([fontSize(`px(7))]),
+        ])
+      | Sm =>
+        style([
+          fontSize(`px(10)),
+          letterSpacing(`em(0.05)),
+          lineHeight(`em(1.14)),
+          Media.smallMobile([fontSize(`px(8))]),
+        ])
+      | Md =>
+        style([
+          fontSize(`px(12)),
+          lineHeight(`px(16)),
+          Media.smallMobile([fontSize(`px(10))]),
+        ])
+      | Lg =>
+        style([
+          fontSize(`px(14)),
+          lineHeight(`px(18)),
+          Media.smallMobile([fontSize(`px(12))]),
+        ])
+      | Xl =>
+        style([
+          fontSize(`px(16)),
+          lineHeight(`px(18)),
+          Media.smallMobile([fontSize(`px(14))]),
+        ])
+      | Xxl => style([fontSize(`px(18)), Media.smallMobile([fontSize(`px(16))])])
+      | Xxxl => style([fontSize(`px(24)), Media.smallMobile([fontSize(`px(22))])]),
     );
 
   let fontWeight =
@@ -107,12 +145,7 @@ module Styles = {
   let noWrap = style([whiteSpace(`nowrap)]);
   let block = style([display(`block)]);
   let ellipsis =
-    style([
-      overflow(`hidden),
-      textOverflow(`ellipsis),
-      whiteSpace(`nowrap),
-      width(`percent(100.)),
-    ]);
+    style([overflow(`hidden), textOverflow(`ellipsis), whiteSpace(`nowrap), width(`auto)]);
   let underline = style([textDecoration(`underline)]);
   let textAlign =
     mapWithDefault(
@@ -120,7 +153,8 @@ module Styles = {
       style([textAlign(`left)]),
       fun
       | Center => style([textAlign(`center)])
-      | Right => style([textAlign(`right)]),
+      | Right => style([textAlign(`right)])
+      | Left => style([textAlign(`left)]),
     );
 
   let code =
@@ -137,6 +171,13 @@ module Styles = {
         `monospace,
       ]),
     ]);
+
+  let textTransform =
+    fun
+    | Uppercase => style([textTransform(`uppercase)])
+    | Lowercase => style([textTransform(`lowercase)])
+    | Capitalize => style([textTransform(`capitalize)])
+    | Normal => style([textTransform(`unset)]);
 
   let breakAll = style([wordBreak(`breakAll)]);
 };
@@ -156,6 +197,7 @@ let make =
       ~ellipsis=false,
       ~underline=false,
       ~breakAll=false,
+      ~transform=Normal,
       ~value,
       ~tooltipItem=React.null,
       ~tooltipPlacement=AlignBottom,
@@ -169,6 +211,7 @@ let make =
           Styles.textAlign(align),
           Styles.letterSpacing(spacing),
           Styles.lineHeight(height),
+          Styles.textTransform(transform),
           nowrap ? Styles.noWrap : "",
           block ? Styles.block : "",
           code ? Styles.code : "",

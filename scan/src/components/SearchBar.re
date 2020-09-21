@@ -7,9 +7,8 @@ module Styles = {
       width(`percent(100.)),
       height(`percent(100.)),
       position(`relative),
-      marginLeft(Spacing.lg),
       marginTop(Spacing.xs),
-      Media.mobile([maxWidth(`px(344))]),
+      Media.mobile([margin(`zero), display(`flex), maxWidth(`percent(100.))]),
     ]);
   let searchIcon =
     style([
@@ -31,7 +30,6 @@ module Styles = {
       ]),
       fontSize(`px(12)),
       outline(`px(1), `none, white),
-      transition(~duration=250, "border"),
       border(`px(1), `solid, white),
       placeholder([color(Colors.blueGray3)]),
     ]);

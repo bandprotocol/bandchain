@@ -14,7 +14,14 @@ jobs:
       - name: Install Rust and rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly
+          override: true
+
+      - name: Install Wabt (wat2wasm)
+        run: |
+          wget https://github.com/WebAssembly/wabt/releases/download/1.0.17/wabt-1.0.17-ubuntu.tar.gz
+          tar -zxf wabt-1.0.17-ubuntu.tar.gz
+          sudo cp wabt-1.0.17/bin/wat2wasm /usr/local/bin
 
       - name: Check cargo cache
         uses: actions/cache@v2
