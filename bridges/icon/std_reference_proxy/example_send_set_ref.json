@@ -9,12 +9,12 @@
     "timestamp": "0x59aaeb314a940",
     "nid": "0x3",
     "nonce": "0x1",
-    "to": "cx4df6eb156edf28e422640167f1974223ab516492",
+    "to": "cxc00093386f0951c0329f707776c8da63b1b6282a",
     "dataType": "call",
     "data": {
       "method": "set_ref",
       "params": {
-        "_ref": "cxed04e8cd1eb6052bb4b001c990344b5dfa2d8caf"
+        "_ref": "cx58847a60657efdd875f03a74a5efd76f06f000de"
       }
     }
   },
