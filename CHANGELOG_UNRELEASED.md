@@ -22,6 +22,7 @@
 
 ### Scan
 
+- (impv) [\#2663](https://github.com/bandprotocol/bandchain/pull/2663) Fixed and updated `ChainIDBadge`
 - (impv) [\#2644](https://github.com/bandprotocol/bandchain/pull/2644) Added `netlify.toml` configuration
 - (feat) [\#2594](https://github.com/bandprotocol/bandchain/pull/2594) Added meta og tag to scan
 
