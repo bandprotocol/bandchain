@@ -127,7 +127,7 @@ class TestTest(IconIntegrateTestBase):
         response = self.process_call(call, self.icon_service)
         self.assertEqual(self._test1.get_address(), response)
 
-    def set_initial_refs(self, symbols, rates, resolve_times):
+    def set_refs_by_using_relay(self, relay_data):
         transaction = (
             CallTransactionBuilder()
             .from_(self._test1.get_address())
@@ -136,34 +136,30 @@ class TestTest(IconIntegrateTestBase):
             .nid(3)
             .nonce(100)
             .method("relay")
-            .params(
-                {
-                    "_json_data_list": json.dumps(
-                        [
-                            {"symbol": s, "rate": r, "resolve_time": rt}
-                            for (s, r, rt) in list(zip(symbols, rates, resolve_times))
-                        ]
-                    )
-                }
-            )
+            .params({"_json_data_list": json.dumps(relay_data)})
             .build()
         )
         signed_transaction = SignedTransaction(transaction, self._test1)
         tx_result = self.process_transaction(signed_transaction, self.icon_service)
         self.assertEqual(True, tx_result["status"])
 
-    def test_get_reference_data(self):
-        symbols = ["BTC", "ETH", "BAND", "ICX", "SUSD"]
-        rates = [int(16e9), int(8e9), int(4e9), int(2e9), int(1e9)]
-        resolve_times = [1600419716, 1600419717, 1600419718, 1600419719, 1600419720]
-        for symbol in symbols:
+    def test_relay_and_get_reference_data(self):
+        pairs = ["BTC/ETH", "ETH/BAND", "BAND/ICX", "ICX/SUSD", "SUSD/BTC"]
+        relay_data = [
+            {"symbol": "BTC", "rate": int(16e9), "resolve_time": 1600419716, "request_id": 1},
+            {"symbol": "ETH", "rate": int(8e9), "resolve_time": 1600419717, "request_id": 2},
+            {"symbol": "BAND", "rate": int(4e9), "resolve_time": 1600419718, "request_id": 3},
+            {"symbol": "ICX", "rate": int(2e9), "resolve_time": 1600419719, "request_id": 4},
+            {"symbol": "SUSD", "rate": int(1e9), "resolve_time": 1600419720, "request_id": 5},
+        ]
+        for pair in pairs:
             with self.assertRaises(IconScoreException) as e:
                 call = (
                     CallBuilder()
                     .from_(self._test1.get_address())
                     .to(self._std_reference_proxy)
                     .method("get_reference_data")
-                    .params({"_base": symbol, "_quote": "USD"})
+                    .params({"_pair": pair})
                     .build()
                 )
                 self.process_call(call, self.icon_service)
@@ -171,24 +167,25 @@ class TestTest(IconIntegrateTestBase):
             self.assertEqual(e.exception.code, 32)
             self.assertEqual(e.exception.message, "REF_DATA_NOT_AVAILABLE")
 
-        self.set_initial_refs(symbols, rates, resolve_times)
+        self.set_refs_by_using_relay(relay_data)
 
-        pairs = ["BTC/ETH", "ETH/BAND", "BAND/ICX", "ICX/SUSD", "SUSD/BTC"]
         expected_rates = [
-            (b * int(1e18) // q) for (b, q) in list(zip(rates, rates[1:] + rates[:1]))
+            (b["rate"] * int(1e18) // q["rate"])
+            for (b, q) in list(zip(relay_data, relay_data[1:] + relay_data[:1]))
         ]
-        last_update_base_list = [b * int(1e6) for b in resolve_times]
-        last_update_quote_list = [b * int(1e6) for b in resolve_times[1:] + resolve_times[:1]]
+        last_update_base_list = [b["resolve_time"] * int(1e6) for b in relay_data]
+        last_update_quote_list = [
+            b["resolve_time"] * int(1e6) for b in relay_data[1:] + relay_data[:1]
+        ]
         for (pair, rate, last_update_base, last_update_quote) in list(
             zip(pairs, expected_rates, last_update_base_list, last_update_quote_list)
         ):
-            [base, quote] = pair.split("/")
             call = (
                 CallBuilder()
                 .from_(self._test1.get_address())
                 .to(self._std_reference_proxy)
                 .method("get_reference_data")
-                .params({"_base": base, "_quote": quote})
+                .params({"_pair": pair})
                 .build()
             )
             response = self.process_call(call, self.icon_service)
@@ -197,11 +194,14 @@ class TestTest(IconIntegrateTestBase):
             self.assertEqual(last_update_quote, response["last_update_quote"])
 
     def test_relay_and_get_reference_data_bulk(self):
-        symbols = ["BTC", "ETH", "BAND", "ICX", "SUSD"]
-        rates = [int(16e9), int(8e9), int(4e9), int(2e9), int(1e9)]
-        resolve_times = [1600419716, 1600419717, 1600419718, 1600419719, 1600419720]
-
         pairs = ["BTC/ETH", "ETH/BAND", "BAND/ICX", "ICX/SUSD", "SUSD/BTC"]
+        relay_data = [
+            {"symbol": "BTC", "rate": int(16e9), "resolve_time": 1600419716, "request_id": 1},
+            {"symbol": "ETH", "rate": int(8e9), "resolve_time": 1600419717, "request_id": 2},
+            {"symbol": "BAND", "rate": int(4e9), "resolve_time": 1600419718, "request_id": 3},
+            {"symbol": "ICX", "rate": int(2e9), "resolve_time": 1600419719, "request_id": 4},
+            {"symbol": "SUSD", "rate": int(1e9), "resolve_time": 1600419720, "request_id": 5},
+        ]
 
         with self.assertRaises(IconScoreException) as e:
             call = (
@@ -209,16 +209,7 @@ class TestTest(IconIntegrateTestBase):
                 .from_(self._test1.get_address())
                 .to(self._std_reference_proxy)
                 .method("get_reference_data_bulk")
-                .params(
-                    {
-                        "_json_pairs": json.dumps(
-                            [
-                                {"base": b, "quote": q}
-                                for (b, q) in list(zip(symbols, symbols[1:] + symbols[:1]))
-                            ]
-                        )
-                    }
-                )
+                .params({"_json_pairs": json.dumps(pairs)})
                 .build()
             )
             self.process_call(call, self.icon_service)
@@ -226,23 +217,14 @@ class TestTest(IconIntegrateTestBase):
         self.assertEqual(e.exception.code, 32)
         self.assertEqual(e.exception.message, "REF_DATA_NOT_AVAILABLE")
 
-        self.set_initial_refs(symbols, rates, resolve_times)
+        self.set_refs_by_using_relay(relay_data)
 
         call = (
             CallBuilder()
             .from_(self._test1.get_address())
             .to(self._std_reference_proxy)
             .method("get_reference_data_bulk")
-            .params(
-                {
-                    "_json_pairs": json.dumps(
-                        [
-                            {"base": b, "quote": q}
-                            for (b, q) in list(zip(symbols, symbols[1:] + symbols[:1]))
-                        ]
-                    )
-                }
-            )
+            .params({"_json_pairs": json.dumps(pairs)})
             .build()
         )
         response = self.process_call(call, self.icon_service)
