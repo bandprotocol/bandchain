@@ -94,3 +94,30 @@ def init(chain_id, topic, db):
             GROUP BY oracle_scripts.id, requests.resolve_status;
         """
     )
+    engine.execute(
+        """
+CREATE VIEW non_validator_vote_proposals_view AS
+SELECT validator_id,
+       proposal_id,
+       answer,
+       SUM(CAST(shares AS DECIMAL) * CAST(tokens AS DECIMAL) / CAST(delegator_shares AS DECIMAL)) AS tokens
+FROM delegations
+JOIN votes ON delegations.delegator_id=votes.voter_id
+JOIN validators ON delegations.validator_id=validators.id
+AND votes.voter_id != validators.account_id
+GROUP BY answer, validator_id, proposal_id;
+"""
+    )
+
+    engine.execute(
+        """
+CREATE VIEW validator_vote_proposals_view AS
+SELECT validators.id,
+       proposal_id,
+       answer,
+       tokens
+FROM votes
+JOIN accounts ON accounts.id = votes.voter_id
+JOIN validators ON accounts.id = validators.account_id;
+"""
+    )
