@@ -107,8 +107,7 @@ blocks = sa.Table(
     metadata,
     Column("height", sa.Integer, primary_key=True),
     Column("timestamp", CustomDateTime, index=True),
-    Column("proposer", sa.String, sa.ForeignKey(
-        "validators.consensus_address")),
+    Column("proposer", sa.String, sa.ForeignKey("validators.consensus_address")),
     Column("hash", CustomBase64),
     Column("inflation", sa.Float),
     Column("supply", sa.String),  # uband suffix
@@ -119,8 +118,7 @@ transactions = sa.Table(
     metadata,
     Column("id", sa.Integer, sa.Sequence("seq_transaction_id"), unique=True),
     Column("hash", CustomBase64, primary_key=True),
-    Column("block_height", sa.Integer, sa.ForeignKey(
-        "blocks.height"), index=True),
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), index=True),
     Column("gas_used", sa.Integer),
     Column("gas_limit", sa.Integer),
     Column("gas_fee", sa.String),  # uband suffix
@@ -147,8 +145,7 @@ data_sources = sa.Table(
     Column("description", sa.String),
     Column("owner", sa.String),
     Column("executable", CustomBase64),
-    Column("transaction_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 oracle_scripts = sa.Table(
@@ -161,16 +158,14 @@ oracle_scripts = sa.Table(
     Column("schema", sa.String),
     Column("codehash", sa.String),
     Column("source_code_url", sa.String),
-    Column("transaction_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 requests = sa.Table(
     "requests",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("transaction_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
     Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id")),
     Column("calldata", CustomBase64),
     Column("ask_count", sa.Integer),
@@ -187,8 +182,7 @@ requests = sa.Table(
 raw_requests = sa.Table(
     "raw_requests",
     metadata,
-    Column("request_id", sa.Integer, sa.ForeignKey(
-        "requests.id"), primary_key=True),
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
     Column("external_id", sa.BigInteger, primary_key=True),
     Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id")),
     Column("calldata", CustomBase64),
@@ -197,23 +191,17 @@ raw_requests = sa.Table(
 val_requests = sa.Table(
     "val_requests",
     metadata,
-    Column("request_id", sa.Integer, sa.ForeignKey(
-        "requests.id"), primary_key=True),
-    Column("validator_id", sa.Integer, sa.ForeignKey(
-        "validators.id"), primary_key=True),
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
 )
 
 reports = sa.Table(
     "reports",
     metadata,
-    Column("request_id", sa.Integer, sa.ForeignKey(
-        "requests.id"), primary_key=True),
-    Column("transaction_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
-    Column("validator_id", sa.Integer, sa.ForeignKey(
-        "validators.id"), primary_key=True),
-    Column("reporter_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), nullable=True),
+    Column("request_id", sa.Integer, sa.ForeignKey("requests.id"), primary_key=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), nullable=True),
 )
 
 raw_reports = sa.Table(
@@ -225,12 +213,10 @@ raw_reports = sa.Table(
     Column("data", CustomBase64),
     Column("exit_code", sa.BigInteger),
     sa.ForeignKeyConstraint(
-        ["request_id", "validator_id"], [
-            "reports.request_id", "reports.validator_id"]
+        ["request_id", "validator_id"], ["reports.request_id", "reports.validator_id"]
     ),
     sa.ForeignKeyConstraint(
-        ["request_id", "external_id"], [
-            "raw_requests.request_id", "raw_requests.external_id"]
+        ["request_id", "external_id"], ["raw_requests.request_id", "raw_requests.external_id"]
     ),
 )
 
@@ -263,10 +249,8 @@ validators = sa.Table(
 delegations = sa.Table(
     "delegations",
     metadata,
-    Column("validator_id", sa.Integer, sa.ForeignKey(
-        "validators.id"), primary_key=True),
-    Column("delegator_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
+    Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("shares", sa.DECIMAL),
     Column("last_ratio", sa.DECIMAL),
 )
@@ -274,8 +258,7 @@ delegations = sa.Table(
 validator_votes = sa.Table(
     "validator_votes",
     metadata,
-    Column("block_height", sa.Integer, sa.ForeignKey(
-        "blocks.height"), primary_key=True),
+    Column("block_height", sa.Integer, sa.ForeignKey("blocks.height"), primary_key=True),
     Column(
         "consensus_address",
         sa.String,
@@ -290,8 +273,7 @@ unbonding_delegations = sa.Table(
     metadata,
     Column("delegator_id", sa.Integer, sa.ForeignKey("accounts.id")),
     Column("validator_id", sa.Integer, sa.ForeignKey("validators.id")),
-    Column("creation_height", sa.Integer, sa.ForeignKey(
-        "blocks.height"), nullable=True),
+    Column("creation_height", sa.Integer, sa.ForeignKey("blocks.height"), nullable=True),
     Column("completion_time", CustomDateTime),
     Column("amount", sa.DECIMAL),
 )
@@ -309,18 +291,15 @@ redelegations = sa.Table(
 account_transactions = sa.Table(
     "account_transactions",
     metadata,
-    Column("transaction_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), primary_key=True),
-    Column("account_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), primary_key=True),
+    Column("transaction_id", sa.Integer, sa.ForeignKey("transactions.id"), primary_key=True),
+    Column("account_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
 )
 
 proposals = sa.Table(
     "proposals",
     metadata,
     Column("id", sa.Integer, primary_key=True),
-    Column("proposer_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), nullable=True),
+    Column("proposer_id", sa.Integer, sa.ForeignKey("accounts.id"), nullable=True),
     Column("type", sa.String),
     Column("title", sa.String),
     Column("description", sa.String),
@@ -336,32 +315,25 @@ proposals = sa.Table(
 deposits = sa.Table(
     "deposits",
     metadata,
-    Column("proposal_id", sa.Integer, sa.ForeignKey(
-        "proposals.id"), primary_key=True),
-    Column("depositor_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), primary_key=True),
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("depositor_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("amount", sa.String),  # uband suffix
-    Column("tx_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 votes = sa.Table(
     "votes",
     metadata,
-    Column("proposal_id", sa.Integer, sa.ForeignKey(
-        "proposals.id"), primary_key=True),
-    Column("voter_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), primary_key=True),
+    Column("proposal_id", sa.Integer, sa.ForeignKey("proposals.id"), primary_key=True),
+    Column("voter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("answer", CustomVoteOption),
-    Column("tx_id", sa.Integer, sa.ForeignKey(
-        "transactions.id"), nullable=True),
+    Column("tx_id", sa.Integer, sa.ForeignKey("transactions.id"), nullable=True),
 )
 
 historical_bonded_token_on_validators = sa.Table(
     "historical_bonded_token_on_validators",
     metadata,
-    Column("validator_id", sa.Integer, sa.ForeignKey(
-        "validators.id"), primary_key=True),
+    Column("validator_id", sa.Integer, sa.ForeignKey("validators.id"), primary_key=True),
     Column("bonded_tokens", sa.DECIMAL),
     Column("timestamp", CustomDateTime, primary_key=True),
 )
@@ -369,18 +341,15 @@ historical_bonded_token_on_validators = sa.Table(
 reporters = sa.Table(
     "reporters",
     metadata,
-    Column("reporter_id", sa.Integer, sa.ForeignKey(
-        "accounts.id"), primary_key=True),
+    Column("reporter_id", sa.Integer, sa.ForeignKey("accounts.id"), primary_key=True),
     Column("operator_address", sa.String, primary_key=True),
 )
 
 related_data_source_oracle_scripts = sa.Table(
     "related_data_source_oracle_scripts",
     metadata,
-    Column("data_source_id", sa.Integer, sa.ForeignKey(
-        "data_sources.id"), primary_key=True),
-    Column("oracle_script_id", sa.Integer, sa.ForeignKey(
-        "oracle_scripts.id"), primary_key=True),
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
 )
 
 historical_oracle_statuses = sa.Table(
@@ -394,16 +363,14 @@ historical_oracle_statuses = sa.Table(
 data_source_requests = sa.Table(
     "data_source_requests",
     metadata,
-    Column("data_source_id", sa.Integer, sa.ForeignKey(
-        "data_sources.id"), primary_key=True),
+    Column("data_source_id", sa.Integer, sa.ForeignKey("data_sources.id"), primary_key=True),
     Column("count", sa.Integer),
 )
 
 oracle_script_requests = sa.Table(
     "oracle_script_requests",
     metadata,
-    Column("oracle_script_id", sa.Integer, sa.ForeignKey(
-        "oracle_scripts.id"), primary_key=True),
+    Column("oracle_script_id", sa.Integer, sa.ForeignKey("oracle_scripts.id"), primary_key=True),
     Column("count", sa.Integer),
 )
 
