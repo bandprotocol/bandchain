@@ -19,7 +19,7 @@ var (
 	ErrInstantiation           = errors.New("error while instantiating Wasm with resolvers")
 	ErrRuntime                 = errors.New("runtime error while executing the Wasm script")
 	ErrOutOfGas                = errors.New("out-of-gas while executing the wasm script")
-	ErrBadEntrySignature       = errors.New("bad execution entry point sigature")
+	ErrBadEntrySignature       = errors.New("bad execution entry point signature")
 	ErrMemoryOutOfBound        = errors.New("out-of-bound memory access while executing the wasm script")
 	ErrWrongPeriodAction       = errors.New("OEI action to invoke is not available")
 	ErrTooManyExternalData     = errors.New("too many external data requests")

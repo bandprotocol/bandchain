@@ -19,7 +19,7 @@ class Client(object):
         return genesis["chain_id"]
 
     def get_latest_block(self) -> dict:
-        return self._get("/blocks/latest")
+        return requests.get(self.rpc_url + "/blocks/latest").json()
 
     def get_account(self, address: str) -> Account:
         return from_dict(
@@ -68,3 +68,4 @@ class Client(object):
 
     def get_reporters(self, validator: str) -> list:
         return self._get("/oracle/reporters/{}".format(validator))
+

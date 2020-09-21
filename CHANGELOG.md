@@ -8,6 +8,30 @@
 
 # Changelog
 
+## [v1.2.6](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.6)
+
+### Chain (Non-consensus)
+
+- (bugs) [\#2649](https://github.com/bandprotocol/bandchain/pull/2649) Add commission check before withdraw when export
+
+## [v1.2.5](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.5)
+
+### Chain (Non-consensus)
+
+- (impv) [\#2646](https://github.com/bandprotocol/bandchain/pull/2646) Modify max block gas and bytes on migrate command
+
+### Scan
+
+- (impv) [\#2644](https://github.com/bandprotocol/bandchain/pull/2644) Added `netlify.toml` configuration
+
+### Owasm
+
+- (chore) [\#2647](https://github.com/bandprotocol/bandchain/pull/2647) Fixed error typo
+
+### Helpers
+
+- (bugs) [\#2643](https://github.com/bandprotocol/bandchain/pull/2643) update reports and result type can be null
+
 ## [v1.2.4](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.4)
 
 ### Chain (Non-consensus)
