@@ -1,0 +1,22 @@
+{
+  "jsonrpc": "2.0",
+  "method": "icx_sendTransaction",
+  "params": {
+    "version": "0x3",
+    "from": "hx55814f724bbffe49bfa4555535cd9d7e0e1dff32",
+    "value": "0x0",
+    "stepLimit": "0x3000000",
+    "timestamp": "0x59aaeb314a940",
+    "nid": "0x3",
+    "nonce": "0x1",
+    "to": "cx143bb647e5475ceac0ec1f02260f15ec13e344ab",
+    "dataType": "call",
+    "data": {
+      "method": "relay",
+      "params": {
+        "_json_data_list": "[{\"symbol\":\"BTC\",\"rate\":100,\"resolve_time\":100},{\"symbol\":\"ETH\",\"rate\":200,\"resolve_time\":200},{\"symbol\":\"LTC\",\"rate\":300,\"resolve_time\":300}]"
+      }
+    }
+  },
+  "id": 1
+}
