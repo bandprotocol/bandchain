@@ -9,12 +9,15 @@
     "timestamp": "0x59aaeb314a940",
     "nid": "0x3",
     "nonce": "0x1",
-    "to": "cx58847a60657efdd875f03a74a5efd76f06f000de",
+    "to": "cxc79c2120992356eac409d5cf5ff650f2780a6995",
     "dataType": "call",
     "data": {
       "method": "relay",
       "params": {
-        "_json_data_list": "[{\"symbol\":\"BTC\",\"rate\":100,\"resolve_time\":100,\"request_id\":1},{\"symbol\":\"ETH\",\"rate\":200,\"resolve_time\":200,\"request_id\":2},{\"symbol\":\"USDT\",\"rate\":300,\"resolve_time\":300,\"request_id\":3}]"
+        "_symbols": "[\"BTC\",\"ETH\",\"BAND\",\"ICX\",\"SUSD\"]",
+        "_rates": "[16000000000, 8000000000, 4000000000, 2000000000, 1000000000]",
+        "_resolve_times": "[1600419716, 1600419717, 1600419718, 1600419719, 1600419720]",
+        "_request_ids": "[1, 2, 3, 4, 5]"
       }
     }
   },
