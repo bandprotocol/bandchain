@@ -60,7 +60,7 @@ class TestStdReferenceBasic(ScoreTestCase):
                 "last_update_base": self.score.block.timestamp,
                 "last_update_quote": self.score.block.timestamp,
             },
-            self.score.get_reference_data("USD/USD"),
+            self.score.get_reference_data("USD", "USD"),
         )
 
         self.assertEqual(
@@ -69,7 +69,7 @@ class TestStdReferenceBasic(ScoreTestCase):
                 "last_update_base": 1_600_419_436_000_000,
                 "last_update_quote": self.score.block.timestamp,
             },
-            self.score.get_reference_data("BTC/USD"),
+            self.score.get_reference_data("BTC", "USD"),
         )
 
         self.assertEqual(
@@ -78,7 +78,7 @@ class TestStdReferenceBasic(ScoreTestCase):
                 "last_update_base": 1_600_419_436_000_000,
                 "last_update_quote": 1_600_419_436_000_000,
             },
-            self.score.get_reference_data("BTC/ETH"),
+            self.score.get_reference_data("BTC", "ETH"),
         )
 
         self.assertEqual(
@@ -87,7 +87,7 @@ class TestStdReferenceBasic(ScoreTestCase):
                 "last_update_base": 1_600_419_436_000_000,
                 "last_update_quote": 1_600_419_716_000_000,
             },
-            self.score.get_reference_data("ETH/SUSD"),
+            self.score.get_reference_data("ETH", "SUSD"),
         )
 
     def test_get_reference_data_bulk(self):
@@ -111,5 +111,12 @@ class TestStdReferenceBasic(ScoreTestCase):
                     "last_update_quote": 1_600_419_716_000_000,
                 },
             ],
-            self.score.get_reference_data_bulk('["USD/USD","BTC/ETH","ETH/SUSD"]'),
+            self.score.get_reference_data_bulk('["USD","BTC","ETH"]', '["USD","ETH","SUSD"]'),
         )
+
+    def test_relay_not_authorized(self):
+        with self.assertRaises(IconScoreException) as e:
+            self.score.relay('["BTC"]', "[]", "[99]", "[99]")
+
+        self.assertEqual(e.exception.code, 32)
+        self.assertEqual(e.exception.message, "NOT_AUTHORIZED")

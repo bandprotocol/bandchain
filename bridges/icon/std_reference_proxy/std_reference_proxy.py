@@ -10,7 +10,7 @@ class IStdReference(InterfaceScore):
         pass
 
     @interface
-    def get_reference_data_bulk(self, _json_pairs: str) -> list:
+    def get_reference_data_bulk(self, _bases: str, _quotes: str) -> list:
         pass
 
 
@@ -38,12 +38,12 @@ class StdReferenceProxy(IconScoreBase):
         return self.ref.get()
 
     @external(readonly=True)
-    def get_reference_data(self, _pair: str) -> dict:
+    def get_reference_data(self, _base: str, _quote: str) -> dict:
         ref = self.create_interface_score(self.ref.get(), IStdReference)
-        return ref.get_reference_data(_pair)
+        return ref.get_reference_data(_base, _quote)
 
     @external(readonly=True)
-    def get_reference_data_bulk(self, _json_pairs: str) -> list:
+    def get_reference_data_bulk(self, _bases: str, _quotes: str) -> list:
         ref = self.create_interface_score(self.ref.get(), IStdReference)
-        return ref.get_reference_data_bulk(_json_pairs)
+        return ref.get_reference_data_bulk(_bases, _quotes)
 
