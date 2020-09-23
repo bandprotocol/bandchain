@@ -48,20 +48,26 @@ module CrytoCompare = {
     // TODO: Find the formular to calulate this
     let circulatingSupply = 20494032.;
     let decode = (usdJson, btcJson) =>
-      JsonUtils.Decode.{
-        usdPrice: usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float),
-        usdMarketCap:
-          (usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float))
-          *. circulatingSupply,
-        usd24HrChange:
-          usdJson |> at(["RAW", "BAND", "USD", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
-        btcPrice: btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float),
-        btcMarketCap:
-          (btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float))
-          *. circulatingSupply,
-        btc24HrChange:
-          btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
+      switch (
+        JsonUtils.Decode.{
+          usdPrice: usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float),
+          usdMarketCap:
+            (usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float))
+            *. circulatingSupply,
+          usd24HrChange:
+            usdJson |> at(["RAW", "BAND", "USD", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
+          btcPrice: btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float),
+          btcMarketCap:
+            (btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float))
+            *. circulatingSupply,
+          btc24HrChange:
+            btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
+        }
+      ) {
+      | result => Some(result)
+      | exception _ => None
       };
+
     let usdJsonUrl = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=USD";
     let btcJsonUrl = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=BTC";
 
@@ -76,7 +82,8 @@ module CrytoCompare = {
     let data = {
       let%Opt usd = usdJson;
       let%Opt btc = btcJson;
-      Some(decode(usd, btc));
+      let%Opt result = decode(usd, btc);
+      Some(result);
     };
 
     (data, reload);
