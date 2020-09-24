@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import hashlib
 
 from bech32 import bech32_encode, bech32_decode, convertbits
@@ -34,7 +32,7 @@ class PrivateKey:
         self.signing_key = None
 
     @classmethod
-    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> (str, PrivateKey):
+    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> (str, "PrivateKey"):
         """
         Generate new private key with random mnemonic phrase
 
@@ -50,7 +48,7 @@ class PrivateKey:
                 pass
 
     @classmethod
-    def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> PrivateKey:
+    def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> "PrivateKey":
         """
         Create a PrivateKey instance from a given mnemonic phrase and a HD derivation path.
         If path is not given, default to Band's HD prefix 494 and all other indexes being zeroes.
@@ -70,7 +68,7 @@ class PrivateKey:
         return self
 
     @classmethod
-    def from_hex(cls, priv: str) -> PrivateKey:
+    def from_hex(cls, priv: str) -> "PrivateKey":
         self = cls(_error_do_not_use_init_directly=True)
         self.signing_key = SigningKey.from_string(
             bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256,
@@ -83,7 +81,7 @@ class PrivateKey:
         """
         return self.signing_key.to_string().hex()
 
-    def to_pubkey(self) -> PublicKey:
+    def to_pubkey(self) -> "PublicKey":
         """
         Return the PublicKey associated with this private key.
 
@@ -122,7 +120,7 @@ class PublicKey:
         self.verify_key = None
 
     @classmethod
-    def _from_bech32(cls, bech: str, prefix: str) -> PublicKey:
+    def _from_bech32(cls, bech: str, prefix: str) -> "PublicKey":
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
         bz = convertbits(bz, 5, 8, False)
@@ -133,15 +131,15 @@ class PublicKey:
         return self
 
     @classmethod
-    def from_acc_bech32(cls, bech: str) -> PublicKey:
+    def from_acc_bech32(cls, bech: str) -> "PublicKey":
         return cls._from_bech32(bech, BECH32_PUBKEY_ACC_PREFIX)
 
     @classmethod
-    def from_val_bech32(cls, bech: str) -> PublicKey:
+    def from_val_bech32(cls, bech: str) -> "PublicKey":
         return cls._from_bech32(bech, BECH32_PUBKEY_VAL_PREFIX)
 
     @classmethod
-    def from_cons_bech32(cls, bech: str) -> PublicKey:
+    def from_cons_bech32(cls, bech: str) -> "PublicKey":
         return cls._from_bech32(bech, BECH32_PUBKEY_CONS_PREFIX)
 
     def to_hex(self) -> str:
@@ -172,7 +170,7 @@ class PublicKey:
         """Return bech32-encoded with validator consensus public key prefix"""
         return self._to_bech32(BECH32_PUBKEY_CONS_PREFIX)
 
-    def to_address(self) -> Address:
+    def to_address(self) -> "Address":
         """Return address instance from this public key"""
         hash = hashlib.new("sha256", self.verify_key.to_string("compressed")).digest()
         return Address(hashlib.new("ripemd160", hash).digest())
@@ -198,23 +196,23 @@ class Address:
         self.addr = addr
 
     @classmethod
-    def _from_bech32(cls, bech: str, prefix: str) -> Address:
+    def _from_bech32(cls, bech: str, prefix: str) -> "Address":
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
         return cls(bytes(convertbits(bz, 5, 8, False)))
 
     @classmethod
-    def from_acc_bech32(cls, bech: str) -> Address:
+    def from_acc_bech32(cls, bech: str) -> "Address":
         """Create an address instance from a bech32-encoded account address"""
         return cls._from_bech32(bech, BECH32_ADDR_ACC_PREFIX)
 
     @classmethod
-    def from_val_bech32(cls, bech: str) -> Address:
+    def from_val_bech32(cls, bech: str) -> "Address":
         """Create an address instance from a bech32-encoded validator address"""
         return cls._from_bech32(bech, BECH32_ADDR_VAL_PREFIX)
 
     @classmethod
-    def from_cons_bech32(cls, bech: str) -> Address:
+    def from_cons_bech32(cls, bech: str) -> "Address":
         """Create an address instance from a bech32-encoded consensus address"""
         return cls._from_bech32(bech, BECH32_ADDR_CONS_PREFIX)
 
