@@ -110,7 +110,7 @@ let make = (~address) => {
                 <div className={CssHelper.flexBox()}>
                   <Text
                     block=true
-                    value={delegatorCount |> string_of_int}
+                    value={delegatorCount |> Format.iPretty}
                     weight=Text.Semibold
                     color=Colors.gray7
                   />
@@ -129,7 +129,7 @@ let make = (~address) => {
                   <div className={CssHelper.flexBox()}>
                     <Text
                       block=true
-                      value={delegatorCount |> string_of_int}
+                      value={delegatorCount |> Format.iPretty}
                       weight=Text.Semibold
                       color=Colors.gray7
                     />
