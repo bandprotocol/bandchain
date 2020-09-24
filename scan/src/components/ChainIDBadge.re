@@ -6,7 +6,8 @@ module Styles = {
       display(`flex),
       borderRadius(`px(10)),
       backgroundColor(Colors.blue1),
-      padding2(~v=`pxFloat(5.), ~h=`px(16)),
+      padding2(~v=`pxFloat(5.), ~h=`px(10)),
+      minWidth(`px(120)),
       justifyContent(`center),
       alignItems(`center),
       marginLeft(Spacing.xs),
@@ -15,6 +16,7 @@ module Styles = {
       cursor(`pointer),
       zIndex(3),
       Media.mobile([padding2(~v=`pxFloat(5.), ~h=`px(10))]),
+      Media.smallMobile([minWidth(`px(90))]),
     ]);
 
   let versionLoading =
@@ -70,7 +72,7 @@ type chainID =
 
 let parseChainID =
   fun
-  | "band-wenchang-testnet2" => WenchangTestnet
+  | "band-wenchang-testnet3" => WenchangTestnet
   | "band-wenchang-mainnet" => WenchangMainnet
   | "band-guanyu-devnet5"
   | "band-guanyu-devnet6"
@@ -85,10 +87,10 @@ let parseChainID =
 
 let getLink =
   fun
-  | WenchangTestnet => "https://wenchang-testnet.cosmoscan.io/"
+  | WenchangTestnet => "https://wenchang-testnet3.cosmoscan.io/"
   | WenchangMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
-  | GuanYuTestnet => "https://guanyu-testnet2.cosmoscan.io/"
+  | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
   | Unknown => "";
 
@@ -126,7 +128,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|WenchangTestnet, WenchangMainnet, GuanYuDevnet, GuanYuTestnet, GuanYuPOA|]
+        {[|WenchangMainnet, GuanYuTestnet, GuanYuPOA|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
