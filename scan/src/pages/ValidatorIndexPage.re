@@ -241,7 +241,6 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                     <Heading value="Oracle Reports" size=Heading.H4 align=Heading.Center />
                     <HSpacing size=Spacing.xs />
                     <CTooltip
-                      width=100
                       tooltipPlacementSm=CTooltip.BottomRight
                       tooltipText="The number of reports this validator has submitted to date">
                       <Icon name="fal fa-info-circle" size=12 />

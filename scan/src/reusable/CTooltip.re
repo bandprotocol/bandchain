@@ -41,7 +41,7 @@ module Styles = {
         position(`absolute),
         border(`px(5), `solid, Colors.transparent),
       ]),
-      Media.mobile([padding(`px(12)), fontSize(`px(12))]),
+      Media.mobile([padding(`px(12)), fontSize(`px(12)), maxWidth(`px(150))]),
     ]);
 
   let placement =
@@ -207,10 +207,23 @@ module Styles = {
       ]);
 };
 
+let caculatedWidthbyText = (innerText, fsize) => {
+  open Webapi.Dom;
+  open Webapi.Canvas;
+  open Webapi.Canvas.Canvas2d;
+  let canvasEl = Document.createElement("canvas", document);
+  let ctx = CanvasElement.getContext2d(canvasEl);
+  font(ctx, fsize |> string_of_int);
+  let measureText = ctx |> measureText(innerText);
+  let width = measureText |> width |> int_of_float;
+
+  width;
+};
+
 [@react.component]
 let make =
     (
-      ~width=150,
+      ~width=0,
       ~pd=10,
       ~fsize=12,
       ~align=`left,
@@ -221,10 +234,11 @@ let make =
       ~styles="",
       ~children,
     ) => {
+  let calculatedWidth = caculatedWidthbyText(tooltipText, fsize);
   <div className={Css.merge([Styles.tooltipContainer, styles])}>
     <div
       className={Css.merge([
-        Styles.tooltipItem(width, pd, align, fsize),
+        Styles.tooltipItem(width == 0 ? calculatedWidth : width, pd, align, fsize),
         Styles.placement(tooltipPlacement),
         Styles.placementSm(tooltipPlacementSm),
         mobile ? "" : Styles.hiddenTooltipSm,
