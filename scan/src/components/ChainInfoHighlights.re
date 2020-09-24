@@ -6,7 +6,7 @@ module Styles = {
       position(`relative),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08)))),
       Media.smallMobile([margin2(~v=`zero, ~h=`px(-5))]),
     ]);
 

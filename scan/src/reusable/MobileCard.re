@@ -5,7 +5,9 @@ module Styles = {
       position(`relative),
       padding(`px(10)),
       backgroundColor(Colors.white),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
       selector("+ div", [marginTop(`px(10))]),
     ]);
   let cardItem = (alignItems_, isOneColumn) =>

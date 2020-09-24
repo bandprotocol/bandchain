@@ -27,7 +27,7 @@ module Styles = {
       right(`px(-10)),
       borderRadius(`px(4)),
       padding(`px(16)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`zero, ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08)))),
       transition(~duration=200, "all"),
       opacity(show ? 1. : 0.),
       pointerEvents(show ? `auto : `none),

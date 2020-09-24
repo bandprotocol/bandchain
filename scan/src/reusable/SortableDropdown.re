@@ -9,7 +9,9 @@ module Styles = {
           show ? `block : `none;
         },
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
       backgroundColor(Colors.white),
       position(`absolute),
       right(`zero),
