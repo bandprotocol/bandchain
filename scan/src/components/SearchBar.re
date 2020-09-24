@@ -25,8 +25,8 @@ module Styles = {
       borderRadius(`px(4)),
       padding4(~left=`px(15), ~right=Spacing.md, ~top=`px(10), ~bottom=`px(10)),
       boxShadows([
-        Shadow.box(~x=`zero, ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
-        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
+        Shadow.box(~x=`zero, ~y=`px(1), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.07))),
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, `num(0.02))),
       ]),
       fontSize(`px(12)),
       outline(`px(1), `none, white),
@@ -45,7 +45,7 @@ module Styles = {
       borderBottomRightRadius(`px(4)),
       fontSize(`px(14)),
       fontWeight(`medium),
-      color(rgba(51, 51, 51, 0.54)),
+      color(rgba(51, 51, 51, `num(0.54))),
       cursor(`pointer),
       border(`zero, `solid, white),
     ]);
@@ -63,8 +63,8 @@ module SearchResults = {
         backgroundColor(white),
         borderRadius(`px(4)),
         boxShadows([
-          Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.07)),
-          Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, 0.02)),
+          Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.07))),
+          Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(12), Css.rgba(0, 0, 0, `num(0.02))),
         ]),
       ]);
 

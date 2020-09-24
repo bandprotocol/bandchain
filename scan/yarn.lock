@@ -2574,18 +2574,18 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css-emotion@^1.2.0:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-1.2.0.tgz#44c0b74123744d231bc36ac821cd6269f29649a3"
-  integrity sha512-mcydi8OdmwvwutlEYYe1x4K9lGC3fYXxIeNcXvICesyZ8tWZQNIVbdSbUkL/gRSbz+vBcFKQDQ53TY/y7mIYQw==
+bs-css-emotion@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-2.0.0.tgz#c5859c17519b10ff368255e8140ef46c1be198d4"
+  integrity sha512-V8KlGKhCebgik3fmGuUVknkHtklkthSwcMLtTuTK6vrbHBjnwtp2aIsgG9NqZA1+g0TPUrhk2yyED0CCQ7qZzw==
   dependencies:
-    bs-css "12.2.0"
+    bs-css "13.0.0"
     emotion "^10.0.7"
 
-bs-css@12.2.0:
-  version "12.2.0"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-12.2.0.tgz#926e758d7f95c02f516505ecdcd855e1d9dcb2a0"
-  integrity sha512-JDaJAc8XKYZA05G8xVuDhB184yGKgNajdUloPC+OK+J8gGTnv8pfrhWKsFFKry87eJN4kKHhgsbXaN5U70g+3Q==
+bs-css@13.0.0:
+  version "13.0.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-13.0.0.tgz#1cc53d9403abbb97cd9d6c8ee9574eec03c2c3a0"
+  integrity sha512-GIa+sS6RftSmr/2BROnn1cJfv1SJSnwBlVZ4sONsaDtEH1dQ5IfCSHz3J+bHoiVYQtQZJFqX/EjgCzUu5v6Vcw==
 
 bs-let@^0.1.14:
   version "0.1.16"
