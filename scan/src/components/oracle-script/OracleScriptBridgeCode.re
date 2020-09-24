@@ -68,13 +68,15 @@ let renderCode = content => {
 
 type target_platform_t =
   | Ethereum
-  | CosmosIBC;
+  | CosmosIBC
+  | Web;
 /*   | Kadena; */
 
 type language_t =
   | Solidity
   /*   | Vyper */
-  | Go;
+  | Go
+  | NodeJS;
 /*   | PACT; */
 
 exception WrongLanugageChoice(string);
@@ -85,6 +87,7 @@ let toLanguageVariant =
   | "Solidity" => Solidity
   /* | "Vyper" => Vyper */
   | "Go" => Go
+  | "NodeJS" => NodeJS
   /*   | "PACT" => PACT */
   | _ => raise(WrongLanugageChoice("Chosen language does not exist"));
 
@@ -92,6 +95,7 @@ let toPlatformVariant =
   fun
   | "Ethereum" => Ethereum
   | "Cosmos IBC" => CosmosIBC
+  | "Web" => Web
   /*   | "Kadena" => Kadena */
   | _ => raise(WrongPlatformChoice("Chosen platform does not exist"));
 
@@ -99,20 +103,23 @@ let toLanguageString =
   fun
   | Solidity => "Solidity"
   /*   | Vyper => "Vyper" */
-  | Go => "Go";
+  | Go => "Go"
+  | NodeJS => "NodeJS";
 /*  | PACT => "PACT"; */
 
 let toPlatformString =
   fun
   | Ethereum => "Ethereum"
-  | CosmosIBC => "Cosmos IBC";
+  | CosmosIBC => "Cosmos IBC"
+  | Web => "Web";
 /*   | Kadena => "Kadena"; */
 
 let getLanguagesByPlatform =
   fun
   //TODO: Add back Vyper
   | Ethereum => [|Solidity|]
-  | CosmosIBC => [|Go|];
+  | CosmosIBC => [|Go|]
+  | Web => [|NodeJS|];
 /*   | Kadena => [|PACT|]; */
 
 module TargetPlatformIcon = {
@@ -125,6 +132,7 @@ module TargetPlatformIcon = {
           switch (icon) {
           | Ethereum => Images.ethereumIcon
           | CosmosIBC => Images.cosmosIBCIcon
+          | Web => Images.webIcon
           /*           | Kadena => Images.kadenaIcon */
           }
         }
@@ -144,6 +152,7 @@ module LanguageIcon = {
           | Solidity => Images.solidityIcon
           /*           | Vyper => Images.vyperIcon */
           | Go => Images.golangIcon
+          | NodeJS => Images.nodeJSIcon
           /*           | PACT => Images.pactIcon */
           }
         }
@@ -157,20 +166,22 @@ let getFileNameFromLanguage = (~language, ~dataType) => {
   switch (language) {
   | Solidity => "Decoders.sol"
   | Go => {j|$(dataTypeString)Decoder.go|j}
+  | NodeJS => "index.js"
   };
 };
 
-let getCodeFromSchema = (~schema, ~language, ~dataType) => {
+let getCodeFromSchema = (~schema, ~oracleScriptID, ~language, ~dataType) => {
   switch (language) {
   | Solidity => Obi.generateDecoderSolidity(schema)
   | Go => Obi.generateDecoderGo("main", schema, dataType)
+  | NodeJS => Obi.generateNodeJS(oracleScriptID, schema, dataType)
   };
 };
 
 module GenerateDecodeCode = {
   [@react.component]
-  let make = (~language, ~schema, ~dataType) => {
-    let codeOpt = getCodeFromSchema(~schema, ~language, ~dataType);
+  let make = (~language, ~oracleScriptID, ~schema, ~dataType) => {
+    let codeOpt = getCodeFromSchema(~schema, ~oracleScriptID, ~language, ~dataType);
     let code =
       switch (codeOpt) {
       | Some(code) => code
@@ -201,7 +212,7 @@ module GenerateDecodeCode = {
 };
 
 [@react.component]
-let make = (~schema) => {
+let make = (~oracleScriptID, ~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
@@ -228,7 +239,7 @@ let make = (~schema) => {
                   newPlatform |> getLanguagesByPlatform |> Belt_Array.getExn(_, 0);
                 setLanguage(_ => newLanguage);
               }}>
-              {[|Ethereum|]
+              {[|Ethereum, Web|]
                ->Belt_Array.map(symbol =>
                    <option value={symbol |> toPlatformString}>
                      {symbol |> toPlatformString |> React.string}
@@ -288,6 +299,6 @@ let make = (~schema) => {
       <div className=Styles.copyContainer> <CopyButton data=schema title="Copy Code" /> </div>
       {schema |> renderCode}
     </div>
-    <GenerateDecodeCode language schema dataType=Obi.Params />
+    <GenerateDecodeCode language oracleScriptID schema dataType=Obi.Params />
   </div>;
 };
