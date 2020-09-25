@@ -44,6 +44,7 @@ module ConnectBtn = {
   [@react.component]
   let make = (~connect) => {
     <div
+      id="connectButton"
       className={Css.merge([
         CssHelper.flexBox(~justify=`center, ~align=`center, ()),
         CssHelper.clickable,
@@ -107,9 +108,11 @@ module FaucetBtn = {
 module SendBtn = {
   [@react.component]
   let make = (~send) => {
-    <Button px=20 py=5 onClick={_ => {send()}}>
-      <Text value="Send" weight=Text.Medium nowrap=true block=true />
-    </Button>;
+    <div id="sendToken">
+      <Button px=20 py=5 onClick={_ => {send()}}>
+        <Text value="Send" weight=Text.Medium nowrap=true block=true />
+      </Button>
+    </div>;
   };
 };
 
@@ -156,6 +159,7 @@ let make = () => {
   | Some({address}) =>
     <div className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.container])}>
       <div
+        id="userInfoButton"
         className={Css.merge([CssHelper.flexBox(), CssHelper.clickable])}
         onClick={_ => setShow(prev => !prev)}>
         <div className=Styles.oval> <Icon name="fal fa-user" color=Colors.white /> </div>
@@ -163,7 +167,7 @@ let make = () => {
         <Icon name="fas fa-caret-down" color=Colors.bandBlue />
       </div>
       <div className={Styles.profileCard(show)}>
-        <AddressRender address position=AddressRender.Text />
+        <div id="addressWrapper"> <AddressRender address position=AddressRender.Text /> </div>
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
           <Balance address />

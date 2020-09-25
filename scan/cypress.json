@@ -1,0 +1,6 @@
+{
+  "baseUrl": "http://localhost:1234/",
+  "pluginsFile": false,
+  "fixturesFolder": false,
+  "defaultCommandTimeout": 10000
+}

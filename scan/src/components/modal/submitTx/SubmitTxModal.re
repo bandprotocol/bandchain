@@ -146,6 +146,7 @@ module SubmitTxStep = {
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.md />
       <button
+        id="nextButton"
         className=Styles.nextBtn
         disabled={msgsOpt->Belt.Option.isNone}
         onClick={_ => {
