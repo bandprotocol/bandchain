@@ -156,7 +156,8 @@ let renderDetailMobile =
     ]
   | SubmitProposalMsg({proposer, title, description, initialDeposit}) => [
       ("Title", Text(title)),
-      ("Description", Text(description)),
+      //TODO: will re-visit
+      // ("Description", Text(description)),
       ("Proposer", Address(proposer, addressWidth, `account)),
       ("Amount", Coin({value: initialDeposit, hasDenom: true})),
     ]

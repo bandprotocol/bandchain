@@ -41,7 +41,7 @@ let make = () => {
 
   let validatorsSub = ValidatorSub.getList(~isActive, ());
   let validatorsCountSub = ValidatorSub.count();
-  let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
+  let activeValidatorCountSub = ValidatorSub.countByActive(true);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
   let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
   let latestBlock = BlockSub.getLatest();
@@ -50,7 +50,7 @@ let make = () => {
   let topPartAllSub =
     Sub.all5(
       validatorsCountSub,
-      isActiveValidatorCountSub,
+      activeValidatorCountSub,
       bondedTokenCountSub,
       avgBlockTimeSub,
       latestBlock,

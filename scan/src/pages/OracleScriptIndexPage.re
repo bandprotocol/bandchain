@@ -132,7 +132,6 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
                                  <CTooltip
                                    mobile=false
                                    align=`center
-                                   width=250
                                    tooltipText={Ellipsis.format(
                                      ~text=dataSourceName,
                                      ~limit=32,
