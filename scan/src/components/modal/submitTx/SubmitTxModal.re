@@ -171,7 +171,7 @@ module SubmitTxStep = {
               setRawTx(_ => Some(rawTx));
               Promise.ret();
             | None =>
-              Window.alert("invalid msgs");
+              Webapi.Dom.(window |> Window.alert("invalid msgs"));
               Promise.ret();
             };
           ();

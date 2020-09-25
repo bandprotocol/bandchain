@@ -32,7 +32,8 @@
     "bs-moment",
     "bs-css",
     "bs-css-emotion",
-    "bs-axios"
+    "bs-axios",
+    "bs-webapi"
   ],
   "bs-dev-dependencies": ["@glennsl/bs-jest"],
   "refmt": 3
