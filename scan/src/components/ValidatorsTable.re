@@ -234,7 +234,12 @@ let getName =
   | UptimeAsc => "Uptime (Low-High)"
   | UptimeDesc => "Uptime (High-Low)";
 
-let compareString = (a, b) => Js.String.localeCompare(a, b) |> int_of_float;
+let compareString = (a, b) => {
+  let removeEmojiRegex = [%re "/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g"];
+  let a_ = a->Js.String2.replaceByRe(removeEmojiRegex, "");
+  let b_ = b->Js.String2.replaceByRe(removeEmojiRegex, "");
+  Js.String.localeCompare(a_, b_) |> int_of_float;
+}
 
 let defaultCompare = (a: ValidatorSub.t, b: ValidatorSub.t) =>
   if (a.tokens != b.tokens) {
