@@ -193,7 +193,7 @@ class Handler(object):
         )
 
     def handle_update_validator(self, msg):
-        if "tokens" in msg:
+        if "tokens" in msg and "last_update" in msg:
             self.handle_new_historical_bonded_token_on_validator(
                 {
                     "validator_id": self.get_validator_id(msg["operator_address"]),
@@ -201,7 +201,6 @@ class Handler(object):
                     "timestamp": msg["last_update"],
                 }
             )
-        if "last_update" in msg:
             del msg["last_update"]
         self.conn.execute(
             validators.update()
@@ -319,7 +318,7 @@ class Handler(object):
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
-        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        msg["operator_address"] = msg["validator"]
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
