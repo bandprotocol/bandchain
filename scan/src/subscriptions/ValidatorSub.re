@@ -25,7 +25,6 @@ type internal_t = {
 
 type t = {
   rank: int,
-  avgResponseTime: int,
   isActive: bool,
   oracleStatus: bool,
   operatorAddress: Address.t,
@@ -40,10 +39,7 @@ type t = {
   commission: float,
   commissionMaxChange: float,
   commissionMaxRate: float,
-  completedRequestCount: int,
-  missedRequestCount: int,
   uptime: option(float),
-  oracleReports: int,
 };
 
 let toExternal =
@@ -72,7 +68,7 @@ let toExternal =
   consensusAddress,
   consensusPubKey,
   votingPower: tokens.amount,
-  moniker,
+  moniker: rank mod 2 == 0 ? {j|😀$moniker|j} : moniker,
   identity,
   website,
   details,
@@ -80,12 +76,7 @@ let toExternal =
   commission: commissionRate *. 100.,
   commissionMaxChange: commissionMaxChange *. 100.,
   commissionMaxRate: commissionMaxRate *. 100.,
-  // TODO: remove hardcoded when somewhere use it
-  avgResponseTime: 2,
-  completedRequestCount: 23459,
-  missedRequestCount: 20,
   uptime: None,
-  oracleReports: 3000,
 };
 
 type validator_voted_status_t =
