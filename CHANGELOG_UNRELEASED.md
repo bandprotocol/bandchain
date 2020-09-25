@@ -23,6 +23,7 @@
 
 ### Scan
 
+- (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
 - (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
 - (impv) [\#2671](https://github.com/bandprotocol/bandchain/pull/2671) Adjusted tooltip width and added webapi
 - (impv) [\#2670](https://github.com/bandprotocol/bandchain/pull/2670) Format the count number
