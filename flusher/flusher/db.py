@@ -99,6 +99,8 @@ tracking = sa.Table(
     Column("chain_id", sa.String, primary_key=True),
     Column("topic", sa.String),
     Column("kafka_offset", sa.Integer),
+    Column("replay_topic", sa.String),
+    Column("replay_offset", sa.Integer),
 )
 
 

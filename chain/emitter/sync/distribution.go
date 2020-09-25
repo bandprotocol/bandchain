@@ -1,6 +1,7 @@
 package emitter
 
 import (
+	"github.com/bandprotocol/bandchain/chain/emitter/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	dist "github.com/cosmos/cosmos-sdk/x/distribution"
 	"github.com/cosmos/cosmos-sdk/x/distribution/types"
@@ -26,7 +27,7 @@ func (app *App) getCurrentRewardAndCurrentRatio(addr sdk.ValAddress) (string, st
 func (app *App) emitUpdateValidatorRewardAndAccumulatedCommission(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	accCommission, _ := app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).TruncateDecimal()
-	app.Write("UPDATE_VALIDATOR", JsDict{
+	app.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address":       addr.String(),
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
@@ -36,7 +37,7 @@ func (app *App) emitUpdateValidatorRewardAndAccumulatedCommission(addr sdk.ValAd
 
 func (app *App) emitUpdateValidatorReward(addr sdk.ValAddress) {
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
-	app.Write("UPDATE_VALIDATOR", JsDict{
+	app.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address": addr.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
@@ -45,7 +46,7 @@ func (app *App) emitUpdateValidatorReward(addr sdk.ValAddress) {
 
 // handleMsgWithdrawDelegatorReward implements emitter handler for MsgWithdrawDelegatorReward.
 func (app *App) handleMsgWithdrawDelegatorReward(
-	txHash []byte, msg dist.MsgWithdrawDelegatorReward, evMap EvMap, extra JsDict,
+	txHash []byte, msg dist.MsgWithdrawDelegatorReward, evMap common.EvMap, extra common.JsDict,
 ) {
 	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, msg.DelegatorAddress)
 	app.AddAccountsInTx(withdrawAddr)
@@ -56,14 +57,14 @@ func (app *App) handleMsgWithdrawDelegatorReward(
 
 // handleMsgSetWithdrawAddress implements emitter handler for MsgSetWithdrawAddress.
 func (app *App) handleMsgSetWithdrawAddress(
-	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap EvMap, extra JsDict,
+	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap common.EvMap, extra common.JsDict,
 ) {
 	app.AddAccountsInTx(msg.WithdrawAddress)
 }
 
 // handleMsgWithdrawValidatorCommission implements emitter handler for MsgWithdrawValidatorCommission.
 func (app *App) handleMsgWithdrawValidatorCommission(
-	txHash []byte, msg dist.MsgWithdrawValidatorCommission, evMap EvMap, extra JsDict,
+	txHash []byte, msg dist.MsgWithdrawValidatorCommission, evMap common.EvMap, extra common.JsDict,
 ) {
 	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, sdk.AccAddress(msg.ValidatorAddress))
 	app.AddAccountsInTx(withdrawAddr)
