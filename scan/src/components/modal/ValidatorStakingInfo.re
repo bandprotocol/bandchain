@@ -42,7 +42,10 @@ module ButtonSection = {
           className={CssHelper.btn(~px=20, ~py=5, ())}
           onClick={_ => {
             validatorInfo.commission == 100.
-              ? Window.alert("Delegation to foundation validator nodes is not advised.")
+              ? Webapi.Dom.(
+                  window
+                  |> Window.alert("Delegation to foundation validator nodes is not advised.")
+                )
               : delegate()
           }}>
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
