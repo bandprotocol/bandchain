@@ -22,6 +22,7 @@
 
 ### Scan
 
+- (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
 - (impv) [\#2670](https://github.com/bandprotocol/bandchain/pull/2670) Format the count number
 - (bugs) [\#2666](https://github.com/bandprotocol/bandchain/pull/2666) Handle rate limit msg when decoding
 - (impv) [\#2663](https://github.com/bandprotocol/bandchain/pull/2663) Fixed and updated `ChainIDBadge`
