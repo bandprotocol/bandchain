@@ -68,7 +68,7 @@ let toExternal =
   consensusAddress,
   consensusPubKey,
   votingPower: tokens.amount,
-  moniker: rank mod 2 == 0 ? {j|😀$moniker|j} : moniker,
+  moniker,
   identity,
   website,
   details,
