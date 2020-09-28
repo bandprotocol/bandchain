@@ -62,7 +62,7 @@ module Styles = {
       display(`flex),
       borderRadius(`px(6)),
       cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, `num(0.2)))),
       borderRadius(`px(10)),
     ]);
 };
@@ -206,7 +206,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     | Some({address: sender}) =>
       let openSendModal = () => Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
       if (sender == address) {
-        Window.confirm("Are you sure you want to send tokens to yourself?")
+        Webapi.Dom.(window |> Window.confirm("Are you sure you want to send tokens to yourself?"))
           ? openSendModal() : ();
       } else {
         openSendModal();

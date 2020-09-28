@@ -19,7 +19,7 @@ let make = (~route, ~className, ~onClick=() => (), ~isTab=false, ~children) => {
         onClick();
         event->ReactEvent.Mouse.preventDefault;
         route->Route.redirect;
-        !isTab ? Window.scrollTo(0, 0) : ();
+        !isTab ? Webapi.Dom.(window |> Window.scrollTo(0., 0.)) : ();
       }
     }>
     children

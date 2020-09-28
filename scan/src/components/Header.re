@@ -138,7 +138,7 @@ module MobileRender = {
           </div>
         </Col.Grid>
         <Col.Grid colSm=Col.Six>
-          <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+          <div className={CssHelper.flexBox(~justify=`flexEnd, ~wrap=`nowrap, ())}>
             <ChainIDBadge />
             <NavBar />
           </div>

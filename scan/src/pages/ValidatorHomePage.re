@@ -4,7 +4,9 @@ module Styles = {
   let infoContainer =
     style([
       backgroundColor(Colors.white),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
       padding(`px(24)),
       height(`percent(100.)),
       Media.mobile([padding(`px(16))]),
@@ -39,7 +41,7 @@ let make = () => {
 
   let validatorsSub = ValidatorSub.getList(~isActive, ());
   let validatorsCountSub = ValidatorSub.count();
-  let isActiveValidatorCountSub = ValidatorSub.countByActive(isActive);
+  let activeValidatorCountSub = ValidatorSub.countByActive(true);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
   let avgBlockTimeSub = BlockSub.getAvgBlockTime(prevDayTime, currentTime);
   let latestBlock = BlockSub.getLatest();
@@ -48,7 +50,7 @@ let make = () => {
   let topPartAllSub =
     Sub.all5(
       validatorsCountSub,
-      isActiveValidatorCountSub,
+      activeValidatorCountSub,
       bondedTokenCountSub,
       avgBlockTimeSub,
       latestBlock,

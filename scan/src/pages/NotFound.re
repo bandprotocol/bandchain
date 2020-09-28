@@ -14,7 +14,7 @@ module Styles = {
       justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, `num(0.1)))),
     ]);
 
   let linkToHome = style([display(`flex), alignItems(`center), cursor(`pointer)]);
