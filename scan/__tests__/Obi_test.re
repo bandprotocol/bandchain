@@ -220,6 +220,65 @@ library ResultDecoder {
     )
     |> toEqual(generateDecoderSolidity({j|{symbol:string,multiplier:u64}/{px:u64}|j}))
   })
+
+  test("should be able to generate solidity when parameter is array", () => {
+    expect(
+      Some(
+        {j|pragma solidity ^0.5.0;
+
+import "./Obi.sol";
+
+library ParamsDecoder {
+    using Obi for Obi.Data;
+
+    struct Params {
+        string[] symbols;
+        uint64 multiplier;
+    }
+
+    function decodeParams(bytes memory _data)
+        internal
+        pure
+        returns (Params memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        uint32 length = data.decodeU32();
+        string[] memory symbols = new string[](length);
+        for (uint256 i = 0; i < length; i++) {
+          symbols[i] = string(data.decodeBytes());
+        }
+        result.symbols = symbols
+        result.multiplier = data.decodeU64();
+    }
+}
+
+library ResultDecoder {
+    using Obi for Obi.Data;
+
+    struct Result {
+        uint64[] rates;
+    }
+
+    function decodeResult(bytes memory _data)
+        internal
+        pure
+        returns (Result memory result)
+    {
+        Obi.Data memory data = Obi.from(_data);
+        uint32 length = data.decodeU32();
+        uint64[] memory rates = new uint64[](length);
+        for (uint256 i = 0; i < length; i++) {
+          rates[i] = data.decodeU64();
+        }
+        result.rates = rates
+    }
+}
+
+|j},
+      ),
+    )
+    |> toEqual(generateDecoderSolidity({j|{symbols:[string],multiplier:u64}/{rates:[u64]}|j}))
+  })
 });
 
 describe("should be able to generate go code correctly", () => {
@@ -313,3 +372,4 @@ func(result *Result) EncodeResult() []byte {
     |> toEqual(generateEncodeGo("test", {j|{symbol:string,multiplier:u64}/{px:u64}|j}, "output"))
   });
 });
+
