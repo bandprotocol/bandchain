@@ -35,6 +35,8 @@
 
 ### Bridges
 
+- (feat) [\#2632](https://github.com/bandprotocol/bandchain/pull/2632) Add aggregator contract for ICON bridge
+
 ### Runtime
 
 ### Owasm
