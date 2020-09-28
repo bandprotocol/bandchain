@@ -4,8 +4,8 @@
     "build": "rm -rf dist/ && bsb -make-world && parcel build index.html --no-source-maps --no-cache",
     "start": "bsb -make-world -w",
     "test:dev": "yarn jest --coverage",
-    "test": "yarn build && yarn test:dev",
-    "integration-test": "cypress open"
+    "integration-test:dev": "start-server-and-test 'serve dist -l 3000' http://localhost:3000 'cypress run'",
+    "test": "RPC_URL=https://d3n.bandprotocol.com/rest GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql NETWORK='GUANYU38' yarn build && yarn test:dev && yarn integration-test:dev"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -60,7 +60,9 @@
     "style-loader": "^1.2.1",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "serve": "^11.3.0",
+    "start-server-and-test": "^1.11.0"
   },
   "customDistStructure": {
     "config": {
@@ -73,5 +75,10 @@
         ".gif"
       ]
     }
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "cypress"
+    ]
   }
 }
