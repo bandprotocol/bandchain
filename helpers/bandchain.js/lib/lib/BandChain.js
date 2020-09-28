@@ -23,9 +23,6 @@ var cosmosjs = require('@cosmostation/cosmosjs');
 
 var delay = require('delay');
 
-var _require2 = require('lodash'),
-    result = _require2.result;
-
 function createRequestMsg(_x, _x2, _x3, _x4, _x5, _x6, _x7) {
   return _createRequestMsg.apply(this, arguments);
 }
@@ -315,7 +312,7 @@ var BandChain = /*#__PURE__*/function () {
             requestEndpoint,
             _requestEndpoint,
             res,
-            _result,
+            result,
             _args5 = arguments;
 
         return _regenerator["default"].wrap(function _callee5$(_context5) {
@@ -356,8 +353,8 @@ var BandChain = /*#__PURE__*/function () {
                   break;
                 }
 
-                _result = res.data.result;
-                return _context5.abrupt("return", _result);
+                result = res.data.result;
+                return _context5.abrupt("return", result);
 
               case 21:
                 if (!(res.status == 200 && res.data.result.evmProofBytes == null)) {

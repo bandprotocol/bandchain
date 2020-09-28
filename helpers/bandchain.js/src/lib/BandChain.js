@@ -207,7 +207,7 @@ class BandChain {
     try {
       let res = await axios.get(requestEndpoint)
       if (res.status == 200 && res.data.result.result != null) {
-        let response = res.data.result.result.ResponsePacketData
+        let response = res.data.result.result.response_packet_data
         response.result = obiObj.decodeOutput(
           Buffer.from(response.result, 'base64'),
         )
@@ -219,8 +219,6 @@ class BandChain {
       throw new Error('Error querying the latest matching request result')
     }
   }
-<<<<<<< Updated upstream
-=======
 
   async getLatestValue(oracleScriptID, parameters) {
     const minCount = 3
@@ -481,7 +479,6 @@ class BandChain {
     })
     return data
   }
->>>>>>> Stashed changes
 }
 
 module.exports = BandChain

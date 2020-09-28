@@ -1,10 +1,11 @@
 {
   "name": "@bandprotocol/bandchain.js",
-  "version": "1.0.17",
+  "version": "1.1.3",
   "description": "Library for interacting with BandChain in browser and Node.js environments",
-  "main": "src/lib/BandChain.js",
+  "main": "lib/BandChain.js",
   "scripts": {
     "test": "jest",
+    "build": "babel src --out-dir lib",
     "postinstall": "node bin/postinstall"
   },
   "repository": {
@@ -27,11 +28,35 @@
   "devDependencies": {
     "jest": "26.0.1"
   },
+  "babel": {
+    "presets": [
+      "@babel/preset-env",
+      "@babel/preset-react"
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      [
+        "@babel/plugin-transform-runtime",
+        {
+          "regenerator": true
+        }
+      ]
+    ]
+  },
   "dependencies": {
-    "@bandprotocol/obi.js": "^1.0.5",
+    "@bandprotocol/obi.js": "^1.0.7",
     "@cosmostation/cosmosjs": "0.5.8",
     "axios": "0.19.2",
-    "delay": "4.3.0"
+    "delay": "4.3.0",
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/plugin-proposal-class-properties": "^7.10.1",
+    "@babel/plugin-syntax-class-properties": "^7.10.1",
+    "@babel/plugin-transform-runtime": "^7.10.1",
+    "@babel/preset-env": "^7.10.1",
+    "@babel/preset-react": "^7.10.1",
+    "@babel/runtime": "^7.10.2",
+    "lodash": "^4.17.15"
   },
   "prettier": {
     "trailingComma": "all",
