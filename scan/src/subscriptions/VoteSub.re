@@ -323,13 +323,13 @@ let getVoteStatByProposalID = proposalID => {
   Sub.resolve({
     proposalID,
     totalYes: totalYesPower,
-    totalYesPercent: totalYesPower /. totalPower *. 100.,
+    totalYesPercent: totalPower == 0. ? 0. : totalYesPower /. totalPower *. 100.,
     totalNo: totalNoPower,
-    totalNoPercent: totalNoPower /. totalPower *. 100.,
+    totalNoPercent: totalPower == 0. ? 0. : totalNoPower /. totalPower *. 100.,
     totalNoWithVeto: totalNoWithVetoPower,
-    totalNoWithVetoPercent: totalNoWithVetoPower /. totalPower *. 100.,
+    totalNoWithVetoPercent: totalPower == 0. ? 0. : totalNoWithVetoPower /. totalPower *. 100.,
     totalAbstain: totalAbstainPower,
-    totalAbstainPercent: totalAbstainPower /. totalPower *. 100.,
+    totalAbstainPercent: totalPower == 0. ? 0. : totalAbstainPower /. totalPower *. 100.,
     total: totalPower,
   });
 };
