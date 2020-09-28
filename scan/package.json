@@ -5,7 +5,7 @@
     "start": "bsb -make-world -w",
     "test:dev": "yarn jest --coverage",
     "integration-test:dev": "start-server-and-test 'serve dist -l 3000' http://localhost:3000 'cypress run'",
-    "test": "RPC_URL=https://d3n.bandprotocol.com/rest GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql NETWORK='GUANYU38' yarn build && yarn test:dev && yarn integration-test:dev"
+    "test": "yarn install --frozen-lockfile && RPC_URL=https://d3n.bandprotocol.com/rest GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql NETWORK='GUANYU38' yarn build && yarn test:dev && yarn integration-test:dev"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
