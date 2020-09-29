@@ -23,6 +23,7 @@
 
 ### Scan
 
+- (bugs) [\#2687](https://github.com/bandprotocol/bandchain/pull/2687) Fixed NaN number (Urgent)
 - (impv) [\#2684](https://github.com/bandprotocol/bandchain/pull/2684) Adjust validator voted from 250 to 100
 - (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
 - (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
