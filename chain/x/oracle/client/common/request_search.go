@@ -28,7 +28,7 @@ func queryRequest(route string, cliCtx context.CLIContext, rid string) (types.Qu
 
 func queryRequestsByLatestTxs(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string, limit int,
-) (*[]types.QueryRequestResult, int64, error) {
+) ([]types.QueryRequestResult, int64, error) {
 	query := fmt.Sprintf("%s.%s='%s' AND %s.%s='%s' AND %s.%s='%s' AND %s.%s='%s'",
 		types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid,
 		types.EventTypeRequest, types.AttributeKeyCalldata, calldata,
@@ -86,7 +86,7 @@ func queryRequestsByLatestTxs(
 
 func queryRequests(
 	route string, cliCtx context.CLIContext, requestIDs []string, limit int,
-) (*[]types.QueryRequestResult, int64, error) {
+) ([]types.QueryRequestResult, int64, error) {
 	requestsChan := make(chan types.QueryRequestResult, len(requestIDs))
 	errsChan := make(chan error, len(requestIDs))
 	for _, rid := range requestIDs {
@@ -119,7 +119,7 @@ func queryRequests(
 		return requests[i].Result.ResponsePacketData.ResolveTime > requests[j].Result.ResponsePacketData.ResolveTime
 	})
 
-	return &requests, cliCtx.Height, nil
+	return requests, cliCtx.Height, nil
 }
 
 func QuerySearchLatestRequest(
@@ -130,10 +130,10 @@ func QuerySearchLatestRequest(
 	if err != nil {
 		return nil, 0, err
 	}
-	if len(*requests) == 0 {
+	if len(requests) == 0 {
 		bz, err := types.QueryNotFound("request with specified specification not found")
 		return bz, 0, err
 	}
-	bz, err := types.QueryOK((*requests)[0])
+	bz, err := types.QueryOK(requests[0])
 	return bz, h, err
 }

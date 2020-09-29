@@ -12,10 +12,10 @@ func QuerySearchLatestResult(
 	if err != nil {
 		return nil, 0, err
 	}
-	if len(*requests) == 0 {
+	if len(requests) == 0 {
 		bz, err := types.QueryNotFound("request with specified specification not found")
 		return &bz, 0, err
 	}
-	bz, err := types.QueryOK(*requests)
+	bz, err := types.QueryOK(requests)
 	return &bz, h, err
 }
