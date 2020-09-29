@@ -358,8 +358,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
               <Col.Grid>
                 <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
-                 | Data(({details}, _, _)) =>
-                   <p> <Text value=details size=Text.Lg color=Colors.gray7 block=true /> </p>
+                 | Data(({details}, _, _)) => <Text value=details size=Text.Lg color=Colors.gray7 block=true />
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
               </Col.Grid>
