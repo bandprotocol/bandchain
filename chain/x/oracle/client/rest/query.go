@@ -151,7 +151,7 @@ func getLatestResultHandler(cliCtx context.CLIContext, route string) http.Handle
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
-		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), *bz)
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
 
