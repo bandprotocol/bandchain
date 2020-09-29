@@ -7,11 +7,7 @@ module Styles = {
   let balance = style([minWidth(`px(150)), justifyContent(`flexEnd)]);
 
   let infoHeader =
-    style([
-      borderBottom(`px(1), `solid, Colors.gray9),
-      padding2(~h=`px(11), ~v=`zero),
-      paddingBottom(`px(16)),
-    ]);
+    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 
   let totalBalance =
     style([
@@ -41,13 +37,23 @@ module Styles = {
 
   let amountBoxes = style([selector("> div + div", [marginTop(`px(24))])]);
 
+  let qrContainer = style([width(`percent(100.)), Media.mobile([width(`auto)])]);
+
   let qrCode =
-    style([backgroundColor(Colors.bandBlue), borderRadius(`px(4)), padding(`px(10))]);
+    style([
+      backgroundColor(Colors.bandBlue),
+      borderRadius(`px(4)),
+      padding(`px(10)),
+      Media.mobile([marginRight(`px(8))]),
+    ]);
+
+  let addressContainer =
+    style([Media.mobile([width(`calc((`sub, `percent(100.), `px(50))))])]);
 };
 
 let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountup=false, ()) => {
   <Row.Grid>
-    <Col.Grid col=Col.Six>
+    <Col.Grid col=Col.Six colSm=Col.Five>
       <div className={CssHelper.flexBox()}>
         <div className={Styles.squareIcon(color)} />
         <Text
@@ -59,7 +65,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
         />
       </div>
     </Col.Grid>
-    <Col.Grid col=Col.Six>
+    <Col.Grid col=Col.Six colSm=Col.Seven>
       <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
         <div className={CssHelper.flexBox()}>
           {isCountup
@@ -226,12 +232,15 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
               className={Css.merge([
                 CssHelper.infoContainer,
                 CssHelper.flexBox(~direction=`column, ~justify=`center, ~align=`stretch, ()),
+                CssHelper.flexBoxSm(~direction=`row, ~align=`center, ~justify=`flexStart, ()),
                 CssHelper.mb(~size=24, ()),
               ])}>
               <div
                 className={Css.merge([
-                  CssHelper.flexBox(~justify=`spaceBetween, ()),
+                  CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexStart, ()),
                   CssHelper.mb(~size=24, ()),
+                  CssHelper.mbSm(~size=0, ()),
+                  Styles.qrContainer,
                 ])}>
                 <div className=Styles.qrCode>
                   <Icon size=20 name="far fa-qrcode" color=Colors.white />
@@ -253,19 +262,20 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                          />
                        </div>
 
-                     | _ => <LoadingCensorBar width=90 height=28 />
+                     | _ => <LoadingCensorBar width=90 height=26 />
                      };
                    }}
               </div>
-              <Heading size=Heading.H4 value="Address" marginBottom=5 />
-              <div className={CssHelper.flexBox()}>
-                <AddressRender
-                  wordBreak=true
-                  address
-                  position=AddressRender.Subtitle
-                  copy=true
-                  clickable=false
-                />
+              <div className=Styles.addressContainer>
+                <Heading size=Heading.H4 value="Address" marginBottom=5 />
+                <div className={CssHelper.flexBox()}>
+                  <AddressRender
+                    address
+                    position=AddressRender.Subtitle
+                    copy=true
+                    clickable=false
+                  />
+                </div>
               </div>
             </div>
             <div
@@ -274,7 +284,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                 CssHelper.flexBox(~direction=`column, ~justify=`center, ~align=`stretch, ()),
                 CssHelper.mbSm(~size=24, ()),
               ])}>
-              <Heading size=Heading.H4 value="Total Balance" marginBottom=5 />
+              <Heading size=Heading.H4 value="Total Balance" marginBottom=8 />
               {switch (topPartAllSub) {
                | Data(({financial}, {balance, commission}, {amount, reward}, unbonding, _)) =>
                  totalBalanceRender(
@@ -283,8 +293,8 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                  )
                | _ =>
                  <>
-                   <LoadingCensorBar width=120 height=24 mb=10 />
-                   <LoadingCensorBar width=120 height=18 />
+                   <LoadingCensorBar width=200 height=22 mb=10 />
+                   <LoadingCensorBar width=220 height=16 />
                  </>
                }}
             </div>
@@ -314,7 +324,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                 {switch (topPartAllSub) {
                  | Data(({financial}, {balance}, _, _, _)) =>
                    balanceDetail(
-                     ~title="Available Balance",
+                     ~title="Available",
                      ~description="Balance available to send, delegate, etc",
                      ~amount={
                        balance->Coin.getBandAmountFromCoins;
@@ -330,7 +340,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                 {switch (topPartAllSub) {
                  | Data(({financial}, _, {amount}, _, _)) =>
                    balanceDetail(
-                     ~title="Balance At Stake",
+                     ~title="Delegated",
                      ~description="Balance currently delegated to validators",
                      ~amount={
                        amount->Coin.getBandAmountFromCoin;
@@ -346,7 +356,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                 {switch (topPartAllSub) {
                  | Data(({financial}, _, _, unbonding, _)) =>
                    balanceDetail(
-                     ~title="Unbonding Amount",
+                     ~title="Unbonding",
                      ~description=
                        "Amount undelegated from validators awaiting 21 days lockup period",
                      ~amount={

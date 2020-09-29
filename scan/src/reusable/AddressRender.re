@@ -54,6 +54,8 @@ module Styles = {
     fun
     | Title => style([Media.mobile([width(`percent(90.))])])
     | _ => "";
+
+  let mobileWidth = style([Media.mobile([width(`calc((`sub, `percent(100.), `px(20))))])]);
 };
 
 [@react.component]
@@ -80,6 +82,7 @@ let make =
         Styles.container,
         Styles.clickable(clickable),
         Styles.setWidth(position),
+        copy ? Styles.mobileWidth : "",
       ])}
       route={
         isValidator
