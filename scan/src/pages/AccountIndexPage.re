@@ -35,7 +35,7 @@ module Styles = {
       ),
     ]);
 
-  let amountBoxes = style([selector("> div + div", [marginTop(`px(24))])]);
+  let amountBoxes = style([selector("> div + div", [marginTop(`px(18))])]);
 
   let qrContainer = style([width(`percent(100.)), Media.mobile([width(`auto)])]);
 
@@ -44,6 +44,7 @@ module Styles = {
       backgroundColor(Colors.bandBlue),
       borderRadius(`px(4)),
       padding(`px(10)),
+      cursor(`pointer),
       Media.mobile([marginRight(`px(8))]),
     ]);
 
@@ -132,8 +133,8 @@ module BalanceDetailLoading = {
   [@react.component]
   let make = () => {
     <Row.Grid>
-      <Col.Grid col=Col.Six> <LoadingCensorBar width=130 height=18 /> </Col.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid col=Col.Six colSm=Col.Five> <LoadingCensorBar width=130 height=18 /> </Col.Grid>
+      <Col.Grid col=Col.Six colSm=Col.Seven>
         <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
           <LoadingCensorBar width=120 height=20 />
           <VSpacing size=Spacing.xs />
@@ -216,6 +217,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     };
   };
 
+  let qrCode = () => {
+    address->QRCode->OpenModal->dispatchModal;
+  };
+
   <Section pbSm=0>
     <div className=CssHelper.container>
       <Row.Grid marginBottom=40 marginBottomSm=24>
@@ -242,7 +247,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                   CssHelper.mbSm(~size=0, ()),
                   Styles.qrContainer,
                 ])}>
-                <div className=Styles.qrCode>
+                <div className=Styles.qrCode onClick={_ => {qrCode()}}>
                   <Icon size=20 name="far fa-qrcode" color=Colors.white />
                 </div>
                 {isMobile
@@ -318,7 +323,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                    unbonding=unbondingAmount
                    commission=commissionAmount
                  />;
-               | _ => <LoadingCensorBar fullWidth=true height=10 />
+               | _ => <LoadingCensorBar fullWidth=true height=12 radius=50 />
                }}
               <div>
                 {switch (topPartAllSub) {
@@ -403,7 +408,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                         )}
                      </div>;
 
-               | _ => <div> <BalanceDetailLoading /> </div>
+               | _ => React.null
                }}
             </div>
           </div>
