@@ -23,6 +23,7 @@
 
 ### Scan
 
+- (impv) [\#2689](https://github.com/bandprotocol/bandchain/pull/2689) Styled the top part of account index page
 - (bugs) [\#2687](https://github.com/bandprotocol/bandchain/pull/2687) Fixed NaN number (Urgent)
 - (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
 - (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
