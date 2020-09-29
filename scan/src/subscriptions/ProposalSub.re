@@ -67,7 +67,7 @@ let toExternal =
       },
     ) => {
   id,
-  name: title,
+  name: id == ID.Proposal.ID(1) ? "BCIP-1: " ++ title : title,
   status,
   description,
   submitTime,
@@ -142,7 +142,8 @@ let getList = (~page, ~pageSize, ()) => {
       MultiConfig.definition,
       ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
     );
-  result |> Sub.map(_, internal => internal##proposals->Belt_Array.map(toExternal));
+  result
+  |> Sub.map(_, internal => internal##proposals->Belt_Array.map(toExternal));
 };
 
 let get = id => {
@@ -160,7 +161,12 @@ let get = id => {
 };
 
 let count = () => {
-  let (result, _) = ApolloHooks.useSubscription(ProposalsCountConfig.definition);
+  let (result, _) =
+    ApolloHooks.useSubscription(ProposalsCountConfig.definition);
   result
-  |> Sub.map(_, x => x##proposals_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  |> Sub.map(_, x =>
+       x##proposals_aggregate##aggregate
+       |> Belt_Option.getExn
+       |> (y => y##count)
+     );
 };
