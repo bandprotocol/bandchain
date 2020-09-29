@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -125,6 +126,32 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 			return
 		}
 		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getLatestResultHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		limit := 1
+		if rawLimit := r.FormValue("limit"); rawLimit != "" {
+			var err error
+			limit, err = strconv.Atoi(rawLimit)
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}
+		bz, height, err := clientcmn.QuerySearchLatestResult(
+			route, cliCtx,
+			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"), limit,
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), *bz)
 	}
 }
 
