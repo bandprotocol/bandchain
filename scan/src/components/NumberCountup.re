@@ -23,7 +23,7 @@ let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true, ~
   let newVal = Countup.countUpGet(countup);
   smallNumber
     ? {
-      Js.Console.log(newVal->Js.String2.split("."));
+      Js.Console.log(newVal->Js.String2.sliceToEnd(2));
       <div className={CssHelper.flexBox()}>
         // <Text value={Array.get(adjustedText, 1)} size weight spacing code nowrap=true color />
         // <Text value={Array.get(adjustedText, 0)} size weight spacing code nowrap=true color />
