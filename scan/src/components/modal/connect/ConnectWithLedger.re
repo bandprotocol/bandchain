@@ -226,8 +226,11 @@ let make = (~chainID, ~ledgerApp) => {
              switch (Os.isWindows(), Os.checkHID()) {
              | (true, false) =>
                let isConfirm =
-                 Window.confirm(
-                   {j|To use Ledger Nano on Windows 10, please enable "Experimental Web Platform Features" by copy-paste "chrome://flags/#enable-experimental-web-platform-features". Click OK to copy.|j},
+                 Webapi.Dom.(
+                   window
+                   |> Window.confirm(
+                        {j|To use Ledger Nano on Windows 10, please enable "Experimental Web Platform Features" by copy-paste "chrome://flags/#enable-experimental-web-platform-features". Click OK to copy.|j},
+                      )
                  );
                isConfirm
                  ? Copy.copy("chrome://flags/#enable-experimental-web-platform-features") : ();

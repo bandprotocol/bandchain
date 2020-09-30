@@ -767,11 +767,12 @@ let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
       <Text value="TITLE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text value={proposal.title} code=true />
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="DESCRIPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={proposal.description} code=true />
-    </div>
+    // <VSpacing size=Spacing.lg />
+    //TODO: Will re-visit
+    // <div className=Styles.topicContainer>
+    //   <Text value="DESCRIPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+    //   <Text value={proposal.description} code=true />
+    // </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="PROPOSER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />

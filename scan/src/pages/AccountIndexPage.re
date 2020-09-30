@@ -206,7 +206,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     | Some({address: sender}) =>
       let openSendModal = () => Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
       if (sender == address) {
-        Window.confirm("Are you sure you want to send tokens to yourself?")
+        Webapi.Dom.(window |> Window.confirm("Are you sure you want to send tokens to yourself?"))
           ? openSendModal() : ();
       } else {
         openSendModal();
