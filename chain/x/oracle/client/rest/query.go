@@ -129,7 +129,7 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 	}
 }
 
-func getLatestResultHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+func getMultiRequestSearchHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
 		if !ok {
@@ -143,7 +143,7 @@ func getLatestResultHandler(cliCtx context.CLIContext, route string) http.Handle
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			}
 		}
-		bz, height, err := clientcmn.QuerySearchLatestResult(
+		bz, height, err := clientcmn.QueryMultiSearchLatestRequest(
 			route, cliCtx,
 			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"), limit,
 		)
