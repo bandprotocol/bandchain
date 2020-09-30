@@ -11,7 +11,7 @@ DIR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 class TestTest(IconIntegrateTestBase):
     TEST_HTTP_ENDPOINT_URI_V3 = "http://127.0.0.1:9000/api/v3"
-    SCORE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, '..'))
+    SCORE_PROJECT = os.path.abspath(os.path.join(DIR_PATH, ".."))
 
     def setUp(self):
         super().setUp()
@@ -21,11 +21,22 @@ class TestTest(IconIntegrateTestBase):
         # self.icon_service = IconService(HTTPProvider(self.TEST_HTTP_ENDPOINT_URI_V3))
 
         # install SCORE
-        self._score_address = self._deploy_score()['scoreAddress']
+        self._score_address = self._deploy_score()["scoreAddress"]
 
     def _deploy_score(self, to: str = SCORE_INSTALL_ADDRESS) -> dict:
         # Generates an instance of transaction for deploying SCORE.
-        transaction = DeployTransactionBuilder()             .from_(self._test1.get_address())             .to(to)             .step_limit(100_000_000_000)             .nid(3)             .nonce(100)             .content_type("application/zip")             .content(gen_deploy_data_content(self.SCORE_PROJECT))             .build()
+        transaction = (
+            DeployTransactionBuilder()
+            .from_(self._test1.get_address())
+            .to(to)
+            .params({"_proxy": self._test1.get_address()})
+            .step_limit(100_000_000_000)
+            .nid(3)
+            .nonce(100)
+            .content_type("application/zip")
+            .content(gen_deploy_data_content(self.SCORE_PROJECT))
+            .build()
+        )
 
         # Returns the signed transaction object having a signature
         signed_transaction = SignedTransaction(transaction, self._test1)
@@ -33,22 +44,7 @@ class TestTest(IconIntegrateTestBase):
         # process the transaction in local
         tx_result = self.process_transaction(signed_transaction, self.icon_service)
 
-        self.assertEqual(True, tx_result['status'])
-        self.assertTrue('scoreAddress' in tx_result)
+        self.assertEqual(True, tx_result["status"])
+        self.assertTrue("scoreAddress" in tx_result)
 
         return tx_result
-
-    def test_score_update(self):
-        # update SCORE
-        tx_result = self._deploy_score(self._score_address)
-
-        self.assertEqual(self._score_address, tx_result['scoreAddress'])
-
-    def test_call_hello(self):
-        # Generates a call instance using the CallBuilder
-        call = CallBuilder().from_(self._test1.get_address())             .to(self._score_address)             .method("hello")             .build()
-
-        # Sends the call request
-        response = self.process_call(call, self.icon_service)
-
-        self.assertEqual("Hello", response)
