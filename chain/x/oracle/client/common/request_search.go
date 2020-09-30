@@ -105,7 +105,7 @@ func queryRequests(
 		}(rid)
 	}
 	requests := make([]types.QueryRequestResult, 0)
-	for i := 0; i < 2*len(requestIDs); i++ {
+	for idx := 0; idx < 2*len(requestIDs); idx++ {
 		select {
 		case req := <-requestsChan:
 			if req.Result != nil {
