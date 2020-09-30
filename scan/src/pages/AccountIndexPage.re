@@ -255,9 +255,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                    : {
                      switch (topPartAllSub) {
                      | Data((_, _, _, _, {chainID})) =>
-                       <div
-                         className={CssHelper.btn(~variant=Outline, ~fsize=10, ~py=5, ~px=11, ())}
-                         onClick={_ => {send(chainID)}}>
+                       <Button variant=Button.Outline py=5 px=11 onClick={_ => {send(chainID)}}>
                          <Text
                            value="Send BAND"
                            block=true
@@ -265,8 +263,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                            color=Colors.bandBlue
                            nowrap=true
                          />
-                       </div>
-
+                       </Button>
                      | _ => <LoadingCensorBar width=90 height=26 />
                      };
                    }}

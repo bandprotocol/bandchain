@@ -85,8 +85,10 @@ module FaucetBtn = {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
       ? <img src=Images.loadingCircles className=Styles.loading />
-      : <div
-          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
+      : <Button
+          px=20
+          py=5
+          variant=Button.Outline
           onClick={_ => {
             setIsRequest(_ => true);
             let _ =
@@ -98,16 +100,16 @@ module FaucetBtn = {
             ();
           }}>
           <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
-        </div>;
+        </Button>;
   };
 };
 
 module SendBtn = {
   [@react.component]
   let make = (~send) => {
-    <div className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => {send()}}>
+    <Button px=20 py=5 onClick={_ => {send()}}>
       <Text value="Send" weight=Text.Medium nowrap=true block=true />
-    </div>;
+    </Button>;
   };
 };
 
