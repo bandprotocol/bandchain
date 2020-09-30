@@ -8,21 +8,43 @@ jobs:
       working-directory: ./scan
 
     steps:
-    - name: Code Checkout
-      uses: actions/checkout@v2
+      - name: Code Checkout
+        uses: actions/checkout@v2
 
-    - name: Cache node_modules
-      id: scan-node-modules-cache
-      uses: actions/cache@v1
-      with:
-        path: scan/node_modules
-        key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
+      - name: Cache node_modules
+        id: scan-node-modules-cache
+        uses: actions/cache@v1
+        with:
+          path: scan/node_modules
+          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
-    - name: Run yarn
-      if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
-      run: yarn
-      working-directory: ${{env.working-directory}}
+      - name: Run yarn
+        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn
+        working-directory: ${{env.working-directory}}
 
-    - name: Run yarn test
-      run: yarn test
-      working-directory: ${{env.working-directory}}
+      - name: Run yarn test
+        run: yarn test
+        working-directory: ${{env.working-directory}}
+
+    integration-tests:
+      name: Integration tests
+      runs-on: ubuntu-16.04
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+        - uses: actions/setup-node@v1
+          with:
+            node-version: "12"
+        - name: Get yarn cache directory path
+          id: yarn-cache-dir-path
+          run: echo "::set-output name=dir::$(yarn cache dir)"
+        - uses: actions/cache@v1
+          id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
+          with:
+            path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+            key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+            restore-keys: |
+              ${{ runner.os }}-yarn-
+        - run: yarn
+        - run: yarn integration-test
