@@ -1,0 +1,5 @@
+{
+    "version": "0.0.1",
+    "main_module": "simple_price_db",
+    "main_score": "SimplePriceDB"
+}
