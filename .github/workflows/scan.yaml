@@ -22,6 +22,8 @@ jobs:
           key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-dep-
+        working-directory: ${{env.working-directory}}
+
       - name: Yarn install deps
         run: |
           yarn install --frozen-lockfile
