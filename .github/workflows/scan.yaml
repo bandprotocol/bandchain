@@ -14,6 +14,7 @@ jobs:
       - name: Get yarn cache directory path
         id: yarn-dep-cache-dir-path
         run: echo "::set-output name=dir::$(yarn cache dir)"
+        working-directory: ${{env.working-directory}}
       - uses: actions/cache@v1
         name: Setup Yarn dep cache
         id: yarn-dep-cache
@@ -22,7 +23,6 @@ jobs:
           key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-yarn-dep-
-        working-directory: ${{env.working-directory}}
 
       - name: Yarn install deps
         run: |
