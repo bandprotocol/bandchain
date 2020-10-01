@@ -11,18 +11,12 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      - name: Get yarn cache directory path
-        id: yarn-dep-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        working-directory: ${{env.working-directory}}
-      - uses: actions/cache@v1
-        name: Setup Yarn dep cache
-        id: yarn-dep-cache
+      - name: Cache node_modules
+        id: scan-node-modules-cache
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-dep-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-dep-
+          path: scan/node_modules
+          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
       - name: Yarn install deps
         run: |
