@@ -33,7 +33,7 @@ jobs:
         working-directory: ${{env.working-directory}}
 
       - name: Run install cypress
-        run: cypress run
+        run: yarn cypress install
         working-directory: ${{env.working-directory}}
 
       - name: Run yarn test
