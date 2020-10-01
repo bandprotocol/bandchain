@@ -12,7 +12,7 @@
 
 ### Chain (Non-consensus)
 
-- (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added saver to cache latest price
+- (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added pricer to cache latest price
 - (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
 
 ### Yoda
