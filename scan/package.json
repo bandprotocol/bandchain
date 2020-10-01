@@ -5,7 +5,7 @@
     "start": "bsb -make-world -w",
     "test:dev": "yarn jest --coverage",
     "test": "yarn test:dev",
-    "cy:run": "yarn cypress run",
+    "cy:run": "cypress run",
     "serve:build": "serve -s dist -l 3000",
     "integration-test": "start-server-and-test 'yarn run serve:build' http://localhost:3000 cy:run"
   },
