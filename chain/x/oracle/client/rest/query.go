@@ -4,12 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -120,6 +123,35 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 			route, cliCtx,
 			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"),
 		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		symbols := strings.Split(r.FormValue("symbols"), ",")
+		prices := make([]pricecache.Price, len(symbols))
+		height := int64(0)
+		for idx, symbol := range symbols {
+			bz, h, err := cliCtx.Query(fmt.Sprintf("prices/%s", symbol+","+r.FormValue("min_count")+","+r.FormValue("ask_count")))
+			height = h
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			var price pricecache.Price
+			obi.MustDecode(bz, &price)
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			prices[idx] = price
+		}
+		bz, err := types.QueryOK(prices)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
