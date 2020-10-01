@@ -3,11 +3,11 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {IStdReference} from "./IStdReference.sol";
+import {StdReferenceBase} from "./IStdReference.sol";
 import {IBridge} from "../interfaces/IBridge.sol";
 import {Obi} from "../obi/Obi.sol";
 
-contract StdReference is Ownable, IStdReference {
+contract StdReference is Ownable, StdReferenceBase {
     using Obi for Obi.Data;
 
     struct RefData {

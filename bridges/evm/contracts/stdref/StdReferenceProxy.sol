@@ -3,9 +3,9 @@ pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
 import {Ownable} from "openzeppelin-solidity/contracts/access/Ownable.sol";
-import {IStdReference} from "./IStdReference.sol";
+import {IStdReference, StdReferenceBase} from "./IStdReference.sol";
 
-contract StdReferenceProxy is Ownable, IStdReference {
+contract StdReferenceProxy is Ownable, StdReferenceBase {
     IStdReference public ref;
 
     constructor(IStdReference _ref) public {
