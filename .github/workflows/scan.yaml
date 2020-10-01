@@ -12,16 +12,16 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Cache node_modules
-        id: scan-node-modules-cache
+        id: scan-node-modules-1-cache
         uses: actions/cache@v1
         with:
           path: scan/node_modules
-          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.OS }}-scan-test-1-${{ hashFiles('**/yarn.lock') }}
 
       - name: Yarn install deps with node_modules cache
         run: |
           yarn install --frozen-lockfile
-        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+        if: steps.scan-node-modules-1-cache.outputs.cache-hit != 'true'
         working-directory: ${{env.working-directory}}
 
       - name: Get yarn cache directory path
@@ -31,15 +31,15 @@ jobs:
         name: Setup Yarn dep cache
         id: yarn-dep-cache
         with:
-          path: ${{ steps.yarn-dep-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
+          path: ${{ steps.yarn-dep-1-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-dep-1-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-            ${{ runner.os }}-yarn-dep-
+            ${{ runner.os }}-yarn-dep-1-
 
       - name: Yarn install deps with yarn cache
         run: |
           yarn install --frozen-lockfile
-        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+        if: steps.scan-node-modules-1-cache.outputs.cache-hit != 'true'
         working-directory: ${{env.working-directory}}
 
       - name: Run yarn build
