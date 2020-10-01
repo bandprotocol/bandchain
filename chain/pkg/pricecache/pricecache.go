@@ -1,0 +1,55 @@
+package pricecache
+
+import (
+	"strconv"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/peterbourgon/diskv"
+)
+
+type Cache struct {
+	priceCache *diskv.Diskv
+}
+
+type Price struct {
+	Multiplier  uint64 `json:"multiplier"`
+	Px          uint64 `json:"px"`
+	ResolveTime int64  `json:"resolve_time"`
+}
+
+// New creates and returns a new file-backed data caching instance.
+func New(basePath string) Cache {
+	return Cache{
+		priceCache: diskv.New(diskv.Options{
+			BasePath:     basePath,
+			Transform:    func(s string) []string { return []string{} },
+			CacheSizeMax: 32 * 1024 * 1024, // 32MB TODO: Make this configurable
+		}),
+	}
+}
+
+func getFilename(symbol string, minCount uint64, askCount uint64) string {
+	return symbol + "," + strconv.FormatUint(minCount, 10) + "," + strconv.FormatUint(askCount, 10)
+}
+
+// AddFile saves the given data to a file in HOME/files directory using symbol,minCount,askCount format as filename.
+func (c Cache) AddFile(symbol string, minCount uint64, askCount uint64, multiplier uint64, px uint64, resolveTime int64) error {
+	data, err := obi.Encode(Price{
+		Multiplier:  multiplier,
+		Px:          px,
+		ResolveTime: resolveTime,
+	})
+	if err != nil {
+		return err
+	}
+	return c.priceCache.Write(getFilename(symbol, minCount, askCount), data)
+}
+
+// GetFile loads the file from the file storage. Returns error if the file does not exist.
+func (c Cache) GetFile(filename string) ([]byte, error) {
+	data, err := c.priceCache.Read(filename)
+	if err != nil {
+		return nil, err
+	}
+	return data, nil
+}
