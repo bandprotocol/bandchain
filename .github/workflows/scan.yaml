@@ -11,17 +11,23 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      - name: Cache node_modules
-        id: scan-node-modules-cache
-        uses: actions/cache@v1
+      - name: Run yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache # use this to check for `cache-hit` (`steps.yarn-cache.outputs.cache-hit != 'true'`)
         with:
-          path: scan/node_modules
-          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Run yarn
-        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
-        run: yarn
-        working-directory: ${{env.working-directory}}
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - run: yarn install --frozen-lockfile
+      - run: yarn cypress install
+      - run: yarn build
+        env:
+          RPC_URL: "https://d3n.bandprotocol.com/rest"
+          GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
+          NETWORK: "GUANYU38"
 
       - name: Run yarn test
         run: yarn test

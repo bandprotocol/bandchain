@@ -4,10 +4,10 @@
     "build": "rm -rf dist/ && bsb -make-world && parcel build index.html --no-source-maps --no-cache",
     "start": "bsb -make-world -w",
     "test:dev": "yarn jest --coverage",
-    "test": "yarn build && yarn test:dev",
+    "test": "yarn test:dev",
     "cy:run": "cypress run",
     "serve:build": "serve -s dist -l 3000",
-    "integration-test": "RPC_URL=https://d3n.bandprotocol.com/rest GRAPHQL_URL=wss://d3n.bandprotocol.com/v1/graphql NETWORK='GUANYU38' yarn build && start-server-and-test 'yarn run serve:build' http://localhost:3000 cy:run"
+    "integration-test": "start-server-and-test 'yarn run serve:build' http://localhost:3000 cy:run"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
