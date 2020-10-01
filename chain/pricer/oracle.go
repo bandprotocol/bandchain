@@ -1,9 +1,8 @@
-package saver
+package pricer
 
 import (
-	"fmt"
-
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -18,9 +17,9 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 		var output Output
 		obi.MustDecode(result.RequestPacketData.Calldata, &input)
 		obi.MustDecode(result.ResponsePacketData.Result, &output)
-		fmt.Println("->", result.ResponsePacketData.ResolveTime)
 		for idx, symbol := range input.Symbols {
-			err := app.cahce.AddFile(symbol, result.RequestPacketData.MinCount, result.RequestPacketData.MinCount, input.Multiplier, output.Pxs[idx], result.ResponsePacketData.ResolveTime)
+			price := pricecache.NewPrice(input.Multiplier, output.Pxs[idx], result.ResponsePacketData.ResolveTime)
+			err := app.cahce.SetPrice(symbol, result.RequestPacketData.MinCount, result.RequestPacketData.MinCount, price)
 			if err != nil {
 				panic(err)
 			}

@@ -1,4 +1,4 @@
-package saver
+package pricer
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"

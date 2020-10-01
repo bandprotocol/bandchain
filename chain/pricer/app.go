@@ -1,4 +1,4 @@
-package saver
+package pricer
 
 import (
 	"errors"
@@ -24,7 +24,7 @@ type App struct {
 	cahce pricecache.Cache
 }
 
-func NewBandAppWithSaver(
+func NewBandAppWithPricer(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
 	disableFeelessReports bool, oids []types.OracleScriptID, fileDir string, baseAppOptions ...func(*bam.BaseApp),
@@ -79,11 +79,15 @@ func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 		if len(paths) < 2 {
 			return QueryResultError(errors.New("no route for prices query specified"))
 		}
-		data, err := app.cahce.GetFile(paths[1])
+		price, err := app.cahce.GetPrice(paths[1])
 		if err != nil {
 			return QueryResultError(err)
 		}
-		return QueryResultSuccess(data, req.Height)
+		bz, err := app.Codec().MarshalBinaryBare(price)
+		if err != nil {
+			return QueryResultError(err)
+		}
+		return QueryResultSuccess(bz, req.Height)
 	}
 	return app.BandApp.Query(req)
 }

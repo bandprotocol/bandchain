@@ -4,18 +4,22 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
+
+type RequestPrices struct {
+	Symbols  []string `json:"symbols"`
+	MinCount uint64   `json:"min_count"`
+	AskCount uint64   `json:"ask_count"`
+}
 
 func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -133,18 +137,24 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 
 func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		symbols := strings.Split(r.FormValue("symbols"), ",")
-		prices := make([]pricecache.Price, len(symbols))
+		decoder := json.NewDecoder(r.Body)
+		var requestPrices RequestPrices
+		err := decoder.Decode(&requestPrices)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		prices := make([]pricecache.Price, len(requestPrices.Symbols))
 		height := int64(0)
-		for idx, symbol := range symbols {
-			bz, h, err := cliCtx.Query(fmt.Sprintf("prices/%s", symbol+","+r.FormValue("min_count")+","+r.FormValue("ask_count")))
+		for idx, symbol := range requestPrices.Symbols {
+			bz, h, err := cliCtx.Query(fmt.Sprintf("prices/%s", pricecache.GetFilename(symbol, requestPrices.MinCount, requestPrices.AskCount)))
 			height = h
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
 			var price pricecache.Price
-			obi.MustDecode(bz, &price)
+			err = cliCtx.Codec.UnmarshalBinaryBare(bz, &price)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 				return

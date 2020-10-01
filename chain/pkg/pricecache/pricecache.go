@@ -1,7 +1,7 @@
 package pricecache
 
 import (
-	"strconv"
+	"fmt"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/peterbourgon/diskv"
@@ -17,6 +17,14 @@ type Price struct {
 	ResolveTime int64  `json:"resolve_time"`
 }
 
+func NewPrice(multiplier uint64, px uint64, resolveTime int64) Price {
+	return Price{
+		Multiplier:  multiplier,
+		Px:          px,
+		ResolveTime: resolveTime,
+	}
+}
+
 // New creates and returns a new file-backed data caching instance.
 func New(basePath string) Cache {
 	return Cache{
@@ -28,28 +36,26 @@ func New(basePath string) Cache {
 	}
 }
 
-func getFilename(symbol string, minCount uint64, askCount uint64) string {
-	return symbol + "," + strconv.FormatUint(minCount, 10) + "," + strconv.FormatUint(askCount, 10)
+func GetFilename(symbol string, minCount uint64, askCount uint64) string {
+	return fmt.Sprintf("%s,%v,%v", symbol, minCount, askCount)
 }
 
-// AddFile saves the given data to a file in HOME/files directory using symbol,minCount,askCount format as filename.
-func (c Cache) AddFile(symbol string, minCount uint64, askCount uint64, multiplier uint64, px uint64, resolveTime int64) error {
-	data, err := obi.Encode(Price{
-		Multiplier:  multiplier,
-		Px:          px,
-		ResolveTime: resolveTime,
-	})
+// SetPrice saves the given data to a file in HOME/files directory using symbol,minCount,askCount format as filename.
+func (c Cache) SetPrice(symbol string, minCount uint64, askCount uint64, price Price) error {
+	data, err := obi.Encode(price)
 	if err != nil {
 		return err
 	}
-	return c.priceCache.Write(getFilename(symbol, minCount, askCount), data)
+	return c.priceCache.Write(GetFilename(symbol, minCount, askCount), data)
 }
 
-// GetFile loads the file from the file storage. Returns error if the file does not exist.
-func (c Cache) GetFile(filename string) ([]byte, error) {
-	data, err := c.priceCache.Read(filename)
+// GetPrice loads the file from the file storage. Returns error if the file does not exist.
+func (c Cache) GetPrice(filename string) (Price, error) {
+	bz, err := c.priceCache.Read(filename)
 	if err != nil {
-		return nil, err
+		return Price{}, err
 	}
-	return data, nil
+	var price Price
+	obi.MustDecode(bz, &price)
+	return price, nil
 }

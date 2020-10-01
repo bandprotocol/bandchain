@@ -26,7 +26,7 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/emitter"
-	"github.com/bandprotocol/bandchain/chain/saver"
+	"github.com/bandprotocol/bandchain/chain/pricer"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -35,7 +35,7 @@ const (
 	flagWithEmitter           = "with-emitter"
 	flagDisableFeelessReports = "disable-feeless-reports"
 	flagEnableFastSync        = "enable-fast-sync"
-	flagWithSaver             = "with-saver"
+	flagWithPricer            = "with-pricer"
 )
 
 var invCheckPeriod uint
@@ -69,7 +69,7 @@ func main() {
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
-	rootCmd.PersistentFlags().String(flagWithSaver, "", "[Experimental] Enable mode to save price in price cahce")
+	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in price cahce")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
@@ -92,8 +92,8 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	if viper.IsSet(flagWithSaver) {
-		rawOids := strings.Split(viper.GetString(flagWithSaver), ",")
+	if viper.IsSet(flagWithPricer) {
+		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
 		oids := make([]types.OracleScriptID, len(rawOids))
 		for idx, rawOid := range rawOids {
 			oid, err := strconv.ParseInt(rawOid, 10, 64)
@@ -102,7 +102,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			}
 			oids[idx] = types.OracleScriptID(oid)
 		}
-		return saver.NewBandAppWithSaver(
+		return pricer.NewBandAppWithPricer(
 			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 			viper.GetString(flags.FlagHome),
 			viper.GetBool(flagDisableFeelessReports),
