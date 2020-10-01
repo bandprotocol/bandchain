@@ -88,7 +88,7 @@ func QuerySearchLatestRequest(
 }
 
 func queryRequests(
-	route string, cliCtx context.CLIContext, requestIDs []string, limit int,
+	route string, cliCtx context.CLIContext, requestIDs []string,
 ) ([]types.QueryRequestResult, int64, error) {
 	requestsChan := make(chan types.QueryRequestResult, len(requestIDs))
 	errsChan := make(chan error, len(requestIDs))
@@ -118,7 +118,7 @@ func queryRequests(
 		}
 	}
 
-	sort.Slice(requests[:], func(i, j int) bool {
+	sort.Slice(requests, func(i, j int) bool {
 		return requests[i].Result.ResponsePacketData.ResolveTime > requests[j].Result.ResponsePacketData.ResolveTime
 	})
 
@@ -176,7 +176,7 @@ func QueryMultiSearchLatestRequest(
 			}
 		}
 	}
-	queryRequestResults, h, err := queryRequests(route, cliCtx, requestIDs, limit)
+	queryRequestResults, h, err := queryRequests(route, cliCtx, requestIDs)
 	if err != nil {
 		return nil, 0, err
 	}
