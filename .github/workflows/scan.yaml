@@ -11,24 +11,17 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
-      - name: Get yarn cache directory path
-        id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn cache dir)"
-        working-directory: ${{env.working-directory}}
-
-      - uses: actions/cache@v1
-        name: Setup Yarn dep cache
-        id: yarn-cache
+      - name: Cache node_modules
+        id: scan-node-modules-cache
+        uses: actions/cache@v1
         with:
-          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
-          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-yarn-
+          path: scan/node_modules
+          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
       - name: Yarn install deps
         run: |
           yarn install --frozen-lockfile
-        if: steps.yarn-cache.outputs.cache-hit != 'true'
+        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
         working-directory: ${{env.working-directory}}
 
       - name: Run yarn build
