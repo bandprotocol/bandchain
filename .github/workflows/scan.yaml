@@ -33,6 +33,7 @@ jobs:
           RPC_URL: "https://d3n.bandprotocol.com/rest"
           GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
           NETWORK: "GUANYU38"
+        working-directory: ${{env.working-directory}}
 
       - name: Run yarn test
         run: yarn test
