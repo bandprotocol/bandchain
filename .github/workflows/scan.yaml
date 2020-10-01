@@ -18,7 +18,25 @@ jobs:
           path: scan/node_modules
           key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Yarn install deps
+      - name: Yarn install deps with node_modules cache
+        run: |
+          yarn install --frozen-lockfile
+        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+        working-directory: ${{env.working-directory}}
+
+      - name: Get yarn cache directory path
+        id: yarn-dep-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        name: Setup Yarn dep cache
+        id: yarn-dep-cache
+        with:
+          path: ${{ steps.yarn-dep-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-dep-
+
+      - name: Yarn install deps with yarn cache
         run: |
           yarn install --frozen-lockfile
         if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
