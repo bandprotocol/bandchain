@@ -21,19 +21,18 @@ jobs:
           path: ${{ steps.yarn-dep-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-yarn-dep-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
-              ${{ runner.os }}-yarn-dep-
+            ${{ runner.os }}-yarn-dep-
       - name: Yarn install deps
         run: |
           yarn install --frozen-lockfile
-      if: steps.yarn-dep-cache.outputs.cache-hit != 'true'
-
+        if: steps.yarn-dep-cache.outputs.cache-hit != 'true'
 
       - name: Run yarn build
-        - run: yarn build
-          env:
-            RPC_URL: "https://d3n.bandprotocol.com/rest"
-            GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
-            NETWORK: "GUANYU38"
+        run: yarn build
+        env:
+          RPC_URL: "https://d3n.bandprotocol.com/rest"
+          GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
+          NETWORK: "GUANYU38"
 
       - name: Run yarn test
         run: yarn test
