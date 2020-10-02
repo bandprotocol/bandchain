@@ -105,7 +105,7 @@ func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 				return queryResultError(err)
 			}
 			askCount := atoi(paths[4])
-			minCount := atoi(paths[4])
+			minCount := atoi(paths[5])
 			reqID, err := app.reqCache.GetLatestRequest(oid, calldata, askCount, minCount)
 			if err != nil {
 				return queryResultError(err)
