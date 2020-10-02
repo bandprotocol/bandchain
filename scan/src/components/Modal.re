@@ -30,7 +30,9 @@ module Styles = {
   let content = isFadeOut =>
     style([
       display(`table),
-      marginTop(`vw(10.)),
+      position(`absolute),
+      top(`percent(50.)),
+      left(`percent(50.)),
       backgroundColor(Css_Colors.white),
       borderRadius(`px(5)),
       boxShadow(
@@ -43,12 +45,28 @@ module Styles = {
         keyframes(
           isFadeOut
             ? [
-              (0, [transform(translateY(`px(-30))), opacity(1.)]),
-              (100, [transform(translateY(`zero)), opacity(0.)]),
+              (0, [transform(translate(`percent(-50.), `percent(-50.))), opacity(1.)]),
+              (
+                100,
+                [
+                  transform(
+                    translate(`percent(-50.), `calc((`sub, `percent(-50.), `px(-30)))),
+                  ),
+                  opacity(0.),
+                ],
+              ),
             ]
             : [
-              (0, [transform(translateY(`zero)), opacity(0.)]),
-              (100, [transform(translateY(`px(-30))), opacity(1.)]),
+              (
+                0,
+                [
+                  transform(
+                    translate(`percent(-50.), `calc((`sub, `percent(-50.), `px(-30)))),
+                  ),
+                  opacity(0.),
+                ],
+              ),
+              (100, [transform(translate(`percent(-50.), `percent(-50.))), opacity(1.)]),
             ],
         ),
       ),
@@ -59,7 +77,7 @@ module Styles = {
       width(`px(15)),
       position(`absolute),
       top(`px(20)),
-      left(`px(605)),
+      right(`px(20)),
       cursor(`pointer),
       zIndex(3),
     ]);
@@ -87,6 +105,7 @@ let make = () => {
         {switch (modal) {
          | Connect(chainID) => <ConnectModal chainID />
          | SubmitTx(msg) => <SubmitTxModal msg />
+         | QRCode(address) => <QRCodeModal address />
          }}
       </div>
     </div>

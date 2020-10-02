@@ -66,6 +66,14 @@ let mbSm = (~size=8, ()) => {
   style([Media.mobile([marginBottom(`px(size))])]);
 };
 
+let mt = (~size=8, ()) => {
+  style([marginTop(`px(size))]);
+};
+
+let mtSm = (~size=8, ()) => {
+  style([Media.mobile([marginTop(`px(size))])]);
+};
+
 let px = (~size=0, ()) => {
   style([paddingLeft(`px(size)), paddingRight(`px(size))]);
 };
@@ -96,3 +104,16 @@ let selectWrapper = (~size=14, ~pRight=16, ~pRightSm=pRight, ~mW=500, ()) => {
     ]),
   ]);
 };
+
+
+// Informations
+
+let infoContainer =
+    style([
+      backgroundColor(Colors.white),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
+      padding(`px(24)),
+      Media.mobile([padding(`px(16))]),
+    ]);
