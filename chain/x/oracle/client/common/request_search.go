@@ -27,7 +27,7 @@ func queryLatestRequest(cliCtx context.CLIContext, oid, calldata, askCount, minC
 }
 
 func queryRequest(route string, cliCtx context.CLIContext, rid types.RequestID) (types.QueryRequestResult, int64, error) {
-	bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid))
+	bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%d", route, types.QueryRequests, rid))
 	if err != nil {
 		return types.QueryRequestResult{}, 0, err
 	}
