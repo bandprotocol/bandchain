@@ -30,6 +30,7 @@ let make = () => {
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
   let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
+  Js.Console.log("Test");
 
   <div className=Styles.container>
     <Header />
