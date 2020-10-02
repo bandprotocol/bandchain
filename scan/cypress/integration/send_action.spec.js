@@ -20,10 +20,10 @@ describe("Login", () => {
 describe("Send", () => {
   it("Status should be Success", () => {
     cy.get('[id="sendToken"]').contains("Send").click();
-    cy.get('[placeholder="Insert recipient address"]')
+    cy.get('[id="recipientAddressInput"]')
       .wait(1000)
       .type("band1mrdmxkhtr3rgfzfgrkxy5pvjtvnm5qq0my5m0x")
-      .get('[placeholder="Insert send amount"]')
+      .get('[id="sendAmountInput"]')
       .type("2");
     cy.get('[id="nextButton"]').contains("Next").click();
     cy.get('[id="broadcastButton"]').click();

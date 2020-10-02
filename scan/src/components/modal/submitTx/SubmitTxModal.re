@@ -130,6 +130,7 @@ module SubmitTxStep = {
         msg="Memo (optional)"
         placeholder="Insert memo"
         code=true
+        id="memoInput"
       />
       <VSpacing size=Spacing.lg />
       <VSpacing size=Spacing.md />

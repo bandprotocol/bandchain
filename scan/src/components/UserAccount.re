@@ -166,8 +166,8 @@ let make = () => {
         <HSpacing size=Spacing.sm />
         <Icon name="fas fa-caret-down" color=Colors.bandBlue />
       </div>
-      <div className={Styles.profileCard(show)}>
-        <div id="addressWrapper"> <AddressRender address position=AddressRender.Text /> </div>
+      <div className={Styles.profileCard(show)} id="addressWrapper">
+        <AddressRender address position=AddressRender.Text />
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
           <Balance address />
