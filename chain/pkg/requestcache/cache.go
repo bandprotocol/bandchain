@@ -24,7 +24,7 @@ func New(basePath string) Cache {
 }
 
 func getFilename(oid types.OracleScriptID, calldata []byte, askCount uint64, minCount uint64) string {
-	return fmt.Sprintf("%d/%x/%d/%d", oid, calldata, askCount, minCount)
+	return fmt.Sprintf("%d,%x,%d,%d", oid, calldata, askCount, minCount)
 }
 
 // SaveLatestRequest saves the latest request id to a file with key that combined from event attributes.
