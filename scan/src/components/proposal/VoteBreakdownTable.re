@@ -4,7 +4,9 @@ module Styles = {
   let container =
     style([
       backgroundColor(Colors.white),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
       Media.mobile([margin2(~h=`px(-15), ~v=`zero)]),
     ]);
 

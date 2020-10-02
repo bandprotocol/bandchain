@@ -13,7 +13,7 @@ module Styles = {
       bottom(`zero),
       right(`zero),
       zIndex(10),
-      backgroundColor(`rgba((0, 0, 0, 0.5))),
+      backgroundColor(`rgba((0, 0, 0, `num(0.5)))),
       position(`fixed),
       animation(
         ~duration=Config.modalFadingDutation,
@@ -33,7 +33,9 @@ module Styles = {
       marginTop(`vw(10.)),
       backgroundColor(Css_Colors.white),
       borderRadius(`px(5)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, 0.5))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, `num(0.5))),
+      ),
       animation(
         ~duration=Config.modalFadingDutation,
         ~timingFunction=`cubicBezier((0.25, 0.46, 0.45, 0.94)),

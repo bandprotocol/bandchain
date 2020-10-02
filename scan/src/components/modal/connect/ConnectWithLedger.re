@@ -63,7 +63,7 @@ module Styles = {
       justifySelf(`right),
       justifyContent(`center),
       alignItems(`center),
-      backgroundColor(isLoading ? Colors.blueGray3 : Css.rgba(0, 0, 0, 0.)),
+      backgroundColor(isLoading ? Colors.blueGray3 : Css.rgba(0, 0, 0, `num(0.))),
       backgroundImage(
         isLoading
           ? `none
@@ -74,7 +74,8 @@ module Styles = {
       ),
       boxShadow(
         isLoading
-          ? `none : Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25)),
+          ? `none
+          : Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
       ),
       borderRadius(`px(4)),
       cursor(isLoading ? `default : `pointer),
@@ -92,7 +93,7 @@ module Styles = {
       height(`px(30)),
       left(`zero),
       top(`px(32)),
-      background(rgba(255, 255, 255, 1.)),
+      background(rgba(255, 255, 255, `num(1.))),
       border(`px(1), `solid, Colors.blueGray3),
       borderRadius(`px(6)),
       float(`left),
@@ -100,7 +101,7 @@ module Styles = {
 
   let selectContent =
     style([
-      background(rgba(255, 255, 255, 1.)),
+      background(rgba(255, 255, 255, `num(1.))),
       border(`px(0), `solid, hex("FFFFFF")),
       width(`px(100)),
       lineHeight(`em(1.41)),
@@ -225,8 +226,11 @@ let make = (~chainID, ~ledgerApp) => {
              switch (Os.isWindows(), Os.checkHID()) {
              | (true, false) =>
                let isConfirm =
-                 Window.confirm(
-                   {j|To use Ledger Nano on Windows 10, please enable "Experimental Web Platform Features" by copy-paste "chrome://flags/#enable-experimental-web-platform-features". Click OK to copy.|j},
+                 Webapi.Dom.(
+                   window
+                   |> Window.confirm(
+                        {j|To use Ledger Nano on Windows 10, please enable "Experimental Web Platform Features" by copy-paste "chrome://flags/#enable-experimental-web-platform-features". Click OK to copy.|j},
+                      )
                  );
                isConfirm
                  ? Copy.copy("chrome://flags/#enable-experimental-web-platform-features") : ();

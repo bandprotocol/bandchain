@@ -30,16 +30,16 @@ module Styles = {
       height(`px(30)),
       left(`zero),
       top(`px(32)),
-      background(rgba(255, 255, 255, 1.)),
+      background(rgba(255, 255, 255, `num(1.))),
       borderRadius(`px(100)),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, 0.1))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(0, 0, 0, `num(0.1)))),
       float(`left),
       fontSize(`px(14)),
     ]);
 
   let selectContent =
     style([
-      background(rgba(255, 255, 255, 1.)),
+      background(rgba(255, 255, 255, `num(1.))),
       border(`px(0), `solid, hex("FFFFFF")),
       width(`px(135)),
       focus([outlineColor(Colors.white)]),
@@ -59,7 +59,9 @@ module Styles = {
           [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
         )),
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
+      ),
       borderRadius(`px(4)),
       border(`zero, `solid, Colors.white),
       alignSelf(`center),
@@ -74,7 +76,9 @@ module Styles = {
           )),
         ),
         color(Colors.gray6),
-        boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, 0.1))),
+        boxShadow(
+          Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, `num(0.1))),
+        ),
         cursor(`default),
       ]),
     ]);
@@ -167,7 +171,7 @@ module SubmitTxStep = {
               setRawTx(_ => Some(rawTx));
               Promise.ret();
             | None =>
-              Window.alert("invalid msgs");
+              Webapi.Dom.(window |> Window.alert("invalid msgs"));
               Promise.ret();
             };
           ();

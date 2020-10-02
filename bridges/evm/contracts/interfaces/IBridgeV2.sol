@@ -3,8 +3,7 @@
 pragma solidity 0.6.11;
 pragma experimental ABIEncoderV2;
 
-import {IBridge} from "./interfaces/IBridge.sol";
-
+import {IBridge} from "./IBridge.sol";
 
 interface IBridgeV2 {
     /// Event to broadcast oracle request event.

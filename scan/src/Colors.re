@@ -98,4 +98,4 @@ let bg = Css.hex("FCFCFC");
 let profileBG = Css.hex("F9FAFF");
 let connectBG = Css.hex("EFF2FF");
 
-let transparent = Css.rgba(0, 0, 0, 0.);
+let transparent = Css.rgba(0, 0, 0, `num(0.));

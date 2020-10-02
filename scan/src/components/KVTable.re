@@ -30,8 +30,8 @@ module Styles = {
           ~y=`px(2),
           ~blur=`px(2),
           switch (theme) {
-          | MessageMiniTable => Css.rgba(0, 0, 0, 0.05)
-          | RequestMiniTable => Css.rgba(11, 29, 142, 0.05)
+          | MessageMiniTable => Css.rgba(0, 0, 0, `num(0.05))
+          | RequestMiniTable => Css.rgba(11, 29, 142, `num(0.05))
           },
         ),
       ),
@@ -62,8 +62,8 @@ module Styles = {
           ~y=`px(2),
           ~blur=`px(4),
           switch (theme) {
-          | MessageMiniTable => Css.rgba(0, 0, 0, 0.08)
-          | RequestMiniTable => Css.rgba(11, 29, 142, 0.08)
+          | MessageMiniTable => Css.rgba(0, 0, 0, `num(0.08))
+          | RequestMiniTable => Css.rgba(11, 29, 142, `num(0.08))
           },
         ),
       ),
