@@ -82,7 +82,7 @@ func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
-		case "price":
+		case "prices":
 			if len(paths) < 3 {
 				return queryResultError(errors.New("no route for prices query specified"))
 			}
