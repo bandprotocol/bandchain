@@ -8,7 +8,7 @@ describe("Login", () => {
   it("Should have s address on account panel", () => {
     cy.get('[id="connectButton"]').click();
     cy.get('[id="mnemonicInput"]').type("s");
-    cy.get('[id="mnemonicConnectButton"]').click();
+    cy.get('[id="mnemonicConnectButton"] > button').click();
     cy.get('[id="userInfoButton"]').click();
     cy.get('[id="addressWrapper"] > a > span').should(
       "contain",
@@ -19,7 +19,7 @@ describe("Login", () => {
 
 describe("Send", () => {
   it("Status should be Success", () => {
-    cy.get('[id="sendToken"]').contains("Send").click();
+    cy.get('[id="sendToken"] > button').contains("Send").click();
     cy.get('[id="recipientAddressInput"]')
       .wait(1000)
       .type("band1mrdmxkhtr3rgfzfgrkxy5pvjtvnm5qq0my5m0x")
