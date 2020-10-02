@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/debug"
@@ -23,6 +26,8 @@ import (
 
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/emitter"
+	"github.com/bandprotocol/bandchain/chain/pricer"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 const (
@@ -30,6 +35,7 @@ const (
 	flagWithEmitter           = "with-emitter"
 	flagDisableFeelessReports = "disable-feeless-reports"
 	flagEnableFastSync        = "enable-fast-sync"
+	flagWithPricer            = "with-pricer"
 )
 
 var invCheckPeriod uint
@@ -63,6 +69,7 @@ func main() {
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
+	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in price cache")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {
@@ -85,7 +92,32 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	if viper.IsSet(flagWithEmitter) {
+	if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
+		panic("Cannot set flag with pricer and with emitter at the same time")
+	}
+	if viper.IsSet(flagWithPricer) {
+		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
+		oids := make([]types.OracleScriptID, len(rawOids))
+		for idx, rawOid := range rawOids {
+			oid, err := strconv.ParseInt(rawOid, 10, 64)
+			if err != nil {
+				panic(err)
+			}
+			oids[idx] = types.OracleScriptID(oid)
+		}
+		return pricer.NewBandAppWithPricer(
+			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
+			viper.GetString(flags.FlagHome),
+			viper.GetBool(flagDisableFeelessReports),
+			oids,
+			filepath.Join(viper.GetString(cli.HomeFlag), "prices"),
+			baseapp.SetPruning(pruningOpts),
+			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+			baseapp.SetInterBlockCache(cache),
+		)
+	} else if viper.IsSet(flagWithEmitter) {
 		return emitter.NewBandAppWithEmitter(
 			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
 			skipUpgradeHeights, viper.GetString(flags.FlagHome),
