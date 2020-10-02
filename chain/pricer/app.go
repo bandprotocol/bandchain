@@ -16,8 +16,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// App extends the standard Band Cosmos-SDK application with Price cache
-// functionality to act as an event producer for all events in the blockchains.
+// App extends the standard Band Cosmos-SDK application with Price cache.
 type App struct {
 	*bandapp.BandApp
 	StdOs map[types.OracleScriptID]bool
@@ -53,7 +52,7 @@ func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	return res
 }
 
-func QueryResultError(err error) abci.ResponseQuery {
+func queryResultError(err error) abci.ResponseQuery {
 	space, code, log := sdkerrors.ABCIInfo(err, true)
 	return abci.ResponseQuery{
 		Code:      code,
@@ -62,7 +61,7 @@ func QueryResultError(err error) abci.ResponseQuery {
 	}
 }
 
-func QueryResultSuccess(value []byte, height int64) abci.ResponseQuery {
+func queryResultSuccess(value []byte, height int64) abci.ResponseQuery {
 	space, code, log := sdkerrors.ABCIInfo(nil, true)
 	return abci.ResponseQuery{
 		Code:      code,
@@ -73,21 +72,22 @@ func QueryResultSuccess(value []byte, height int64) abci.ResponseQuery {
 	}
 }
 
+// Query returns response query if the route is prices else calls into the underlying Query
 func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "prices" {
 		if len(paths) < 2 {
-			return QueryResultError(errors.New("no route for prices query specified"))
+			return queryResultError(errors.New("no route for prices query specified"))
 		}
 		price, err := app.cache.GetPrice(paths[1])
 		if err != nil {
-			return QueryResultError(err)
+			return queryResultError(err)
 		}
 		bz, err := app.Codec().MarshalBinaryBare(price)
 		if err != nil {
-			return QueryResultError(err)
+			return queryResultError(err)
 		}
-		return QueryResultSuccess(bz, req.Height)
+		return queryResultSuccess(bz, req.Height)
 	}
 	return app.BandApp.Query(req)
 }
