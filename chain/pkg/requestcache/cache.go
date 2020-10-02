@@ -1,6 +1,8 @@
 package requestcache
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 
@@ -24,7 +26,9 @@ func New(basePath string) Cache {
 }
 
 func getFilename(oid types.OracleScriptID, calldata []byte, askCount uint64, minCount uint64) string {
-	return fmt.Sprintf("%d,%x,%d,%d", oid, calldata, askCount, minCount)
+	full := fmt.Sprintf("%d,%x,%d,%d", oid, calldata, askCount, minCount)
+	hash := sha256.Sum256([]byte(full))
+	return hex.EncodeToString(hash[:])
 }
 
 // SaveLatestRequest saves the latest request id to a file with key that combined from event attributes.
