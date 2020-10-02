@@ -92,6 +92,9 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
+	if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
+		panic("Cannot set flag with pricer and with emitter at the same time")
+	}
 	if viper.IsSet(flagWithPricer) {
 		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
 		oids := make([]types.OracleScriptID, len(rawOids))
