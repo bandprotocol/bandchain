@@ -131,6 +131,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          </div>
          <div
            className=Styles.btn
+           id="broadcastButton"
            onClick={_ => {
              dispatchModal(DisableExit);
              setState(_ => Signing);
@@ -192,7 +193,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
        </div>
      | Success(txHash) =>
        <div className=Styles.resultContainer>
-         <div className=Styles.rFlex>
+         <div className=Styles.rFlex id="successMsgContainer">
            <img src=Images.success2 className=Styles.resultIcon />
            <HSpacing size=Spacing.md />
            <Text value="Broadcast Transaction Success" weight=Text.Semibold />

@@ -1,5 +1,5 @@
 [@react.component]
-let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true) => {
+let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true, ~smallNumber=false) => {
   let countup =
     Countup.context(
       Countup.props(
@@ -20,7 +20,14 @@ let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true) =
     },
     [|value|],
   );
-
-  let newVal = Countup.countUpGet(countup);
-  <Text value=newVal size weight spacing code nowrap=true color />;
+  let newVal = Countup.countUpGet(countup) |> Js.Float.toString;
+  smallNumber
+    ? {
+      let adjustedText = newVal->Js.String2.split(".");
+      <div className={CssHelper.flexBox(~align=`flexEnd, ())}>
+        <Text value={Array.get(adjustedText, 0)} size weight spacing code nowrap=true color />
+        <Text value={"." ++ adjustedText[1]} size=Text.Lg weight spacing code nowrap=true color />
+      </div>;
+    }
+    : <Text value=newVal size weight spacing code nowrap=true color />;
 };
