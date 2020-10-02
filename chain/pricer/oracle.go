@@ -19,7 +19,7 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 		obi.MustDecode(result.ResponsePacketData.Result, &output)
 		for idx, symbol := range input.Symbols {
 			price := pricecache.NewPrice(input.Multiplier, output.Pxs[idx], result.ResponsePacketData.ResolveTime)
-			err := app.cache.SetPrice(pricecache.GetFilename(symbol, result.RequestPacketData.MinCount, result.RequestPacketData.MinCount), price)
+			err := app.cache.SetPrice(pricecache.GetFilename(symbol, result.RequestPacketData.MinCount, result.RequestPacketData.AskCount), price)
 			if err != nil {
 				panic(err)
 			}
