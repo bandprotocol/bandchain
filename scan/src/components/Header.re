@@ -75,14 +75,14 @@ module DesktopRender = {
                     target="_blank"
                     rel="noopener"
                     className=Styles.socialLink>
-                    <img src=Images.twitterLogo className=Styles.twitterLogo />
+                    <Icon name="fab fa-twitter" color=Colors.bandBlue size=16 />
                   </a>
                   <a
                     href="https://t.me/bandprotocol"
                     target="_blank"
                     rel="noopener"
                     className=Styles.socialLink>
-                    <img src=Images.telegramLogo className=Styles.telegramLogo />
+                    <Icon name="fab fa-telegram-plane" color=Colors.bandBlue size=17 />
                   </a>
                   <a
                     href="https://coinmarketcap.com/currencies/band-protocol/"

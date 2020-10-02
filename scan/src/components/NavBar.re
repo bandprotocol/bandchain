@@ -64,7 +64,7 @@ module RenderMobile = {
     let menu = style([width(`px(20))]);
     let twitterLogo = style([width(`px(19))]);
     let telegramLogo = style([width(`px(17))]);
-    let cmcLogo = style([width(`px(21))]);
+    let cmcLogo = style([width(`px(19))]);
     let socialContainer = style([display(`flex), flexDirection(`row), marginTop(`px(10))]);
     let socialLink =
       style([
@@ -106,13 +106,13 @@ module RenderMobile = {
         <div className=Styles.socialContainer>
           <div className=Styles.socialLink>
             <a href="https://twitter.com/bandprotocol" target="_blank" rel="noopener">
-              <img src=Images.twitterLogo className=Styles.twitterLogo />
+              <Icon name="fab fa-twitter" color=Colors.bandBlue size=20 />
             </a>
           </div>
           <HSpacing size={`px(24)} />
           <div className=Styles.socialLink>
             <a href="https://t.me/bandprotocol" target="_blank" rel="noopener">
-              <img src=Images.telegramLogo className=Styles.telegramLogo />
+              <Icon name="fab fa-telegram-plane" color=Colors.bandBlue size=21 />
             </a>
           </div>
           <HSpacing size={`px(24)} />
