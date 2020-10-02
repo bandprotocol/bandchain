@@ -1,7 +1,7 @@
 import requests
 from dacite import from_dict
 
-from .data import DataSource, OracleScript, RequestInfo, DACITE_CONFIG
+from .data import Account, DataSource, OracleScript, RequestInfo, DACITE_CONFIG
 
 
 class Client(object):
@@ -10,6 +10,23 @@ class Client(object):
 
     def _get(self, path, **kwargs):
         return requests.get(self.rpc_url + path, **kwargs).json()["result"]
+
+    def send_tx(self, data: dict) -> dict:
+        return requests.post(self.rpc_url + "/txs", json=data).json()
+
+    def get_chain_id(self) -> str:
+        genesis = requests.get(self.rpc_url + "/bandchain/genesis").json()
+        return genesis["chain_id"]
+
+    def get_latest_block(self) -> dict:
+        return requests.get(self.rpc_url + "/blocks/latest").json()
+
+    def get_account(self, address: str) -> Account:
+        return from_dict(
+            data_class=Account,
+            data=self._get("/auth/accounts/{}".format(address))["value"],
+            config=DACITE_CONFIG,
+        )
 
     def get_data_source(self, id: int) -> DataSource:
         return from_dict(
@@ -48,4 +65,7 @@ class Client(object):
             ),
             config=DACITE_CONFIG,
         )
+
+    def get_reporters(self, validator: str) -> list:
+        return self._get("/oracle/reporters/{}".format(validator))
 

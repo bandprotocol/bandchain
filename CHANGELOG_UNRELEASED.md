@@ -12,50 +12,37 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
+
 ### Yoda
 
 ### Emitter & Flusher
 
-- (impv) [\#2558](https://github.com/bandprotocol/bandchain/pull/2558) fast-sync: emit all oracle module from start state
-- (bugs) [\#2601](https://github.com/bandprotocol/bandchain/pull/2601) Downgrade Kafka go
-- (bugs) [\#2600](https://github.com/bandprotocol/bandchain/pull/2600) Fix bug handle new transaction
+- (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
+- (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
 
 ### Scan
 
-- (bugs) [\#2606](https://github.com/bandprotocol/bandchain/pull/2606) Fix overflow text on request index page
-- (impv) [\#2604](https://github.com/bandprotocol/bandchain/pull/2604) Moved the proposal route to wenchang route
-- (feat) [\#2603](https://github.com/bandprotocol/bandchain/pull/2603) Added `guanyu-poa` on chain id
-- (impv) [\#2599](https://github.com/bandprotocol/bandchain/pull/2599) Polish style on revamp GuanYu part 2
-- (feat) [\#2598](https://github.com/bandprotocol/bandchain/pull/2598) Implemented VoteSub, Vote breakdown table and wire up
-- (feat) [\#2597](https://github.com/bandprotocol/bandchain/pull/2597) Implemented VoteMsg and modal action
-- (impv) [\#2596](https://github.com/bandprotocol/bandchain/pull/2596) Fix total deposit, deposit amount type
-- (bugs) [\#2595](https://github.com/bandprotocol/bandchain/pull/2595) Handle `client_id` optional case
-- (impv) [\#2593](https://github.com/bandprotocol/bandchain/pull/2593) Polish UI
-- (feat) [\#2592](https://github.com/bandprotocol/bandchain/pull/2592) Added new voting overview and results box to proposal index page
-- (feat) [\#2591](https://github.com/bandprotocol/bandchain/pull/2591) Implemented the deposit overview, depositors table
-- (feat) [\#2578](https://github.com/bandprotocol/bandchain/pull/2578) Implemented the top part for proposal index page, markdown component
-- (bugs) [\#2576](https://github.com/bandprotocol/bandchain/pull/2576) Fix overflow value on History Bonded Token, implement HistoryOracleParser and unit test.
-- (impv) [\#2573](https://github.com/bandprotocol/bandchain/pull/2573) Added tooltip text to each place which is lorem
-- (feat) [\#2570](https://github.com/bandprotocol/bandchain/pull/2570) Created ProposalSub and ProposalHomepage, and also implemented the route for both home and index page
-- (bugs) [\#2568](https://github.com/bandprotocol/bandchain/pull/2568) Updated reporters subscription
-- (impv) [\#2566](https://github.com/bandprotocol/bandchain/pull/2566) Implemented TxIndexpage with new theme
-- (impv) [\#2563](https://github.com/bandprotocol/bandchain/pull/2563) Implemented the revamp block index page
-- (impv) [\#2561](https://github.com/bandprotocol/bandchain/pull/2561) Implemented the new layout for Validator Homepage
-- (impv) [\#2560](https://github.com/bandprotocol/bandchain/pull/2560) Refactor, improve Block Home Page for revamp GuanYu version
-- (impv) [\#2557](https://github.com/bandprotocol/bandchain/pull/2557) Fix and clean up copy button
-- (impv) [\#2552](https://github.com/bandprotocol/bandchain/pull/2552) Wire up related data source, handle nullable timestamp
-- (impv) [\#2550](https://github.com/bandprotocol/bandchain/pull/2550) Polish request index page
-- (bugs) [\#2527](https://github.com/bandprotocol/bandchain/pull/2527) Fix search bugs on ds & os home page
-- (impv) [\#2516](https://github.com/bandprotocol/bandchain/pull/2516) Fix loading width and bg color
-- (impv) [\#2499](https://github.com/bandprotocol/bandchain/pull/2499) Implemented Total request chart
-- (impv) [\#2455](https://github.com/bandprotocol/bandchain/pull/2455) Implement full copy non evm proof
-- (impv) [\#2363](https://github.com/bandprotocol/bandchain/pull/2363) Added loading state on AccountIndexPage, fixed some layout to make everything consistance.
+- (bugs) [\#2687](https://github.com/bandprotocol/bandchain/pull/2687) Fixed NaN number (Urgent)
+- (impv) [\#2684](https://github.com/bandprotocol/bandchain/pull/2684) Adjust validator voted from 250 to 100
+- (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
+- (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
+- (impv) [\#2671](https://github.com/bandprotocol/bandchain/pull/2671) Adjusted tooltip width and added webapi
+- (impv) [\#2670](https://github.com/bandprotocol/bandchain/pull/2670) Format the count number
+- (feat) [\#2669](https://github.com/bandprotocol/bandchain/pull/2669) Add active validator's rank on Validator Index Page
+- (bugs) [\#2666](https://github.com/bandprotocol/bandchain/pull/2666) Handle rate limit msg when decoding
+- (impv) [\#2663](https://github.com/bandprotocol/bandchain/pull/2663) Fixed and updated `ChainIDBadge`
+- (impv) [\#2644](https://github.com/bandprotocol/bandchain/pull/2644) Added `netlify.toml` configuration
+- (feat) [\#2594](https://github.com/bandprotocol/bandchain/pull/2594) Added meta og tag to scan
 
 ### Bridges
 
-- (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2529](https://github.com/bandprotocol/bandchain/pull/2529) Add harmony to bridge evm
+- (feat) [\#2548](https://github.com/bandprotocol/bandchain/pull/2548) Added `BridgeProxy` contract
 - (feat) [\#2385](https://github.com/bandprotocol/bandchain/pull/2385) Add icon bridge
+- (docs) [\#2691](https://github.com/bandprotocol/bandchain/pull/2691) Add simple price db example for doc
+- (feat) [\#2632](https://github.com/bandprotocol/bandchain/pull/2632) Add aggregator contract for ICON bridge
+- (impv) [\#2626](https://github.com/bandprotocol/bandchain/pull/2626) Icon bridge fixed from auditing process
 
 ### Runtime
 
@@ -65,6 +52,7 @@
 
 ### Helpers
 
-- (impv) [\#2577](https://github.com/bandprotocol/bandchain/pull/2577) Wallet module completion
+- (impv) [\#2652](https://github.com/bandprotocol/bandchain/pull/2652) pyband: use string instead of class annotation for Python3.6
+- (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get latest block
 
 ### MISC

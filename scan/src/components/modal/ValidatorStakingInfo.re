@@ -6,7 +6,9 @@ module Styles = {
   let infoContainer =
     style([
       backgroundColor(Colors.white),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
       padding(`px(24)),
       Media.mobile([padding(`px(16))]),
     ]);
@@ -40,7 +42,10 @@ module ButtonSection = {
           className={CssHelper.btn(~px=20, ~py=5, ())}
           onClick={_ => {
             validatorInfo.commission == 100.
-              ? Window.alert("Delegation to foundation validator nodes is not advised.")
+              ? Webapi.Dom.(
+                  window
+                  |> Window.alert("Delegation to foundation validator nodes is not advised.")
+                )
               : delegate()
           }}>
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
@@ -127,7 +132,7 @@ module StakingInfo = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
 
     let infoSub = React.useContext(GlobalContext.context);
-    let balanceAtStakeSub = DelegationSub.getStakeByValiator(delegatorAddress, validatorAddress);
+    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
     let unbondingSub =
       UnbondingSub.getUnbondingBalanceByValidator(
         delegatorAddress,

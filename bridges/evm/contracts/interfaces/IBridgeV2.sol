@@ -5,7 +5,6 @@ pragma experimental ABIEncoderV2;
 
 import {IBridge} from "./IBridge.sol";
 
-
 interface IBridgeV2 {
     /// Event to broadcast oracle request event.
     event OracleRequest(

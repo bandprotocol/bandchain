@@ -3,7 +3,9 @@ module Styles = {
 
   let container = height_ =>
     style([
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, `num(0.05))),
+      ),
       backgroundColor(white),
       marginBottom(`px(1)),
       display(`flex),
@@ -14,7 +16,9 @@ module Styles = {
   let containerBase = height_ =>
     style([
       backgroundColor(Colors.blueGray1),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, 0.05))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(2), Css.rgba(0, 0, 0, `num(0.05))),
+      ),
       padding2(~v=`zero, ~h=`px(24)),
       selector("> div", [height(`px(height_))]),
     ]);

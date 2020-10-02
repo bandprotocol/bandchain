@@ -1,4 +1,5 @@
 from pyband import Client, PyObi
+from pyband.wallet import PrivateKey
 
 
 def main():
@@ -9,6 +10,9 @@ def main():
     oracle_script = c.get_oracle_script(6)
     obi = PyObi(oracle_script.schema)
     print(obi.decode_output(req_info.result.response_packet_data.result))
+
+    _, priv = PrivateKey.generate()
+    print(priv.to_pubkey().to_acc_bech32(), priv.to_pubkey().to_address().to_acc_bech32())
 
 
 if __name__ == "__main__":

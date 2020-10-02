@@ -62,7 +62,7 @@ module Styles = {
       display(`flex),
       borderRadius(`px(6)),
       cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, 0.2))),
+      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, `num(0.2)))),
       borderRadius(`px(10)),
     ]);
 };
@@ -80,7 +80,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
         tooltipPlacement=Text.AlignBottomStart
       />
     </Col>
-    <Col size=0.6>
+    <Col size=2.0>
       <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
         <div className={CssHelper.flexBox()}>
           {isCountup
@@ -204,10 +204,9 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let send = chainID => {
     switch (accountOpt) {
     | Some({address: sender}) =>
-      let openSendModal = () =>
-        Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+      let openSendModal = () => Some(address)->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
       if (sender == address) {
-        Window.confirm("Are you sure you want to send tokens to yourself?")
+        Webapi.Dom.(window |> Window.confirm("Are you sure you want to send tokens to yourself?"))
           ? openSendModal() : ();
       } else {
         openSendModal();

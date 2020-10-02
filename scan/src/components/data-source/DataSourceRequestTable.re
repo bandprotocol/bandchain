@@ -156,7 +156,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                 <div className={CssHelper.flexBox()}>
                   <Text
                     block=true
-                    value={totalRequestCount |> string_of_int}
+                    value={totalRequestCount |> Format.iPretty}
                     weight=Text.Semibold
                     color=Colors.gray7
                   />
@@ -175,7 +175,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                   <div className={CssHelper.flexBox()}>
                     <Text
                       block=true
-                      value={totalRequestCount |> string_of_int}
+                      value={totalRequestCount |> Format.iPretty}
                       weight=Text.Semibold
                       color=Colors.gray7
                     />

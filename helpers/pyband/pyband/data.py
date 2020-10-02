@@ -1,6 +1,6 @@
 import base64
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from dacite import Config
 
@@ -86,6 +86,15 @@ class Result(object):
 @dataclass
 class RequestInfo(object):
     request: Request
-    reports: List[Report]
-    result: Result
+    reports: Optional[List[Report]]
+    result: Optional[Result]
+
+
+@dataclass
+class Account(object):
+    address: str
+    coins: List[dict]
+    public_key: Optional[dict]
+    account_number: int
+    sequence: int
 

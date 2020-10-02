@@ -193,7 +193,7 @@ class Handler(object):
         )
 
     def handle_update_validator(self, msg):
-        if "tokens" in msg:
+        if "tokens" in msg and "last_update" in msg:
             self.handle_new_historical_bonded_token_on_validator(
                 {
                     "validator_id": self.get_validator_id(msg["operator_address"]),
@@ -201,7 +201,6 @@ class Handler(object):
                     "timestamp": msg["last_update"],
                 }
             )
-        if "last_update" in msg:
             del msg["last_update"]
         self.conn.execute(
             validators.update()
@@ -250,6 +249,13 @@ class Handler(object):
         del msg["operator_address"]
         self.conn.execute(insert(unbonding_delegations).values(**msg))
 
+    def handle_remove_unbonding(self, msg):
+        self.conn.execute(
+            unbonding_delegations.delete().where(
+                unbonding_delegations.c.completion_time <= msg["timestamp"]
+            )
+        )
+
     def handle_new_redelegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
@@ -258,6 +264,11 @@ class Handler(object):
         msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
+
+    def handle_remove_redelegation(self, msg):
+        self.conn.execute(
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
+        )
 
     def handle_new_proposal(self, msg):
         msg["proposer_id"] = self.get_account_id(msg["proposer"])
@@ -307,7 +318,7 @@ class Handler(object):
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
-        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        msg["operator_address"] = msg["validator"]
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]

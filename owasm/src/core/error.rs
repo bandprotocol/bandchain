@@ -17,7 +17,7 @@ pub enum Error {
     InstantiationError = 10, // Error while instantiating Wasm with resolvers.
     RuntimeError = 11,       // Runtime error while executing the Wasm script.
     OutOfGasError = 12,      // Out-of-gas while executing the Wasm script.
-    BadEntrySignatureError = 13, // Bad execution entry point sigature.
+    BadEntrySignatureError = 13, // Bad execution entry point signature.
     MemoryOutOfBoundError = 14, // Out-of-bound memory access while executing the wasm script
     // Host-generated errors while interacting with OEI.
     WrongPeriodActionError = 128, // OEI action to invoke is not available.

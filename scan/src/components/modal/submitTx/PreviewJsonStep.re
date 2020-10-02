@@ -67,7 +67,9 @@ module Styles = {
           [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
         )),
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
+      ),
       borderRadius(`px(4)),
       cursor(`pointer),
       alignSelf(`center),

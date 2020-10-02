@@ -16,7 +16,13 @@ module Styles = {
       paddingLeft(`px(9)),
       borderRadius(`px(8)),
       boxShadow(
-        Shadow.box(~inset=true, ~x=`zero, ~y=`px(3), ~blur=`px(4), Css.rgba(11, 29, 142, 0.1)),
+        Shadow.box(
+          ~inset=true,
+          ~x=`zero,
+          ~y=`px(3),
+          ~blur=`px(4),
+          Css.rgba(11, 29, 142, `num(0.1)),
+        ),
       ),
       focus([outline(`zero, `none, Colors.white)]),
     ]);
@@ -45,7 +51,9 @@ module Styles = {
           [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
         )),
       ),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, 0.25))),
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
+      ),
       borderRadius(`px(4)),
       cursor(`pointer),
       alignSelf(`flexEnd),

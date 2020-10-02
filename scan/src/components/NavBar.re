@@ -53,7 +53,9 @@ module RenderMobile = {
         transition(~duration=400, "all"),
         backgroundColor(Colors.white),
         padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
-        boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, 0.08))),
+        boxShadow(
+          Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+        ),
       ]);
 
     let nav = style([color(Colors.gray8), padding2(~v=`px(16), ~h=`zero)]);
@@ -75,7 +77,7 @@ module RenderMobile = {
       style([
         width(`percent(100.)),
         height(`percent(100.)),
-        backgroundColor(`rgba((0, 0, 0, 0.5))),
+        backgroundColor(`rgba((0, 0, 0, `num(0.5)))),
         position(`fixed),
         opacity(show ? 1. : 0.),
         pointerEvents(show ? `auto : `none),
