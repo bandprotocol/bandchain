@@ -16,12 +16,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// App extends the standard Band Cosmos-SDK application with Kafka emitter
+// App extends the standard Band Cosmos-SDK application with Price cache
 // functionality to act as an event producer for all events in the blockchains.
 type App struct {
 	*bandapp.BandApp
 	StdOs map[types.OracleScriptID]bool
-	cahce pricecache.Cache
+	cache pricecache.Cache
 }
 
 func NewBandAppWithPricer(
@@ -40,11 +40,11 @@ func NewBandAppWithPricer(
 	return &App{
 		BandApp: app,
 		StdOs:   stdOs,
-		cahce:   pricecache.New(fileDir),
+		cache:   pricecache.New(fileDir),
 	}
 }
 
-// EndBlock calls into the underlying EndBlock and emits relevant events to Kafka.
+// EndBlock calls into the underlying EndBlock and save price to cache
 func (app *App) EndBlock(req abci.RequestEndBlock) abci.ResponseEndBlock {
 	res := app.BandApp.EndBlock(req)
 	for _, event := range res.Events {
@@ -79,7 +79,7 @@ func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 		if len(paths) < 2 {
 			return QueryResultError(errors.New("no route for prices query specified"))
 		}
-		price, err := app.cahce.GetPrice(paths[1])
+		price, err := app.cache.GetPrice(paths[1])
 		if err != nil {
 			return QueryResultError(err)
 		}

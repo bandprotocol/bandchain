@@ -37,13 +37,14 @@ func New(basePath string) Cache {
 	}
 }
 
+// GetFilename returns filename format as symbol,minCount,askCount.
 func GetFilename(symbol string, minCount uint64, askCount uint64) string {
 	return fmt.Sprintf("%s,%v,%v", symbol, minCount, askCount)
 }
 
-// SetPrice saves the given data to a file in HOME/files directory using symbol,minCount,askCount format as filename.
-func (c Cache) SetPrice(symbol string, minCount uint64, askCount uint64, price Price) error {
-	return c.priceCache.Write(GetFilename(symbol, minCount, askCount), obi.MustEncode(price))
+// SetPrice saves the given data to a file in HOME/prices directory.
+func (c Cache) SetPrice(filename string, price Price) error {
+	return c.priceCache.Write(filename, obi.MustEncode(price))
 }
 
 // GetPrice loads the file from the file storage. Returns error if the file does not exist.
