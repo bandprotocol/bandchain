@@ -8,20 +8,13 @@ _gy = int("483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8", 16
 _g = (_gx, _gy)
 
 
-# https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm
-def inv_mod(a, n=_p):
-    lm, hm = 1, 0
-    low, high = a % n, n
-    while low > 1:
-        ratio = high // low
-        nm, new = hm - lm * ratio, high - low * ratio
-        lm, low, hm, high = nm, new, lm, low
-    return lm % n
+def inv_mod(a, n):
+    return pow(a, n - 2, n)
 
 
 # https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Point_addition
 def ecc_add(a, b):
-    l = ((b[1] - a[1]) * inv_mod(b[0] - a[0])) % _p
+    l = ((b[1] - a[1]) * inv_mod(b[0] - a[0], _p)) % _p
     x = (l * l - a[0] - b[0]) % _p
     y = (l * (a[0] - x) - a[1]) % _p
     return (x, y)
@@ -29,7 +22,7 @@ def ecc_add(a, b):
 
 # https://en.wikipedia.org/wiki/Elliptic_curve_point_multiplication#Point_doubling
 def ecc_double(a):
-    l = ((3 * a[0] * a[0] + _a) * inv_mod((2 * a[1]))) % _p
+    l = ((3 * a[0] * a[0] + _a) * inv_mod((2 * a[1]), _p)) % _p
     x = (l * l - 2 * a[0]) % _p
     y = (l * (a[0] - x) - a[1]) % _p
     return (x, y)
@@ -98,7 +91,14 @@ def ecc_sqrt(n, p):
 
 
 # https://en.wikipedia.org/wiki/Elliptic_Curve_Digital_Signature_Algorithm
-def ecrecover(_e: bytes, _r: bytes, _s: bytes, v):
+def ecrecover(_e: bytes, _r: bytes, _s: bytes, v: int):
+    if len(_e) != 32:
+        raise ValueError(f"size of message hash must be 32 but got {len(_e)}")
+    if len(_r) != 32:
+        raise ValueError(f"size of r must be 32 but got {len(_r)}")
+    if len(_s) != 32:
+        raise ValueError(f"size of s must be 32 but got {len(_s)}")
+
     e = int.from_bytes(_e, "big")
     r = int.from_bytes(_r, "big")
     s = int.from_bytes(_s, "big")

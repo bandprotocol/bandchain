@@ -373,7 +373,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  toggle
                  sortedBy
                  isRight=false
-                 tooltipItem="Percentage of the blocks that the validator is active for out of the last 250"
+                 tooltipItem="Percentage of the blocks that the validator is active for out of the last 100"
                />
              </Col.Grid>
              <Col.Grid col=Col.Two>
