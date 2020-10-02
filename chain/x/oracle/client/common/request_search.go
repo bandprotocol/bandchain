@@ -12,11 +12,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-type QueryResult struct {
-	result types.QueryRequestResult
-	err    error
-}
-
 func queryRequest(route string, cliCtx context.CLIContext, rid string) (types.QueryRequestResult, int64, error) {
 	bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid))
 	if err != nil {
@@ -95,15 +90,19 @@ func QuerySearchLatestRequest(
 func queryRequests(
 	route string, cliCtx context.CLIContext, requestIDs []string,
 ) ([]types.QueryRequestResult, int64, error) {
-	queryResultsChan := make(chan QueryResult, len(requestIDs))
+	type queryResult struct {
+		result types.QueryRequestResult
+		err    error
+	}
+	queryResultsChan := make(chan queryResult, len(requestIDs))
 	for _, rid := range requestIDs {
 		go func(rid string) {
 			out, _, err := queryRequest(route, cliCtx, rid)
 			if err != nil {
-				queryResultsChan <- QueryResult{err: err}
+				queryResultsChan <- queryResult{err: err}
 				return
 			}
-			queryResultsChan <- QueryResult{result: out}
+			queryResultsChan <- queryResult{result: out}
 		}(rid)
 	}
 	requests := make([]types.QueryRequestResult, 0)
@@ -184,6 +183,9 @@ func QueryMultiSearchLatestRequest(
 	if len(queryRequestResults) == 0 {
 		bz, err := types.QueryNotFound("request with specified specification not found")
 		return bz, 0, err
+	}
+	if len(queryRequestResults) > limit {
+		queryRequestResults = queryRequestResults[:limit]
 	}
 	bz, err := types.QueryOK(queryRequestResults)
 	return bz, h, err
