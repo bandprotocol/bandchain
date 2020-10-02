@@ -12,6 +12,11 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+type QueryResult struct {
+	result types.QueryRequestResult
+	err    error
+}
+
 func queryRequest(route string, cliCtx context.CLIContext, rid string) (types.QueryRequestResult, int64, error) {
 	bz, height, err := cliCtx.Query(fmt.Sprintf("custom/%s/%s/%s", route, types.QueryRequests, rid))
 	if err != nil {
@@ -90,30 +95,26 @@ func QuerySearchLatestRequest(
 func queryRequests(
 	route string, cliCtx context.CLIContext, requestIDs []string,
 ) ([]types.QueryRequestResult, int64, error) {
-	requestsChan := make(chan types.QueryRequestResult, len(requestIDs))
-	errsChan := make(chan error, len(requestIDs))
+	queryResultsChan := make(chan QueryResult, len(requestIDs))
 	for _, rid := range requestIDs {
 		go func(rid string) {
 			out, _, err := queryRequest(route, cliCtx, rid)
 			if err != nil {
-				requestsChan <- types.QueryRequestResult{}
-				errsChan <- err
+				queryResultsChan <- QueryResult{err: err}
+				return
 			}
-			requestsChan <- out
-			errsChan <- nil
-
+			queryResultsChan <- QueryResult{result: out}
 		}(rid)
 	}
 	requests := make([]types.QueryRequestResult, 0)
-	for idx := 0; idx < 2*len(requestIDs); idx++ {
+	for idx := 0; idx < len(requestIDs); idx++ {
 		select {
-		case req := <-requestsChan:
-			if req.Result != nil {
-				requests = append(requests, req)
+		case req := <-queryResultsChan:
+			if req.err != nil {
+				return nil, 0, req.err
 			}
-		case err := <-errsChan:
-			if err != nil {
-				return nil, 0, err
+			if req.result.Result != nil {
+				requests = append(requests, req.result)
 			}
 		}
 	}
