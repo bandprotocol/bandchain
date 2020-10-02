@@ -19,8 +19,9 @@ module Styles = {
   let leftContainer = style([display(`flex), alignItems(`center), width(`percent(100.))]);
   let bandLogo = style([width(`px(40)), Media.mobile([width(`px(34))])]);
   let cmcLogo = style([width(`px(15))]);
+  let blockImage = style([display(`block)]);
 
-  let socialLink = style([marginLeft(`px(10))]);
+  let socialLink = style([marginLeft(`px(10)), display(`flex), textDecoration(`none)]);
 
   let link = style([cursor(`pointer)]);
 };
@@ -68,27 +69,32 @@ module DesktopRender = {
                   </LinkToHome>
                   <HSpacing size=Spacing.xs />
                   <ChainIDBadge />
-                  <a
-                    href="https://twitter.com/bandprotocol"
-                    target="_blank"
-                    rel="noopener"
-                    className=Styles.socialLink>
-                    <Icon name="fab fa-twitter" color=Colors.bandBlue size=16 />
-                  </a>
-                  <a
-                    href="https://t.me/bandprotocol"
-                    target="_blank"
-                    rel="noopener"
-                    className=Styles.socialLink>
-                    <Icon name="fab fa-telegram-plane" color=Colors.bandBlue size=17 />
-                  </a>
-                  <a
-                    href="https://coinmarketcap.com/currencies/band-protocol/"
-                    target="_blank"
-                    rel="noopener"
-                    className=Styles.socialLink>
-                    <img src=Images.cmcLogo className=Styles.cmcLogo />
-                  </a>
+                  <div className={CssHelper.flexBox(~align=`center, ())}>
+                    <a
+                      href="https://twitter.com/bandprotocol"
+                      target="_blank"
+                      rel="noopener"
+                      className=Styles.socialLink>
+                      <Icon name="fab fa-twitter" color=Colors.bandBlue size=16 />
+                    </a>
+                    <a
+                      href="https://t.me/bandprotocol"
+                      target="_blank"
+                      rel="noopener"
+                      className=Styles.socialLink>
+                      <Icon name="fab fa-telegram-plane" color=Colors.bandBlue size=17 />
+                    </a>
+                    <a
+                      href="https://coinmarketcap.com/currencies/band-protocol/"
+                      target="_blank"
+                      rel="noopener"
+                      className=Styles.socialLink>
+                      <img
+                        src=Images.cmcLogo
+                        className={Css.merge([Styles.cmcLogo, Styles.blockImage])}
+                      />
+                    </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -108,10 +114,15 @@ module MobileRender = {
   [@react.component]
   let make = () => {
     <header className=Styles.header>
-      <Row.Grid>
+      <Row.Grid alignItems=Row.Center>
         <Col.Grid colSm=Col.Six>
-          <div className={CssHelper.flexBox()}>
-            <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
+          <div className={CssHelper.flexBox(~align=`flexEnd, ())}>
+            <LinkToHome>
+              <img
+                src=Images.bandLogo
+                className={Css.merge([Styles.bandLogo, Styles.blockImage])}
+              />
+            </LinkToHome>
             <HSpacing size=Spacing.sm />
             <LinkToHome>
               <div className={CssHelper.flexBox(~direction=`column, ~align=`flexStart, ())}>
