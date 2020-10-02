@@ -44,6 +44,7 @@ module ConnectBtn = {
   [@react.component]
   let make = (~connect) => {
     <div
+      id="connectButton"
       className={Css.merge([
         CssHelper.flexBox(~justify=`center, ~align=`center, ()),
         CssHelper.clickable,
@@ -85,31 +86,35 @@ module FaucetBtn = {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
       ? <img src=Images.loadingCircles className=Styles.loading />
-      : <Button
-          px=20
-          py=5
-          variant=Button.Outline
-          onClick={_ => {
-            setIsRequest(_ => true);
-            let _ =
-              AxiosFaucet.request({address: address |> Address.toBech32, amount: 10_000_000})
-              |> Js.Promise.then_(_ => {
-                   setIsRequest(_ => false);
-                   Js.Promise.resolve();
-                 });
-            ();
-          }}>
-          <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
-        </Button>;
+      : <div id="getFreeButton">
+          <Button
+            px=20
+            py=5
+            variant=Button.Outline
+            onClick={_ => {
+              setIsRequest(_ => true);
+              let _ =
+                AxiosFaucet.request({address: address |> Address.toBech32, amount: 10_000_000})
+                |> Js.Promise.then_(_ => {
+                     setIsRequest(_ => false);
+                     Js.Promise.resolve();
+                   });
+              ();
+            }}>
+            <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
+          </Button>
+        </div>;
   };
 };
 
 module SendBtn = {
   [@react.component]
   let make = (~send) => {
-    <Button px=20 py=5 onClick={_ => {send()}}>
-      <Text value="Send" weight=Text.Medium nowrap=true block=true />
-    </Button>;
+    <div id="sendToken">
+      <Button px=20 py=5 onClick={_ => {send()}}>
+        <Text value="Send" weight=Text.Medium nowrap=true block=true />
+      </Button>
+    </div>;
   };
 };
 
@@ -120,7 +125,7 @@ module Balance = {
 
     <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
       <Text value="Balance" weight=Text.Medium />
-      <div className={CssHelper.flexBox()}>
+      <div className={CssHelper.flexBox()} id="bandBalance">
         <Text
           value={
             switch (accountSub) {
@@ -156,13 +161,14 @@ let make = () => {
   | Some({address}) =>
     <div className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.container])}>
       <div
+        id="userInfoButton"
         className={Css.merge([CssHelper.flexBox(), CssHelper.clickable])}
         onClick={_ => setShow(prev => !prev)}>
         <div className=Styles.oval> <Icon name="fal fa-user" color=Colors.white /> </div>
         <HSpacing size=Spacing.sm />
         <Icon name="fas fa-caret-down" color=Colors.bandBlue />
       </div>
-      <div className={Styles.profileCard(show)}>
+      <div className={Styles.profileCard(show)} id="addressWrapper">
         <AddressRender address position=AddressRender.Text />
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
