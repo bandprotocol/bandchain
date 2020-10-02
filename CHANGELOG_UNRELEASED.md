@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2690](https://github.com/bandprotocol/bandchain/pull/2690) Added `multi_request_search`endpoint
 - (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
 
 ### Yoda
