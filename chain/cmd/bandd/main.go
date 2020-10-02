@@ -69,7 +69,7 @@ func main() {
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
-	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in price cahce")
+	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in price cache")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	err := executor.Execute()
 	if err != nil {

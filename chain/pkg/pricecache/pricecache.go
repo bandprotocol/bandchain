@@ -3,8 +3,9 @@ package pricecache
 import (
 	"fmt"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 	"github.com/peterbourgon/diskv"
+
+	"github.com/bandprotocol/bandchain/chain/pkg/obi"
 )
 
 type Cache struct {
@@ -42,11 +43,7 @@ func GetFilename(symbol string, minCount uint64, askCount uint64) string {
 
 // SetPrice saves the given data to a file in HOME/files directory using symbol,minCount,askCount format as filename.
 func (c Cache) SetPrice(symbol string, minCount uint64, askCount uint64, price Price) error {
-	data, err := obi.Encode(price)
-	if err != nil {
-		return err
-	}
-	return c.priceCache.Write(GetFilename(symbol, minCount, askCount), data)
+	return c.priceCache.Write(GetFilename(symbol, minCount, askCount), obi.MustEncode(price))
 }
 
 // GetPrice loads the file from the file storage. Returns error if the file does not exist.
