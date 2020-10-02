@@ -18,9 +18,7 @@ module Styles = {
 
   let leftContainer = style([display(`flex), alignItems(`center), width(`percent(100.))]);
   let bandLogo = style([width(`px(40)), Media.mobile([width(`px(34))])]);
-  let twitterLogo = style([width(`px(15))]);
-  let telegramLogo = style([width(`px(15))]);
-  let cmcLogo = style([width(`px(17))]);
+  let cmcLogo = style([width(`px(15))]);
 
   let socialLink = style([marginLeft(`px(10))]);
 
@@ -89,7 +87,7 @@ module DesktopRender = {
                     target="_blank"
                     rel="noopener"
                     className=Styles.socialLink>
-                    <img src=Images.cmcLogo className=Styles.telegramLogo />
+                    <img src=Images.cmcLogo className=Styles.cmcLogo />
                   </a>
                 </div>
               </div>

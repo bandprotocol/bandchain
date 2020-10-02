@@ -21,14 +21,6 @@ module Styles = {
       justifyContent(isRight ? `flexEnd : `flexStart),
     ]);
 
-  let sort = style([width(`px(10))]);
-  let downIcon = down =>
-    style([
-      width(`px(8)),
-      marginLeft(`pxFloat(1.6)),
-      transform(`rotate(`deg(down ? 0. : 180.))),
-    ]);
-
   let oracleStatus = style([display(`flex), justifyContent(`center)]);
   let logo = style([width(`px(20))]);
 };

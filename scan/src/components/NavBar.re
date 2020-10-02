@@ -62,8 +62,6 @@ module RenderMobile = {
     let menuContainer =
       style([padding4(~top=`px(10), ~bottom=`px(10), ~left=`px(10), ~right=`px(5))]);
     let menu = style([width(`px(20))]);
-    let twitterLogo = style([width(`px(19))]);
-    let telegramLogo = style([width(`px(17))]);
     let cmcLogo = style([width(`px(19))]);
     let socialContainer = style([display(`flex), flexDirection(`row), marginTop(`px(10))]);
     let socialLink =
