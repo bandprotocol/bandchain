@@ -1,0 +1,22 @@
+{
+  "jsonrpc": "2.0",
+  "method": "icx_sendTransaction",
+  "params": {
+    "version": "0x3",
+    "from": "hx55814f724bbffe49bfa4555535cd9d7e0e1dff32",
+    "value": "0x0",
+    "stepLimit": "0x3000000",
+    "timestamp": "0x59aaeb314a940",
+    "nid": "0x3",
+    "nonce": "0x1",
+    "to": "cxd8b7e45dad9a111254f1d3168931e9ca562bc534",
+    "dataType": "call",
+    "data": {
+      "method": "set_proxy",
+      "params": {
+        "_proxy": "cx61a36e5d10412e03c907a507d1e8c6c3856d9964"
+      }
+    }
+  },
+  "id": 1
+}

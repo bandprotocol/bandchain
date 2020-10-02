@@ -9,7 +9,7 @@
     "timestamp": "0x59aaeb314a940",
     "nid": "0x3",
     "nonce": "0x1",
-    "to": "cx947d7eb9766c4a59a127967574add8bf22304c8e",
+    "to": "cx3ba7f485dca73db634f116c21995eb89e3994f36",
     "dataType": "call",
     "data": {
       "method": "relay_and_verify",
