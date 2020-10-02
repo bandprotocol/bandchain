@@ -105,8 +105,10 @@ let make = (~chainID) => {
       }
     />
     <VSpacing size={`px(35)} />
-    <div className=Styles.connectBtn onClick={_ => createMnemonic()}>
-      <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
+    <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+      <Button px=20 py=8 onClick={_ => createMnemonic()}>
+        <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
+      </Button>
     </div>
     <VSpacing size=Spacing.lg />
     <Text value=errMsg color=Colors.red6 />

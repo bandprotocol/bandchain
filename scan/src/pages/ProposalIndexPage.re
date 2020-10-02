@@ -69,23 +69,19 @@ module VoteButton = {
 
     switch (accountOpt) {
     | Some(_) =>
-      <button
-        className={Css.merge([CssHelper.btn(~px=20, ~py=5, ()), CssHelper.flexBox()])}
-        onClick={_ => vote()}>
+      <Button px=20 py=5 style={CssHelper.flexBox()} onClick={_ => vote()}>
         <Icon name="fas fa-pencil" size=12 color=Colors.white />
         <HSpacing size=Spacing.sm />
         <Text value="Vote" nowrap=true block=true />
-      </button>
+      </Button>
     | None =>
       switch (trackingSub) {
       | Data({chainID}) =>
-        <button
-          className={Css.merge([CssHelper.btn(~px=20, ~py=5, ()), CssHelper.flexBox()])}
-          onClick={_ => connect(chainID)}>
+        <Button px=20 py=5 style={CssHelper.flexBox()} onClick={_ => connect(chainID)}>
           <Icon name="fas fa-pencil" size=12 color=Colors.white />
           <HSpacing size=Spacing.sm />
           <Text value="Vote" nowrap=true block=true />
-        </button>
+        </Button>
       | Error(err) =>
         // log for err details
         Js.Console.log(err);

@@ -97,5 +97,10 @@ let highlightBg = Css.hex("EBF1FF");
 let bg = Css.hex("FCFCFC");
 let profileBG = Css.hex("F9FAFF");
 let connectBG = Css.hex("EFF2FF");
+let buttonBaseHover = Css.hex("495EE5");
+let buttonBaseActive = Css.hex("4154CC");
+let buttonDisabled = Css.hex("C8CFFC");
+let buttonOutlineHover = Css.hex("EAEDFC");
+let buttonOutlineActive = Css.hex("E5E8F7");
 
 let transparent = Css.rgba(0, 0, 0, `num(0.));

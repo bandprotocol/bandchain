@@ -38,8 +38,9 @@ module ButtonSection = {
     switch (validatorInfoSub) {
     | Data(validatorInfo) =>
       <div className={CssHelper.flexBox()}>
-        <button
-          className={CssHelper.btn(~px=20, ~py=5, ())}
+        <Button
+          px=20
+          py=5
           onClick={_ => {
             validatorInfo.commission == 100.
               ? Webapi.Dom.(
@@ -49,19 +50,15 @@ module ButtonSection = {
               : delegate()
           }}>
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
-        </button>
+        </Button>
         <HSpacing size=Spacing.md />
-        <button
-          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
-          onClick={_ => {undelegate()}}>
+        <Button px=20 py=5 variant=Button.Outline onClick={_ => {undelegate()}}>
           <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
-        </button>
+        </Button>
         <HSpacing size=Spacing.md />
-        <button
-          className={CssHelper.btn(~variant=Outline, ~px=20, ~py=5, ())}
-          onClick={_ => {redelegate()}}>
+        <Button px=20 py=5 variant=Button.Outline onClick={_ => {redelegate()}}>
           <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
-        </button>
+        </Button>
       </div>
     | _ => React.null
     };
@@ -199,9 +196,9 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <button className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => withdrawReward()}>
+            <Button px=20 py=5 onClick={_ => withdrawReward()}>
               <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
-            </button>
+            </Button>
           </div>
         </Col.Grid>
       </Row.Grid>
@@ -246,9 +243,9 @@ let make = (~validatorAddress) => {
            <VSpacing size={`px(16)} />
            <Text value="Please connect to make request" size=Text.Lg nowrap=true block=true />
            <VSpacing size={`px(16)} />
-           <button className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => connect(chainID)}>
+           <Button px=20 py=5 onClick={_ => connect(chainID)}>
              <Text value="Connect" weight=Text.Medium nowrap=true block=true />
-           </button>
+           </Button>
          </div>
        | Error(err) =>
          // log for err details

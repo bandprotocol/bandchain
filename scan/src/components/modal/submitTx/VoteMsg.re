@@ -20,30 +20,38 @@ module VoteInput = {
   [@react.component]
   let make = (~setAnswerOpt, ~answerOpt) => {
     <div className={Css.merge([CssHelper.flexBox(), Styles.buttonGroup])}>
-      <button
-        className={CssHelper.btn(~variant=Outline, ~px=15, ~py=8, ())}
+      <Button
+        variant=Button.Outline
+        px=15
+        py=8
         onClick={_ => setAnswerOpt(_ => Some("Yes"))}
         disabled={answerOpt == Some("Yes")}>
         <Text size=Text.Md value="Yes" />
-      </button>
-      <button
-        className={CssHelper.btn(~variant=Outline, ~px=15, ~py=8, ())}
+      </Button>
+      <Button
+        variant=Button.Outline
+        px=15
+        py=8
         onClick={_ => setAnswerOpt(_ => Some("No"))}
         disabled={answerOpt == Some("No")}>
         <Text size=Text.Md value="No" />
-      </button>
-      <button
-        className={CssHelper.btn(~variant=Outline, ~px=15, ~py=8, ())}
+      </Button>
+      <Button
+        variant=Button.Outline
+        px=15
+        py=8
         onClick={_ => setAnswerOpt(_ => Some("NoWithVeto"))}
         disabled={answerOpt == Some("NoWithVeto")}>
         <Text size=Text.Md value="No with Veto" />
-      </button>
-      <button
-        className={CssHelper.btn(~variant=Outline, ~px=15, ~py=8, ())}
+      </Button>
+      <Button
+        variant=Button.Outline
+        px=15
+        py=8
         onClick={_ => setAnswerOpt(_ => Some("Abstain"))}
         disabled={answerOpt == Some("Abstain")}>
         <Text size=Text.Md value="Abstain" />
-      </button>
+      </Button>
     </div>;
   };
 };
