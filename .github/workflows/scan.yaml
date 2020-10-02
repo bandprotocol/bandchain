@@ -18,28 +18,11 @@ jobs:
           path: scan/node_modules
           key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Yarn install deps with node_modules cache
-        run: |
-          yarn install --frozen-lockfile
+      - name: Run yarn
         if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn
         working-directory: ${{env.working-directory}}
-
-      - name: Run yarn build
-        run: yarn build
-        env:
-          RPC_URL: "https://d3n.bandprotocol.com/rest"
-          GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
-          NETWORK: "GUANYU38"
-        working-directory: ${{env.working-directory}}
-
-      # - name: Run install cypress
-      #   run: yarn cypress install
-      #   working-directory: ${{env.working-directory}}
 
       - name: Run yarn test
         run: yarn test
         working-directory: ${{env.working-directory}}
-
-      # - name: Run yarn integration-test
-      #   run: yarn integration-test
-      #   working-directory: ${{env.working-directory}}

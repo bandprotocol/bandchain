@@ -85,7 +85,6 @@ let make =
       ~placeholder="",
       ~inputType="text",
       ~autoFocus=false,
-      ~id,
     ) => {
   let (status, setStatus) = React.useState(_ => Untouched);
 
@@ -102,7 +101,6 @@ let make =
     <Text value=msg size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
     <div className={Styles.rightContainer(width)}>
       <input
-        id
         value={inputData.text}
         className={Css.merge([Styles.input, code ? Styles.code : ""])}
         placeholder

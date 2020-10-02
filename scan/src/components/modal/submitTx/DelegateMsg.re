@@ -94,7 +94,6 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          inputType="number"
          code=true
          autoFocus=true
-         id="delegateAmountInput"
        />;
      | _ => <EnhanceTxInput.Loading msg="Delegate Amount (BAND)" width=300 />
      }}
