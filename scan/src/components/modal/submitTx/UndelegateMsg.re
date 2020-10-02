@@ -108,6 +108,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          inputType="number"
          code=true
          autoFocus=true
+         id="undelegateAmountInput"
        />;
      | _ => <EnhanceTxInput.Loading msg="Undelegate Amount (BAND)" width=300 />
      }}
