@@ -1,6 +1,5 @@
 type btn_style_t =
   | Primary
-  | Secondary
   | Outline;
 
 module Styles = {
@@ -30,13 +29,13 @@ module Styles = {
           active([backgroundColor(Colors.buttonBaseActive)]),
           disabled([backgroundColor(Colors.buttonDisabled), color(Colors.white)]),
         ])
-      | Secondary => style([]) // TODO: add later
       | Outline =>
         style([
           backgroundColor(Colors.white),
           color(Colors.bandBlue),
           border(`px(1), `solid, Colors.bandBlue),
           hover([backgroundColor(Colors.buttonOutlineHover)]),
+          active([backgroundColor(Colors.buttonOutlineActive)]),
           disabled([borderColor(Colors.buttonDisabled), color(Colors.buttonDisabled)]),
         ])
       };

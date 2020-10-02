@@ -101,5 +101,6 @@ let buttonBaseHover = Css.hex("495EE5");
 let buttonBaseActive = Css.hex("4154CC");
 let buttonDisabled = Css.hex("C8CFFC");
 let buttonOutlineHover = Css.hex("EAEDFC");
+let buttonOutlineActive = Css.hex("E5E8F7");
 
 let transparent = Css.rgba(0, 0, 0, `num(0.));
