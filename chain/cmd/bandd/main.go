@@ -111,6 +111,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			viper.GetBool(flagDisableFeelessReports),
 			oids,
 			filepath.Join(viper.GetString(cli.HomeFlag), "prices"),
+			filepath.Join(viper.GetString(cli.HomeFlag), "requests"),
 			baseapp.SetPruning(pruningOpts),
 			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),

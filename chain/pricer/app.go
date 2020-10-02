@@ -1,7 +1,9 @@
 package pricer
 
 import (
+	"encoding/hex"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 
@@ -13,20 +15,22 @@ import (
 
 	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
+	"github.com/bandprotocol/bandchain/chain/pkg/requestcache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // App extends the standard Band Cosmos-SDK application with Price cache.
 type App struct {
 	*bandapp.BandApp
-	StdOs map[types.OracleScriptID]bool
-	cache pricecache.Cache
+	StdOs      map[types.OracleScriptID]bool
+	priceCache pricecache.Cache
+	reqCache   requestcache.Cache
 }
 
 func NewBandAppWithPricer(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	disableFeelessReports bool, oids []types.OracleScriptID, fileDir string, baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, oids []types.OracleScriptID, priceCacheDir string, reqCacheDir string, baseAppOptions ...func(*bam.BaseApp),
 ) *App {
 	app := bandapp.NewBandApp(
 		logger, db, traceStore, loadLatest, invCheckPeriod, skipUpgradeHeights,
@@ -37,9 +41,10 @@ func NewBandAppWithPricer(
 		stdOs[oid] = true
 	}
 	return &App{
-		BandApp: app,
-		StdOs:   stdOs,
-		cache:   pricecache.New(fileDir),
+		BandApp:    app,
+		StdOs:      stdOs,
+		priceCache: pricecache.New(priceCacheDir),
+		reqCache:   requestcache.New(reqCacheDir),
 	}
 }
 
@@ -75,19 +80,42 @@ func queryResultSuccess(value []byte, height int64) abci.ResponseQuery {
 // Query returns response query if the route is prices else calls into the underlying Query
 func (app *App) Query(req abci.RequestQuery) abci.ResponseQuery {
 	paths := strings.Split(req.Path, "/")
-	if paths[0] == "prices" {
-		if len(paths) < 2 {
-			return queryResultError(errors.New("no route for prices query specified"))
+	if paths[0] == "band" {
+		switch paths[1] {
+		case "prices":
+			if len(paths) < 3 {
+				return queryResultError(errors.New("no route for prices query specified"))
+			}
+			price, err := app.priceCache.GetPrice(paths[2])
+			if err != nil {
+				return queryResultError(err)
+			}
+			bz, err := app.Codec().MarshalBinaryBare(price)
+			if err != nil {
+				return queryResultError(err)
+			}
+			return queryResultSuccess(bz, req.Height)
+		case "latest_request":
+			if len(paths) != 6 {
+				return queryResultError(fmt.Errorf("expect 6 arguments given %d", len(paths)))
+			}
+			oid := types.OracleScriptID(atoi(paths[2]))
+			calldata, err := hex.DecodeString(paths[3])
+			if err != nil {
+				return queryResultError(err)
+			}
+			askCount := atoi(paths[4])
+			minCount := atoi(paths[5])
+			reqID, err := app.reqCache.GetLatestRequest(oid, calldata, askCount, minCount)
+			if err != nil {
+				return queryResultError(err)
+			}
+			bz, err := app.Codec().MarshalBinaryBare(reqID)
+			return queryResultSuccess(bz, req.Height)
+		default:
+			return queryResultError(fmt.Errorf("no route for %s", paths[1]))
 		}
-		price, err := app.cache.GetPrice(paths[1])
-		if err != nil {
-			return queryResultError(err)
-		}
-		bz, err := app.Codec().MarshalBinaryBare(price)
-		if err != nil {
-			return queryResultError(err)
-		}
-		return queryResultSuccess(bz, req.Height)
+	} else {
+		return app.BandApp.Query(req)
 	}
-	return app.BandApp.Query(req)
 }
