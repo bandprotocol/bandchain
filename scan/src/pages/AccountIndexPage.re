@@ -1,46 +1,13 @@
 module Styles = {
   open Css;
 
-  let innerCenter = style([Media.mobile([display(`flex), justifyContent(`center)])]);
-
-  let separatorLine =
-    style([
-      width(`px(1)),
-      height(`px(275)),
-      backgroundColor(Colors.gray7),
-      marginLeft(`px(20)),
-      opacity(0.3),
-      Media.mobile([marginLeft(`zero), width(`percent(100.)), height(`px(1))]),
-    ]);
-
-  let ovalIcon = color =>
-    style([
-      width(`px(17)),
-      height(`px(17)),
-      backgroundColor(color),
-      borderRadius(`percent(50.)),
-    ]);
+  let squareIcon = color =>
+    style([width(`px(8)), marginRight(`px(8)), height(`px(8)), backgroundColor(color)]);
 
   let balance = style([minWidth(`px(150)), justifyContent(`flexEnd)]);
 
-  let totalContainer =
-    style([
-      display(`flex),
-      flexDirection(`column),
-      justifyContent(`spaceBetween),
-      alignItems(`flexEnd),
-      height(`px(200)),
-      padding2(~v=`px(12), ~h=`zero),
-      Media.mobile([height(`px(100))]),
-    ]);
-
-  let infoContainerFullwidth =
-    style([
-      Media.mobile([
-        selector("> div", [flexBasis(`percent(100.))]),
-        selector("> div + div", [marginTop(`px(15))]),
-      ]),
-    ]);
+  let infoHeader =
+    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 
   let totalBalance =
     style([
@@ -55,46 +22,65 @@ module Styles = {
       ]),
     ]);
 
-  let button =
+  let infoLeft =
     style([
-      backgroundColor(Colors.blue1),
-      padding2(~h=`px(8), ~v=`px(4)),
-      display(`flex),
-      borderRadius(`px(6)),
-      cursor(`pointer),
-      boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(20, 32, 184, `num(0.2)))),
-      borderRadius(`px(10)),
+      height(`percent(100.)),
+      selector(
+        "> div",
+        [
+          height(`calc((`sub, `percent(50.), `px(12)))),
+          width(`percent(100.)),
+          Media.mobile([height(`auto)]),
+        ],
+      ),
     ]);
+
+  let amountBoxes = style([selector("> div + div", [marginTop(`px(18))])]);
+
+  let qrContainer = style([width(`percent(100.)), Media.mobile([width(`auto)])]);
+
+  let qrCode =
+    style([
+      backgroundColor(Colors.bandBlue),
+      borderRadius(`px(4)),
+      padding(`px(10)),
+      cursor(`pointer),
+      Media.mobile([marginRight(`px(8))]),
+    ]);
+
+  let addressContainer =
+    style([Media.mobile([width(`calc((`sub, `percent(100.), `px(50))))])]);
 };
 
 let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountup=false, ()) => {
-  <Row alignItems=Css.flexStart>
-    <Col size=0.25> <div className={Styles.ovalIcon(color)} /> </Col>
-    <Col size=1.2>
-      <Text
-        value=title
-        height={Text.Px(18)}
-        spacing={Text.Em(0.03)}
-        nowrap=true
-        tooltipItem={description |> React.string}
-        tooltipPlacement=Text.AlignBottomStart
-      />
-    </Col>
-    <Col size=2.0>
+  <Row.Grid>
+    <Col.Grid col=Col.Six colSm=Col.Five>
+      <div className={CssHelper.flexBox()}>
+        <div className={Styles.squareIcon(color)} />
+        <Text
+          value=title
+          size=Text.Lg
+          weight=Text.Semibold
+          tooltipItem={description |> React.string}
+          tooltipPlacement=Text.AlignBottomStart
+        />
+      </div>
+    </Col.Grid>
+    <Col.Grid col=Col.Six colSm=Col.Seven>
       <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
         <div className={CssHelper.flexBox()}>
           {isCountup
              ? <NumberCountup
                  value=amount
                  size=Text.Lg
-                 weight=Text.Semibold
-                 spacing={Text.Em(0.02)}
+                 weight=Text.Regular
+                 spacing={Text.Em(0.)}
                />
              : <Text
                  value={amount |> Format.fPretty}
                  size=Text.Lg
-                 weight=Text.Semibold
-                 spacing={Text.Em(0.02)}
+                 weight=Text.Regular
+                 spacing={Text.Em(0.)}
                  nowrap=true
                  code=true
                />}
@@ -104,7 +90,7 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
             size=Text.Lg
             code=true
             weight=Text.Thin
-            spacing={Text.Em(0.02)}
+            spacing={Text.Em(0.)}
             nowrap=true
           />
         </div>
@@ -113,68 +99,84 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
           {isCountup
              ? <NumberCountup
                  value={amount *. usdPrice}
-                 size=Text.Sm
+                 size=Text.Md
                  weight=Text.Thin
                  spacing={Text.Em(0.02)}
+                 color=Colors.gray6
                />
              : <Text
                  value={amount *. usdPrice |> Format.fPretty}
-                 size=Text.Sm
+                 size=Text.Md
                  spacing={Text.Em(0.02)}
                  weight=Text.Thin
                  nowrap=true
                  code=true
+                 color=Colors.gray6
                />}
           <HSpacing size=Spacing.sm />
           <Text
             value="USD"
-            size=Text.Sm
+            size=Text.Md
             code=true
             spacing={Text.Em(0.02)}
             weight=Text.Thin
             nowrap=true
+            color=Colors.gray6
           />
         </div>
       </div>
-    </Col>
-  </Row>;
+    </Col.Grid>
+  </Row.Grid>;
 };
 
-let totalBalanceRender = (isMobile, rawTitle, amount, symbol) => {
-  let titles = isMobile ? rawTitle->Js.String2.split("\n") : [|rawTitle|];
+module BalanceDetailLoading = {
+  [@react.component]
+  let make = () => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six colSm=Col.Five> <LoadingCensorBar width=130 height=18 /> </Col.Grid>
+      <Col.Grid col=Col.Six colSm=Col.Seven>
+        <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
+          <LoadingCensorBar width=120 height=20 />
+          <VSpacing size=Spacing.xs />
+          <LoadingCensorBar width=120 height=16 />
+        </div>
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
 
-  <div className=Styles.totalBalance>
-    <div className={CssHelper.flexBox(~direction=`column, ())}>
-      {titles
-       ->Belt_Array.mapWithIndex((i, title) =>
-           <Text
-             key={i->string_of_int ++ title}
-             value=title
-             size={isMobile ? Text.Sm : Text.Md}
-             spacing={Text.Em(0.03)}
-             height={Text.Px(18)}
-           />
-         )
-       ->React.array}
+let totalBalanceRender = (amountBAND, usdPrice) => {
+  <>
+    <div
+      className={Css.merge([CssHelper.flexBox(~align=`flexEnd, ()), CssHelper.mb(~size=5, ())])}>
+      <NumberCountup
+        value=amountBAND
+        size=Text.Xxxl
+        weight=Text.Regular
+        spacing={Text.Em(0.)}
+        color=Colors.bandBlue
+        smallNumber=true
+      />
+      <HSpacing size=Spacing.sm />
+      <Text value="BAND" color=Colors.bandBlue size=Text.Lg code=false weight=Text.Thin />
     </div>
-    <VSpacing size=Spacing.md />
     <div className={CssHelper.flexBox()}>
       <NumberCountup
-        value=amount
-        size={isMobile ? Text.Lg : Text.Xxl}
-        weight=Text.Semibold
-        spacing={Text.Em(0.02)}
+        value={amountBAND *. usdPrice}
+        size=Text.Lg
+        weight=Text.Regular
+        spacing={Text.Em(0.)}
+        color=Colors.gray7
       />
       <HSpacing size=Spacing.sm />
       <Text
-        value=symbol
-        size={isMobile ? Text.Lg : Text.Xxl}
+        value={"USD " ++ "($" ++ (usdPrice |> Js.Float.toString) ++ " / BAND)"}
+        color=Colors.gray6
+        size=Text.Lg
         weight=Text.Thin
-        spacing={Text.Em(0.02)}
-        code=true
       />
     </div>
-  </div>;
+  </>;
 };
 
 [@react.component]
@@ -215,180 +217,200 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
     };
   };
 
+  let qrCode = () => {
+    address->QRCode->OpenModal->dispatchModal;
+  };
+
   <Section pbSm=0>
     <div className=CssHelper.container>
       <Row.Grid marginBottom=40 marginBottomSm=24>
         <Col.Grid> <Heading value="Account Detail" size=Heading.H4 /> </Col.Grid>
       </Row.Grid>
-      <div className={CssHelper.flexBox()}>
-        {switch (topPartAllSub) {
-         | Data((_, _, _, _, {chainID})) =>
-           <>
-             <AddressRender address position=AddressRender.Title copy=true clickable=false />
-             {isMobile
-                ? React.null
-                : <>
-                    <HSpacing size=Spacing.md />
-                    <div
-                      className={CssHelper.btn(~px=13, ~fsize=10, ~py=5, ())}
-                      onClick={_ => {send(chainID)}}>
-                      <Text
-                        value="Send BAND"
-                        size=Text.Lg
-                        block=true
-                        color=Colors.white
-                        nowrap=true
-                      />
-                    </div>
-                  </>}
-           </>
-         | _ => <LoadingCensorBar width=600 height=20 />
-         }}
-      </div>
-      <VSpacing size={isMobile ? Spacing.lg : Spacing.xxl} />
-      <Row justify=Row.Between alignItems=`flexStart wrap=true style=Styles.infoContainerFullwidth>
-        <Col size=0.75>
-          <div className=Styles.innerCenter>
-            {switch (topPartAllSub) {
-             | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
-               let availableBalance = balance->Coin.getBandAmountFromCoins;
-               let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
-               let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
-               let rewardAmount = reward->Coin.getBandAmountFromCoin;
-               let commissionAmount = commission->Coin.getBandAmountFromCoins;
-               <PieChart
-                 size={isMobile ? 160 : 187}
-                 availableBalance
-                 balanceAtStake=balanceAtStakeAmount
-                 reward=rewardAmount
-                 unbonding=unbondingAmount
-                 commission=commissionAmount
-               />;
-             | _ => <LoadingCensorBar width=160 height=160 radius=160 />
-             }}
+      <Row.Grid>
+        <Col.Grid col=Col.Six>
+          <div
+            className={Css.merge([
+              CssHelper.flexBox(~direction=`column, ~justify=`spaceBetween, ~align=`stretch, ()),
+              Styles.infoLeft,
+            ])}>
+            <div
+              className={Css.merge([
+                CssHelper.infoContainer,
+                CssHelper.flexBox(~direction=`column, ~justify=`center, ~align=`stretch, ()),
+                CssHelper.flexBoxSm(~direction=`row, ~align=`center, ~justify=`flexStart, ()),
+                CssHelper.mb(~size=24, ()),
+              ])}>
+              <div
+                className={Css.merge([
+                  CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexStart, ()),
+                  CssHelper.mb(~size=24, ()),
+                  CssHelper.mbSm(~size=0, ()),
+                  Styles.qrContainer,
+                ])}>
+                <div className=Styles.qrCode onClick={_ => {qrCode()}}>
+                  <Icon size=20 name="far fa-qrcode" color=Colors.white />
+                </div>
+                {isMobile
+                   ? React.null
+                   : {
+                     switch (topPartAllSub) {
+                     | Data((_, _, _, _, {chainID})) =>
+                       <Button variant=Button.Outline py=5 px=11 onClick={_ => {send(chainID)}}>
+                         <Text
+                           value="Send BAND"
+                           block=true
+                           weight=Text.Semibold
+                           color=Colors.bandBlue
+                           nowrap=true
+                         />
+                       </Button>
+                     | _ => <LoadingCensorBar width=90 height=26 />
+                     };
+                   }}
+              </div>
+              <div className=Styles.addressContainer>
+                <Heading size=Heading.H4 value="Address" marginBottom=5 />
+                <div className={CssHelper.flexBox()}>
+                  <AddressRender
+                    address
+                    position=AddressRender.Subtitle
+                    copy=true
+                    clickable=false
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              className={Css.merge([
+                CssHelper.infoContainer,
+                CssHelper.flexBox(~direction=`column, ~justify=`center, ~align=`stretch, ()),
+                CssHelper.mbSm(~size=24, ()),
+              ])}>
+              <Heading size=Heading.H4 value="Total Balance" marginBottom=8 />
+              {switch (topPartAllSub) {
+               | Data(({financial}, {balance, commission}, {amount, reward}, unbonding, _)) =>
+                 totalBalanceRender(
+                   sumBalance(balance, amount, unbonding, reward, commission),
+                   financial.usdPrice,
+                 )
+               | _ =>
+                 <>
+                   <LoadingCensorBar width=200 height=22 mb=10 />
+                   <LoadingCensorBar width=220 height=16 />
+                 </>
+               }}
+            </div>
           </div>
-        </Col>
-        <Col size=1.>
-          <VSpacing size=Spacing.md />
-          {switch (topPartAllSub) {
-           | Data(({financial}, {balance}, _, _, _)) =>
-             balanceDetail(
-               ~title="Available Balance",
-               ~description="Balance available to send, delegate, etc",
-               ~amount={
-                 balance->Coin.getBandAmountFromCoins;
-               },
-               ~usdPrice=financial.usdPrice,
-               ~color=Colors.bandBlue,
-               (),
-             )
-           | _ => <LoadingCensorBar width=338 height=20 />
-           }}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {switch (topPartAllSub) {
-           | Data(({financial}, _, {amount}, _, _)) =>
-             balanceDetail(
-               ~title="Balance At Stake",
-               ~description="Balance currently delegated to validators",
-               ~amount={
-                 amount->Coin.getBandAmountFromCoin;
-               },
-               ~usdPrice=financial.usdPrice,
-               ~color=Colors.chartBalanceAtStake,
-               (),
-             )
-           | _ => <LoadingCensorBar width=338 height=20 />
-           }}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {switch (topPartAllSub) {
-           | Data(({financial}, _, _, unbonding, _)) =>
-             balanceDetail(
-               ~title="Unbonding Amount",
-               ~description="Amount undelegated from validators awaiting 21 days lockup period",
-               ~amount={
-                 unbonding->Coin.getBandAmountFromCoin;
-               },
-               ~usdPrice=financial.usdPrice,
-               ~color=Colors.blue4,
-               (),
-             )
-           | _ => <LoadingCensorBar width=338 height=20 />
-           }}
-          <VSpacing size=Spacing.lg />
-          <VSpacing size=Spacing.md />
-          {switch (topPartAllSub) {
-           | Data(({financial}, _, {reward}, _, _)) =>
-             balanceDetail(
-               ~title="Reward",
-               ~description="Reward from staking to validators",
-               ~amount={
-                 reward->Coin.getBandAmountFromCoin;
-               },
-               ~usdPrice=financial.usdPrice,
-               ~color=Colors.chartReward,
-               ~isCountup=true,
-               (),
-             )
-           | _ => <LoadingCensorBar width=338 height=20 />
-           }}
-          {switch (topPartAllSub) {
-           | Data(({financial}, {commission}, _, _, _)) =>
-             let commissionAmount = commission->Coin.getBandAmountFromCoins;
-             commissionAmount == 0.
-               ? React.null
-               : <>
-                   <VSpacing size=Spacing.lg />
-                   <VSpacing size=Spacing.md />
-                   {balanceDetail(
-                      ~title="Commission",
-                      ~description="Reward commission from delegator's reward",
-                      ~amount=commissionAmount,
-                      ~usdPrice=financial.usdPrice,
-                      ~color=Colors.gray6,
-                      ~isCountup=true,
-                      (),
-                    )}
-                   <VSpacing size=Spacing.lg />
-                 </>;
-           | _ =>
-             <>
-               <VSpacing size=Spacing.lg />
-               <VSpacing size=Spacing.md />
-               <LoadingCensorBar width=338 height=20 />
-             </>
-           }}
-        </Col>
-        <div className=Styles.separatorLine />
-        <Col size=1. alignSelf=Col.Start>
-          <div className=Styles.totalContainer>
-            {switch (topPartAllSub) {
-             | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
-               totalBalanceRender(
-                 isMobile,
-                 "Total BAND Balance",
-                 sumBalance(balance, amount, unbonding, reward, commission),
-                 "BAND",
-               )
-             | _ => <LoadingCensorBar width=200 height=20 />
-             }}
-            {switch (topPartAllSub) {
-             | Data(({financial}, {balance, commission}, {amount, reward}, unbonding, _)) =>
-               totalBalanceRender(
-                 isMobile,
-                 "Total BAND In USD \n($"
-                 ++ (financial.usdPrice |> Format.fPretty(~digits=2))
-                 ++ " / BAND)",
-                 sumBalance(balance, amount, unbonding, reward, commission) *. financial.usdPrice,
-                 "USD",
-               )
+        </Col.Grid>
+        <Col.Grid col=Col.Six>
+          <div className=CssHelper.infoContainer>
+            <Heading value="Balance" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
+            <div className=Styles.amountBoxes>
+              {switch (topPartAllSub) {
+               | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
+                 let availableBalance = balance->Coin.getBandAmountFromCoins;
+                 let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
+                 let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
+                 let rewardAmount = reward->Coin.getBandAmountFromCoin;
+                 let commissionAmount = commission->Coin.getBandAmountFromCoins;
+                 <AccountBarChart
+                   availableBalance
+                   balanceAtStake=balanceAtStakeAmount
+                   reward=rewardAmount
+                   unbonding=unbondingAmount
+                   commission=commissionAmount
+                 />;
+               | _ => <LoadingCensorBar fullWidth=true height=12 radius=50 />
+               }}
+              <div>
+                {switch (topPartAllSub) {
+                 | Data(({financial}, {balance}, _, _, _)) =>
+                   balanceDetail(
+                     ~title="Available",
+                     ~description="Balance available to send, delegate, etc",
+                     ~amount={
+                       balance->Coin.getBandAmountFromCoins;
+                     },
+                     ~usdPrice=financial.usdPrice,
+                     ~color=Colors.bandBlue,
+                     (),
+                   )
+                 | _ => <BalanceDetailLoading />
+                 }}
+              </div>
+              <div>
+                {switch (topPartAllSub) {
+                 | Data(({financial}, _, {amount}, _, _)) =>
+                   balanceDetail(
+                     ~title="Delegated",
+                     ~description="Balance currently delegated to validators",
+                     ~amount={
+                       amount->Coin.getBandAmountFromCoin;
+                     },
+                     ~usdPrice=financial.usdPrice,
+                     ~color=Colors.chartBalanceAtStake,
+                     (),
+                   )
+                 | _ => <BalanceDetailLoading />
+                 }}
+              </div>
+              <div>
+                {switch (topPartAllSub) {
+                 | Data(({financial}, _, _, unbonding, _)) =>
+                   balanceDetail(
+                     ~title="Unbonding",
+                     ~description=
+                       "Amount undelegated from validators awaiting 21 days lockup period",
+                     ~amount={
+                       unbonding->Coin.getBandAmountFromCoin;
+                     },
+                     ~usdPrice=financial.usdPrice,
+                     ~color=Colors.blue4,
+                     (),
+                   )
+                 | _ => <BalanceDetailLoading />
+                 }}
+              </div>
+              <div>
+                {switch (topPartAllSub) {
+                 | Data(({financial}, _, {reward}, _, _)) =>
+                   balanceDetail(
+                     ~title="Reward",
+                     ~description="Reward from staking to validators",
+                     ~amount={
+                       reward->Coin.getBandAmountFromCoin;
+                     },
+                     ~usdPrice=financial.usdPrice,
+                     ~color=Colors.chartReward,
+                     ~isCountup=true,
+                     (),
+                   )
+                 | _ => <BalanceDetailLoading />
+                 }}
+              </div>
+              {switch (topPartAllSub) {
+               | Data(({financial}, {commission}, _, _, _)) =>
+                 let commissionAmount = commission->Coin.getBandAmountFromCoins;
+                 commissionAmount == 0.
+                   ? React.null
+                   : <div>
+                       {balanceDetail(
+                          ~title="Commission",
+                          ~description="Reward commission from delegator's reward",
+                          ~amount=commissionAmount,
+                          ~usdPrice=financial.usdPrice,
+                          ~color=Colors.gray6,
+                          ~isCountup=true,
+                          (),
+                        )}
+                     </div>;
 
-             | _ => <LoadingCensorBar width=200 height=20 />
-             }}
+               | _ => React.null
+               }}
+            </div>
           </div>
-        </Col>
-      </Row>
+        </Col.Grid>
+      </Row.Grid>
       <VSpacing size=Spacing.xl />
       <Tab
         tabs=[|
