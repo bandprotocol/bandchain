@@ -13,7 +13,7 @@ func (app *App) handleEventRequestExecute(evMap EvMap) {
 	if result.ResponsePacketData.ResolveStatus == types.ResolveStatus_Success {
 		// Store latest successful request to request cache file
 		app.reqCache.SaveLatestRequest(
-			result.RequestPacketData.OracleScriptID, result.RequestPacketData.Calldata, result.RequestPacketData.MinCount, result.RequestPacketData.AskCount, reqID,
+			result.RequestPacketData.OracleScriptID, result.RequestPacketData.Calldata, result.RequestPacketData.AskCount, result.RequestPacketData.MinCount, reqID,
 		)
 		// Check that we need to store data to price cache file
 		if app.StdOs[result.RequestPacketData.OracleScriptID] {
