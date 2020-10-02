@@ -86,22 +86,24 @@ module FaucetBtn = {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
       ? <img src=Images.loadingCircles className=Styles.loading />
-      : <Button
-          px=20
-          py=5
-          variant=Button.Outline
-          onClick={_ => {
-            setIsRequest(_ => true);
-            let _ =
-              AxiosFaucet.request({address: address |> Address.toBech32, amount: 10_000_000})
-              |> Js.Promise.then_(_ => {
-                   setIsRequest(_ => false);
-                   Js.Promise.resolve();
-                 });
-            ();
-          }}>
-          <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
-        </Button>;
+      : <div id="getFreeButton">
+          <Button
+            px=20
+            py=5
+            variant=Button.Outline
+            onClick={_ => {
+              setIsRequest(_ => true);
+              let _ =
+                AxiosFaucet.request({address: address |> Address.toBech32, amount: 10_000_000})
+                |> Js.Promise.then_(_ => {
+                     setIsRequest(_ => false);
+                     Js.Promise.resolve();
+                   });
+              ();
+            }}>
+            <Text value="Get 10 Testnet BAND" weight=Text.Medium nowrap=true />
+          </Button>
+        </div>;
   };
 };
 
@@ -123,7 +125,7 @@ module Balance = {
 
     <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
       <Text value="Balance" weight=Text.Medium />
-      <div className={CssHelper.flexBox()}>
+      <div className={CssHelper.flexBox()} id="bandBalance">
         <Text
           value={
             switch (accountSub) {

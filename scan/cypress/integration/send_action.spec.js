@@ -19,10 +19,11 @@ describe("Login", () => {
 
 describe("Send", () => {
   it("Status should be Success", () => {
-    cy.get('[id="sendToken"] > button').contains("Send").click();
+    cy.get('[id="getFreeButton"] > button').click();
+    cy.get('[id="sendToken"] > button').wait(500).contains("Send").click();
     cy.get('[id="recipientAddressInput"]')
       .wait(1000)
-      .type("band1mrdmxkhtr3rgfzfgrkxy5pvjtvnm5qq0my5m0x")
+      .type("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")
       .get('[id="sendAmountInput"]')
       .type("2");
     cy.get('[id="nextButton"]').contains("Next").click();
