@@ -16,7 +16,7 @@ module Styles = {
       padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
       Media.mobile([padding4(~top=`zero, ~left=`px(12), ~right=`px(12), ~bottom=`px(24))]),
       selector(
-        "> div + div",
+        "> button + button",
         [
           marginLeft(`px(24)),
           Media.mobile([marginLeft(`px(16))]),

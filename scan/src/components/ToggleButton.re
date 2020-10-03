@@ -13,6 +13,7 @@ module Styles = {
       borderTopRightRadius(`zero),
       borderBottomRightRadius(`zero),
       backgroundColor(isActive ? Colors.bandBlue : Colors.white),
+      hover([backgroundColor(isActive ? Colors.bandBlue : Colors.white)]),
     ]);
   };
   let inActiveBtn = isActive => {
@@ -20,6 +21,7 @@ module Styles = {
       borderTopLeftRadius(`zero),
       borderBottomLeftRadius(`zero),
       backgroundColor(isActive ? Colors.white : Colors.bandBlue),
+      hover([backgroundColor(isActive ? Colors.white : Colors.bandBlue)]),
     ]);
   };
 };
@@ -27,23 +29,19 @@ module Styles = {
 [@react.component]
 let make = (~isActive, ~setIsActive) => {
   <div className={Css.merge([CssHelper.flexBox(), Styles.buttonContainer])}>
-    <div
+    <Button
+      px=22
+      py=5
       onClick={_ => setIsActive(_ => true)}
-      className={Css.merge([
-        CssHelper.btn(~px=22, ~py=5, ()),
-        Styles.baseBtn,
-        Styles.activeBtn(isActive),
-      ])}>
+      style={Css.merge([Styles.baseBtn, Styles.activeBtn(isActive)])}>
       <Text value="Active" color={isActive ? Colors.white : Colors.bandBlue} />
-    </div>
-    <div
+    </Button>
+    <Button
+      px=22
+      py=5
       onClick={_ => setIsActive(_ => false)}
-      className={Css.merge([
-        CssHelper.btn(~px=22, ~py=5, ()),
-        Styles.baseBtn,
-        Styles.inActiveBtn(isActive),
-      ])}>
+      style={Css.merge([Styles.baseBtn, Styles.inActiveBtn(isActive)])}>
       <Text value="Inactive" color={isActive ? Colors.bandBlue : Colors.white} />
-    </div>
+    </Button>
   </div>;
 };
