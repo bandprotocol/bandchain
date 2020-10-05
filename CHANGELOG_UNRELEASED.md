@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added pricer to cache latest price
+- (feat) [\#2690](https://github.com/bandprotocol/bandchain/pull/2690) Added `multi_request_search`endpoint
 - (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
 
 ### Yoda
@@ -23,8 +25,12 @@
 
 ### Scan
 
+- (impv) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
+- (impv) [\#2693](https://github.com/bandprotocol/bandchain/pull/2693) Created the new button component and patched to all buttons
+- (impv) [\#2689](https://github.com/bandprotocol/bandchain/pull/2689) Styled the top part of account index page
 - (bugs) [\#2687](https://github.com/bandprotocol/bandchain/pull/2687) Fixed NaN number (Urgent)
 - (impv) [\#2684](https://github.com/bandprotocol/bandchain/pull/2684) Adjust validator voted from 250 to 100
+- (impv) [\#2676](https://github.com/bandprotocol/bandchain/pull/2676) Setup cypress to scan, added new sendToken testcase
 - (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
 - (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
 - (impv) [\#2671](https://github.com/bandprotocol/bandchain/pull/2671) Adjusted tooltip width and added webapi
