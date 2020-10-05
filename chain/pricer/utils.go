@@ -17,8 +17,8 @@ type Output struct {
 }
 
 // atoi converts the given string into an int64. Panics on errors.
-func atoi(val string) int64 {
-	res, err := strconv.ParseInt(val, 10, 64)
+func atoi(val string) uint64 {
+	res, err := strconv.ParseUint(val, 10, 64)
 	if err != nil {
 		panic(err)
 	}

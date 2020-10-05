@@ -12,14 +12,6 @@ module Styles = {
       justifyContent(isRight ? `flexEnd : `flexStart),
     ]);
 
-  let sort = style([width(`px(10))]);
-  let downIcon = down =>
-    style([
-      width(`px(8)),
-      marginLeft(`pxFloat(1.6)),
-      transform(`rotate(`deg(down ? 0. : 180.))),
-    ]);
-
   let oracleStatus = style([display(`flex), justifyContent(`center)]);
   let logo = style([width(`px(20))]);
 };
@@ -299,11 +291,11 @@ module SortableTHead = {
       />
       <HSpacing size=Spacing.xs />
       {if (sortedBy == asc) {
-         <img src=Images.sortDown className={Styles.downIcon(false)} />;
+         <Icon name="fas fa-caret-down" color=Colors.black />;
        } else if (sortedBy == desc) {
-         <img src=Images.sortDown className={Styles.downIcon(true)} />;
+         <Icon name="fas fa-caret-up" color=Colors.black />;
        } else {
-         <img src=Images.sort className=Styles.sort />;
+         <Icon name="fas fa-sort" color=Colors.black />;
        }}
     </div>;
   };

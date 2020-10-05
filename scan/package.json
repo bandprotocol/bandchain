@@ -3,8 +3,10 @@
   "scripts": {
     "build": "rm -rf dist/ && bsb -make-world && parcel build index.html --no-source-maps --no-cache",
     "start": "bsb -make-world -w",
-    "test:dev": "yarn jest --coverage",
-    "test": "yarn build && yarn test:dev"
+    "test": "yarn jest --coverage",
+    "cy:run": "cypress run",
+    "serve:build": "serve -s dist -l 3000",
+    "integration-test": "start-server-and-test 'yarn run serve:build' http://localhost:3000 cy:run"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
@@ -53,12 +55,15 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^4.3.0",
+    "cypress": "^5.2.0",
     "html-webpack-plugin": "^4.5.0",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^1.2.1",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "^3.11.0"
+    "webpack-dev-server": "^3.11.0",
+    "serve": "^11.3.0",
+    "start-server-and-test": "^1.11.0"
   },
   "customDistStructure": {
     "config": {
@@ -71,5 +76,10 @@
         ".gif"
       ]
     }
+  },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "cypress"
+    ]
   }
 }

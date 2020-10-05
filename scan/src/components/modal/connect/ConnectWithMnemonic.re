@@ -91,6 +91,7 @@ let make = (~chainID) => {
     <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
     <VSpacing size=Spacing.sm />
     <input
+      id="mnemonicInput"
       autoFocus=true
       value=mnemonic
       className=Styles.inputBar
@@ -105,7 +106,7 @@ let make = (~chainID) => {
       }
     />
     <VSpacing size={`px(35)} />
-    <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+    <div id="mnemonicConnectButton" className={CssHelper.flexBox(~justify=`flexEnd, ())}>
       <Button px=20 py=8 onClick={_ => createMnemonic()}>
         <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
       </Button>

@@ -69,6 +69,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
       parse=Parse.address
       msg="Recipient Address"
       code=true
+      id="recipientAddressInput"
       placeholder="Insert recipient address"
       autoFocus={
         switch (toAddress.text) {
@@ -99,6 +100,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
            | _ => true
            }
          }
+         id="sendAmountInput"
        />;
      | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=300 />
      }}
