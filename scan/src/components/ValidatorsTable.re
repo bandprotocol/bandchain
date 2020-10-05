@@ -21,14 +21,6 @@ module Styles = {
       justifyContent(isRight ? `flexEnd : `flexStart),
     ]);
 
-  let sort = style([width(`px(10))]);
-  let downIcon = down =>
-    style([
-      width(`px(8)),
-      marginLeft(`pxFloat(1.6)),
-      transform(`rotate(`deg(down ? 0. : 180.))),
-    ]);
-
   let oracleStatus = style([display(`flex), justifyContent(`center)]);
   let logo = style([width(`px(20))]);
 };
@@ -235,11 +227,13 @@ let getName =
   | UptimeDesc => "Uptime (High-Low)";
 
 let compareString = (a, b) => {
-  let removeEmojiRegex = [%re "/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g"];
+  let removeEmojiRegex = [%re
+    "/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g"
+  ];
   let a_ = a->Js.String2.replaceByRe(removeEmojiRegex, "");
   let b_ = b->Js.String2.replaceByRe(removeEmojiRegex, "");
   Js.String.localeCompare(a_, b_) |> int_of_float;
-}
+};
 
 let defaultCompare = (a: ValidatorSub.t, b: ValidatorSub.t) =>
   if (a.tokens != b.tokens) {
@@ -306,11 +300,11 @@ module SortableTHead = {
       />
       <HSpacing size=Spacing.xs />
       {if (sortedBy == asc) {
-         <img src=Images.sortDown className={Styles.downIcon(false)} />;
+         <Icon name="fas fa-caret-down" color=Colors.black />;
        } else if (sortedBy == desc) {
-         <img src=Images.sortDown className={Styles.downIcon(true)} />;
+         <Icon name="fas fa-caret-up" color=Colors.black />;
        } else {
-         <img src=Images.sort className=Styles.sort />;
+         <Icon name="fas fa-sort" color=Colors.black />;
        }}
     </div>;
   };
