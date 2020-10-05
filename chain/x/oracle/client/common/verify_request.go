@@ -113,7 +113,7 @@ func VerifyRequest(
 		return nil, 0, fmt.Errorf("%s is not an authorized report of %s", reporter, validator)
 	}
 
-	request, height, err := queryRequest(route, cliCtx, fmt.Sprintf("%d", requestID))
+	request, height, err := queryRequest(route, cliCtx, requestID)
 	if err != nil {
 		return nil, 0, err
 	}

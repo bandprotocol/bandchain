@@ -12,7 +12,7 @@ type props = {
 
 [@bs.deriving abstract]
 type t = {
-  countUp: string,
+  countUp: float,
   update: float => unit,
 };
 

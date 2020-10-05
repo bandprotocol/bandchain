@@ -200,11 +200,11 @@ let make = (~executable: JsBuffer.t) => {
             <HSpacing size=Spacing.sm />
             <Text value="to test the data source." color=Colors.gray7 />
           </div>
-          <button
-            className={Css.merge([
-              CssHelper.btn(~fsize=14, ()),
-              Styles.button(result == Loading),
-            ])}
+          <Button
+            fsize=14
+            style={Styles.button(result == Loading)}
+            px=25
+            py=13
             onClick={_ =>
               if (result != Loading) {
                 setResult(_ => Loading);
@@ -240,7 +240,7 @@ let make = (~executable: JsBuffer.t) => {
               }
             }>
             {(result == Loading ? "Executing ... " : "Test Execution") |> React.string}
-          </button>
+          </Button>
         </div>
         {resultRender(result)}
       </div>
