@@ -25,6 +25,7 @@
 
 ### Scan
 
+- (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (impv) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
 - (impv) [\#2693](https://github.com/bandprotocol/bandchain/pull/2693) Created the new button component and patched to all buttons
 - (impv) [\#2689](https://github.com/bandprotocol/bandchain/pull/2689) Styled the top part of account index page
