@@ -199,7 +199,7 @@ let make = () => {
        let show = data->Belt.Array.size > 5;
        <div className=Styles.innerCard>
          <canvas id="historicalRequest" className={Styles.chart(show)} />
-         <EmptyContainer display={!show ? `flex : `none} height={`percent(100.)}>
+         <EmptyContainer display={!show} height={`percent(100.)}>
            <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
            <VSpacing size={`px(16)} />
            <Heading

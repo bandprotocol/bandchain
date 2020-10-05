@@ -154,19 +154,17 @@ let make = (~operatorAddress) => {
 
     <div className=Styles.container>
       <canvas id="historicalBonded" className={Styles.chart(show)} />
-      {!show
-         ? <EmptyContainer height={`percent(100.)}>
-             <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
-             <VSpacing size={`px(16)} />
-             <Heading
-               size=Heading.H4
-               value="Insufficient data to visualize"
-               align=Heading.Center
-               weight=Heading.Regular
-               color=Colors.bandBlue
-             />
-           </EmptyContainer>
-         : React.null}
+      <EmptyContainer height={`percent(100.)} display={!show}>
+        <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
+        <VSpacing size={`px(16)} />
+        <Heading
+          size=Heading.H4
+          value="Insufficient data to visualize"
+          align=Heading.Center
+          weight=Heading.Regular
+          color=Colors.bandBlue
+        />
+      </EmptyContainer>
     </div>;
   | _ => <LoadingCensorBar fullWidth=true height=180 />
   };
