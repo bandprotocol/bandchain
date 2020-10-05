@@ -35,6 +35,24 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
     ]);
+
+  let msgBadge = msgType =>
+    style([
+      backgroundColor(
+        switch (msgType) {
+        | TxSub.Msg.TokenMsg => Colors.bandBlue
+        | ValidatorMsg => Colors.blue12
+        | ProposalMsg => Colors.blue13
+        | DataMsg => Colors.blue14
+        | _ => Colors.bandBlue
+        },
+      ),
+      borderRadius(`percent(50.)),
+      margin2(~v=`zero, ~h=`px(5)),
+      padding2(~v=`px(5), ~h=`px(8)),
+    ]);
+
+  let addressWrapper = style([width(`px(120))]);
 };
 
 let makeBadge = (name, length, color1, color2) =>
@@ -44,29 +62,35 @@ let makeBadge = (name, length, color1, color2) =>
     </div>
   </div>;
 
+module MsgBadge = {
+  [@react.component]
+  let make = (~msgType: TxSub.Msg.msg_cat_t, ~name) => {
+    <div className={Styles.msgBadge(msgType)}>
+      <Text value=name size=Text.Xs color=Colors.white transform=Text.Uppercase />
+    </div>;
+  };
+};
+
+module Action = {
+  [@react.component]
+  let make = (~msgType, ~name, ~fromAddress) => {
+    <div className={CssHelper.flexBox()}>
+      <div className=Styles.addressWrapper> <AddressRender address=fromAddress /> </div>
+      <MsgBadge msgType={TxSub.Msg.getCatVarientbyMsgType(msgType)} name />
+    </div>;
+  };
+};
+
 [@react.component]
 let make = (~msg: TxSub.Msg.t, ~width: int) => {
   switch (msg) {
   | SendMsg({fromAddress, toAddress, amount}) =>
-    <div className={Styles.rowWithWidth(width)}>
-      <div className={Styles.withWidth(120)}> <AddressRender address=fromAddress /> </div>
-      <div className="labelContainer">
-        <div className={Styles.withBg(Colors.blue1, 40)}>
-          <Text
-            value="SEND"
-            size=Text.Xs
-            spacing={Text.Em(0.07)}
-            weight=Text.Medium
-            color=Colors.blue7
-          />
-        </div>
-      </div>
-      <AmountRender coins=amount />
-      <HSpacing size=Spacing.sm />
-      <Text value={j| to |j} size=Text.Md code=true nowrap=true block=true />
-      <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(width - 285)}> <AddressRender address=toAddress /> </div>
-    </div>
+    <Action msgType=msg name={msg |> TxSub.Msg.getNameByMsgType} fromAddress />
+  // <AmountRender coins=amount />
+  // <HSpacing size=Spacing.sm />
+  // <Text value={j| to |j} size=Text.Md code=true nowrap=true block=true />
+  // <HSpacing size=Spacing.sm />
+  // <div className={Styles.withWidth(width - 285)}> <AddressRender address=toAddress /> </div>
   | ReceiveMsg({fromAddress, toAddress, amount}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(120)}> <AddressRender address=toAddress /> </div>
@@ -81,12 +105,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
           />
         </div>
       </div>
-      <AmountRender coins=amount />
-      <HSpacing size=Spacing.sm />
-      <Text value={j| from |j} size=Text.Md code=true nowrap=true block=true />
-      <HSpacing size=Spacing.sm />
-      <div className={Styles.withWidth(width - 315)}> <AddressRender address=fromAddress /> </div>
     </div>
+  // <AmountRender coins=amount />
+  // <HSpacing size=Spacing.sm />
+  // <Text value={j| from |j} size=Text.Md code=true nowrap=true block=true />
+  // <HSpacing size=Spacing.sm />
+  // <div className={Styles.withWidth(width - 315)}> <AddressRender address=fromAddress /> </div>
   | CreateDataSourceMsg({id, sender, name}) =>
     <div className={Styles.rowWithWidth(width)}>
       <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
