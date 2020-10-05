@@ -4,15 +4,23 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
+	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
+
+type RequestPrices struct {
+	Symbols  []string `json:"symbols"`
+	MinCount uint64   `json:"min_count"`
+	AskCount uint64   `json:"ask_count"`
+}
 
 func getParamsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -119,6 +127,67 @@ func getRequestSearchHandler(cliCtx context.CLIContext, route string) http.Handl
 		bz, height, err := clientcmn.QuerySearchLatestRequest(
 			route, cliCtx,
 			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"),
+		)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		decoder := json.NewDecoder(r.Body)
+		var requestPrices RequestPrices
+		err := decoder.Decode(&requestPrices)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		prices := make([]pricecache.Price, len(requestPrices.Symbols))
+		height := int64(0)
+		for idx, symbol := range requestPrices.Symbols {
+			bz, h, err := cliCtx.Query(fmt.Sprintf("band/prices/%s", pricecache.GetFilename(symbol, requestPrices.MinCount, requestPrices.AskCount)))
+			height = h
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+				return
+			}
+			var price pricecache.Price
+			err = cliCtx.Codec.UnmarshalBinaryBare(bz, &price)
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			prices[idx] = price
+		}
+		bz, err := types.QueryOK(prices)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getMultiRequestSearchHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+		limit := 1
+		if rawLimit := r.FormValue("limit"); rawLimit != "" {
+			var err error
+			limit, err = strconv.Atoi(rawLimit)
+			if err != nil {
+				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
+			}
+		}
+		bz, height, err := clientcmn.QueryMultiSearchLatestRequest(
+			route, cliCtx,
+			r.FormValue("oid"), r.FormValue("calldata"), r.FormValue("ask_count"), r.FormValue("min_count"), limit,
 		)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())

@@ -11,6 +11,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
+	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/segmentio/kafka-go"
 	abci "github.com/tendermint/tendermint/abci/types"
@@ -154,6 +155,42 @@ func (app *App) InitChain(req abci.RequestInitChain) abci.ResponseInitChain {
 				"amount":               entry.InitialBalance,
 			})
 		}
+	}
+
+	// Gov module
+	var govState gov.GenesisState
+	app.Codec().MustUnmarshalJSON(genesisState[gov.ModuleName], &govState)
+	for _, proposal := range govState.Proposals {
+		app.Write("NEW_PROPOSAL", JsDict{
+			"id":               proposal.ProposalID,
+			"proposer":         nil,
+			"type":             proposal.ProposalType(),
+			"title":            proposal.Content.GetTitle(),
+			"description":      proposal.Content.GetDescription(),
+			"proposal_route":   proposal.Content.ProposalRoute(),
+			"status":           int(proposal.Status),
+			"submit_time":      proposal.SubmitTime.UnixNano(),
+			"deposit_end_time": proposal.DepositEndTime.UnixNano(),
+			"total_deposit":    proposal.TotalDeposit.String(),
+			"voting_time":      proposal.VotingStartTime.UnixNano(),
+			"voting_end_time":  proposal.VotingEndTime.UnixNano(),
+		})
+	}
+	for _, deposit := range govState.Deposits {
+		app.Write("SET_DEPOSIT", JsDict{
+			"proposal_id": deposit.ProposalID,
+			"depositor":   deposit.Depositor,
+			"amount":      deposit.Amount.String(),
+			"tx_hash":     nil,
+		})
+	}
+	for _, vote := range govState.Votes {
+		app.Write("SET_VOTE", JsDict{
+			"proposal_id": vote.ProposalID,
+			"voter":       vote.Voter,
+			"answer":      int(vote.Option),
+			"tx_hash":     nil,
+		})
 	}
 
 	// Oracle module

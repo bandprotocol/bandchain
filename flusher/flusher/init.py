@@ -35,6 +35,13 @@ def init(chain_id, topic, db):
             JOIN accounts ON accounts.id=delegations.delegator_id;"""
     )
     engine.execute(
+        """CREATE VIEW validator_last_100_votes AS
+			SELECT COUNT(*), consensus_address, voted
+			FROM (SELECT * FROM validator_votes ORDER BY block_height DESC LIMIT 30000) tt
+			WHERE block_height > (SELECT MAX(height) from blocks) - 101
+			GROUP BY consensus_address, voted;"""
+    )
+    engine.execute(
         """CREATE VIEW validator_last_250_votes AS
 			SELECT COUNT(*), consensus_address, voted
 			FROM (SELECT * FROM validator_votes ORDER BY block_height DESC LIMIT 30000) tt

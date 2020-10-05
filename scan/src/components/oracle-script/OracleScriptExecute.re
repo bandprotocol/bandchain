@@ -96,9 +96,9 @@ module ConnectPanel = {
         ])}>
         <Icon name="fal fa-link" size=32 color=Colors.bandBlue />
         <Text value="Please connect to make request" size=Text.Lg nowrap=true block=true />
-        <div className={CssHelper.btn(~px=20, ~py=5, ())} onClick={_ => {connect()}}>
+        <Button px=20 py=5 onClick={_ => {connect()}}>
           <Text value="Connect" weight=Text.Medium nowrap=true block=true />
-        </div>
+        </Button>
       </div>
     </div>;
   };
@@ -374,11 +374,11 @@ module ExecutionPart = {
               {switch (accountOpt) {
                | Some(_) =>
                  <>
-                   <button
-                     className={Css.merge([
-                       CssHelper.btn(~fsize=14, ()),
-                       Styles.button(result == Loading),
-                     ])}
+                   <Button
+                     fsize=14
+                     px=25
+                     py=13
+                     style={Styles.button(result == Loading)}
                      onClick={_ =>
                        if (result != Loading) {
                          switch (
@@ -420,7 +420,7 @@ module ExecutionPart = {
                        }
                      }>
                      {(result == Loading ? "Sending Request ... " : "Request") |> React.string}
-                   </button>
+                   </Button>
                    {resultRender(result, schema)}
                  </>
                | None =>
