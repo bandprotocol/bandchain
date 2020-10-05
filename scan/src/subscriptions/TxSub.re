@@ -57,6 +57,13 @@ module Msg = {
     | ActivateBadge
     | UnknownBadge;
 
+  type msg_cat_t =
+    | TokenMsg
+    | ValidatorMsg
+    | ProposalMsg
+    | DataMsg
+    | UnknownMsg;
+
   let getBadgeVariantFromString = badge => {
     switch (badge) {
     | "send" => SendBadge
@@ -927,6 +934,18 @@ module Msg = {
     | _ => "" |> Address.fromHex
     };
   };
+
+  let getNameByMsgType =
+    fun
+    | SendMsg(_) => "Send"
+    | ReceiveMsg(_) => "Receive"
+    | _ => "";
+
+  let getCatVarientbyMsgType =
+    fun
+    | SendMsg(_)
+    | ReceiveMsg(_) => TokenMsg
+    | _ => UnknownMsg;
 
   type badge_theme_t = {
     text: string,
