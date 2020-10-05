@@ -6,7 +6,7 @@ type position =
 module Styles = {
   open Css;
 
-  let container = style([display(`flex), cursor(`pointer)]);
+  let container = style([display(`flex), cursor(`pointer), overflow(`hidden)]);
 
   let clickable = isActive =>
     isActive
