@@ -1,14 +1,6 @@
 module Styles = {
   open Css;
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
+
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -128,7 +120,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
              )
            ->React.array
-         : <div className=Styles.emptyContainer>
+         : <EmptyContainer>
              <img src=Images.noBlock className=Styles.noDataImage />
              <Heading
                size=Heading.H4
@@ -137,7 +129,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                weight=Heading.Regular
                color=Colors.bandBlue
              />
-           </div>
+           </EmptyContainer>
      | _ =>
        Belt_Array.make(isMobile ? 1 : 10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>

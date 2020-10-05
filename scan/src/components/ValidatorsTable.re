@@ -1,15 +1,6 @@
 module Styles = {
   open Css;
 
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 
   let sortableTHead = isRight =>
@@ -235,11 +226,13 @@ let getName =
   | UptimeDesc => "Uptime (High-Low)";
 
 let compareString = (a, b) => {
-  let removeEmojiRegex = [%re "/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g"];
+  let removeEmojiRegex = [%re
+    "/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g"
+  ];
   let a_ = a->Js.String2.replaceByRe(removeEmojiRegex, "");
   let b_ = b->Js.String2.replaceByRe(removeEmojiRegex, "");
   Js.String.localeCompare(a_, b_) |> int_of_float;
-}
+};
 
 let defaultCompare = (a: ValidatorSub.t, b: ValidatorSub.t) =>
   if (a.tokens != b.tokens) {
@@ -412,7 +405,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                     : renderBody(e.rank, Sub.resolve(e), votingPower);
                 })
               ->React.array
-            : <div className=Styles.emptyContainer>
+            : <EmptyContainer>
                 <img src=Images.noSource className=Styles.noDataImage />
                 <Heading
                   size=Heading.H4
@@ -421,7 +414,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                   weight=Heading.Regular
                   color=Colors.bandBlue
                 />
-              </div>}
+              </EmptyContainer>}
        </>;
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)

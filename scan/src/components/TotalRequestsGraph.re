@@ -23,16 +23,6 @@ module Styles = {
       paddingBottom(`px(16)),
     ]);
 
-  let emptyContainer = show =>
-    style([
-      height(`percent(100.)),
-      flexDirection(`column),
-      justifyContent(`center),
-      alignItems(`center),
-      backgroundColor(white),
-      display(show ? `flex : `none),
-    ]);
-
   let chart = show => style([important(display(show ? `block : `none))]);
 };
 
@@ -209,7 +199,7 @@ let make = () => {
        let show = data->Belt.Array.size > 5;
        <div className=Styles.innerCard>
          <canvas id="historicalRequest" className={Styles.chart(show)} />
-         <div className={Styles.emptyContainer(!show)}>
+         <EmptyContainer display={!show ? `flex : `none} height={`percent(100.)}>
            <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
            <VSpacing size={`px(16)} />
            <Heading
@@ -219,7 +209,7 @@ let make = () => {
              weight=Heading.Regular
              color=Colors.bandBlue
            />
-         </div>
+         </EmptyContainer>
        </div>;
      | _ => <LoadingCensorBar fullWidth=true height=200 />
      }}
