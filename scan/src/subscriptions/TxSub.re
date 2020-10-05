@@ -889,6 +889,7 @@ module Msg = {
 
   let getCreator = msg => {
     switch (msg) {
+    | ReceiveMsg(receive) => receive.fromAddress
     | SendMsg(send) => send.fromAddress
     | CreateDataSourceMsg(dataSource) => dataSource.sender
     | EditDataSourceMsg(dataSource) => dataSource.sender
@@ -935,17 +936,29 @@ module Msg = {
     };
   };
 
-  let getNameByMsgType =
-    fun
-    | SendMsg(_) => "Send"
-    | ReceiveMsg(_) => "Receive"
-    | _ => "";
-
   let getCatVarientbyMsgType =
     fun
+    | DelegateMsg(_)
+    | UndelegateMsg(_)
+    | RedelegateMsg(_)
+    | WithdrawRewardMsg(_)
+    | WithdrawCommissionMsg(_)
     | SendMsg(_)
+    | MultiSendMsg(_)
     | ReceiveMsg(_) => TokenMsg
     | _ => UnknownMsg;
+
+  let getNameByMsgType =
+    fun
+    | DelegateMsg(_) => "Delegate"
+    | UndelegateMsg(_) => "Undelegate"
+    | RedelegateMsg(_) => "Redelegate"
+    | WithdrawRewardMsg(_) => "Withdraw Reward"
+    | WithdrawCommissionMsg(_) => "Withdraw Comission"
+    | SendMsg(_) => "Send"
+    | MultiSendMsg(_) => "Multisend"
+    | ReceiveMsg(_) => "Receive"
+    | _ => "";
 
   type badge_theme_t = {
     text: string,
