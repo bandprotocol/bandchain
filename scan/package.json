@@ -6,7 +6,7 @@
     "test": "yarn jest --coverage",
     "cy:run": "cypress run",
     "serve:build": "serve -s dist -l 3000",
-    "integration-test": "start-server-and-test 'yarn run serve:build' http://localhost:3000 cy:run"
+    "integration-test": "start-server-and-test 'yarn run serve:build' http://localhost:1234 cy:run"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
