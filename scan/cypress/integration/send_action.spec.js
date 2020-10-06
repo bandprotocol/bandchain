@@ -22,7 +22,7 @@ describe("Send", () => {
     cy.get('[id="getFreeButton"] > button').click();
     cy.get('[id="sendToken"] > button').wait(500).contains("Send").click();
     cy.get('[id="recipientAddressInput"]')
-      .wait(1000)
+      .wait(5000)
       .type("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")
       .get('[id="sendAmountInput"]')
       .type("2");
