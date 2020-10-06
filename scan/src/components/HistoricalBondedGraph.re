@@ -4,16 +4,6 @@ module Styles = {
   let container =
     style([width(`percent(100.)), height(`px(180)), margin2(~v=`zero, ~h=`auto)]);
 
-  let emptyContainer =
-    style([
-      height(`percent(100.)),
-      display(`flex),
-      flexDirection(`column),
-      justifyContent(`center),
-      alignItems(`center),
-      backgroundColor(white),
-    ]);
-
   let chart = show => style([important(display(show ? `block : `none))]);
 };
 
@@ -164,19 +154,17 @@ let make = (~operatorAddress) => {
 
     <div className=Styles.container>
       <canvas id="historicalBonded" className={Styles.chart(show)} />
-      {!show
-         ? <div className=Styles.emptyContainer>
-             <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
-             <VSpacing size={`px(16)} />
-             <Heading
-               size=Heading.H4
-               value="Insufficient data to visualize"
-               align=Heading.Center
-               weight=Heading.Regular
-               color=Colors.bandBlue
-             />
-           </div>
-         : React.null}
+      <EmptyContainer height={`percent(100.)} display={!show}>
+        <Icon name="fal fa-clock" size=40 color=Colors.bandBlue />
+        <VSpacing size={`px(16)} />
+        <Heading
+          size=Heading.H4
+          value="Insufficient data to visualize"
+          align=Heading.Center
+          weight=Heading.Regular
+          color=Colors.bandBlue
+        />
+      </EmptyContainer>
     </div>;
   | _ => <LoadingCensorBar fullWidth=true height=180 />
   };

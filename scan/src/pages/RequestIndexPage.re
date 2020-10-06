@@ -18,16 +18,6 @@ module Styles = {
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
   let infoIcon = style([width(`px(12)), height(`px(12)), display(`block)]);
 
-  let emptyContainer =
-    style([
-      height(`px(200)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(Colors.blueGray1),
-    ]);
-
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 
   let kvTableContainer =
@@ -168,7 +158,7 @@ module KVTableContainer = {
              ->React.array}
           </>;
     | None =>
-      <div className=Styles.emptyContainer>
+      <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
         <img src=Images.noSource className=Styles.noDataImage />
         <Heading
           size=Heading.H4
@@ -177,7 +167,7 @@ module KVTableContainer = {
           weight=Heading.Regular
           color=Colors.bandBlue
         />
-      </div>
+      </EmptyContainer>
     };
   };
 };
@@ -389,7 +379,7 @@ let make = (~reqID) => {
                  let decodesOpt = Obi.decode(schema, "output", result);
                  <KVTableContainer decodesOpt />;
                | (Pending, _) =>
-                 <div className=Styles.emptyContainer>
+                 <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
                    <img src=Images.loadingCircles className=Styles.loading />
                    <Heading
                      size=Heading.H4
@@ -398,9 +388,9 @@ let make = (~reqID) => {
                      weight=Heading.Regular
                      color=Colors.bandBlue
                    />
-                 </div>
+                 </EmptyContainer>
                | (_, _) =>
-                 <div className=Styles.emptyContainer>
+                 <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
                    <img src=Images.noSource className=Styles.noDataImage />
                    <Heading
                      size=Heading.H4
@@ -409,7 +399,7 @@ let make = (~reqID) => {
                      weight=Heading.Regular
                      color=Colors.bandBlue
                    />
-                 </div>
+                 </EmptyContainer>
                }
              | _ => <KVTableContainer.Loading />
              }}
@@ -430,7 +420,7 @@ let make = (~reqID) => {
                switch (request.resolveStatus) {
                | Success => <RequestProof request />
                | Pending =>
-                 <div className=Styles.emptyContainer>
+                 <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
                    <img src=Images.loadingCircles className=Styles.loading />
                    <Heading
                      size=Heading.H4
@@ -439,9 +429,9 @@ let make = (~reqID) => {
                      weight=Heading.Regular
                      color=Colors.bandBlue
                    />
-                 </div>
+                 </EmptyContainer>
                | _ =>
-                 <div className=Styles.emptyContainer>
+                 <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
                    <img src=Images.noSource className=Styles.noDataImage />
                    <Heading
                      size=Heading.H4
@@ -450,7 +440,7 @@ let make = (~reqID) => {
                      weight=Heading.Regular
                      color=Colors.bandBlue
                    />
-                 </div>
+                 </EmptyContainer>
                }
              | _ => <LoadingCensorBar fullWidth=true height=100 />
              }}

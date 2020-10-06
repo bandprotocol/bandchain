@@ -2,15 +2,6 @@ module Styles = {
   open Css;
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -194,7 +185,7 @@ let make = (~address) => {
                isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
              )
            ->React.array
-         : <div className=Styles.emptyContainer>
+         : <EmptyContainer>
              <img src=Images.noBlock className=Styles.noDataImage />
              <Heading
                size=Heading.H4
@@ -203,7 +194,7 @@ let make = (~address) => {
                weight=Heading.Regular
                color=Colors.bandBlue
              />
-           </div>
+           </EmptyContainer>
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
