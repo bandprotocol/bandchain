@@ -60,7 +60,18 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
     <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (voteSub) {
-         | Data({voter}) => <AddressRender address=voter />
+         | Data({voter, validator}) =>
+           switch (validator) {
+           | Some({moniker, operatorAddress, identity}) =>
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`percent(100.)}
+               avatarWidth=20
+             />
+           | None => <AddressRender address=voter />
+           }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
       </Col.Grid>
@@ -90,12 +101,19 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
   switch (voteSub) {
-  | Data({voter, txHash, timestamp}) =>
+  | Data({voter, txHash, timestamp, validator}) =>
     let key_ = voter |> Address.toBech32;
 
     <MobileCard
       values=InfoMobileCard.[
-        ("Voter", Address(voter, 200, `account)),
+        (
+          "Voter",
+          {switch (validator) {
+           | Some({operatorAddress, moniker, identity}) =>
+             Validator(operatorAddress, moniker, identity)
+           | None => Address(voter, 200, `account)
+           }},
+        ),
         ("TX Hash", TxHash(txHash, 200)),
         ("Timestamp", Timestamp(timestamp)),
       ]
