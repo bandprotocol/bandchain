@@ -10,7 +10,7 @@ type t = {
 
 module CoinGekco = {
   let get = () => {
-    let decode = (usdJson, btcJson, supplyJson) =>
+    let decode = (usdJson, btcJson, circulatingSupply) =>
       JsonUtils.Decode.{
         usdPrice: usdJson |> at(["band-protocol", "usd"], JsonUtils.Decode.float),
         usdMarketCap: usdJson |> at(["band-protocol", "usd_market_cap"], JsonUtils.Decode.float),
@@ -20,7 +20,7 @@ module CoinGekco = {
         btcMarketCap: btcJson |> at(["band-protocol", "btc_market_cap"], JsonUtils.Decode.float),
         btc24HrChange:
           btcJson |> at(["band-protocol", "btc_24h_change"], JsonUtils.Decode.float),
-        circulatingSupply: supplyJson,
+        circulatingSupply,
       };
 
     let usdJsonUrl = "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true";
@@ -40,12 +40,10 @@ module CoinGekco = {
     let data = {
       let%Opt usd = usdJson;
       let%Opt btc = btcJson;
-      let%Opt supply =
-        switch (supplyJson) {
-        | None => None
-        | Some(sp) => sp |> Js.Json.decodeNumber
-        };
-      Some(decode(usd, btc, supply));
+      let%Opt supply = supplyJson;
+      let%Opt circulatingSupply = supply |> Js.Json.decodeNumber;
+
+      Some(decode(usd, btc, circulatingSupply));
     };
 
     (data, reload);
@@ -54,23 +52,22 @@ module CoinGekco = {
 
 module CrytoCompare = {
   let get = () => {
-    // TODO: Find the formular to calulate this
-    let decode = (usdJson, btcJson, supplyJson) =>
+    let decode = (usdJson, btcJson, circulatingSupply) =>
       switch (
         JsonUtils.Decode.{
           usdPrice: usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float),
           usdMarketCap:
             (usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float))
-            *. supplyJson,
+            *. circulatingSupply,
           usd24HrChange:
             usdJson |> at(["RAW", "BAND", "USD", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
           btcPrice: btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float),
           btcMarketCap:
             (btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float))
-            *. supplyJson,
+            *. circulatingSupply,
           btc24HrChange:
             btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
-          circulatingSupply: supplyJson,
+          circulatingSupply,
         }
       ) {
       | result => Some(result)
@@ -94,12 +91,10 @@ module CrytoCompare = {
     let data = {
       let%Opt usd = usdJson;
       let%Opt btc = btcJson;
-      let%Opt supply =
-        switch (supplyJson) {
-        | None => None
-        | Some(sp) => sp |> Js.Json.decodeNumber
-        };
-      let%Opt result = decode(usd, btc, supply);
+      let%Opt supply = supplyJson;
+      let%Opt circulatingSupply = supply |> Js.Json.decodeNumber;
+
+      let%Opt result = decode(usd, btc, circulatingSupply);
       Some(result);
     };
 
