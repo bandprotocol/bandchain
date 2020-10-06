@@ -124,55 +124,56 @@ module LoginMethod = {
 let make = (~chainID) => {
   let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
   <div className=Styles.container>
-    <div className=Styles.bg />
-    <div className=Styles.innerContainer>
-      <VSpacing size=Spacing.xxl />
-      <div className=Styles.modalTitle>
-        <Text value="Connect With Your Wallet" weight=Text.Bold size=Text.Xxxl />
-        {chainID == "band-wenchang-mainnet"
-           ? <>
-               <VSpacing size=Spacing.lg />
-               <div className=Styles.warning>
-                 <Text value="Please check that you are visiting" />
-                 <HSpacing size=Spacing.sm />
-                 <Text value="https://www.cosmoscan.io" weight=Text.Bold />
-               </div>
-             </>
-           : <VSpacing size=Spacing.xxl />}
+    // <div className=Styles.bg />
+
+      <div className=Styles.innerContainer>
+        <VSpacing size=Spacing.xxl />
+        <div className=Styles.modalTitle>
+          <Text value="Connect with your wallet" weight=Text.Medium size=Text.Xl />
+          {chainID == "band-wenchang-mainnet"
+             ? <>
+                 <VSpacing size=Spacing.lg />
+                 <div className=Styles.warning>
+                   <Text value="Please check that you are visiting" />
+                   <HSpacing size=Spacing.sm />
+                   <Text value="https://www.cosmoscan.io" weight=Text.Bold />
+                 </div>
+               </>
+             : <VSpacing size=Spacing.xxl />}
+        </div>
+        <VSpacing size=Spacing.xl />
+        <Row alignItems=`flexStart>
+          <Col>
+            <div className=Styles.loginSelectionContainer>
+              <Text
+                value="Select your connection method"
+                size=Text.Lg
+                weight=Text.Medium
+                color=Colors.gray7
+              />
+              {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
+               ->Belt_Array.map(method =>
+                   <React.Fragment key={method |> toLoginMethodString}>
+                     <VSpacing size=Spacing.lg />
+                     <LoginMethod
+                       name=method
+                       active={loginMethod == method}
+                       onClick={_ => setLoginMethod(_ => method)}
+                     />
+                   </React.Fragment>
+                 )
+               ->React.array}
+            </div>
+          </Col>
+          <Col> <div className=Styles.seperatedLongLine /> </Col>
+          <Col size=1.>
+            {switch (loginMethod) {
+             | Mnemonic => <ConnectWithMnemonic chainID />
+             | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
+             | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
+             }}
+          </Col>
+        </Row>
       </div>
-      <VSpacing size=Spacing.xl />
-      <Row alignItems=`flexStart>
-        <Col>
-          <div className=Styles.loginSelectionContainer>
-            <Text
-              value="Select your connection method"
-              size=Text.Lg
-              weight=Text.Medium
-              color=Colors.gray7
-            />
-            {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
-             ->Belt_Array.map(method =>
-                 <React.Fragment key={method |> toLoginMethodString}>
-                   <VSpacing size=Spacing.lg />
-                   <LoginMethod
-                     name=method
-                     active={loginMethod == method}
-                     onClick={_ => setLoginMethod(_ => method)}
-                   />
-                 </React.Fragment>
-               )
-             ->React.array}
-          </div>
-        </Col>
-        <Col> <div className=Styles.seperatedLongLine /> </Col>
-        <Col size=1.>
-          {switch (loginMethod) {
-           | Mnemonic => <ConnectWithMnemonic chainID />
-           | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
-           | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
-           }}
-        </Col>
-      </Row>
-    </div>
-  </div>;
+    </div>;
 };
