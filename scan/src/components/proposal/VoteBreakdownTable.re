@@ -38,15 +38,6 @@ module Styles = {
     ]);
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-  let emptyContainer =
-    style([
-      height(`px(250)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -212,7 +203,7 @@ let make = (~proposalID) => {
                      ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
                  )
                ->React.array
-             : <div className=Styles.emptyContainer>
+             : <EmptyContainer height={`px(250)}>
                  <img src=Images.noAccount className=Styles.noDataImage />
                  <Heading
                    size=Heading.H4
@@ -221,7 +212,7 @@ let make = (~proposalID) => {
                    weight=Heading.Regular
                    color=Colors.bandBlue
                  />
-               </div>
+               </EmptyContainer>
          | _ =>
            Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>
