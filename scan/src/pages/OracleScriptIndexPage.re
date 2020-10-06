@@ -23,7 +23,7 @@ module Content = {
       (
         ~oracleScriptSub: ApolloHooks.Subscription.variant(BandScan.OracleScriptSub.t),
         ~oracleScriptID,
-        ~hashtag: Route.oracle_script_tab_t,
+        ~hashtag,
       ) => {
     <Section pbSm=0>
       <div className=CssHelper.container>
@@ -231,7 +231,7 @@ module Content = {
 };
 
 [@react.component]
-let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
+let make = (~oracleScriptID, ~hashtag) => {
   let oracleScriptSub = OracleScriptSub.get(oracleScriptID);
 
   switch (oracleScriptSub) {

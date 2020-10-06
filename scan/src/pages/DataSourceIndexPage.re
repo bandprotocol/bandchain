@@ -19,7 +19,7 @@ module Content = {
       (
         ~dataSourceSub: ApolloHooks.Subscription.variant(BandScan.DataSourceSub.t),
         ~dataSourceID,
-        ~hashtag: Route.data_source_tab_t,
+        ~hashtag,
       ) => {
     <Section pbSm=0>
       <div className=CssHelper.container>
@@ -117,7 +117,7 @@ module Content = {
 };
 
 [@react.component]
-let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
+let make = (~dataSourceID, ~hashtag) => {
   let dataSourceSub = DataSourceSub.get(dataSourceID);
 
   switch (dataSourceSub) {
