@@ -13,13 +13,14 @@ module Styles = {
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
-[@react.component]
-let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
-  let dataSourceSub = DataSourceSub.get(dataSourceID);
-
-  switch (dataSourceSub) {
-  | NoData => <NotFound />
-  | _ =>
+module Content = {
+  [@react.component]
+  let make =
+      (
+        ~dataSourceSub: ApolloHooks.Subscription.variant(BandScan.DataSourceSub.t),
+        ~dataSourceID,
+        ~hashtag: Route.data_source_tab_t,
+      ) => {
     <Section pbSm=0>
       <div className=CssHelper.container>
         <Row.Grid marginBottom=40 marginBottomSm=16>
@@ -111,6 +112,16 @@ let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
            }}
         </Tab>
       </div>
-    </Section>
+    </Section>;
+  };
+};
+
+[@react.component]
+let make = (~dataSourceID, ~hashtag: Route.data_source_tab_t) => {
+  let dataSourceSub = DataSourceSub.get(dataSourceID);
+
+  switch (dataSourceSub) {
+  | NoData => <NotFound />
+  | _ => <Content dataSourceSub dataSourceID hashtag />
   };
 };

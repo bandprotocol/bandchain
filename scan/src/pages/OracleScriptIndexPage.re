@@ -17,13 +17,14 @@ module Styles = {
   let containerSpacingSm = style([Media.mobile([marginTop(`px(16))])]);
 };
 
-[@react.component]
-let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
-  let oracleScriptSub = OracleScriptSub.get(oracleScriptID);
-
-  switch (oracleScriptSub) {
-  | NoData => <NotFound />
-  | _ =>
+module Content = {
+  [@react.component]
+  let make =
+      (
+        ~oracleScriptSub: ApolloHooks.Subscription.variant(BandScan.OracleScriptSub.t),
+        ~oracleScriptID,
+        ~hashtag: Route.oracle_script_tab_t,
+      ) => {
     <Section pbSm=0>
       <div className=CssHelper.container>
         <Heading value="Oracle Script" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
@@ -225,6 +226,16 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
            }}
         </Tab>
       </div>
-    </Section>
+    </Section>;
+  };
+};
+
+[@react.component]
+let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
+  let oracleScriptSub = OracleScriptSub.get(oracleScriptID);
+
+  switch (oracleScriptSub) {
+  | NoData => <NotFound />
+  | _ => <Content oracleScriptSub oracleScriptID hashtag />
   };
 };
