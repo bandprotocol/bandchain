@@ -55,7 +55,12 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       | "revisions" => DataSourceRevisions
       | _ => DataSourceRequests
     );
-    DataSourceIndexPage(dataSourceID |> int_of_string, urlHash(hash));
+    let dataSourceIDOpt = dataSourceID |> int_of_string_opt;
+    switch (dataSourceIDOpt) {
+    | None => NotFound
+    | Some(dataSourceIDInt) => DataSourceIndexPage(dataSourceIDInt, urlHash(hash))
+    };
+
   | (["oracle-scripts"], _) => OracleScriptHomePage
   | (["oracle-script", oracleScriptID], hash) =>
     let urlHash = (
@@ -66,7 +71,12 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       | "revisions" => OracleScriptRequests
       | _ => OracleScriptRequests
     );
-    OracleScriptIndexPage(oracleScriptID |> int_of_string, urlHash(hash));
+    let oracleScriptIDOpt = oracleScriptID |> int_of_string_opt;
+    switch (oracleScriptIDOpt) {
+    | None => NotFound
+    | Some(oracleScriptIDInt) => OracleScriptIndexPage(oracleScriptIDInt, urlHash(hash))
+    };
+
   | (["txs"], _) => TxHomePage
   | (["tx", txHash], _) => TxIndexPage(Hash.fromHex(txHash))
   | (["validators"], _) => ValidatorHomePage
