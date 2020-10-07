@@ -37,7 +37,7 @@ module ButtonSection = {
 
     switch (validatorInfoSub) {
     | Data(validatorInfo) =>
-      <div className={CssHelper.flexBox()}>
+      <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
           py=5

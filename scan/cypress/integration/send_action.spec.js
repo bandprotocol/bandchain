@@ -32,5 +32,30 @@ describe("Send", () => {
       "contain",
       "Broadcast Transaction Success"
     );
+    cy.get('[id="closeModal"]').click();
+  });
+});
+
+describe("Delegate", () => {
+  it("Should able to delegate with Carol", () => {
+    cy.get('[id="nav-/validators"]').click();
+    cy.get(
+      '[id="nav-/validator/bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst#reports"]'
+    )
+      .wait(500)
+      .click();
+    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(1)')
+      .wait(1000)
+      .click();
+    cy.get('[id="nextButton"]').wait(2000).should("be.disabled");
+    cy.get('[id="delegateAmountInput').type("10");
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButton"]').click().wait(2000);
+    cy.get('[id="broadcastButton"]').click().wait(2000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast Transaction Success"
+    );
+    cy.get('[id="closeModal"]').click();
   });
 });
