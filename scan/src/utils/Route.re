@@ -56,8 +56,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       | _ => DataSourceRequests
     );
     switch (dataSourceID |> int_of_string_opt) {
-    | None => NotFound
     | Some(dataSourceIDInt) => DataSourceIndexPage(dataSourceIDInt, urlHash(hash))
+    | None => NotFound
     };
 
   | (["oracle-scripts"], _) => OracleScriptHomePage
@@ -71,8 +71,8 @@ let fromUrl = (url: ReasonReactRouter.url) =>
       | _ => OracleScriptRequests
     );
     switch (oracleScriptID |> int_of_string_opt) {
-    | None => NotFound
     | Some(oracleScriptIDInt) => OracleScriptIndexPage(oracleScriptIDInt, urlHash(hash))
+    | None => NotFound
     };
 
   | (["txs"], _) => TxHomePage
