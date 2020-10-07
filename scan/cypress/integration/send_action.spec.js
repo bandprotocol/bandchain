@@ -37,7 +37,7 @@ describe("Send", () => {
 });
 
 describe("Delegation", () => {
-  it("Should able to delegate with Carol", () => {
+  it("Should be able to delegate with Carol", () => {
     cy.get('[id="nav-/validators"]').click();
     cy.get(
       '[id="nav-/validator/bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst#reports"]'
@@ -59,12 +59,23 @@ describe("Delegation", () => {
     cy.get('[id="closeModal"]').click();
   });
 
-  it("Should able to undelegate with Carol", () => {
+  it("Should be able to undelegate with Carol", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)')
       .wait(1000)
       .click();
     cy.get('[id="undelegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast Transaction Success"
+    );
+    cy.get('[id="closeModal"]').click();
+  });
+
+  it("Should be able to withdraw reward with Carol", () => {
+    cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
     cy.get('[id="nextButton"]').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(

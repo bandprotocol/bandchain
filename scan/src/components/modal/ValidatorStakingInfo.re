@@ -186,7 +186,9 @@ module StakingInfo = {
       </Row.Grid>
       <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
         <Col.Grid>
-          <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+          <div
+            className={CssHelper.flexBox(~justify=`spaceBetween, ())}
+            id="withdrawRewardContainer">
             <div>
               <Heading value="Reward" size=Heading.H5 />
               <VSpacing size={`px(8)} />
