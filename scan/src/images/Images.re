@@ -24,6 +24,8 @@
 [@bs.module] external cosmosIBCIcon: string = "./cosmosibc.svg";
 [@bs.module] external kadenaIcon: string = "./kadena.svg";
 [@bs.module] external solidityIcon: string = "./solidity.svg";
+[@bs.module] external webIcon: string = "./web.svg";
+[@bs.module] external nodeJSIcon: string = "./nodejs.png";
 [@bs.module] external vyperIcon: string = "./vyper.svg";
 [@bs.module] external golangIcon: string = "./golang.svg";
 [@bs.module] external pactIcon: string = "./pact.svg";

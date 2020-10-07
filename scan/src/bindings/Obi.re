@@ -338,3 +338,62 @@ func(result *Result) EncodeResult() []byte {
     ),
   );
 };
+
+let setInput = ({name, _}) => {
+  {j|$name,|j};
+};
+
+let setParameters = ({name, varType}) => {
+  {j|const $name = |j};
+};
+
+let generateNodeJS = (oracleScriptID, schema, dataType) => {
+  let name = dataType |> dataTypeToSchemaField;
+  let template = (inputs, parameters) => {j|const BandChain = require('@bandprotocol/bandchain.js');
+const { Obi } = require('@bandprotocol/obi.js');
+
+const endpoint = 'http://poa-api.bandchain.org';
+
+// Fill in request parameters here
+$parameters
+
+const sendRequest = async (mnemonic, endpoint, minCount, askCount) => {
+  // Instantiating BandChain with REST endpoint
+  const bandchain = new BandChain(endpoint);
+
+  // Create an instance of OracleScript with the script ID
+  const oracleScript = await bandchain.getOracleScript($oracleScriptID);
+
+  // Create a new request, which will block until the tx is confirmed
+  try {
+    const requestId = await bandchain.submitRequestTx(
+      oracleScript,
+      {
+        $inputs
+      },
+      { minCount, askCount },
+      mnemonic
+    );
+
+    // Get final result (blocking until the reports & aggregations are finished)
+    const finalResult = await bandchain.getRequestResult(requestId);
+    let res = new Obi(oracleScript.schema).decodeOutput(
+      Buffer.from(finalResult.response_packet_data.result, 'base64')
+    );
+    if (res) {
+      console.log(res);
+    }
+  } catch {
+    throw 'Data request failed';
+  }
+};|j};
+  let%Opt fieldsPair = extractFields(schema, name);
+  let%Opt fields = fieldsPair |> Belt_Array.map(_, parse) |> optionsAll;
+  Js.Console.log(fields);
+  Some(
+    template(
+      fields |> Belt_Array.map(_, setInput) |> Js.Array.joinWith("\n\t"),
+      fields |> Belt_Array.map(_, setParameters) |> Js.Array.joinWith("\n"),
+    ),
+  );
+};

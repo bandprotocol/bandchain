@@ -204,7 +204,7 @@ let make = (~oracleScriptID, ~hashtag: Route.oracle_script_tab_t) => {
 
          | OracleScriptBridgeCode =>
            switch (oracleScriptSub) {
-           | Data({schema}) => <OracleScriptBridgeCode schema />
+           | Data({schema}) => <OracleScriptBridgeCode oracleScriptID schema />
            | _ => <LoadingCensorBar fullWidth=true height=400 />
            }
          | OracleScriptRequests => <OracleScriptRequestTable oracleScriptID />
