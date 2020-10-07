@@ -48,7 +48,7 @@ describe("Delegation", () => {
       .wait(1000)
       .click();
     cy.get('[id="nextButton"]').wait(1000).should("be.disabled");
-    cy.get('[id="delegateAmountInput').type("10");
+    cy.get('[id="delegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
@@ -63,7 +63,7 @@ describe("Delegation", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)')
       .wait(1000)
       .click();
-    cy.get('[id="undelegateAmountInput').type("10");
+    cy.get('[id="undelegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
