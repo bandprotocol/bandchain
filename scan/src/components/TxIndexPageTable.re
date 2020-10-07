@@ -1021,37 +1021,40 @@ let make = (~messages: list(TxSub.Msg.t)) => {
          <TBody.Grid key={index |> string_of_int} paddingH={`px(24)}>
            <Row.Grid alignItems=Row.Start>
              <Col.Grid col=Col.Two>
-               <div className=Styles.badgeContainer>
-                 <div className={Styles.badge(theme.bgColor)}>
-                   <Text value={theme.text} size=Text.Xs color={theme.textColor} />
+               //TODO: will remove when doing the ravamp style
+
+                 <div className=Styles.badgeContainer>
+                   <MsgBadge name={theme.name} msgType={theme.category} />
+                   {switch (msg) {
+                    | CreateDataSourceMsg(dataSource) =>
+                      <>
+                        <hr className=Styles.separatorLine />
+                        <TypeID.DataSource id={dataSource.id} />
+                      </>
+                    | EditDataSourceMsg(dataSource) =>
+                      <>
+                        <hr className=Styles.separatorLine />
+                        <TypeID.DataSource id={dataSource.id} />
+                      </>
+                    | CreateOracleScriptMsg(oracleScript) =>
+                      <>
+                        <hr className=Styles.separatorLine />
+                        <TypeID.OracleScript id={oracleScript.id} />
+                      </>
+                    | EditOracleScriptMsg(oracleScript) =>
+                      <>
+                        <hr className=Styles.separatorLine />
+                        <TypeID.OracleScript id={oracleScript.id} />
+                      </>
+                    | RequestMsg(request) =>
+                      <>
+                        <hr className=Styles.separatorLine />
+                        <TypeID.Request id={request.id} />
+                      </>
+                    | _ => React.null
+                    }}
                  </div>
-                 {switch (msg) {
-                  | CreateDataSourceMsg(dataSource) =>
-                    <>
-                      <hr className=Styles.separatorLine />
-                      <TypeID.DataSource id={dataSource.id} />
-                    </>
-                  | EditDataSourceMsg(dataSource) =>
-                    <>
-                      <hr className=Styles.separatorLine />
-                      <TypeID.DataSource id={dataSource.id} />
-                    </>
-                  | CreateOracleScriptMsg(oracleScript) =>
-                    <>
-                      <hr className=Styles.separatorLine />
-                      <TypeID.OracleScript id={oracleScript.id} />
-                    </>
-                  | EditOracleScriptMsg(oracleScript) =>
-                    <>
-                      <hr className=Styles.separatorLine />
-                      <TypeID.OracleScript id={oracleScript.id} />
-                    </>
-                  | RequestMsg(request) =>
-                    <> <hr className=Styles.separatorLine /> <TypeID.Request id={request.id} /> </>
-                  | _ => React.null
-                  }}
-               </div>
-             </Col.Grid>
+               </Col.Grid>
              <Col.Grid col=Col.Three>
                <div className={Styles.addressContainer(170)}>
                  <AddressRender address={msg |> TxSub.Msg.getCreator} />
