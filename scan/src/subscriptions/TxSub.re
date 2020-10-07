@@ -936,175 +936,54 @@ module Msg = {
     };
   };
 
-  let getCatVarientbyMsgType =
-    fun
-    | DelegateMsg(_)
-    | UndelegateMsg(_)
-    | RedelegateMsg(_)
-    | WithdrawRewardMsg(_)
-    | WithdrawCommissionMsg(_)
-    | SendMsg(_)
-    | MultiSendMsg(_)
-    | ReceiveMsg(_) => TokenMsg
-    | _ => UnknownMsg;
-
-  let getNameByMsgType =
-    fun
-    | DelegateMsg(_) => "Delegate"
-    | UndelegateMsg(_) => "Undelegate"
-    | RedelegateMsg(_) => "Redelegate"
-    | WithdrawRewardMsg(_) => "Withdraw Reward"
-    | WithdrawCommissionMsg(_) => "Withdraw Comission"
-    | SendMsg(_) => "Send"
-    | MultiSendMsg(_) => "Multisend"
-    | ReceiveMsg(_) => "Receive"
-    | _ => "";
-
   type badge_theme_t = {
-    text: string,
-    textColor: Css.Types.Color.t,
-    bgColor: Css.Types.Color.t,
+    name: string,
+    category: msg_cat_t,
   };
 
   let getBadge = badgeVariant => {
     switch (badgeVariant) {
-    | SendBadge => {text: "SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.green1, bgColor: Colors.green7}
-    | CreateDataSourceBadge => {
-        text: "CREATE DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | EditDataSourceBadge => {
-        text: "EDIT DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | CreateOracleScriptBadge => {
-        text: "CREATE ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | EditOracleScriptBadge => {
-        text: "EDIT ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | RequestBadge => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | ReportBadge => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | AddReporterBadge => {
-        text: "ADD REPORTER",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | RemoveReporterBadge => {
-        text: "REMOVE REPORTER",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | CreateValidatorBadge => {
-        text: "CREATE VALIDATOR",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | EditValidatorBadge => {
-        text: "EDIT VALIDATOR",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | CreateClientBadge => {text: "CREATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | UpdateClientBadge => {text: "UPDATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | SubmitClientMisbehaviourBadge => {
-        text: "SUBMIT CLIENT MISBEHAVIOUR",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenInitBadge => {
-        text: "CONNECTION OPEN INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenTryBadge => {
-        text: "CONNECTION OPEN TRY",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenAckBadge => {
-        text: "CONNECTION OPEN ACK",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenConfirmBadge => {
-        text: "CONNECTION OPEN CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenInitBadge => {
-        text: "CHANNEL OPEN INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenTryBadge => {
-        text: "CHANNEL OPEN TRY",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenAckBadge => {
-        text: "CHANNEL OPEN ACK",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenConfirmBadge => {
-        text: "CHANNEL OPEN CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelCloseInitBadge => {
-        text: "CHANNEL CLOSE INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelCloseConfirmBadge => {
-        text: "CHANNEL CLOSE CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | PacketBadge => {text: "PACKET", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | AcknowledgementBadge => {
-        text: "ACKNOWLEDGEMENT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | TimeoutBadge => {text: "TIMEOUT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | DelegateBadge => {text: "DELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | UndelegateBadge => {text: "UNDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | RedelegateBadge => {text: "REDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | VoteBadge => {text: "VOTE", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | WithdrawRewardBadge => {
-        text: "WITHDRAW REWARD",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | UnjailBadge => {text: "UNJAIL", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | SetWithdrawAddressBadge => {
-        text: "SET WITHDRAW ADDRESS",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | SubmitProposalBadge => {
-        text: "SUBMIT PROPOSAL",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | DepositBadge => {text: "DEPOSIT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | WithdrawCommissionBadge => {
-        text: "WITHDRAW COMMISSION",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | MultiSendBadge => {text: "MULTI SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | ActivateBadge => {text: "ACTIVATE", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | UnknownBadge => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
+    | SendBadge => {name: "SEND", category: TokenMsg}
+    | ReceiveBadge => {name: "RECEIVE", category: TokenMsg}
+    | CreateDataSourceBadge => {name: "CREATE DATA SOURCE", category: DataMsg}
+    | EditDataSourceBadge => {name: "EDIT DATA SOURCE", category: DataMsg}
+    | CreateOracleScriptBadge => {name: "CREATE ORACLE SCRIPT", category: DataMsg}
+    | EditOracleScriptBadge => {name: "EDIT ORACLE SCRIPT", category: DataMsg}
+    | RequestBadge => {name: "REQUEST", category: DataMsg}
+    | ReportBadge => {name: "REPORT", category: DataMsg}
+    | AddReporterBadge => {name: "ADD REPORTER", category: ValidatorMsg}
+    | RemoveReporterBadge => {name: "REMOVE REPORTER", category: ValidatorMsg}
+    | CreateValidatorBadge => {name: "CREATE VALIDATOR", category: ValidatorMsg}
+    | EditValidatorBadge => {name: "EDIT VALIDATOR", category: ValidatorMsg}
+    | CreateClientBadge => {name: "CREATE CLIENT", category: TokenMsg}
+    | UpdateClientBadge => {name: "UPDATE CLIENT", category: TokenMsg}
+    | SubmitClientMisbehaviourBadge => {name: "SUBMIT CLIENT MISBEHAVIOUR", category: TokenMsg}
+    | ConnectionOpenInitBadge => {name: "CONNECTION OPEN INIT", category: TokenMsg}
+    | ConnectionOpenTryBadge => {name: "CONNECTION OPEN TRY", category: TokenMsg}
+    | ConnectionOpenAckBadge => {name: "CONNECTION OPEN ACK", category: TokenMsg}
+    | ConnectionOpenConfirmBadge => {name: "CONNECTION OPEN CONFIRM", category: TokenMsg}
+    | ChannelOpenInitBadge => {name: "CHANNEL OPEN INIT", category: TokenMsg}
+    | ChannelOpenTryBadge => {name: "CHANNEL OPEN TRY", category: TokenMsg}
+    | ChannelOpenAckBadge => {name: "CHANNEL OPEN ACK", category: TokenMsg}
+    | ChannelOpenConfirmBadge => {name: "CHANNEL OPEN CONFIRM", category: TokenMsg}
+    | ChannelCloseInitBadge => {name: "CHANNEL CLOSE INIT", category: TokenMsg}
+    | ChannelCloseConfirmBadge => {name: "CHANNEL CLOSE CONFIRM", category: TokenMsg}
+    | PacketBadge => {name: "PACKET", category: TokenMsg}
+    | AcknowledgementBadge => {name: "ACKNOWLEDGEMENT", category: TokenMsg}
+    | TimeoutBadge => {name: "TIMEOUT", category: TokenMsg}
+    | DelegateBadge => {name: "DELEGATE", category: TokenMsg}
+    | UndelegateBadge => {name: "UNDELEGATE", category: TokenMsg}
+    | RedelegateBadge => {name: "REDELEGATE", category: TokenMsg}
+    | VoteBadge => {name: "VOTE", category: ProposalMsg}
+    | WithdrawRewardBadge => {name: "WITHDRAW REWARD", category: TokenMsg}
+    | UnjailBadge => {name: "UNJAIL", category: ValidatorMsg}
+    | SetWithdrawAddressBadge => {name: "SET WITHDRAW ADDRESS", category: ValidatorMsg}
+    | SubmitProposalBadge => {name: "SUBMIT PROPOSAL", category: ProposalMsg}
+    | DepositBadge => {name: "DEPOSIT", category: ProposalMsg}
+    | WithdrawCommissionBadge => {name: "WITHDRAW COMMISSION", category: TokenMsg}
+    | MultiSendBadge => {name: "MULTI SEND", category: TokenMsg}
+    | ActivateBadge => {name: "ACTIVATE", category: ValidatorMsg}
+    | UnknownBadge => {name: "UNKNOWN", category: TokenMsg}
     };
   };
 

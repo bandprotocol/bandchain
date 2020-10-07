@@ -7,6 +7,6 @@ module Styles = {
 let make = (~msgType, ~name, ~fromAddress) => {
   <div className={Css.merge([CssHelper.flexBox(~wrap=`nowrap, ())])}>
     <div className=Styles.addressWrapper> <AddressRender address=fromAddress /> </div>
-    <MsgBadge msgType={TxSub.Msg.getCatVarientbyMsgType(msgType)} name />
+    <MsgBadge msgType name />
   </div>;
 };

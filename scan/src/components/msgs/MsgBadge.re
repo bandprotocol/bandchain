@@ -19,7 +19,11 @@ module Styles = {
 
 [@react.component]
 let make = (~msgType: TxSub.Msg.msg_cat_t, ~name) => {
-  <div className={Css.merge([Styles.msgBadge(msgType), CssHelper.flexBox(~wrap=`nowrap, ())])}>
-    <Text value=name size=Text.Xs color=Colors.white transform=Text.Uppercase />
+  <div
+    className={Css.merge([
+      Styles.msgBadge(msgType),
+      CssHelper.flexBox(~wrap=`nowrap, ~justify=`center, ()),
+    ])}>
+    <Text value=name size=Text.Xs color=Colors.white transform=Text.Uppercase align=Text.Center />
   </div>;
 };
