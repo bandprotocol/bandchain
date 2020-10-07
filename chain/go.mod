@@ -6,7 +6,7 @@ require (
 	github.com/bandprotocol/bandchain/go-owasm v0.0.0-00010101000000-000000000000
 	github.com/cosmos/cosmos-sdk v0.39.1
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
-	github.com/ethereum/go-ethereum v1.9.19
+	github.com/ethereum/go-ethereum v1.9.22
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.4.2
