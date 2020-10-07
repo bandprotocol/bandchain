@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (bugs) [\#2730](https://github.com/bandprotocol/bandchain/pull/2730) Add Content-Type header on oracle module rest endpoints
 - (feat) [\#2718](https://github.com/bandprotocol/bandchain/pull/2718) Added more field in price cache
 - (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added pricer to cache latest price
 - (feat) [\#2690](https://github.com/bandprotocol/bandchain/pull/2690) Added `multi_request_search`endpoint
