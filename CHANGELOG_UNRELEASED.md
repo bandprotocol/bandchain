@@ -26,6 +26,7 @@
 
 ### Scan
 
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegate UI test
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (chore) [\#2713](https://github.com/bandprotocol/bandchain/pull/2713) Remove redundant emptyContainer styles
 - (chore) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
