@@ -1,15 +1,6 @@
 module Styles = {
   open Css;
 
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 
   let sortableTHead = isRight =>
@@ -406,7 +397,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                     : renderBody(e.rank, Sub.resolve(e), votingPower);
                 })
               ->React.array
-            : <div className=Styles.emptyContainer>
+            : <EmptyContainer>
                 <img src=Images.noSource className=Styles.noDataImage />
                 <Heading
                   size=Heading.H4
@@ -415,7 +406,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                   weight=Heading.Regular
                   color=Colors.bandBlue
                 />
-              </div>}
+              </EmptyContainer>}
        </>;
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
