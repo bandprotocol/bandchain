@@ -6,7 +6,7 @@ module Styles = {
       display(`flex),
       flexDirection(`column),
       width(`percent(100.)),
-      padding4(~top=`px(18), ~left=`px(18), ~right=`px(28), ~bottom=`px(0)),
+      padding4(~top=`px(0), ~left=`px(18), ~right=`px(18), ~bottom=`px(0)),
     ]);
 
   let instructionCard =
@@ -18,9 +18,6 @@ module Styles = {
       width(`percent(100.)),
       justifyContent(`spaceBetween),
       backgroundColor(Css.rgb(255, 255, 255)),
-      border(`px(1), `solid, Colors.blueGray3),
-      borderRadius(`px(8)),
-      padding2(~v=`px(25), ~h=`px(18)),
     ]);
 
   let oval =
@@ -50,28 +47,20 @@ module Styles = {
       height(`px(35)),
     ]);
 
-  let ledgerGuide = style([width(`px(106)), height(`px(25))]);
+  let ledgerGuide = style([width(`px(248)), height(`px(38))]);
 
   let loading = style([width(`px(100))]);
 
   let connectBtn = (~isLoading, ()) =>
     style([
       marginTop(`px(10)),
-      width(`px(140)),
-      height(`px(30)),
+      width(`percent(100.)),
+      height(`px(36)),
       display(`flex),
       justifySelf(`right),
       justifyContent(`center),
       alignItems(`center),
-      backgroundColor(isLoading ? Colors.blueGray3 : Css.rgba(0, 0, 0, `num(0.))),
-      backgroundImage(
-        isLoading
-          ? `none
-          : `linearGradient((
-              `deg(90.),
-              [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
-            )),
-      ),
+      backgroundColor(isLoading ? Colors.blueGray3 : Colors.bandBlue),
       boxShadow(
         isLoading
           ? `none
@@ -90,7 +79,7 @@ module Styles = {
       justifyContent(`center),
       alignItems(`center),
       width(`percent(100.)),
-      height(`px(30)),
+      height(`px(37)),
       left(`zero),
       top(`px(32)),
       background(rgba(255, 255, 255, `num(1.))),
@@ -106,25 +95,16 @@ module Styles = {
       width(`px(100)),
       lineHeight(`em(1.41)),
     ]);
+
+  let connectingBtnContainer =
+    style([width(`px(104)), display(`flex), justifyContent(`spaceBetween)]);
 };
 
 module InstructionCard = {
   [@react.component]
-  let make = (~idx, ~title, ~url) => {
+  let make = (~title, ~url) => {
     <div className=Styles.instructionCard>
-      <div className=Styles.rFlex>
-        <div className=Styles.oval>
-          <Text
-            value={idx |> string_of_int}
-            color=Colors.white
-            size=Text.Xxl
-            spacing={Text.Em(0.03)}
-            weight=Text.Bold
-          />
-        </div>
-        <HSpacing size=Spacing.md />
-        <Text value=title weight=Text.Semibold spacing={Text.Em(0.03)} />
-      </div>
+      <div className=Styles.rFlex> <Text value=title /> </div>
       <img src=url className=Styles.ledgerGuide />
     </div>;
   };
@@ -142,7 +122,7 @@ let make = (~chainID, ~ledgerApp) => {
   let (result, setResult) = React.useState(_ => Nothing);
   let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
-  let createLedger = accountIndex => {
+  let createLedger = aCcccountIndex => {
     dispatchModal(DisableExit);
     setResult(_ => Loading);
     let _ =
@@ -164,8 +144,9 @@ let make = (~chainID, ~ledgerApp) => {
   };
 
   <div className=Styles.container>
+    <VSpacing size=Spacing.xl />
     <Text value="1. Select HD Derivation Path" weight=Text.Semibold />
-    <VSpacing size=Spacing.sm />
+    <VSpacing size=Spacing.md />
     <div className=Styles.selectWrapper>
       <div className={CssHelper.selectWrapper(~pRight=8, ~mW=100, ~size=10, ())}>
         <select
@@ -189,15 +170,14 @@ let make = (~chainID, ~ledgerApp) => {
         </select>
       </div>
     </div>
-    <VSpacing size=Spacing.sm />
+    <VSpacing size=Spacing.xl />
     <Text value="2. On Your Ledger" weight=Text.Semibold />
-    <VSpacing size=Spacing.sm />
-    <InstructionCard idx=1 title="Enter Pin Code" url=Images.ledgerStep1 />
-    <VSpacing size=Spacing.md />
+    <VSpacing size=Spacing.xl />
+    <InstructionCard title="1. Enter Pin Code" url=Images.ledgerStep1 />
+    <VSpacing size=Spacing.lg />
     {switch (ledgerApp) {
-     | Ledger.Cosmos => <InstructionCard idx=2 title="Open Cosmos" url=Images.ledgerStep2Cosmos />
-     | BandChain =>
-       <InstructionCard idx=2 title="Open BandChain" url=Images.ledgerStep2BandChain />
+     | Ledger.Cosmos => <InstructionCard title="2. Open Cosmos" url=Images.ledgerStep2Cosmos />
+     | BandChain => <InstructionCard title="2. Open BandChain" url=Images.ledgerStep2BandChain />
      }}
     <div className=Styles.resultContainer>
       {switch (result) {
@@ -209,7 +189,6 @@ let make = (~chainID, ~ledgerApp) => {
              spacing={Text.Em(0.03)}
              weight=Text.Medium
            />
-           <img src=Images.loadingCircles className=Styles.loading />
          </>
        | Error(err) =>
          <Text value=err color=Colors.red5 weight=Text.Medium spacing={Text.Em(0.03)} />
@@ -218,10 +197,13 @@ let make = (~chainID, ~ledgerApp) => {
     </div>
     {result == Loading
        ? <div className={Styles.connectBtn(~isLoading=true, ())}>
-           <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
+           <div className=Styles.connectingBtnContainer>
+             <Icon name="fad fa-spinner-third fa-spin" size=16 />
+             <Text value="Connecting..." weight=Text.Bold size=Text.Md color=Colors.blueGray7 />
+           </div>
          </div>
-       : <div
-           className={Styles.connectBtn(~isLoading=false, ())}
+       : <Button
+           style={Styles.connectBtn(~isLoading=false, ())}
            onClick={_ => {
              switch (Os.isWindows(), Os.checkHID()) {
              | (true, false) =>
@@ -237,7 +219,7 @@ let make = (~chainID, ~ledgerApp) => {
              | (_, _) => createLedger(accountIndex)
              }
            }}>
-           <Text value="Connect To Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
-         </div>}
+           <Text value="Connect to Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
+         </Button>}
   </div>;
 };
