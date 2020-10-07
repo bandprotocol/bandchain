@@ -1,16 +1,6 @@
 module Styles = {
   open Css;
 
-  let emptyContainer =
-    style([
-      height(`px(130)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(Colors.blueGray1),
-    ]);
-
   let proofContainer =
     style([
       padding4(~top=`zero, ~left=`px(24), ~right=`px(24), ~bottom=`px(24)),
@@ -99,7 +89,7 @@ let make = (~request: RequestSub.t) => {
          : React.null}
     </>
   | None =>
-    <div className=Styles.emptyContainer>
+    <EmptyContainer height={`px(130)} backgroundColor=Colors.blueGray1>
       <img src=Images.loadingCircles className=Styles.loading />
       <Heading
         size=Heading.H4
@@ -108,6 +98,6 @@ let make = (~request: RequestSub.t) => {
         weight=Heading.Regular
         color=Colors.bandBlue
       />
-    </div>
+    </EmptyContainer>
   };
 };

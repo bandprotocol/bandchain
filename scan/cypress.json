@@ -3,5 +3,6 @@
   "pluginsFile": false,
   "fixturesFolder": false,
   "defaultCommandTimeout": 10000,
-  "video": false
+  "videoUploadOnPasses": false,
+  "projectId": "gva981"
 }

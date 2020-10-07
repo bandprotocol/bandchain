@@ -22,16 +22,6 @@ module Styles = {
   let mobileCard =
     style([backgroundColor(Colors.profileBG), boxShadow(`none), marginTop(`px(8))]);
 
-  let emptyContainer =
-    style([
-      height(`px(250)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(Colors.blueGray1),
-    ]);
-
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -117,7 +107,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
           </div>
         })
       ->React.array
-    : <div className=Styles.emptyContainer>
+    : <EmptyContainer height={`px(250)} backgroundColor={Colors.blueGray1}>
         <img src=Images.noSource className=Styles.noDataImage />
         <Heading
           size=Heading.H4
@@ -126,5 +116,5 @@ let make = (~reports: array(RequestSub.report_t)) => {
           weight=Heading.Regular
           color=Colors.bandBlue
         />
-      </div>;
+      </EmptyContainer>;
 };

@@ -1,15 +1,6 @@
 module Styles = {
   open Css;
 
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -202,7 +193,7 @@ let make = () => {
                       ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
                   )
                 ->React.array
-              : <div className=Styles.emptyContainer>
+              : <EmptyContainer>
                   <img src=Images.noSource className=Styles.noDataImage />
                   <Heading
                     size=Heading.H4
@@ -211,7 +202,7 @@ let make = () => {
                     weight=Heading.Regular
                     color=Colors.bandBlue
                   />
-                </div>}
+                </EmptyContainer>}
            {isMobile
               ? React.null
               : <Pagination
