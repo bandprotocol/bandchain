@@ -52,4 +52,4 @@ def hasura(password, db):
     engine.execute(
         """GRANT SELECT ON pg_catalog.pg_constraint, pg_catalog.pg_class, pg_catalog.pg_namespace, pg_catalog.pg_attribute, pg_catalog.pg_proc, pg_catalog.pg_available_extensions, pg_catalog.pg_statio_all_tables, pg_catalog.pg_description TO hasura;"""
     )
-    engine.execute('''ALTER ROLE hasura SET statement_timeout="5s"''')
+    engine.execute("""ALTER ROLE hasura SET statement_timeout='5s'""")
