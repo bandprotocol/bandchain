@@ -25,8 +25,24 @@ let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true, ~
     ? {
       let adjustedText = newVal->Js.String2.split(".");
       <div className={CssHelper.flexBox(~align=`flexEnd, ())}>
-        <Text value={Array.get(adjustedText, 0)} size weight spacing code nowrap=true color />
-        <Text value={"." ++ adjustedText[1]} size=Text.Lg weight spacing code nowrap=true color />
+        <Text
+          value={adjustedText->Belt.Array.get(0)->Belt.Option.getWithDefault("0")}
+          size
+          weight
+          spacing
+          code
+          nowrap=true
+          color
+        />
+        <Text
+          value={"." ++ adjustedText->Belt.Array.get(1)->Belt.Option.getWithDefault("0")}
+          size=Text.Lg
+          weight
+          spacing
+          code
+          nowrap=true
+          color
+        />
       </div>;
     }
     : <Text value=newVal size weight spacing code nowrap=true color />;
