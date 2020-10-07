@@ -36,7 +36,7 @@ describe("Send", () => {
   });
 });
 
-describe("Delegate", () => {
+describe("Delegation", () => {
   it("Should able to delegate with Carol", () => {
     cy.get('[id="nav-/validators"]').click();
     cy.get(
@@ -47,11 +47,26 @@ describe("Delegate", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(1)')
       .wait(1000)
       .click();
-    cy.get('[id="nextButton"]').wait(2000).should("be.disabled");
+    cy.get('[id="nextButton"]').wait(1000).should("be.disabled");
     cy.get('[id="delegateAmountInput').type("10");
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButton"]').click().wait(2000);
-    cy.get('[id="broadcastButton"]').click().wait(2000);
+    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast Transaction Success"
+    );
+    cy.get('[id="closeModal"]').click();
+  });
+
+  it("Should able to undelegate with Carol", () => {
+    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)')
+      .wait(1000)
+      .click();
+    cy.get('[id="undelegateAmountInput').type("10");
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"
