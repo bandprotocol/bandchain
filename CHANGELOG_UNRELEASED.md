@@ -27,6 +27,8 @@
 ### Scan
 
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
+- (bugs) [\#2716](https://github.com/bandprotocol/bandchain/pull/2716) Fixed no decimal balance bug on account index
+  page
 - (impv) [\#2714](https://github.com/bandprotocol/bandchain/pull/2714) Handle NotFound case for Datasources and Oracle-scripts page
 - (chore) [\#2713](https://github.com/bandprotocol/bandchain/pull/2713) Remove redundant emptyContainer styles
 - (chore) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
