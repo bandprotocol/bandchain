@@ -29,39 +29,44 @@ let renderMuitisendList = (tx: TxSub.Msg.MultiSend.t) =>
 let renderDetailMobile =
   //TODO: implement Guan Yu's message later
   fun
-  | TxSub.Msg.SendMsg({fromAddress, toAddress, amount}) =>
+  | TxSub.Msg.SendMsgSuccess({fromAddress, toAddress, amount}) =>
     InfoMobileCard.[
       ("From", Address(fromAddress, addressWidth, `account)),
       ("To", Address(toAddress, addressWidth, `account)),
       ("Amount", Coin({value: amount, hasDenom: true})),
     ]
-  | DelegateMsg({validatorAddress, delegatorAddress, amount}) => [
+  | DelegateMsgSuccess({validatorAddress, delegatorAddress, amount}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Validator Address", Address(validatorAddress, addressWidth, `validator)),
       ("Amount", Coin({value: [amount], hasDenom: true})),
     ]
-  | UndelegateMsg({validatorAddress, delegatorAddress, amount}) => [
+  | UndelegateMsgSuccess({validatorAddress, delegatorAddress, amount}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Validator Address", Address(validatorAddress, addressWidth, `validator)),
       ("Amount", Coin({value: [amount], hasDenom: true})),
     ]
-  | MultiSendMsg(tx) => renderMuitisendList(tx)
-  | WithdrawRewardMsg({validatorAddress, delegatorAddress, amount}) => [
+  | MultiSendMsgSuccess(tx) => renderMuitisendList(tx)
+  | WithdrawRewardMsgSuccess({validatorAddress, delegatorAddress, amount}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Validator Address", Address(validatorAddress, addressWidth, `validator)),
       ("Amount", Coin({value: amount, hasDenom: true})),
     ]
-  | RedelegateMsg({validatorSourceAddress, validatorDestinationAddress, delegatorAddress, amount}) => [
+  | RedelegateMsgSuccess({
+      validatorSourceAddress,
+      validatorDestinationAddress,
+      delegatorAddress,
+      amount,
+    }) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Source Address", Address(validatorSourceAddress, addressWidth, `validator)),
       ("Destination Address", Address(validatorDestinationAddress, addressWidth, `validator)),
       ("Amount", Coin({value: [amount], hasDenom: true})),
     ]
-  | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) => [
+  | SetWithdrawAddressMsgSuccess({delegatorAddress, withdrawAddress}) => [
       ("Delegator Address", Address(delegatorAddress, addressWidth, `account)),
       ("Withdraw Address", Address(withdrawAddress, addressWidth, `account)),
     ]
-  | CreateValidatorMsg({
+  | CreateValidatorMsgSuccess({
       moniker,
       identity,
       website,
@@ -88,7 +93,7 @@ let renderDetailMobile =
       ("Min Self Delegation", Coin({value: [minSelfDelegation], hasDenom: true})),
       ("Self Delegation", Coin({value: [selfDelegation], hasDenom: true})),
     ]
-  | EditValidatorMsg({
+  | EditValidatorMsgSuccess({
       moniker,
       identity,
       website,
@@ -117,22 +122,24 @@ let renderDetailMobile =
         },
       ),
     ]
-  | WithdrawCommissionMsg({validatorAddress, amount}) => [
+  | WithdrawCommissionMsgSuccess({validatorAddress, amount}) => [
       ("Validator Address", Address(validatorAddress, addressWidth, `validator)),
       ("Amount", Coin({value: amount, hasDenom: true})),
     ]
-  | UnjailMsg({address}) => [("Validator Address", Address(address, addressWidth, `validator))]
-  | CreateDataSourceMsg({id, owner, name})
-  | EditDataSourceMsg({id, owner, name}) => [
+  | UnjailMsgSuccess({address}) => [
+      ("Validator Address", Address(address, addressWidth, `validator)),
+    ]
+  | CreateDataSourceMsgSuccess({id, owner, name})
+  | EditDataSourceMsgSuccess({id, owner, name}) => [
       ("Owner", Address(owner, addressWidth, `account)),
       ("Name", DataSource(id, name)),
     ]
-  | CreateOracleScriptMsg({id, owner, name})
-  | EditOracleScriptMsg({id, owner, name}) => [
+  | CreateOracleScriptMsgSuccess({id, owner, name})
+  | EditOracleScriptMsgSuccess({id, owner, name}) => [
       ("Owner", Address(owner, addressWidth, `account)),
       ("Name", OracleScript(id, name)),
     ]
-  | RequestMsg({oracleScriptID, oracleScriptName, calldata, askCount, schema, minCount}) => {
+  | RequestMsgSuccess({oracleScriptID, oracleScriptName, calldata, askCount, schema, minCount}) => {
       let calldataKVsOpt = Obi.decode(schema, "input", calldata);
       [
         ("Oracle Script", OracleScript(oracleScriptID, oracleScriptName)),
@@ -142,31 +149,31 @@ let renderDetailMobile =
         ("Min Count", Count(minCount)),
       ];
     }
-  | ReportMsg({requestID, rawReports}) => [
+  | ReportMsgSuccess({requestID, rawReports}) => [
       ("Request ID", RequestID(requestID)),
       ("Raw Data Reports", KVTableReport(["EXTERNAL ID", "EXIT CODE", "VALUE"], rawReports)),
     ]
-  | AddReporterMsg({reporter, validatorMoniker})
-  | RemoveReporterMsg({reporter, validatorMoniker}) => [
+  | AddReporterMsgSuccess({reporter, validatorMoniker})
+  | RemoveReporterMsgSuccess({reporter, validatorMoniker}) => [
       ("Validator", Text(validatorMoniker)),
       ("Reporter Address", Address(reporter, addressWidth, `account)),
     ]
-  | ActivateMsg({validatorAddress}) => [
+  | ActivateMsgSuccess({validatorAddress}) => [
       ("Validator Address", Address(validatorAddress, addressWidth, `validator)),
     ]
-  | SubmitProposalMsg({proposer, title, description, initialDeposit}) => [
+  | SubmitProposalMsgSuccess({proposer, title, description, initialDeposit}) => [
       ("Title", Text(title)),
       //TODO: will re-visit
       // ("Description", Text(description)),
       ("Proposer", Address(proposer, addressWidth, `account)),
       ("Amount", Coin({value: initialDeposit, hasDenom: true})),
     ]
-  | DepositMsg({depositor, proposalID, amount}) => [
+  | DepositMsgSuccess({depositor, proposalID, amount}) => [
       ("Dopositor", Address(depositor, addressWidth, `account)),
       ("Proposal ID", Count(proposalID)),
       ("Amount", Coin({value: amount, hasDenom: true})),
     ]
-  | VoteMsg({voterAddress, proposalID, option}) => [
+  | VoteMsgSuccess({voterAddress, proposalID, option}) => [
       ("Voter Address", Address(voterAddress, addressWidth, `account)),
       ("Proposal ID", Count(proposalID)),
       ("Option", Text(option)),
