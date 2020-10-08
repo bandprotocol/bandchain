@@ -70,15 +70,15 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
       fromAddress={msg |> TxSub.Msg.getCreator}
     />
     {switch (msg) {
-     | SendMsg({toAddress, amount}) => <TokenMsg.SendMsg toAddress amount />
+     | SendMsgSuccess({toAddress, amount}) => <TokenMsg.SendMsg toAddress amount />
      | ReceiveMsg({fromAddress, amount}) => <TokenMsg.ReceiveMsg fromAddress amount />
-     | MultiSendMsg({inputs, outputs}) => <TokenMsg.MultisendMsg inputs outputs />
-     | DelegateMsg({amount}) => <TokenMsg.DelegateMsg amount />
-     | UndelegateMsg({amount}) => <TokenMsg.UndelegateMsg amount />
-     | RedelegateMsg({amount}) => <TokenMsg.RedelegateMsg amount />
-     | WithdrawRewardMsg({amount}) => <TokenMsg.WithdrawRewardMsg amount />
-     | WithdrawCommissionMsg({amount}) => <TokenMsg.WithdrawCommissionMsg amount />
-     | CreateDataSourceMsg({id, sender, name}) =>
+     | MultiSendMsgSuccess({inputs, outputs}) => <TokenMsg.MultisendMsg inputs outputs />
+     | DelegateMsgSuccess({amount}) => <TokenMsg.DelegateMsg amount />
+     | UndelegateMsgSuccess({amount}) => <TokenMsg.UndelegateMsg amount />
+     | RedelegateMsgSuccess({amount}) => <TokenMsg.RedelegateMsg amount />
+     | WithdrawRewardMsgSuccess({amount}) => <TokenMsg.WithdrawRewardMsg amount />
+     | WithdrawCommissionMsgSuccess({amount}) => <TokenMsg.WithdrawCommissionMsg amount />
+     | CreateDataSourceMsgSuccess({id, sender, name}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -103,7 +103,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            ellipsis=true
          />
        </div>
-     | EditDataSourceMsg({id, sender, name}) =>
+     | EditDataSourceMsgSuccess({id, sender, name}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -132,7 +132,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
                 />
               </>}
        </div>
-     | CreateOracleScriptMsg({id, sender, name}) =>
+     | CreateOracleScriptMsgSuccess({id, sender, name}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -159,7 +159,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            />
          </div>
        </div>
-     | EditOracleScriptMsg({id, sender, name}) =>
+     | EditOracleScriptMsgSuccess({id, sender, name}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -190,7 +190,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
                 </>}
          </div>
        </div>
-     | RequestMsg({id, oracleScriptID, oracleScriptName, sender}) =>
+     | RequestMsgSuccess({id, oracleScriptID, oracleScriptName, sender}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -219,7 +219,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            ellipsis=true
          />
        </div>
-     | ReportMsg({requestID, reporter}) =>
+     | ReportMsgSuccess({requestID, reporter}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
          <div className="labelContainer">
@@ -237,7 +237,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          <HSpacing size=Spacing.sm />
          <TypeID.Request id=requestID />
        </div>
-     | AddReporterMsg({validator, reporter}) =>
+     | AddReporterMsgSuccess({validator, reporter}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=validator /> </div>
          <div className="labelContainer">
@@ -254,7 +254,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          <HSpacing size=Spacing.sm />
          <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
        </div>
-     | RemoveReporterMsg({validator, reporter}) =>
+     | RemoveReporterMsgSuccess({validator, reporter}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=validator /> </div>
          <div className="labelContainer">
@@ -271,7 +271,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
          <HSpacing size=Spacing.sm />
          <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
        </div>
-     | CreateValidatorMsg({delegatorAddress, moniker}) =>
+     | CreateValidatorMsgSuccess({delegatorAddress, moniker}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
          <div className="labelContainer">
@@ -298,7 +298,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            />
          </div>
        </div>
-     | EditValidatorMsg({sender, moniker}) =>
+     | EditValidatorMsgSuccess({sender, moniker}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
@@ -856,7 +856,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            ellipsis=true
          />
        </div>
-     | UnjailMsg({address}) =>
+     | UnjailMsgSuccess({address}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
          <div className="labelContainer">
@@ -874,7 +874,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            <AddressRender address accountType=`validator />
          </div>
        </div>
-     | SetWithdrawAddressMsg({delegatorAddress, withdrawAddress}) =>
+     | SetWithdrawAddressMsgSuccess({delegatorAddress, withdrawAddress}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
          <div className="labelContainer">
@@ -892,7 +892,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            <AddressRender address=withdrawAddress />
          </div>
        </div>
-     | SubmitProposalMsg({proposer, title}) =>
+     | SubmitProposalMsgSuccess({proposer, title}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=proposer /> </div>
          <div className="labelContainer">
@@ -910,7 +910,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            <Text value=title weight=Text.Regular code=true nowrap=true block=true />
          </div>
        </div>
-     | DepositMsg({depositor, amount, proposalID}) =>
+     | DepositMsgSuccess({depositor, amount, proposalID}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=depositor /> </div>
          <div className="labelContainer">
@@ -938,7 +938,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            />
          </div>
        </div>
-     | VoteMsg({voterAddress, proposalID, option}) =>
+     | VoteMsgSuccess({voterAddress, proposalID, option}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=voterAddress /> </div>
          <div className="labelContainer">
@@ -966,7 +966,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            />
          </div>
        </div>
-     | ActivateMsg({validatorAddress}) =>
+     | ActivateMsgSuccess({validatorAddress}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=validatorAddress /> </div>
          <div className="labelContainer">

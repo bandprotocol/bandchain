@@ -81,7 +81,7 @@ let renderSend = (send: TxSub.Msg.Send.t) => {
   </Col>;
 };
 // TODO: move it to file later.
-let renderRequest = (request: TxSub.Msg.Request.t) => {
+let renderRequest = (request: TxSub.Msg.Request.success_t) => {
   let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -172,7 +172,7 @@ let renderReport = (report: TxSub.Msg.Report.t) => {
   </Col>;
 };
 
-let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.t) => {
+let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -225,7 +225,7 @@ let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
   </Col>;
 };
 
-let renderCreateOracleScript = (oracleScript: TxSub.Msg.CreateOracleScript.t) => {
+let renderCreateOracleScript = (oracleScript: TxSub.Msg.CreateOracleScript.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -268,7 +268,7 @@ let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
   </Col>;
 };
 
-let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
+let renderAddReporter = (address: TxSub.Msg.AddReporter.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -282,7 +282,7 @@ let renderAddReporter = (address: TxSub.Msg.AddReporter.t) => {
   </Col>;
 };
 
-let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.t) => {
+let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -728,7 +728,7 @@ let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
   </Col>;
 };
 
-let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.t) => {
+let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -826,7 +826,7 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
     </div>
   </Col>;
 };
-let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.t) => {
+let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -928,15 +928,6 @@ let renderActivate = (activate: TxSub.Msg.Activate.t) => {
   </Col>;
 };
 
-let renderFailMessage = () => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="MESSAGE FAILED" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex> <img src=Images.fail className=Styles.failIcon /> </div>
-    </div>
-  </Col>;
-};
-
 let renderUnknownMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -948,17 +939,54 @@ let renderUnknownMessage = () => {
 
 let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
-  | SendMsg(send) => renderSend(send)
-  | CreateDataSourceMsg(dataSource) => renderCreateDataSource(dataSource)
-  | EditDataSourceMsg(dataSource) => renderEditDataSource(dataSource)
-  | CreateOracleScriptMsg(oracleScript) => renderCreateOracleScript(oracleScript)
-  | EditOracleScriptMsg(oracleScript) => renderEditOracleScript(oracleScript)
-  | RequestMsg(request) => renderRequest(request)
-  | ReportMsg(report) => renderReport(report)
-  | AddReporterMsg(address) => renderAddReporter(address)
-  | RemoveReporterMsg(address) => renderRemoveReporter(address)
-  | CreateValidatorMsg(validator) => renderCreateValidator(validator)
-  | EditValidatorMsg(validator) => renderEditValidator(validator)
+  | SendMsgSuccess(send) => renderSend(send)
+  | SendMsgFail(send) => React.null
+  | CreateDataSourceMsgSuccess(dataSource) => renderCreateDataSource(dataSource)
+  | CreateDataSourceMsgFail(dataSource) => React.null
+  | EditDataSourceMsgSuccess(dataSource) => renderEditDataSource(dataSource)
+  | EditDataSourceMsgFail(dataSource) => React.null
+  | CreateOracleScriptMsgSuccess(oracleScript) => renderCreateOracleScript(oracleScript)
+  | CreateOracleScriptMsgFail(oracleScript) => React.null
+  | EditOracleScriptMsgSuccess(oracleScript) => renderEditOracleScript(oracleScript)
+  | EditOracleScriptMsgFail(oracleScript) => React.null
+  | RequestMsgSuccess(request) => renderRequest(request)
+  | RequestMsgFail(request) => React.null
+  | ReportMsgSuccess(report) => renderReport(report)
+  | ReportMsgFail(report) => React.null
+  | AddReporterMsgSuccess(address) => renderAddReporter(address)
+  | AddReporterMsgFail(address) => React.null
+  | RemoveReporterMsgSuccess(address) => renderRemoveReporter(address)
+  | RemoveReporterMsgFail(address) => React.null
+  | CreateValidatorMsgSuccess(validator) => renderCreateValidator(validator)
+  | CreateValidatorMsgFail(validator) => React.null
+  | EditValidatorMsgSuccess(validator) => renderEditValidator(validator)
+  | EditValidatorMsgFail(validator) => React.null
+  | DelegateMsgSuccess(delegation) => renderDelegate(delegation)
+  | DelegateMsgFail(delegation) => React.null
+  | UndelegateMsgSuccess(delegation) => renderUndelegate(delegation)
+  | UndelegateMsgFail(delegation) => React.null
+  | RedelegateMsgSuccess(delegation) => renderRedelegate(delegation)
+  | RedelegateMsgFail(delegation) => React.null
+  | WithdrawRewardMsgSuccess(withdrawal) => renderWithdrawReward(withdrawal)
+  | WithdrawRewardMsgFail(withdrawal) => React.null
+  | WithdrawCommissionMsgSuccess(withdrawal) => renderWithdrawCommission(withdrawal)
+  | WithdrawCommissionMsgFail(withdrawal) => React.null
+  | UnjailMsgSuccess(unjail) => renderUnjail(unjail)
+  | UnjailMsgFail(unjail) => React.null
+  | SetWithdrawAddressMsgSuccess(set) => renderSetWithdrawAddress(set)
+  | SetWithdrawAddressMsgFail(set) => React.null
+  | SubmitProposalMsgSuccess(proposal) => renderSubmitProposal(proposal)
+  | SubmitProposalMsgFail(proposal) => React.null
+  | DepositMsgSuccess(deposit) => renderDeposit(deposit)
+  | DepositMsgFail(deposit) => React.null
+  | VoteMsgSuccess(vote) => renderVote(vote)
+  | VoteMsgFail(vote) => React.null
+  | MultiSendMsgSuccess(tx) => renderMultiSend(tx)
+  | MultiSendMsgFail(tx) => React.null
+  | ActivateMsgSuccess(activate) => renderActivate(activate)
+  | ActivateMsgFail(activate) => React.null
+  | UnknownMsg => renderUnknownMessage()
+  //TODO: Re-visit IBC Msg
   | CreateClientMsg(info) => renderCreateClient(info)
   | UpdateClientMsg(info) => renderUpdateClient(info)
   | SubmitClientMisbehaviourMsg(info) => renderSubmitClientMisbehaviour(info)
@@ -975,20 +1003,7 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | PacketMsg(info) => renderPacketVariant(msg, info.common)
   | AcknowledgementMsg(info) => renderPacketVariant(msg, info.common)
   | TimeoutMsg(info) => renderPacketVariant(msg, info.common)
-  | DelegateMsg(delegation) => renderDelegate(delegation)
-  | UndelegateMsg(delegation) => renderUndelegate(delegation)
-  | RedelegateMsg(delegation) => renderRedelegate(delegation)
-  | WithdrawRewardMsg(withdrawal) => renderWithdrawReward(withdrawal)
-  | WithdrawCommissionMsg(withdrawal) => renderWithdrawCommission(withdrawal)
-  | UnjailMsg(unjail) => renderUnjail(unjail)
-  | SetWithdrawAddressMsg(set) => renderSetWithdrawAddress(set)
-  | SubmitProposalMsg(proposal) => renderSubmitProposal(proposal)
-  | DepositMsg(deposit) => renderDeposit(deposit)
-  | VoteMsg(vote) => renderVote(vote)
-  | MultiSendMsg(tx) => renderMultiSend(tx)
-  | ActivateMsg(activate) => renderActivate(activate)
-  | FailMsg(_) => renderFailMessage()
-  | UnknownMsg => renderUnknownMessage()
+  | _ => React.null
   };
 
 module THead = {
@@ -1026,27 +1041,27 @@ let make = (~messages: list(TxSub.Msg.t)) => {
                  <div className=Styles.badgeContainer>
                    <MsgBadge name={theme.name} msgType={theme.category} />
                    {switch (msg) {
-                    | CreateDataSourceMsg(dataSource) =>
+                    | CreateDataSourceMsgSuccess(dataSource) =>
                       <>
                         <hr className=Styles.separatorLine />
                         <TypeID.DataSource id={dataSource.id} />
                       </>
-                    | EditDataSourceMsg(dataSource) =>
+                    | EditDataSourceMsgSuccess(dataSource) =>
                       <>
                         <hr className=Styles.separatorLine />
                         <TypeID.DataSource id={dataSource.id} />
                       </>
-                    | CreateOracleScriptMsg(oracleScript) =>
+                    | CreateOracleScriptMsgSuccess(oracleScript) =>
                       <>
                         <hr className=Styles.separatorLine />
                         <TypeID.OracleScript id={oracleScript.id} />
                       </>
-                    | EditOracleScriptMsg(oracleScript) =>
+                    | EditOracleScriptMsgSuccess(oracleScript) =>
                       <>
                         <hr className=Styles.separatorLine />
                         <TypeID.OracleScript id={oracleScript.id} />
                       </>
-                    | RequestMsg(request) =>
+                    | RequestMsgSuccess(request) =>
                       <>
                         <hr className=Styles.separatorLine />
                         <TypeID.Request id={request.id} />
