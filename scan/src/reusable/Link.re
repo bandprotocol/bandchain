@@ -8,7 +8,6 @@ module Styles = {
 let make = (~route, ~className, ~onClick=() => (), ~isTab=false, ~children) => {
   <a
     href={route->Route.toString}
-    id={"nav-" ++ route->Route.toString}
     className={Css.merge([Styles.a, className])}
     onClick={event =>
       if (!event->ReactEvent.Mouse.defaultPrevented

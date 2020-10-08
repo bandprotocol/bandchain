@@ -38,11 +38,10 @@ describe("Send", () => {
 
 describe("Delegation", () => {
   it("Should be able to delegate with Carol", () => {
-    cy.get('[id="nav-/validators"]').click();
-    cy.get(
-      '[id="nav-/validator/bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst#reports"]'
-    )
+    cy.get('[id="navigationBar"] > div > a').contains("Validator").click();
+    cy.get('[id="validatorsSection"] > div > div > div > a > span')
       .wait(500)
+      .contains("Carol")
       .click();
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(1)')
       .wait(1000)
