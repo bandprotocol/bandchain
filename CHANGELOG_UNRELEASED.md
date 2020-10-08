@@ -27,10 +27,7 @@
 
 ### Scan
 
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add withdraw reward UI test
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add undelegation UI test
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add redelegation UI test
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation UI test
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
 - (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (bugs) [\#2716](https://github.com/bandprotocol/bandchain/pull/2716) Fixed no decimal balance bug on account index
