@@ -122,7 +122,7 @@ let make = (~chainID, ~ledgerApp) => {
   let (result, setResult) = React.useState(_ => Nothing);
   let (accountIndex, setAccountIndex) = React.useState(_ => 0);
 
-  let createLedger = aCcccountIndex => {
+  let createLedger = accountIndex => {
     dispatchModal(DisableExit);
     setResult(_ => Loading);
     let _ =
