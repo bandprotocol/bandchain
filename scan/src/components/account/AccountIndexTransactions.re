@@ -2,12 +2,12 @@ module Styles = {
   open Css;
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-
 };
 
 let transform = (account, msg: TxSub.Msg.t) => {
   switch (msg) {
-  | SendMsg({toAddress, fromAddress, amount}) when toAddress == account =>
+  | SendMsgSuccess({toAddress, fromAddress, amount})
+  | SendMsgFail({toAddress, fromAddress, amount}) when toAddress == account =>
     TxSub.Msg.ReceiveMsg({toAddress, fromAddress, amount})
   | _ => msg
   };
