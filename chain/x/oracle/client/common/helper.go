@@ -15,6 +15,7 @@ func PostProcessQueryResponse(w http.ResponseWriter, cliCtx context.CLIContext, 
 	if err := json.Unmarshal(bz, &result); err != nil {
 		rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 	}
+	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(result.Status)
 	rest.PostProcessResponse(w, cliCtx, result.Result)
 }
