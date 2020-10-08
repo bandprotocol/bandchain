@@ -159,7 +159,7 @@ let make = () => {
   let allSub = Sub.all3(proposalsSub, bondedTokenCountSub, voteStatSub);
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="proposalsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
       </Row.Grid>

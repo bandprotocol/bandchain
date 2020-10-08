@@ -9,7 +9,7 @@ let make = () => {
   let isMobile = Media.isMobile();
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="transactionsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve>
           <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />

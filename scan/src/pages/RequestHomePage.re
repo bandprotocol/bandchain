@@ -132,7 +132,7 @@ let make = () => {
   let allSub = Sub.all2(requestsSub, totalRequestCountSub);
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="requestsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve>
           <Heading value="All Requests" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
