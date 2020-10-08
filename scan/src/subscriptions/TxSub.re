@@ -869,6 +869,13 @@ module Msg = {
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
       };
     };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+      };
+    };
   };
 
   module Unjail = {
@@ -949,6 +956,12 @@ module Msg = {
         amount: json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins,
         moniker: json |> at(["extra", "moniker"], string),
         identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
       };
     };
 
