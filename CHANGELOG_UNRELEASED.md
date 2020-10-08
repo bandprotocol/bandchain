@@ -26,7 +26,10 @@
 
 ### Scan
 
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegate UI test
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add withdraw reward UI test
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add undelegation UI test
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add redelegation UI test
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation UI test
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (impv) [\#2714](https://github.com/bandprotocol/bandchain/pull/2714) Handle NotFound case for Datasources and Oracle-scripts page
 - (chore) [\#2713](https://github.com/bandprotocol/bandchain/pull/2713) Remove redundant emptyContainer styles
