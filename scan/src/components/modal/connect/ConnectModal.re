@@ -21,6 +21,7 @@ module Styles = {
       justifyContent(`center),
       flexDirection(`column),
       alignItems(`center),
+      paddingTop(`px(30)),
       borderBottom(`px(1), `solid, Colors.gray9),
     ]);
 
@@ -34,7 +35,6 @@ module Styles = {
       flexDirection(`row),
       alignSelf(`center),
       alignItems(`center),
-      width(`px(480)),
       padding2(~v=`zero, ~h=`px(20)),
       color(active ? Colors.gray8 : Colors.gray6),
       backgroundColor(Colors.white),
@@ -99,7 +99,6 @@ let make = (~chainID) => {
   let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
   <div className=Styles.container>
     <div className=Styles.innerContainer>
-      <VSpacing size=Spacing.xl />
       <div className=Styles.modalTitle>
         <Text value="Connect with your wallet" weight=Text.Medium size=Text.Xl />
         {chainID == "band-wenchang-mainnet"

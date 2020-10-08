@@ -6,7 +6,7 @@ module Styles = {
       display(`flex),
       flexDirection(`column),
       width(`percent(100.)),
-      padding4(~top=`px(0), ~left=`px(18), ~right=`px(18), ~bottom=`px(0)),
+      padding2(~v=`px(0), ~h=`px(18)),
     ]);
 
   let inputBar =
