@@ -1,6 +1,8 @@
 {
-  "baseUrl": "http://localhost:3000/",
+  "baseUrl": "http://localhost:1234/",
   "pluginsFile": false,
   "fixturesFolder": false,
-  "defaultCommandTimeout": 10000
+  "defaultCommandTimeout": 10000,
+  "videoUploadOnPasses": false,
+  "projectId": "gva981"
 }
