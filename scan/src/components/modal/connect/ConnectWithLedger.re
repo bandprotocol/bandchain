@@ -145,7 +145,7 @@ let make = (~chainID, ~ledgerApp) => {
 
   <div className=Styles.container>
     <VSpacing size=Spacing.xl />
-    <Text value="1. Select HD Derivation Path" weight=Text.Semibold />
+    <Text value="1. Select HD Derivation Path" weight=Text.Semibold size=Text.Lg />
     <VSpacing size=Spacing.md />
     <div className=Styles.selectWrapper>
       <div className={CssHelper.selectWrapper(~pRight=8, ~mW=100, ~size=10, ())}>
@@ -171,7 +171,7 @@ let make = (~chainID, ~ledgerApp) => {
       </div>
     </div>
     <VSpacing size=Spacing.xl />
-    <Text value="2. On Your Ledger" weight=Text.Semibold />
+    <Text value="2. On Your Ledger" weight=Text.Semibold size=Text.Lg />
     <VSpacing size=Spacing.xl />
     <InstructionCard title="1. Enter Pin Code" url=Images.ledgerStep1 />
     <VSpacing size=Spacing.lg />
@@ -191,7 +191,13 @@ let make = (~chainID, ~ledgerApp) => {
            />
          </>
        | Error(err) =>
-         <Text value=err color=Colors.red5 weight=Text.Medium spacing={Text.Em(0.03)} />
+         <Text
+           value=err
+           color=Colors.red5
+           weight=Text.Medium
+           size=Text.Lg
+           spacing={Text.Em(0.03)}
+         />
        | Nothing => React.null
        }}
     </div>
@@ -219,7 +225,7 @@ let make = (~chainID, ~ledgerApp) => {
              | (_, _) => createLedger(accountIndex)
              }
            }}>
-           <Text value="Connect to Ledger" weight=Text.Bold size=Text.Md color=Colors.white />
+           <Text value="Connect to Ledger" weight=Text.Bold size=Text.Lg color=Colors.white />
          </Button>}
   </div>;
 };

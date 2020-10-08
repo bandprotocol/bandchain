@@ -69,7 +69,7 @@ let make = (~chainID) => {
 
   <div className=Styles.container>
     <VSpacing size=Spacing.xl />
-    <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Semibold />
+    <Text value="Enter Your Mnemonic" size=Text.Lg weight=Text.Semibold />
     <VSpacing size=Spacing.md />
     <input
       id="mnemonicInput"
@@ -89,7 +89,7 @@ let make = (~chainID) => {
     <VSpacing size=Spacing.xl />
     <div id="mnemonicConnectButton" className={CssHelper.flexBox(~justify=`flexEnd, ())}>
       <Button px=20 py=8 onClick={_ => createMnemonic()} style=Styles.connectBtn>
-        <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
+        <Text value="Connect" weight=Text.Bold size=Text.Lg color=Colors.white />
       </Button>
     </div>
     <VSpacing size=Spacing.lg />

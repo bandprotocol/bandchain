@@ -88,7 +88,7 @@ module LoginMethod = {
            </div>
          | _ => <div />
          }}
-        <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Md />
+        <Text value={name |> toLoginMethodString} weight=Text.Medium size=Text.Lg />
       </div>
     </div>;
   };
