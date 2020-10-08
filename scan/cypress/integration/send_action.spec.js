@@ -63,7 +63,29 @@ describe("Delegation", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)')
       .wait(1000)
       .click();
-    cy.get('[id="undelegateAmountInput').type("1");
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="undelegateAmountInput').type("0.5");
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast Transaction Success"
+    );
+    cy.get('[id="closeModal"]').click();
+  });
+
+  it("Should be able to redelegate with Carol", () => {
+    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(3)')
+      .click()
+      .wait(1000);
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="redelegateContainer"] > div:nth-of-type(1)').click();
+    cy.get('[id="redelegateContainer"] input').wait(1000).type("Bobby.fish 🐡");
+    cy.get(
+      '[id="redelegateContainer"] > div:nth-of-type(1) > div:nth-of-type(2) > div:nth-of-type(1) > div:nth-of-type(1)'
+    ).click();
+    cy.get('[id="redelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
@@ -76,6 +98,7 @@ describe("Delegation", () => {
 
   it("Should be able to withdraw reward with Carol", () => {
     cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
+    cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
