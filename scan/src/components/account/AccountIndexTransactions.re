@@ -2,7 +2,6 @@ module Styles = {
   open Css;
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let transform = (account, msg: TxSub.Msg.t) => {
@@ -93,23 +92,7 @@ let make = (~accountAddress: Address.t) => {
              </Col.Grid>
            </Row.Grid>
          </THead.Grid>}
-    {switch (txsSub) {
-     | Data(txs) =>
-       txs->Belt.Array.size > 0
-         ? <TxsTable txsSub msgTransform={transform(accountAddress)} />
-         : <EmptyContainer>
-             <img src=Images.noBlock className=Styles.noDataImage />
-             <Heading
-               size=Heading.H4
-               value="No Transaction"
-               align=Heading.Center
-               weight=Heading.Regular
-               color=Colors.bandBlue
-             />
-           </EmptyContainer>
-     | _ => <TxsTable txsSub msgTransform={transform(accountAddress)} />
-     }}
-    // <TxsTable txsSub msgTransform={transform(accountAddress)} />
+    <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {
      | Data(txsCount) =>
        let pageCount = Page.getPageCount(txsCount, pageSize);
