@@ -55,7 +55,7 @@ module DstValidatorSelection = {
       );
 
     // TODO: Hack styles for react-select
-    <div className=Styles.distValidatorContainer>
+    <div className=Styles.distValidatorContainer id="redelegateContainer">
       <ReactSelect
         options=validatorList
         onChange={newOption => {
