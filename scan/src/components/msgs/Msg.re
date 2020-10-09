@@ -146,35 +146,88 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            />
          </div>
        </div>
-     | EditValidatorMsgSuccess({sender, moniker}) =>
+     | EditOracleScriptMsgSuccess({id, sender, name}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
          <div className="labelContainer">
-           <div className={Styles.withBg(Colors.purple1, 85)}>
+           <div className={Styles.withBg(Colors.pink1, 110)}>
              <Text
-               value="EDIT VALIDATOR"
+               value="EDIT ORACLE SCRIPT"
                size=Text.Xs
                spacing={Text.Em(0.07)}
                weight=Text.Medium
-               color=Colors.purple6
+               color=Colors.pink6
              />
            </div>
          </div>
-         <HSpacing size=Spacing.sm />
-         <div className={Styles.withWidth(width / 2 - 5)}>
-           {moniker == Config.doNotModify
-              ? <AddressRender address=sender accountType=`validator />
-              : <Text
-                  value=moniker
-                  color=Colors.gray7
-                  weight=Text.Regular
-                  code=true
-                  nowrap=true
-                  block=true
-                  ellipsis=true
-                />}
+         <div className={Styles.rowWithWidth(210)}>
+           <TypeID.OracleScript id />
+           {name == Config.doNotModify
+              ? React.null
+              : <>
+                  <HSpacing size=Spacing.sm />
+                  <Text
+                    value=name
+                    color=Colors.gray7
+                    weight=Text.Medium
+                    nowrap=true
+                    block=true
+                    ellipsis=true
+                  />
+                </>}
          </div>
        </div>
+     | RequestMsgSuccess({id, oracleScriptID, oracleScriptName, sender}) =>
+       <div className={Styles.rowWithWidth(width)}>
+         <div className={Styles.withWidth(120)}> <AddressRender address=sender /> </div>
+         <div className="labelContainer">
+           <div className={Styles.withBg(Colors.orange1, 60)}>
+             <Text
+               value="REQUEST"
+               size=Text.Xs
+               spacing={Text.Em(0.07)}
+               weight=Text.Medium
+               color=Colors.orange6
+             />
+           </div>
+         </div>
+         <TypeID.Request id />
+         <HSpacing size=Spacing.sm />
+         <Icon name="far fa-arrow-right" color=Colors.black />
+         <HSpacing size=Spacing.sm />
+         <TypeID.OracleScript id=oracleScriptID />
+         <HSpacing size=Spacing.sm />
+         <Text
+           value=oracleScriptName
+           color=Colors.gray7
+           weight=Text.Medium
+           nowrap=true
+           block=true
+           ellipsis=true
+         />
+       </div>
+     | ReportMsgSuccess({requestID, reporter}) =>
+       <div className={Styles.rowWithWidth(width)}>
+         <div className={Styles.withWidth(120)}> <AddressRender address=reporter /> </div>
+         <div className="labelContainer">
+           <div className={Styles.withBg(Colors.orange1, 50)}>
+             <Text
+               value="REPORT"
+               size=Text.Xs
+               spacing={Text.Em(0.07)}
+               weight=Text.Medium
+               color=Colors.orange6
+             />
+           </div>
+         </div>
+         <Icon name="far fa-arrow-right" color=Colors.black />
+         <HSpacing size=Spacing.sm />
+         <TypeID.Request id=requestID />
+       </div>
+     | AddReporterMsgSuccess({validator, reporter}) => <ValidatorMsg.AddReporter reporter />
+     | RemoveReporterMsgSuccess({reporter}) => <ValidatorMsg.RemoveReporter reporter />
+     | CreateValidatorMsgSuccess({moniker}) => <ValidatorMsg.CreateValidator moniker />
+     | EditValidatorMsgSuccess({moniker}) => <ValidatorMsg.EditValidator moniker />
      | CreateClientMsg({address, clientID, chainID}) =>
        <div className={Styles.rowWithWidth(width)}>
          <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
@@ -704,131 +757,16 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
            ellipsis=true
          />
        </div>
-     | UnjailMsgSuccess({address}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.blue1, 50)}>
-             <Text
-               value="UNJAIL"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.blue7
-             />
-           </div>
-         </div>
-         <div className={Styles.withWidth(width / 2)}>
-           <AddressRender address accountType=`validator />
-         </div>
-       </div>
-     | SetWithdrawAddressMsgSuccess({delegatorAddress, withdrawAddress}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address=delegatorAddress /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.purple1, 130)}>
-             <Text
-               value="SET WITHDRAW ADDRESS"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.purple6
-             />
-           </div>
-         </div>
-         <div className={Styles.withWidth(width / 3)}>
-           <AddressRender address=withdrawAddress />
-         </div>
-       </div>
+     | UnjailMsgSuccess(_) => React.null
+     | SetWithdrawAddressMsgSuccess({withdrawAddress}) =>
+       <ValidatorMsg.SetWithdrawAddress withdrawAddress />
      | SubmitProposalMsgSuccess({proposer, title}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address=proposer /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.blue1, 100)}>
-             <Text
-               value="SUBMIT PROPOSAL"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.blue7
-             />
-           </div>
-         </div>
-         <div className={Styles.rowWithWidth(200)}>
-           <Text value=title weight=Text.Regular code=true nowrap=true block=true />
-         </div>
-       </div>
+       <ProposalMsg.SubmitProposal proposer title />
      | DepositMsgSuccess({depositor, amount, proposalID}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address=depositor /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.blue1, 50)}>
-             <Text
-               value="DEPOSIT"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.blue7
-             />
-           </div>
-         </div>
-         <AmountRender coins=amount />
-         <HSpacing size=Spacing.sm />
-         <Icon name="far fa-arrow-right" color=Colors.black />
-         <HSpacing size=Spacing.sm />
-         <div className={Styles.rowWithWidth(200)}>
-           <Text
-             value={"Proposal " ++ (proposalID |> string_of_int)}
-             weight=Text.Regular
-             code=true
-             nowrap=true
-             block=true
-           />
-         </div>
-       </div>
+       <ProposalMsg.Deposit depositor amount proposalID />
      | VoteMsgSuccess({voterAddress, proposalID, option}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address=voterAddress /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.blue1, 40)}>
-             <Text
-               value="VOTE"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.blue7
-             />
-           </div>
-         </div>
-         <Text value=option weight=Text.Regular code=true nowrap=true block=true />
-         <HSpacing size=Spacing.sm />
-         <Icon name="far fa-arrow-right" color=Colors.black />
-         <HSpacing size=Spacing.sm />
-         <div className={Styles.rowWithWidth(200)}>
-           <Text
-             value={"Proposal " ++ (proposalID |> string_of_int)}
-             weight=Text.Regular
-             code=true
-             nowrap=true
-             block=true
-           />
-         </div>
-       </div>
-     | ActivateMsgSuccess({validatorAddress}) =>
-       <div className={Styles.rowWithWidth(width)}>
-         <div className={Styles.withWidth(120)}> <AddressRender address=validatorAddress /> </div>
-         <div className="labelContainer">
-           <div className={Styles.withBg(Colors.blue1, 65)}>
-             <Text
-               value="ACTIVATE"
-               size=Text.Xs
-               spacing={Text.Em(0.07)}
-               weight=Text.Medium
-               color=Colors.blue7
-             />
-           </div>
-         </div>
-       </div>
+       <ProposalMsg.Vote voterAddress proposalID option />
+     | ActivateMsgSuccess(_) => React.null
      | _ => React.null
      }}
   </div>;
