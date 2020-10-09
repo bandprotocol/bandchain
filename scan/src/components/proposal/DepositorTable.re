@@ -38,7 +38,11 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
       </Col.Grid>
       <Col.Grid col=Col.Five>
         {switch (depositSub) {
-         | Data({txHash}) => <TxLink txHash width=240 />
+         | Data({txHash}) =>
+           switch (txHash) {
+           | Some(txHash') => <TxLink txHash=txHash' width=240 />
+           | None => <Text value="Genesis Transaction" />
+           }
          | _ => <LoadingCensorBar width=100 height=15 />
          }}
       </Col.Grid>
@@ -65,7 +69,13 @@ let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.varia
     <MobileCard
       values=InfoMobileCard.[
         ("Depositor", Address(depositor, 200, `account)),
-        ("TX Hash", TxHash(txHash, 200)),
+        (
+          "TX Hash",
+          switch (txHash) {
+          | Some(txHash') => TxHash(txHash', 200)
+          | None => Text("Genesis")
+          },
+        ),
         ("Amount", Coin({value: amount, hasDenom: false})),
       ]
       key={depositor |> Address.toBech32}

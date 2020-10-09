@@ -70,7 +70,11 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (voteSub) {
-         | Data({txHash}) => <TxLink txHash width=200 />
+         | Data({txHash}) =>
+           switch (txHash) {
+           | Some(txHash') => <TxLink txHash=txHash' width=200 />
+           | None => <Text value="Genesis Transaction" />
+           }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
       </Col.Grid>
@@ -78,12 +82,16 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (voteSub) {
            | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+             switch (timestamp) {
+             | Some(timestamp') =>
+               <Timestamp.Grid
+                 time=timestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Genesis" />
+             }
            | _ => <LoadingCensorBar width=80 height=15 />
            }}
         </div>
@@ -107,8 +115,20 @@ let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(
            | None => Address(voter, 200, `account)
            }},
         ),
-        ("TX Hash", TxHash(txHash, 200)),
-        ("Timestamp", Timestamp(timestamp)),
+        (
+          "TX Hash",
+          switch (txHash) {
+          | Some(txHash') => TxHash(txHash', 200)
+          | None => Text("Genesis")
+          },
+        ),
+        (
+          "Timestamp",
+          switch (timestamp) {
+          | Some(timestamp') => Timestamp(timestamp')
+          | None => Text("Genesis")
+          },
+        ),
       ]
       key=key_
       idx=key_
