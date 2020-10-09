@@ -6,6 +6,7 @@ import (
 	"github.com/peterbourgon/diskv"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type Cache struct {
@@ -13,15 +14,19 @@ type Cache struct {
 }
 
 type Price struct {
-	Multiplier  uint64 `json:"multiplier"`
-	Px          uint64 `json:"px"`
-	ResolveTime int64  `json:"resolve_time"`
+	Symbol      string          `json:"symbol"`
+	Multiplier  uint64          `json:"multiplier"`
+	Px          uint64          `json:"px"`
+	RequestID   types.RequestID `json:"request_id"`
+	ResolveTime int64           `json:"resolve_time"`
 }
 
-func NewPrice(multiplier uint64, px uint64, resolveTime int64) Price {
+func NewPrice(symbol string, multiplier uint64, px uint64, reqID types.RequestID, resolveTime int64) Price {
 	return Price{
+		Symbol:      symbol,
 		Multiplier:  multiplier,
 		Px:          px,
+		RequestID:   reqID,
 		ResolveTime: resolveTime,
 	}
 }
