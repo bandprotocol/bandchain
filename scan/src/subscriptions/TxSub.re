@@ -916,13 +916,13 @@ module Msg = {
   module Deposit = {
     type t = {
       depositor: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
       amount: list(Coin.t),
     };
     let decode = json => {
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
     };
@@ -930,13 +930,13 @@ module Msg = {
   module Vote = {
     type t = {
       voterAddress: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
       option: string,
     };
     let decode = json => {
       JsonUtils.Decode.{
         voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         option: json |> at(["msg", "option"], string),
       };
     };

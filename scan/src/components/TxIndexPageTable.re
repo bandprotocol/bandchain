@@ -680,7 +680,7 @@ let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={deposit.proposalID |> string_of_int} code=true />
+      <Text value={deposit.proposalID |> ID.Proposal.toString} code=true />
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
@@ -719,7 +719,7 @@ let renderVote = (vote: TxSub.Msg.Vote.t) => {
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
       <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex> <Text value={vote.proposalID |> string_of_int} /> </div>
+      <div className=Styles.hFlex> <Text value={vote.proposalID |> ID.Proposal.toString} /> </div>
     </div>
     <VSpacing size=Spacing.lg />
     <div className=Styles.topicContainer>
