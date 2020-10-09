@@ -43,6 +43,7 @@
 - (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
 - (impv) [\#2748](https://github.com/bandprotocol/bandchain/pull/2748) Implemented the token msg category on txindex page (both success and fail msgs)
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
+- (chore) [\#2742](https://github.com/bandprotocol/bandchain/pull/2742) Validator and proposal message restructure
 - (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
 - (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
 - (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
