@@ -7,7 +7,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
       ),
-      Media.mobile([margin2(~h=`px(-15), ~v=`zero)]),
+      Media.mobile([margin2(~h=`px(-12), ~v=`zero)]),
     ]);
   let header =
     style([
