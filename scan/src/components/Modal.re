@@ -98,6 +98,7 @@ let make = () => {
       <div
         className={Styles.content(closing)} onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
         <img
+          id="closeModal"
           src=Images.closeButton
           onClick={_ => {canExit ? closeModal() : ()}}
           className=Styles.closeButton
