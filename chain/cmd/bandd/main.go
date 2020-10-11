@@ -25,8 +25,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/emitter"
-	"github.com/bandprotocol/bandchain/chain/pricer"
+	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -92,9 +91,47 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
-		panic("Cannot set flag with pricer and with emitter at the same time")
-	}
+	// TODO: Make emitter as hook
+
+	// if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
+	// 	panic("Cannot set flag with pricer and with emitter at the same time")
+	// }
+	// if viper.IsSet(flagWithEmitter) {
+	// 	bandApp = emitter.NewBandAppWithEmitter(
+	// 		viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
+	// 		skipUpgradeHeights, viper.GetString(flags.FlagHome),
+	// 		viper.GetBool(flagDisableFeelessReports),
+	// 		viper.GetBool(flagEnableFastSync),
+	// 		baseapp.SetPruning(pruningOpts),
+	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+	// 		baseapp.SetInterBlockCache(cache),
+	// 	)
+	// } else {
+	// 	bandApp = app.NewBandApp(
+	// 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
+	// 		viper.GetString(flags.FlagHome),
+	// 		viper.GetBool(flagDisableFeelessReports),
+	// 		baseapp.SetPruning(pruningOpts),
+	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+	// 		baseapp.SetInterBlockCache(cache),
+	// 	)
+	// }
+
+	bandApp := app.NewBandApp(
+		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
+		viper.GetString(flags.FlagHome),
+		viper.GetBool(flagDisableFeelessReports),
+		baseapp.SetPruning(pruningOpts),
+		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
+		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
+		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
+		baseapp.SetInterBlockCache(cache),
+	)
+
 	if viper.IsSet(flagWithPricer) {
 		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
 		oids := make([]types.OracleScriptID, len(rawOids))
@@ -105,43 +142,10 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			}
 			oids[idx] = types.OracleScriptID(oid)
 		}
-		return pricer.NewBandAppWithPricer(
-			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-			viper.GetString(flags.FlagHome),
-			viper.GetBool(flagDisableFeelessReports),
-			oids,
-			filepath.Join(viper.GetString(cli.HomeFlag), "prices"),
-			filepath.Join(viper.GetString(cli.HomeFlag), "requests"),
-			baseapp.SetPruning(pruningOpts),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-			baseapp.SetInterBlockCache(cache),
-		)
-	} else if viper.IsSet(flagWithEmitter) {
-		return emitter.NewBandAppWithEmitter(
-			viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-			skipUpgradeHeights, viper.GetString(flags.FlagHome),
-			viper.GetBool(flagDisableFeelessReports),
-			viper.GetBool(flagEnableFastSync),
-			baseapp.SetPruning(pruningOpts),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-			baseapp.SetInterBlockCache(cache),
-		)
-	} else {
-		return app.NewBandApp(
-			logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-			viper.GetString(flags.FlagHome),
-			viper.GetBool(flagDisableFeelessReports),
-			baseapp.SetPruning(pruningOpts),
-			baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-			baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-			baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-			baseapp.SetInterBlockCache(cache),
-		)
+		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
 	}
+
+	return bandApp
 }
 
 func exportAppStateAndTMValidators(
