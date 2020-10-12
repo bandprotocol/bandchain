@@ -27,4 +27,6 @@ func (app *App) handleMsgUnjail(
 		"operator_address": msg.ValidatorAddr.String(),
 		"jailed":           validator.Jailed,
 	})
+	extra["moniker"] = validator.Description.Moniker
+	extra["identity"] = validator.Description.Identity
 }

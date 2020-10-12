@@ -51,6 +51,9 @@ func (app *App) handleMsgWithdrawDelegatorReward(
 	app.AddAccountsInTx(withdrawAddr)
 	app.emitUpdateValidatorReward(msg.ValidatorAddress)
 	app.emitDelegationAfterWithdrawReward(msg.ValidatorAddress, withdrawAddr)
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.ValidatorAddress)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
 	extra["reward_amount"] = evMap[dist.EventTypeWithdrawRewards+"."+sdk.AttributeKeyAmount][0]
 }
 
@@ -59,6 +62,8 @@ func (app *App) handleMsgSetWithdrawAddress(
 	txHash []byte, msg dist.MsgSetWithdrawAddress, evMap EvMap, extra JsDict,
 ) {
 	app.AddAccountsInTx(msg.WithdrawAddress)
+	extra["delegator_address"] = msg.DelegatorAddress
+	extra["withdraw_address"] = msg.WithdrawAddress
 }
 
 // handleMsgWithdrawValidatorCommission implements emitter handler for MsgWithdrawValidatorCommission.
@@ -68,5 +73,8 @@ func (app *App) handleMsgWithdrawValidatorCommission(
 	withdrawAddr := app.DistrKeeper.GetDelegatorWithdrawAddr(app.DeliverContext, sdk.AccAddress(msg.ValidatorAddress))
 	app.AddAccountsInTx(withdrawAddr)
 	app.emitUpdateValidatorRewardAndAccumulatedCommission(msg.ValidatorAddress)
+	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.ValidatorAddress)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
 	extra["commission_amount"] = evMap[types.EventTypeWithdrawCommission+"."+sdk.AttributeKeyAmount][0]
 }

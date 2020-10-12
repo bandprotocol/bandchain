@@ -49,7 +49,7 @@ func (app *App) emitStakingModule() {
 	})
 }
 
-func (app *App) emitSetValidator(addr sdk.ValAddress) {
+func (app *App) emitSetValidator(addr sdk.ValAddress) types.Validator {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	accCommission, _ := app.DistrKeeper.GetValidatorAccumulatedCommission(app.DeliverContext, addr).TruncateDecimal()
@@ -74,9 +74,11 @@ func (app *App) emitSetValidator(addr sdk.ValAddress) {
 		"accumulated_commission": accCommission.String(),
 		"last_update":            app.DeliverContext.BlockTime().UnixNano(),
 	})
+	return val
+
 }
 
-func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
+func (app *App) emitUpdateValidator(addr sdk.ValAddress) types.Validator {
 	val, _ := app.StakingKeeper.GetValidator(app.DeliverContext, addr)
 	currentReward, currentRatio := app.getCurrentRewardAndCurrentRatio(addr)
 	app.Write("UPDATE_VALIDATOR", JsDict{
@@ -87,6 +89,7 @@ func (app *App) emitUpdateValidator(addr sdk.ValAddress) {
 		"current_ratio":    currentRatio,
 		"last_update":      app.DeliverContext.BlockTime().UnixNano(),
 	})
+	return val
 }
 
 func (app *App) emitUpdateValidatorStatus(addr sdk.ValAddress) {
@@ -129,35 +132,45 @@ func (app *App) emitDelegation(operatorAddress sdk.ValAddress, delegatorAddress 
 func (app *App) handleMsgCreateValidator(
 	txHash []byte, msg staking.MsgCreateValidator, evMap EvMap, extra JsDict,
 ) {
-	app.emitSetValidator(msg.ValidatorAddress)
+	val := app.emitSetValidator(msg.ValidatorAddress)
 	app.emitDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
+
 }
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
 func (app *App) handleMsgEditValidator(
 	txHash []byte, msg staking.MsgEditValidator, evMap EvMap, extra JsDict,
 ) {
-	app.emitSetValidator(msg.ValidatorAddress)
+	val := app.emitSetValidator(msg.ValidatorAddress)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
 }
 
-func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) {
-	app.emitUpdateValidator(operatorAddress)
+func (app *App) emitUpdateValidatorAndDelegation(operatorAddress sdk.ValAddress, delegatorAddress sdk.AccAddress) types.Validator {
+	val := app.emitUpdateValidator(operatorAddress)
 	app.emitDelegation(operatorAddress, delegatorAddress)
+	return val
 }
 
 // handleMsgDelegate implements emitter handler for MsgDelegate
 func (app *App) handleMsgDelegate(
 	txHash []byte, msg staking.MsgDelegate, evMap EvMap, extra JsDict,
 ) {
-	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	val := app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
 func (app *App) handleMsgUndelegate(
 	txHash []byte, msg staking.MsgUndelegate, evMap EvMap, extra JsDict,
 ) {
-	app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
+	val := app.emitUpdateValidatorAndDelegation(msg.ValidatorAddress, msg.DelegatorAddress)
 	app.emitUnbondingDelegation(msg, evMap)
+	extra["moniker"] = val.Description.Moniker
+	extra["identity"] = val.Description.Identity
 }
 
 func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) {
@@ -175,9 +188,13 @@ func (app *App) emitUnbondingDelegation(msg staking.MsgUndelegate, evMap EvMap) 
 func (app *App) handleMsgBeginRedelegate(
 	txHash []byte, msg staking.MsgBeginRedelegate, evMap EvMap, extra JsDict,
 ) {
-	app.emitUpdateValidatorAndDelegation(msg.ValidatorSrcAddress, msg.DelegatorAddress)
-	app.emitUpdateValidatorAndDelegation(msg.ValidatorDstAddress, msg.DelegatorAddress)
+	valSrc := app.emitUpdateValidatorAndDelegation(msg.ValidatorSrcAddress, msg.DelegatorAddress)
+	valDst := app.emitUpdateValidatorAndDelegation(msg.ValidatorDstAddress, msg.DelegatorAddress)
 	app.emitUpdateRedelation(msg.ValidatorSrcAddress, msg.ValidatorDstAddress, msg.DelegatorAddress, evMap)
+	extra["val_src_moniker"] = valSrc.Description.Moniker
+	extra["val_src_identity"] = valSrc.Description.Identity
+	extra["val_dst_moniker"] = valDst.Description.Moniker
+	extra["val_dst_identity"] = valDst.Description.Identity
 }
 
 func (app *App) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorDstAddress sdk.ValAddress, delegatorAddress sdk.AccAddress, evMap EvMap) {
