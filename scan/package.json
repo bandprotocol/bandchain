@@ -21,7 +21,7 @@
     "axios-hooks": "^2.1.0",
     "bech32": "^1.1.4",
     "bs-axios": "^0.0.43",
-    "bs-css-emotion": "^2.0.0",
+    "bs-css-emotion": "^2.1.0",
     "bs-let": "^0.1.14",
     "bs-moment": "^0.4.5",
     "bs-webapi": "^0.19.1",
