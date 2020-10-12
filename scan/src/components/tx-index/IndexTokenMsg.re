@@ -20,7 +20,31 @@ module SendMsg = {
 
 module DelegateMsg = {
   [@react.component]
-  let make = (~delegation: TxSub.Msg.Delegate.t) => {
+  let make = (~delegation: TxSub.Msg.Delegate.success_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender address={delegation.delegatorAddress} />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={delegation.validatorAddress}
+          moniker={delegation.moniker}
+          identity={delegation.identity}
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Amount" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module DelegateFailMsg = {
+  [@react.component]
+  let make = (~delegation: TxSub.Msg.Delegate.fail_t) => {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
@@ -40,7 +64,31 @@ module DelegateMsg = {
 
 module UndelegateMsg = {
   [@react.component]
-  let make = (~delegation: TxSub.Msg.Undelegate.t) => {
+  let make = (~delegation: TxSub.Msg.Undelegate.success_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender address={delegation.delegatorAddress} />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={delegation.validatorAddress}
+          moniker={delegation.moniker}
+          identity={delegation.identity}
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Amount" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module UndelegateFailMsg = {
+  [@react.component]
+  let make = (~delegation: TxSub.Msg.Undelegate.fail_t) => {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
@@ -60,21 +108,53 @@ module UndelegateMsg = {
 
 module RedelegateMsg = {
   [@react.component]
-  let make = (~delegation: TxSub.Msg.Redelegate.t) => {
+  let make = (~delegation: TxSub.Msg.Redelegate.success_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={delegation.delegatorAddress} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
-        <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
+        <Heading value="Source Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={delegation.validatorSourceAddress}
+          moniker={delegation.monikerSource}
+          identity={delegation.identitySource}
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Destination Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={delegation.validatorDestinationAddress}
+          moniker={delegation.monikerDestination}
+          identity={delegation.identityDestination}
+        />
+      </Col.Grid>
+      <Col.Grid>
+        <Heading value="Amount" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module RedelegateFailMsg = {
+  [@react.component]
+  let make = (~delegation: TxSub.Msg.Redelegate.fail_t) => {
+    <Row.Grid>
+      <Col.Grid mb=24>
+        <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender address={delegation.delegatorAddress} />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator Source Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={delegation.validatorSourceAddress} accountType=`validator />
       </Col.Grid>
-      <Col.Grid col=Col.Six mbSm=24>
-        <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator Destination Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={delegation.validatorDestinationAddress} accountType=`validator />
       </Col.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid>
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
@@ -91,8 +171,12 @@ module WithdrawRewardMsg = {
         <AddressRender address={withdrawal.delegatorAddress} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
-        <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={withdrawal.validatorAddress}
+          moniker={withdrawal.moniker}
+          identity={withdrawal.identity}
+        />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
@@ -106,11 +190,11 @@ module WithdrawRewardFailMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawReward.fail_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.delegatorAddress} />
       </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six>
         <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </Col.Grid>
@@ -123,8 +207,12 @@ module WithdrawComissionMsg = {
   let make = (~withdrawal: TxSub.Msg.WithdrawCommission.success_t) => {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
-        <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={withdrawal.validatorAddress}
+          moniker={withdrawal.moniker}
+          identity={withdrawal.identity}
+        />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
@@ -138,7 +226,7 @@ module WithdrawComissionFailMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawCommission.fail_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col.Grid col=Col.Six>
         <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </Col.Grid>
