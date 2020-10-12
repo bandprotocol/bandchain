@@ -773,12 +773,12 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | CreateValidatorMsgFail(validator) => React.null
   | EditValidatorMsgSuccess(validator) => renderEditValidator(validator)
   | EditValidatorMsgFail(validator) => React.null
-  | DelegateMsgSuccess(delegation)
-  | DelegateMsgFail(delegation) => <IndexTokenMsg.DelegateMsg delegation />
-  | UndelegateMsgSuccess(delegation)
-  | UndelegateMsgFail(delegation) => <IndexTokenMsg.UndelegateMsg delegation />
-  | RedelegateMsgSuccess(delegation)
-  | RedelegateMsgFail(delegation) => <IndexTokenMsg.RedelegateMsg delegation />
+  | DelegateMsgSuccess(delegation) => <IndexTokenMsg.DelegateMsg delegation />
+  | DelegateMsgFail(delegation) => <IndexTokenMsg.DelegateFailMsg delegation />
+  | UndelegateMsgSuccess(delegation) => <IndexTokenMsg.UndelegateMsg delegation />
+  | UndelegateMsgFail(delegation) => <IndexTokenMsg.UndelegateFailMsg delegation />
+  | RedelegateMsgSuccess(delegation) => <IndexTokenMsg.RedelegateMsg delegation />
+  | RedelegateMsgFail(delegation) => <IndexTokenMsg.RedelegateFailMsg delegation />
   | WithdrawRewardMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawRewardMsg withdrawal />
   | WithdrawRewardMsgFail(withdrawal) => <IndexTokenMsg.WithdrawRewardFailMsg withdrawal />
   | WithdrawCommissionMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawComissionMsg withdrawal />
