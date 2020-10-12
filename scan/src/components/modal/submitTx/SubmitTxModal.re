@@ -4,21 +4,25 @@ module Styles = {
   let container =
     style([
       flexDirection(`column),
-      width(`px(640)),
+      width(`px(468)),
       minHeight(`px(300)),
       height(`auto),
-      padding2(~v=`px(50), ~h=`px(50)),
-      backgroundColor(rgb(249, 249, 251)),
+      padding2(~v=`px(32), ~h=`px(24)),
       borderRadius(`px(5)),
       justifyContent(`flexStart),
     ]);
 
   let disable = isActive => style([display(isActive ? `flex : `none)]);
 
-  let modalTitle = style([display(`flex), justifyContent(`center)]);
+  let modalTitle = style([paddingBottom(`px(40))]);
 
   let rowContainer =
-    style([display(`flex), alignItems(`center), justifyContent(`spaceBetween)]);
+    style([
+      display(`flex),
+      alignItems(`center),
+      justifyContent(`spaceBetween),
+      paddingBottom(`px(24)),
+    ]);
 
   let selectWrapper =
     style([
@@ -47,21 +51,13 @@ module Styles = {
 
   let nextBtn =
     style([
-      marginTop(`px(30)),
-      width(`px(100)),
-      height(`px(30)),
+      marginTop(`px(24)),
+      width(`percent(100.)),
+      height(`px(36)),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
-      backgroundImage(
-        `linearGradient((
-          `deg(90.),
-          [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
-        )),
-      ),
-      boxShadow(
-        Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
-      ),
+      backgroundColor(Colors.bandBlue),
       borderRadius(`px(4)),
       border(`zero, `solid, Colors.white),
       alignSelf(`center),
@@ -76,14 +72,19 @@ module Styles = {
           )),
         ),
         color(Colors.gray6),
-        boxShadow(
-          Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(4), rgba(11, 29, 142, `num(0.1))),
-        ),
         cursor(`default),
       ]),
     ]);
 
-  let info = style([display(`flex), justifyContent(`spaceBetween)]);
+  let info = style([display(`flex), justifyContent(`spaceBetween), alignItems(`center)]);
+
+  let seperatedLine =
+    style([
+      width(`percent(100.)),
+      height(`px(1)),
+      marginBottom(`px(24)),
+      backgroundColor(Colors.gray9),
+    ]);
 };
 
 module SubmitTxStep = {
@@ -97,19 +98,8 @@ module SubmitTxStep = {
 
     <div className={Css.merge([Styles.container, Styles.disable(isActive)])}>
       <div className=Styles.modalTitle>
-        <Text value="Submit Transaction" weight=Text.Bold size=Text.Xxxl />
+        <Text value={SubmitMsg.toString(msg)} size=Text.Xl weight=Text.Medium />
       </div>
-      <VSpacing size=Spacing.xl />
-      <div className=Styles.rowContainer>
-        <Text value="Message Type" size=Text.Lg spacing={Text.Em(0.03)} />
-        <Text
-          value={SubmitMsg.toString(msg)}
-          size=Text.Md
-          spacing={Text.Em(0.03)}
-          weight=Text.Semibold
-        />
-      </div>
-      <VSpacing size=Spacing.md />
       {switch (msg) {
        | SubmitMsg.Send(receiver) => <SendMsg address={account.address} receiver setMsgsOpt />
        | Delegate(validator) => <DelegateMsg address={account.address} validator setMsgsOpt />
@@ -119,7 +109,6 @@ module SubmitTxStep = {
          <WithdrawRewardMsg validator setMsgsOpt address={account.address} />
        | Vote(proposalID, proposalName) => <VoteMsg proposalID proposalName setMsgsOpt />
        }}
-      <VSpacing size=Spacing.sm />
       <EnhanceTxInput
         width=300
         inputData=memo
@@ -127,25 +116,15 @@ module SubmitTxStep = {
         parse={newVal => {
           newVal->Js.String.length <= 32 ? Result.Ok(newVal) : Err("Exceed limit length")
         }}
-        msg="Memo (optional)"
-        placeholder="Insert memo"
-        code=true
+        msg="Memo (Optional)"
+        placeholder="Memo"
         id="memoInput"
       />
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.md />
+      <div className=Styles.seperatedLine />
       <div className=Styles.info>
-        <Text
-          value="Transaction Fee"
-          size=Text.Lg
-          spacing={Text.Em(0.03)}
-          nowrap=true
-          block=true
-        />
-        <Text value="0.005 BAND" code=true />
+        <Text value="Transaction Fee" size=Text.Md weight=Text.Medium nowrap=true block=true />
+        <Text value="0.005 BAND" size=Text.Lg code=true />
       </div>
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.md />
       <button
         id="nextButton"
         className=Styles.nextBtn
@@ -178,7 +157,7 @@ module SubmitTxStep = {
             };
           ();
         }}>
-        <Text value="Next" weight=Text.Bold size=Text.Md />
+        <Text value="Next" weight=Text.Medium size=Text.Lg />
       </button>
     </div>;
   };
