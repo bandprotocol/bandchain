@@ -730,13 +730,30 @@ module Msg = {
   };
 
   module Delegate = {
-    type t = {
+    type success_t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      moniker: string,
+      identity: string,
+    };
+    type fail_t = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
 
-    let decode = json => {
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
@@ -746,12 +763,30 @@ module Msg = {
   };
 
   module Undelegate = {
-    type t = {
+    type success_t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      moniker: string,
+      identity: string,
+    };
+    type fail_t = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
@@ -761,13 +796,39 @@ module Msg = {
   };
 
   module Redelegate = {
-    type t = {
+    type success_t = {
+      validatorSourceAddress: Address.t,
+      validatorDestinationAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      monikerSource: string,
+      monikerDestination: string,
+      identitySource: string,
+      identityDestination: string,
+    };
+
+    type fail_t = {
       validatorSourceAddress: Address.t,
       validatorDestinationAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
-    let decode = json => {
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        validatorSourceAddress:
+          json |> at(["msg", "validator_src_address"], string) |> Address.fromBech32,
+        validatorDestinationAddress:
+          json |> at(["msg", "validator_dst_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        monikerSource: json |> at(["extra", "val_src_moniker"], string),
+        monikerDestination: json |> at(["extra", "val_dst_moniker"], string),
+        identitySource: json |> at(["extra", "val_src_identity"], string),
+        identityDestination: json |> at(["extra", "val_dst_identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         validatorSourceAddress:
           json |> at(["msg", "validator_src_address"], string) |> Address.fromBech32,
@@ -784,6 +845,8 @@ module Msg = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: list(Coin.t),
+      moniker: string,
+      identity: string,
     };
     type fail_t = {
       validatorAddress: Address.t,
@@ -795,6 +858,8 @@ module Msg = {
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         amount: json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins,
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "moniker"], string),
       };
     };
 
@@ -873,12 +938,17 @@ module Msg = {
     type success_t = {
       validatorAddress: Address.t,
       amount: list(Coin.t),
+      moniker: string,
+      identity: string,
     };
     type fail_t = {validatorAddress: Address.t};
+
     let decodeSuccess = json => {
       JsonUtils.Decode.{
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
         amount: json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins,
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
       };
     };
 
@@ -962,12 +1032,12 @@ module Msg = {
     | PacketMsg(Packet.t)
     | AcknowledgementMsg(Acknowledgement.t)
     | TimeoutMsg(Timeout.t)
-    | DelegateMsgSuccess(Delegate.t)
-    | DelegateMsgFail(Delegate.t)
-    | UndelegateMsgSuccess(Undelegate.t)
-    | UndelegateMsgFail(Undelegate.t)
-    | RedelegateMsgSuccess(Redelegate.t)
-    | RedelegateMsgFail(Redelegate.t)
+    | DelegateMsgSuccess(Delegate.success_t)
+    | DelegateMsgFail(Delegate.fail_t)
+    | UndelegateMsgSuccess(Undelegate.success_t)
+    | UndelegateMsgFail(Undelegate.fail_t)
+    | RedelegateMsgSuccess(Redelegate.success_t)
+    | RedelegateMsgFail(Redelegate.fail_t)
     | WithdrawRewardMsgSuccess(WithdrawReward.success_t)
     | WithdrawRewardMsgFail(WithdrawReward.fail_t)
     | UnjailMsgSuccess(Unjail.t)
@@ -1013,11 +1083,11 @@ module Msg = {
     | CreateValidatorMsgFail(validator) => validator.delegatorAddress
     | EditValidatorMsgSuccess(validator)
     | EditValidatorMsgFail(validator) => validator.sender
-    | DelegateMsgSuccess(delegation)
+    | DelegateMsgSuccess(delegation) => delegation.delegatorAddress
     | DelegateMsgFail(delegation) => delegation.delegatorAddress
-    | UndelegateMsgSuccess(delegation)
+    | UndelegateMsgSuccess(delegation) => delegation.delegatorAddress
     | UndelegateMsgFail(delegation) => delegation.delegatorAddress
-    | RedelegateMsgSuccess(delegation)
+    | RedelegateMsgSuccess(delegation) => delegation.delegatorAddress
     | RedelegateMsgFail(delegation) => delegation.delegatorAddress
     | WithdrawRewardMsgSuccess(withdrawal) => withdrawal.delegatorAddress
     | WithdrawRewardMsgFail(withdrawal) => withdrawal.delegatorAddress
@@ -1199,9 +1269,9 @@ module Msg = {
       | RemoveReporterBadge => RemoveReporterMsgSuccess(json |> RemoveReporter.decodeSuccess)
       | CreateValidatorBadge => CreateValidatorMsgSuccess(json |> CreateValidator.decode)
       | EditValidatorBadge => EditValidatorMsgSuccess(json |> EditValidator.decode)
-      | DelegateBadge => DelegateMsgSuccess(json |> Delegate.decode)
-      | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decode)
-      | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decode)
+      | DelegateBadge => DelegateMsgSuccess(json |> Delegate.decodeSuccess)
+      | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decodeSuccess)
+      | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decodeSuccess)
       | WithdrawRewardBadge => WithdrawRewardMsgSuccess(json |> WithdrawReward.decodeSuccess)
       | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decode)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgSuccess(json |> SetWithdrawAddress.decode)
@@ -1253,9 +1323,9 @@ module Msg = {
       | RemoveReporterBadge => RemoveReporterMsgFail(json |> RemoveReporter.decodeFail)
       | CreateValidatorBadge => CreateValidatorMsgFail(json |> CreateValidator.decode)
       | EditValidatorBadge => EditValidatorMsgFail(json |> EditValidator.decode)
-      | DelegateBadge => DelegateMsgFail(json |> Delegate.decode)
-      | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decode)
-      | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decode)
+      | DelegateBadge => DelegateMsgFail(json |> Delegate.decodeFail)
+      | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decodeFail)
+      | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decodeFail)
       | WithdrawRewardBadge => WithdrawRewardMsgFail(json |> WithdrawReward.decodeFail)
       | UnjailBadge => UnjailMsgFail(json |> Unjail.decode)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgFail(json |> SetWithdrawAddress.decode)
