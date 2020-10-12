@@ -55,31 +55,11 @@ module Styles = {
       height(`px(1)),
       margin2(~v=`px(10), ~h=`auto),
     ]);
+
+  let infoHeader =
+    style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
-let renderSend = (send: TxSub.Msg.Send.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={send.fromAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={send.toAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={send.amount} pos=AmountRender.TxIndex />
-    </div>
-    <VSpacing size=Spacing.lg />
-  </Col>;
-};
 // TODO: move it to file later.
 let renderRequest = (request: TxSub.Msg.Request.success_t) => {
   let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
@@ -652,105 +632,6 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
   </Col>;
 };
 
-let renderDelegate = (delegation: TxSub.Msg.Delegate.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.delegatorAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
-let renderUndelegate = (delegation: TxSub.Msg.Undelegate.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.delegatorAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
-let renderRedelegate = (delegation: TxSub.Msg.Redelegate.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.delegatorAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="SOURCE ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorSourceAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="DESTINATION ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={delegation.validatorDestinationAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
-let renderWithdrawReward = (withdrawal: TxSub.Msg.WithdrawReward.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.delegatorAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
 let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -826,21 +707,6 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
     </div>
   </Col>;
 };
-let renderWithdrawCommission = (withdrawal: TxSub.Msg.WithdrawCommission.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
 
 let renderVote = (vote: TxSub.Msg.Vote.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
@@ -860,60 +726,6 @@ let renderVote = (vote: TxSub.Msg.Vote.t) => {
       <Text value="OPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <div className=Styles.hFlex> <Text value={vote.option} /> </div>
     </div>
-  </Col>;
-};
-
-let renderMultiSend = (tx: TxSub.Msg.MultiSend.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="Inputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
-    </div>
-    <VSpacing size=Spacing.lg />
-    {tx.inputs
-     ->Belt_List.mapWithIndex((idx, input) =>
-         <div key={idx |> string_of_int}>
-           <div className=Styles.topicContainer>
-             <Text value="FROM" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <div className={Styles.addressContainer(300)}>
-               <AddressRender address={input.address} />
-             </div>
-           </div>
-           <VSpacing size=Spacing.lg />
-           <div className=Styles.topicContainer>
-             <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <AmountRender coins={input.coins} pos=AmountRender.TxIndex />
-           </div>
-           <VSpacing size=Spacing.lg />
-           <VSpacing size=Spacing.md />
-         </div>
-       )
-     ->Belt_List.toArray
-     ->React.array}
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="Outputs" size=Text.Md weight=Text.Semibold spacing={Text.Em(0.06)} />
-    </div>
-    <VSpacing size=Spacing.lg />
-    {tx.outputs
-     ->Belt_List.mapWithIndex((idx, output) =>
-         <div key={idx |> string_of_int}>
-           <div className=Styles.topicContainer>
-             <Text value="TO" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <div className={Styles.addressContainer(300)}>
-               <AddressRender address={output.address} />
-             </div>
-           </div>
-           <VSpacing size=Spacing.lg />
-           <div className=Styles.topicContainer>
-             <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-             <AmountRender coins={output.coins} pos=AmountRender.TxIndex />
-           </div>
-           <VSpacing size=Spacing.lg />
-           <VSpacing size=Spacing.lg />
-         </div>
-       )
-     ->Belt_List.toArray
-     ->React.array}
   </Col>;
 };
 
@@ -939,8 +751,8 @@ let renderUnknownMessage = () => {
 
 let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
-  | SendMsgSuccess(send) => renderSend(send)
-  | SendMsgFail(send) => React.null
+  | SendMsgSuccess(send)
+  | SendMsgFail(send) => <IndexTokenMsg.SendMsg send />
   | CreateDataSourceMsgSuccess(dataSource) => renderCreateDataSource(dataSource)
   | CreateDataSourceMsgFail(dataSource) => React.null
   | EditDataSourceMsgSuccess(dataSource) => renderEditDataSource(dataSource)
@@ -961,16 +773,16 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | CreateValidatorMsgFail(validator) => React.null
   | EditValidatorMsgSuccess(validator) => renderEditValidator(validator)
   | EditValidatorMsgFail(validator) => React.null
-  | DelegateMsgSuccess(delegation) => renderDelegate(delegation)
-  | DelegateMsgFail(delegation) => React.null
-  | UndelegateMsgSuccess(delegation) => renderUndelegate(delegation)
-  | UndelegateMsgFail(delegation) => React.null
-  | RedelegateMsgSuccess(delegation) => renderRedelegate(delegation)
-  | RedelegateMsgFail(delegation) => React.null
-  | WithdrawRewardMsgSuccess(withdrawal) => renderWithdrawReward(withdrawal)
-  | WithdrawRewardMsgFail(withdrawal) => React.null
-  | WithdrawCommissionMsgSuccess(withdrawal) => renderWithdrawCommission(withdrawal)
-  | WithdrawCommissionMsgFail(withdrawal) => React.null
+  | DelegateMsgSuccess(delegation)
+  | DelegateMsgFail(delegation) => <IndexTokenMsg.DelegateMsg delegation />
+  | UndelegateMsgSuccess(delegation)
+  | UndelegateMsgFail(delegation) => <IndexTokenMsg.UndelegateMsg delegation />
+  | RedelegateMsgSuccess(delegation)
+  | RedelegateMsgFail(delegation) => <IndexTokenMsg.RedelegateMsg delegation />
+  | WithdrawRewardMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawRewardMsg withdrawal />
+  | WithdrawRewardMsgFail(withdrawal) => <IndexTokenMsg.WithdrawRewardFailMsg withdrawal />
+  | WithdrawCommissionMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawComissionMsg withdrawal />
+  | WithdrawCommissionMsgFail(withdrawal) => <IndexTokenMsg.WithdrawComissionFailMsg withdrawal />
   | UnjailMsgSuccess(unjail) => renderUnjail(unjail)
   | UnjailMsgFail(unjail) => React.null
   | SetWithdrawAddressMsgSuccess(set) => renderSetWithdrawAddress(set)
@@ -981,8 +793,8 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | DepositMsgFail(deposit) => React.null
   | VoteMsgSuccess(vote) => renderVote(vote)
   | VoteMsgFail(vote) => React.null
-  | MultiSendMsgSuccess(tx) => renderMultiSend(tx)
-  | MultiSendMsgFail(tx) => React.null
+  | MultiSendMsgSuccess(tx)
+  | MultiSendMsgFail(tx) => <IndexTokenMsg.MultisendMsg tx />
   | ActivateMsgSuccess(activate) => renderActivate(activate)
   | ActivateMsgFail(activate) => React.null
   | UnknownMsg => renderUnknownMessage()
@@ -1006,78 +818,26 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | _ => React.null
   };
 
-module THead = {
-  [@react.component]
-  let make = () => {
-    <THead.Grid>
-      <Row.Grid alignItems=Row.Center>
-        <Col.Grid col=Col.Two>
-          <Text block=true value="Message Type" weight=Text.Semibold color=Colors.gray7 />
-        </Col.Grid>
-        <Col.Grid col=Col.Three>
-          <Text block=true value="Creator" weight=Text.Semibold color=Colors.gray7 />
-        </Col.Grid>
-        <Col.Grid col=Col.Seven>
-          <Text block=true value="Detail" weight=Text.Semibold color=Colors.gray7 />
-        </Col.Grid>
-      </Row.Grid>
-    </THead.Grid>;
-  };
-};
-
 [@react.component]
 let make = (~messages: list(TxSub.Msg.t)) => {
   <>
-    <THead />
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
-         //TODO: Change index to be uniqe something
-         <TBody.Grid key={index |> string_of_int} paddingH={`px(24)}>
-           <Row.Grid alignItems=Row.Start>
-             <Col.Grid col=Col.Two>
-               //TODO: will remove when doing the revamp style
-
-                 <div className=Styles.badgeContainer>
-                   <MsgBadge name={theme.name} msgType={theme.category} />
-                   {switch (msg) {
-                    | CreateDataSourceMsgSuccess(dataSource) =>
-                      <>
-                        <hr className=Styles.separatorLine />
-                        <TypeID.DataSource id={dataSource.id} />
-                      </>
-                    | EditDataSourceMsgSuccess(dataSource) =>
-                      <>
-                        <hr className=Styles.separatorLine />
-                        <TypeID.DataSource id={dataSource.id} />
-                      </>
-                    | CreateOracleScriptMsgSuccess(oracleScript) =>
-                      <>
-                        <hr className=Styles.separatorLine />
-                        <TypeID.OracleScript id={oracleScript.id} />
-                      </>
-                    | EditOracleScriptMsgSuccess(oracleScript) =>
-                      <>
-                        <hr className=Styles.separatorLine />
-                        <TypeID.OracleScript id={oracleScript.id} />
-                      </>
-                    | RequestMsgSuccess(request) =>
-                      <>
-                        <hr className=Styles.separatorLine />
-                        <TypeID.Request id={request.id} />
-                      </>
-                    | _ => React.null
-                    }}
-                 </div>
-               </Col.Grid>
-             <Col.Grid col=Col.Three>
-               <div className={Styles.addressContainer(170)}>
-                 <AddressRender address={msg |> TxSub.Msg.getCreator} />
-               </div>
-             </Col.Grid>
-             <Col.Grid col=Col.Seven> {renderBody(msg)} </Col.Grid>
-           </Row.Grid>
-         </TBody.Grid>;
+         <div className=CssHelper.infoContainer key={(index |> string_of_int) ++ theme.name}>
+           <div
+             className={Css.merge([
+               CssHelper.flexBox(),
+               Styles.infoHeader,
+               CssHelper.mb(~size=21, ()),
+               CssHelper.mbSm(~size=16, ()),
+             ])}>
+             <IndexMsgIcon category={theme.category} />
+             <HSpacing size=Spacing.sm />
+             <Heading value={theme.name} size=Heading.H4 />
+           </div>
+           {renderBody(msg)}
+         </div>;
        })
      ->Array.of_list
      ->React.array}
@@ -1087,34 +847,32 @@ let make = (~messages: list(TxSub.Msg.t)) => {
 module Loading = {
   [@react.component]
   let make = () => {
-    <>
-      <THead />
-      <TBody.Grid paddingH={`px(24)}>
-        <Row.Grid>
-          <Col.Grid col=Col.Two> <LoadingCensorBar width=95 height=25 /> </Col.Grid>
-          <Col.Grid col=Col.Three>
-            <VSpacing size=Spacing.sm />
-            <LoadingCensorBar width=160 height=15 />
-          </Col.Grid>
-          <Col.Grid col=Col.Seven>
-            <VSpacing size=Spacing.sm />
-            <div className=Styles.topicContainer>
-              <LoadingCensorBar width=60 height=15 />
-              <LoadingCensorBar width=310 height=15 />
-            </div>
-            <VSpacing size=Spacing.lg />
-            <div className=Styles.topicContainer>
-              <LoadingCensorBar width=75 height=15 />
-              <LoadingCensorBar width=240 height=15 />
-            </div>
-            <VSpacing size=Spacing.lg />
-            <div className=Styles.topicContainer>
-              <LoadingCensorBar width=95 height=15 />
-              <LoadingCensorBar width=280 height=15 />
-            </div>
-          </Col.Grid>
-        </Row.Grid>
-      </TBody.Grid>
-    </>;
+    <div className=CssHelper.infoContainer>
+      <div
+        className={Css.merge([
+          CssHelper.flexBox(),
+          Styles.infoHeader,
+          CssHelper.mb(~size=21, ()),
+          CssHelper.mbSm(~size=16, ()),
+        ])}>
+        <LoadingCensorBar width=24 height=24 radius=24 />
+        <HSpacing size=Spacing.sm />
+        <LoadingCensorBar width=75 height=15 />
+      </div>
+      <Row.Grid>
+        <Col.Grid col=Col.Six mb=24>
+          <LoadingCensorBar width=75 height=15 mb=8 />
+          <LoadingCensorBar width=150 height=15 />
+        </Col.Grid>
+        <Col.Grid col=Col.Six mb=24>
+          <LoadingCensorBar width=75 height=15 mb=8 />
+          <LoadingCensorBar width=150 height=15 />
+        </Col.Grid>
+        <Col.Grid col=Col.Six>
+          <LoadingCensorBar width=75 height=15 mb=8 />
+          <LoadingCensorBar width=150 height=15 />
+        </Col.Grid>
+      </Row.Grid>
+    </div>;
   };
 };
