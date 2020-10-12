@@ -15,20 +15,20 @@ type transaction_t = {
 
 type internal_t = {
   account: account_t,
-  transaction: transaction_t,
+  transaction: option(transaction_t),
 };
 
 type t = {
   voter: Address.t,
-  txHash: Hash.t,
-  timestamp: MomentRe.Moment.t,
+  txHash: option(Hash.t),
+  timestamp: option(MomentRe.Moment.t),
   validator: option(validator_t),
 };
 
-let toExternal = ({account: {address, validator}, transaction: {hash, block}}) => {
+let toExternal = ({account: {address, validator}, transaction}) => {
   voter: address,
-  txHash: hash,
-  timestamp: block.timestamp,
+  txHash: transaction->Belt.Option.map(({hash}) => hash),
+  timestamp: transaction->Belt.Option.map(({block}) => block.timestamp),
   validator,
 };
 
@@ -146,7 +146,7 @@ module ValidatorVoteByProposalIDConfig = [%graphql
       validator_vote_proposals_view(where: {proposal_id: {_eq: $proposal_id}}) @bsRecord {
         validatorID: id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -159,7 +159,7 @@ module DelegatorVoteByProposalIDConfig = [%graphql
       non_validator_vote_proposals_view(where: {proposal_id: {_eq: $proposal_id}}) @bsRecord {
         validatorID: validator_id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -172,7 +172,7 @@ module ValidatorVotesConfig = [%graphql
       validator_vote_proposals_view @bsRecord {
         validatorID: id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }
@@ -185,7 +185,7 @@ module DelegatorVotesConfig = [%graphql
       non_validator_vote_proposals_view @bsRecord {
         validatorID: validator_id @bsDecoder(fn: "Belt_Option.getExn")
         answer @bsDecoder(fn: "getAnswer")
-        power: amount @bsDecoder(fn: "GraphQLParser.coinExn")
+        power: tokens @bsDecoder(fn: "GraphQLParser.coinExn")
         proposalID: proposal_id @bsDecoder(fn: "ID.Proposal.fromIntExn")
       }
     }

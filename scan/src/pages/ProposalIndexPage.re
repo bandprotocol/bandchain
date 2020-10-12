@@ -147,7 +147,11 @@ let make = (~proposalID) => {
                 <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({proposerAddress}, _, _)) =>
-                   <AddressRender address=proposerAddress position=AddressRender.Subtitle />
+                   switch (proposerAddress) {
+                   | Some(proposerAddress') =>
+                     <AddressRender address=proposerAddress' position=AddressRender.Subtitle />
+                   | None => <Text value="Proposed on Wenchang" />
+                   }
                  | _ => <LoadingCensorBar width=270 height=15 />
                  }}
               </Col.Grid>

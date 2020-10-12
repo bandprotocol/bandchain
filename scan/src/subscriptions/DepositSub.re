@@ -1,7 +1,7 @@
 type t = {
   depositor: Address.t,
   amount: list(Coin.t),
-  txHash: Hash.t,
+  txHash: option(Hash.t),
 };
 
 type account_t = {address: Address.t};
@@ -10,13 +10,13 @@ type transaction_t = {hash: Hash.t};
 type internal_t = {
   account: account_t,
   amount: list(Coin.t),
-  transaction: transaction_t,
+  transaction: option(transaction_t),
 };
 
 let toExternal = ({account, amount, transaction}) => {
   depositor: account.address,
   amount,
-  txHash: transaction.hash,
+  txHash: transaction->Belt.Option.map(({hash}) => hash),
 };
 
 module MultiConfig = [%graphql

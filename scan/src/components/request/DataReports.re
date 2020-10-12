@@ -34,11 +34,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
       ->Belt.Array.mapWithIndex(
           (
             idx,
-            {
-              reportValidator: {operatorAddress, moniker, identity},
-              transaction: {hash},
-              reportDetails,
-            },
+            {reportValidator: {operatorAddress, moniker, identity}, transaction, reportDetails},
           ) => {
           <div
             key={operatorAddress |> Address.toOperatorBech32}
@@ -58,7 +54,10 @@ let make = (~reports: array(RequestSub.report_t)) => {
               <Col.Grid col=Col.Six>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
-                <TxLink txHash=hash width=280 />
+                {switch (transaction) {
+                 | Some({hash}) => <TxLink txHash=hash width=280 />
+                 | None => <Text value="Genesis Transaction" />
+                 }}
               </Col.Grid>
             </Row.Grid>
             <div className=Styles.reportsTable>
@@ -107,7 +106,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
           </div>
         })
       ->React.array
-    : <EmptyContainer height={`px(250)} backgroundColor={Colors.blueGray1}>
+    : <EmptyContainer height={`px(250)} backgroundColor=Colors.blueGray1>
         <img src=Images.noSource className=Styles.noDataImage />
         <Heading
           size=Heading.H4

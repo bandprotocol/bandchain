@@ -31,7 +31,7 @@ type internal_t = {
   depositEndTime: MomentRe.Moment.t,
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
-  account: account_t,
+  account: option(account_t),
   proposalType: string,
   totalDeposit: list(Coin.t),
 };
@@ -45,7 +45,7 @@ type t = {
   depositEndTime: MomentRe.Moment.t,
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
-  proposerAddress: Address.t,
+  proposerAddress: option(Address.t),
   proposalType: string,
   totalDeposit: list(Coin.t),
 };
@@ -74,7 +74,7 @@ let toExternal =
   depositEndTime,
   votingStartTime,
   votingEndTime,
-  proposerAddress: account.address,
+  proposerAddress: account->Belt.Option.map(({address}) => address),
   proposalType,
   totalDeposit,
 };
