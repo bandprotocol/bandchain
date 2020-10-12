@@ -83,10 +83,10 @@ module ProposalCard = {
           <Col.Grid col=Col.Four mbSm=16>
             <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
             {switch (proposalSub) {
-             | Data({proposerAddress}) =>
-               switch (proposerAddress) {
-               | Some(proposerAddress') =>
-                 <AddressRender address=proposerAddress' position=AddressRender.Subtitle />
+             | Data({proposerAddressOpt}) =>
+               switch (proposerAddressOpt) {
+               | Some(proposerAddress) =>
+                 <AddressRender address=proposerAddress position=AddressRender.Subtitle />
                | None => <Text value="Proposed on Wenchang" />
                }
              | _ => <LoadingCensorBar width=270 height=15 />

@@ -32,13 +32,13 @@ module Mini = {
 
   type request_internal = {
     id: ID.Request.t,
-    sender: option(string),
+    sender: Address.t,
     clientID: string,
     requestTime: option(MomentRe.Moment.t),
     resolveTime: option(MomentRe.Moment.t),
     calldata: JsBuffer.t,
     oracleScript: oracle_script_internal_t,
-    transaction: option(TxSub.Mini.t),
+    transactionOpt: option(TxSub.Mini.t),
     reportsAggregate: aggregate_wrapper_intenal_t,
     minCount: int,
     resolveStatus: resolve_status_t,
@@ -79,14 +79,14 @@ module Mini = {
                clientID: client_id
                requestTime: request_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
                resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
-               sender
+               sender @bsDecoder(fn: "GraphQLParser.addressExn")
                calldata @bsDecoder(fn: "GraphQLParser.buffer")
                oracleScript: oracle_script @bsRecord {
                  scriptID: id @bsDecoder(fn: "ID.OracleScript.fromInt")
                  name
                  schema
                }
-               transaction @bsRecord {
+               transactionOpt: transaction @bsRecord {
                  hash @bsDecoder(fn: "GraphQLParser.hash")
                  blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
                  block @bsRecord {
@@ -126,14 +126,14 @@ module Mini = {
           clientID: client_id
           requestTime: request_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
           resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
-          sender
+          sender @bsDecoder(fn: "GraphQLParser.addressExn")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
           oracleScript: oracle_script @bsRecord {
             scriptID: id @bsDecoder(fn: "ID.OracleScript.fromInt")
             name
             schema
           }
-          transaction @bsRecord {
+          transactionOpt: transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
             block @bsRecord {
@@ -167,14 +167,14 @@ module Mini = {
           clientID: client_id
           requestTime: request_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
           resolveTime: resolve_time @bsDecoder(fn: "GraphQLParser.fromUnixSecondOpt")
-          sender
+          sender @bsDecoder(fn: "GraphQLParser.addressExn")
           calldata @bsDecoder(fn: "GraphQLParser.buffer")
           oracleScript: oracle_script @bsRecord {
             scriptID: id @bsDecoder(fn: "ID.OracleScript.fromInt")
             name
             schema
           }
-          transaction @bsRecord {
+          transactionOpt: transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
             block @bsRecord {
@@ -210,7 +210,7 @@ module Mini = {
           resolveTime,
           calldata,
           oracleScript,
-          transaction,
+          transactionOpt,
           reportsAggregate,
           minCount,
           resolveStatus,
@@ -219,17 +219,18 @@ module Mini = {
         },
       ) => {
     id,
-    sender: sender->Belt.Option.getExn->Address.fromBech32,
+    sender,
     clientID,
     requestTime,
     resolveTime,
     calldata,
     oracleScriptID: oracleScript.scriptID,
     oracleScriptName: oracleScript.name,
-    txHash: transaction->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
-    txTimestamp: transaction->Belt.Option.map(({block}) => block.timestamp)->Belt.Option.getExn,
+    txHash: transactionOpt->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
+    txTimestamp:
+      transactionOpt->Belt.Option.map(({block}) => block.timestamp)->Belt.Option.getExn,
     blockHeight:
-      transaction->Belt.Option.map(({blockHeight}) => blockHeight)->Belt.Option.getExn,
+      transactionOpt->Belt.Option.map(({blockHeight}) => blockHeight)->Belt.Option.getExn,
     reportsCount:
       reportsAggregate.aggregate->Belt_Option.map(({count}) => count)->Belt_Option.getExn,
     minCount,
@@ -257,20 +258,20 @@ module Mini = {
          ->Belt_Array.map(y =>
              {
                id: y##id,
-               sender: y##sender->Belt.Option.getExn->Address.fromBech32,
+               sender: y##sender,
                clientID: y##clientID,
                requestTime: y##requestTime,
                resolveTime: y##resolveTime,
                calldata: y##calldata,
                oracleScriptID: y##oracleScript.scriptID,
                oracleScriptName: y##oracleScript.name,
-               txHash: y##transaction->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
+               txHash: y##transactionOpt->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
                txTimestamp:
-                 y##transaction
+                 y##transactionOpt
                  ->Belt.Option.map(({block}) => block.timestamp)
                  ->Belt.Option.getExn,
                blockHeight:
-                 y##transaction
+                 y##transactionOpt
                  ->Belt.Option.map(({blockHeight}) => blockHeight)
                  ->Belt.Option.getExn,
                reportsCount:
@@ -324,20 +325,20 @@ module Mini = {
          ->Belt_Array.map(y =>
              {
                id: y##id,
-               sender: y##sender->Belt.Option.getExn->Address.fromBech32,
+               sender: y##sender,
                clientID: y##clientID,
                requestTime: y##requestTime,
                resolveTime: y##resolveTime,
                calldata: y##calldata,
                oracleScriptID: y##oracleScript.scriptID,
                oracleScriptName: y##oracleScript.name,
-               txHash: y##transaction->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
+               txHash: y##transactionOpt->Belt.Option.map(({hash}) => hash)->Belt.Option.getExn,
                txTimestamp:
-                 y##transaction
+                 y##transactionOpt
                  ->Belt.Option.map(({block}) => block.timestamp)
                  ->Belt.Option.getExn,
                blockHeight:
-                 y##transaction
+                 y##transactionOpt
                  ->Belt.Option.map(({blockHeight}) => blockHeight)
                  ->Belt.Option.getExn,
                reportsCount:
@@ -388,7 +389,7 @@ type report_detail_t = {
 };
 
 type report_t = {
-  transaction: option(TxSub.Mini.t),
+  transactionOpt: option(TxSub.Mini.t),
   reportDetails: array(report_detail_t),
   reportValidator: ValidatorSub.Mini.t,
 };
@@ -422,8 +423,8 @@ type internal_t = {
   requestedValidators: array(requested_validator_internal_t),
   minCount: int,
   resolveStatus: resolve_status_t,
-  sender: option(string),
-  transaction: option(TxSub.Mini.t),
+  sender: Address.t,
+  transactionOpt: option(TxSub.Mini.t),
   rawDataRequests: array(raw_data_request_t),
   reports: array(report_t),
   result: option(JsBuffer.t),
@@ -459,7 +460,7 @@ let toExternal =
         minCount,
         resolveStatus,
         sender,
-        transaction,
+        transactionOpt,
         rawDataRequests,
         reports,
         result,
@@ -474,8 +475,8 @@ let toExternal =
   requestedValidators,
   minCount,
   resolveStatus,
-  requester: sender->Belt.Option.getExn->Address.fromBech32,
-  transaction: transaction->Belt.Option.getExn,
+  requester: sender,
+  transaction: transactionOpt->Belt.Option.getExn,
   rawDataRequests,
   reports,
   result,
@@ -496,7 +497,7 @@ module SingleRequestConfig = [%graphql
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
         reports(order_by: {validator_id: asc}) @bsRecord {
-          transaction @bsRecord {
+          transactionOpt: transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
             block @bsRecord {
@@ -526,8 +527,8 @@ module SingleRequestConfig = [%graphql
         }
         minCount: min_count
         resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
-        sender
-        transaction @bsRecord {
+        sender @bsDecoder(fn: "GraphQLParser.addressExn")
+        transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
           blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
           block @bsRecord {
@@ -564,7 +565,7 @@ module MultiRequestConfig = [%graphql
         }
         calldata @bsDecoder(fn: "GraphQLParser.buffer")
         reports @bsRecord {
-          transaction @bsRecord {
+          transactionOpt: transaction @bsRecord {
             hash @bsDecoder(fn: "GraphQLParser.hash")
             blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
             block @bsRecord {
@@ -594,8 +595,8 @@ module MultiRequestConfig = [%graphql
         }
         minCount: min_count
         resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
-        sender
-        transaction @bsRecord {
+        sender @bsDecoder(fn: "GraphQLParser.addressExn")
+        transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
           blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
           block @bsRecord {

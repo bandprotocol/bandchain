@@ -15,20 +15,20 @@ type transaction_t = {
 
 type internal_t = {
   account: account_t,
-  transaction: option(transaction_t),
+  transactionOpt: option(transaction_t),
 };
 
 type t = {
   voter: Address.t,
-  txHash: option(Hash.t),
-  timestamp: option(MomentRe.Moment.t),
+  txHashOpt: option(Hash.t),
+  timestampOpt: option(MomentRe.Moment.t),
   validator: option(validator_t),
 };
 
-let toExternal = ({account: {address, validator}, transaction}) => {
+let toExternal = ({account: {address, validator}, transactionOpt}) => {
   voter: address,
-  txHash: transaction->Belt.Option.map(({hash}) => hash),
-  timestamp: transaction->Belt.Option.map(({block}) => block.timestamp),
+  txHashOpt: transactionOpt->Belt.Option.map(({hash}) => hash),
+  timestampOpt: transactionOpt->Belt.Option.map(({block}) => block.timestamp),
   validator,
 };
 
@@ -117,7 +117,7 @@ module MultiConfig = [%graphql
             identity
           }
         }
-        transaction @bsRecord {
+        transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
           block @bsRecord {
             timestamp @bsDecoder(fn: "GraphQLParser.timestamp")

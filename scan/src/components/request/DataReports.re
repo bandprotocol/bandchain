@@ -34,7 +34,11 @@ let make = (~reports: array(RequestSub.report_t)) => {
       ->Belt.Array.mapWithIndex(
           (
             idx,
-            {reportValidator: {operatorAddress, moniker, identity}, transaction, reportDetails},
+            {
+              reportValidator: {operatorAddress, moniker, identity},
+              transactionOpt,
+              reportDetails,
+            },
           ) => {
           <div
             key={operatorAddress |> Address.toOperatorBech32}
@@ -54,7 +58,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
               <Col.Grid col=Col.Six>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
-                {switch (transaction) {
+                {switch (transactionOpt) {
                  | Some({hash}) => <TxLink txHash=hash width=280 />
                  | None => <Text value="Genesis Transaction" />
                  }}

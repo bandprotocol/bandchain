@@ -70,9 +70,9 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (voteSub) {
-         | Data({txHash}) =>
-           switch (txHash) {
-           | Some(txHash') => <TxLink txHash=txHash' width=200 />
+         | Data({txHashOpt}) =>
+           switch (txHashOpt) {
+           | Some(txHash) => <TxLink txHash width=200 />
            | None => <Text value="Voted on Wenchang" />
            }
          | _ => <LoadingCensorBar width=200 height=20 />
@@ -81,11 +81,11 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       <Col.Grid col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (voteSub) {
-           | Data({timestamp}) =>
-             switch (timestamp) {
-             | Some(timestamp') =>
+           | Data({timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp) =>
                <Timestamp.Grid
-                 time=timestamp'
+                 time=timestamp
                  size=Text.Md
                  weight=Text.Regular
                  textAlign=Text.Right
@@ -102,7 +102,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
   switch (voteSub) {
-  | Data({voter, txHash, timestamp, validator}) =>
+  | Data({voter, txHashOpt, timestampOpt, validator}) =>
     let key_ = voter |> Address.toBech32;
 
     <MobileCard
@@ -117,15 +117,15 @@ let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(
         ),
         (
           "TX Hash",
-          switch (txHash) {
-          | Some(txHash') => TxHash(txHash', 200)
+          switch (txHashOpt) {
+          | Some(txHash) => TxHash(txHash, 200)
           | None => Text("Voted on Wenchang")
           },
         ),
         (
           "Timestamp",
-          switch (timestamp) {
-          | Some(timestamp') => Timestamp(timestamp')
+          switch (timestampOpt) {
+          | Some(timestamp) => Timestamp(timestamp)
           | None => Text("Created on Wenchang")
           },
         ),

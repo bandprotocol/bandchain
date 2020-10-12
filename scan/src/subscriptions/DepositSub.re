@@ -1,7 +1,7 @@
 type t = {
   depositor: Address.t,
   amount: list(Coin.t),
-  txHash: option(Hash.t),
+  txHashOpt: option(Hash.t),
 };
 
 type account_t = {address: Address.t};
@@ -10,13 +10,13 @@ type transaction_t = {hash: Hash.t};
 type internal_t = {
   account: account_t,
   amount: list(Coin.t),
-  transaction: option(transaction_t),
+  transactionOpt: option(transaction_t),
 };
 
-let toExternal = ({account, amount, transaction}) => {
+let toExternal = ({account, amount, transactionOpt}) => {
   depositor: account.address,
   amount,
-  txHash: transaction->Belt.Option.map(({hash}) => hash),
+  txHashOpt: transactionOpt->Belt.Option.map(({hash}) => hash),
 };
 
 module MultiConfig = [%graphql
@@ -27,7 +27,7 @@ module MultiConfig = [%graphql
           address @bsDecoder(fn:"Address.fromBech32")
         }
         amount @bsDecoder(fn: "GraphQLParser.coins")
-        transaction @bsRecord {
+        transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
         }
       }

@@ -38,9 +38,9 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
       </Col.Grid>
       <Col.Grid col=Col.Five>
         {switch (depositSub) {
-         | Data({txHash}) =>
-           switch (txHash) {
-           | Some(txHash') => <TxLink txHash=txHash' width=240 />
+         | Data({txHashOpt}) =>
+           switch (txHashOpt) {
+           | Some(txHash) => <TxLink txHash width=240 />
            | None => <Text value="Deposited on Wenchang" />
            }
          | _ => <LoadingCensorBar width=100 height=15 />
@@ -65,14 +65,14 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
 
 let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {
   switch (depositSub) {
-  | Data({depositor, txHash, amount}) =>
+  | Data({depositor, txHashOpt, amount}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Depositor", Address(depositor, 200, `account)),
         (
           "TX Hash",
-          switch (txHash) {
-          | Some(txHash') => TxHash(txHash', 200)
+          switch (txHashOpt) {
+          | Some(txHash) => TxHash(txHash, 200)
           | None => Text("Deposited on Wenchang")
           },
         ),
