@@ -27,6 +27,7 @@
 
 ### Scan
 
+- (impv) [\#2748](https://github.com/bandprotocol/bandchain/pull/2748) Implemented the token msg category on txindex page (both success and fail msgs) 
 - (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
 - (impv) [\#2723](https://github.com/bandprotocol/bandchain/pull/2723) Re-factor to Msg structure
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
