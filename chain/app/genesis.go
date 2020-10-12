@@ -46,11 +46,17 @@ func NewDefaultGenesisState() GenesisState {
 	mintGenesis.Params.MintDenom = denom
 	govGenesis.DepositParams.MinDeposit = sdk.NewCoins(sdk.NewCoin(denom, sdk.TokensFromConsensusPower(1000)))
 	crisisGenesis.ConstantFee = sdk.NewCoin(denom, sdk.TokensFromConsensusPower(10000))
-	slashingGenesis.Params.SignedBlocksWindow = 30000                         // approximately 1 day
-	slashingGenesis.Params.MinSignedPerWindow = sdk.NewDecWithPrec(5, 2)      // 5%
-	slashingGenesis.Params.DowntimeJailDuration = 60 * 10 * time.Second       // 10 minutes
+	// slashingGenesis.Params.SignedBlocksWindow = 30000                         // approximately 1 day
+	// slashingGenesis.Params.MinSignedPerWindow = sdk.NewDecWithPrec(5, 2)      // 5%
+	// slashingGenesis.Params.DowntimeJailDuration = 60 * 10 * time.Second       // 10 minutes
+	slashingGenesis.Params.SignedBlocksWindow = 50
+	slashingGenesis.Params.MinSignedPerWindow = sdk.NewDecWithPrec(5, 2) // 5%
+	slashingGenesis.Params.DowntimeJailDuration = 1 * time.Minute
 	slashingGenesis.Params.SlashFractionDoubleSign = sdk.NewDecWithPrec(5, 2) // 5%
 	slashingGenesis.Params.SlashFractionDowntime = sdk.NewDecWithPrec(1, 4)   // 0.01%
+	stakingGenesis.Params.UnbondingTime = 2 * time.Minute
+	govGenesis.DepositParams.MaxDepositPeriod = 5 * time.Minute
+	govGenesis.VotingParams.VotingPeriod = 5 * time.Minute
 	return GenesisState{
 		genutil.ModuleName:  genutil.AppModuleBasic{}.DefaultGenesis(),
 		auth.ModuleName:     cdc.MustMarshalJSON(authGenesis),
