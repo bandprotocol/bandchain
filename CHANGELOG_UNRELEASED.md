@@ -26,6 +26,7 @@
 
 ### Scan
 
+- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
 - (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
 - (impv) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
 - (impv) [\#2693](https://github.com/bandprotocol/bandchain/pull/2693) Created the new button component and patched to all buttons
