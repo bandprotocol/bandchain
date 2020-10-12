@@ -46,7 +46,6 @@
 - (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
 - (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
 - (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
-  page
 - (impv) [\#2723](https://github.com/bandprotocol/bandchain/pull/2723) Re-factor to Msg structure
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (bugs) [\#2716](https://github.com/bandprotocol/bandchain/pull/2716) Fixed no decimal balance bug on account index

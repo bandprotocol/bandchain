@@ -1013,22 +1013,6 @@ module Msg = {
     | CreateValidatorMsgFail(validator) => validator.delegatorAddress
     | EditValidatorMsgSuccess(validator)
     | EditValidatorMsgFail(validator) => validator.sender
-    | CreateClientMsg(client) => client.address
-    | UpdateClientMsg(client) => client.address
-    | SubmitClientMisbehaviourMsg(client) => client.address
-    | ConnectionOpenInitMsg(connection) => connection.signer
-    | ConnectionOpenTryMsg(connection) => connection.signer
-    | ConnectionOpenAckMsg(connection) => connection.signer
-    | ConnectionOpenConfirmMsg(connection) => connection.signer
-    | ChannelOpenInitMsg(channel) => channel.signer
-    | ChannelOpenTryMsg(channel) => channel.signer
-    | ChannelOpenAckMsg(channel) => channel.signer
-    | ChannelOpenConfirmMsg(channel) => channel.signer
-    | ChannelCloseInitMsg(channel) => channel.signer
-    | ChannelCloseConfirmMsg(channel) => channel.signer
-    | PacketMsg(packet) => packet.sender
-    | AcknowledgementMsg(ack) => ack.sender
-    | TimeoutMsg(timeout) => timeout.sender
     | DelegateMsgSuccess(delegation)
     | DelegateMsgFail(delegation) => delegation.delegatorAddress
     | UndelegateMsgSuccess(delegation)
@@ -1055,6 +1039,23 @@ module Msg = {
       firstInput.address;
     | ActivateMsgSuccess(activator)
     | ActivateMsgFail(activator) => activator.validatorAddress
+    //TODO: Revisit IBC msg
+    | CreateClientMsg(client) => client.address
+    | UpdateClientMsg(client) => client.address
+    | SubmitClientMisbehaviourMsg(client) => client.address
+    | ConnectionOpenInitMsg(connection) => connection.signer
+    | ConnectionOpenTryMsg(connection) => connection.signer
+    | ConnectionOpenAckMsg(connection) => connection.signer
+    | ConnectionOpenConfirmMsg(connection) => connection.signer
+    | ChannelOpenInitMsg(channel) => channel.signer
+    | ChannelOpenTryMsg(channel) => channel.signer
+    | ChannelOpenAckMsg(channel) => channel.signer
+    | ChannelOpenConfirmMsg(channel) => channel.signer
+    | ChannelCloseInitMsg(channel) => channel.signer
+    | ChannelCloseConfirmMsg(channel) => channel.signer
+    | PacketMsg(packet) => packet.sender
+    | AcknowledgementMsg(ack) => ack.sender
+    | TimeoutMsg(timeout) => timeout.sender
     | _ => "" |> Address.fromHex
     };
   };
@@ -1078,6 +1079,20 @@ module Msg = {
     | RemoveReporterBadge => {name: "REMOVE REPORTER", category: ValidatorMsg}
     | CreateValidatorBadge => {name: "CREATE VALIDATOR", category: ValidatorMsg}
     | EditValidatorBadge => {name: "EDIT VALIDATOR", category: ValidatorMsg}
+    | DelegateBadge => {name: "DELEGATE", category: TokenMsg}
+    | UndelegateBadge => {name: "UNDELEGATE", category: TokenMsg}
+    | RedelegateBadge => {name: "REDELEGATE", category: TokenMsg}
+    | VoteBadge => {name: "VOTE", category: ProposalMsg}
+    | WithdrawRewardBadge => {name: "WITHDRAW REWARD", category: TokenMsg}
+    | UnjailBadge => {name: "UNJAIL", category: ValidatorMsg}
+    | SetWithdrawAddressBadge => {name: "SET WITHDRAW ADDRESS", category: ValidatorMsg}
+    | SubmitProposalBadge => {name: "SUBMIT PROPOSAL", category: ProposalMsg}
+    | DepositBadge => {name: "DEPOSIT", category: ProposalMsg}
+    | WithdrawCommissionBadge => {name: "WITHDRAW COMMISSION", category: TokenMsg}
+    | MultiSendBadge => {name: "MULTI SEND", category: TokenMsg}
+    | ActivateBadge => {name: "ACTIVATE", category: ValidatorMsg}
+    | UnknownBadge => {name: "UNKNOWN", category: TokenMsg}
+    //TODO: Revisit IBC msg
     | CreateClientBadge => {name: "CREATE CLIENT", category: TokenMsg}
     | UpdateClientBadge => {name: "UPDATE CLIENT", category: TokenMsg}
     | SubmitClientMisbehaviourBadge => {name: "SUBMIT CLIENT MISBEHAVIOUR", category: TokenMsg}
@@ -1094,19 +1109,6 @@ module Msg = {
     | PacketBadge => {name: "PACKET", category: TokenMsg}
     | AcknowledgementBadge => {name: "ACKNOWLEDGEMENT", category: TokenMsg}
     | TimeoutBadge => {name: "TIMEOUT", category: TokenMsg}
-    | DelegateBadge => {name: "DELEGATE", category: TokenMsg}
-    | UndelegateBadge => {name: "UNDELEGATE", category: TokenMsg}
-    | RedelegateBadge => {name: "REDELEGATE", category: TokenMsg}
-    | VoteBadge => {name: "VOTE", category: ProposalMsg}
-    | WithdrawRewardBadge => {name: "WITHDRAW REWARD", category: TokenMsg}
-    | UnjailBadge => {name: "UNJAIL", category: ValidatorMsg}
-    | SetWithdrawAddressBadge => {name: "SET WITHDRAW ADDRESS", category: ValidatorMsg}
-    | SubmitProposalBadge => {name: "SUBMIT PROPOSAL", category: ProposalMsg}
-    | DepositBadge => {name: "DEPOSIT", category: ProposalMsg}
-    | WithdrawCommissionBadge => {name: "WITHDRAW COMMISSION", category: TokenMsg}
-    | MultiSendBadge => {name: "MULTI SEND", category: TokenMsg}
-    | ActivateBadge => {name: "ACTIVATE", category: ValidatorMsg}
-    | UnknownBadge => {name: "UNKNOWN", category: TokenMsg}
     };
   };
 
@@ -1135,22 +1137,6 @@ module Msg = {
     | CreateValidatorMsgFail(_) => getBadge(CreateValidatorBadge)
     | EditValidatorMsgSuccess(_)
     | EditValidatorMsgFail(_) => getBadge(EditValidatorBadge)
-    | CreateClientMsg(_) => getBadge(CreateClientBadge)
-    | UpdateClientMsg(_) => getBadge(UpdateClientBadge)
-    | SubmitClientMisbehaviourMsg(_) => getBadge(SubmitClientMisbehaviourBadge)
-    | ConnectionOpenInitMsg(_) => getBadge(ConnectionOpenInitBadge)
-    | ConnectionOpenTryMsg(_) => getBadge(ConnectionOpenTryBadge)
-    | ConnectionOpenAckMsg(_) => getBadge(ConnectionOpenAckBadge)
-    | ConnectionOpenConfirmMsg(_) => getBadge(ConnectionOpenConfirmBadge)
-    | ChannelOpenInitMsg(_) => getBadge(ChannelOpenInitBadge)
-    | ChannelOpenTryMsg(_) => getBadge(ChannelOpenTryBadge)
-    | ChannelOpenAckMsg(_) => getBadge(ChannelOpenAckBadge)
-    | ChannelOpenConfirmMsg(_) => getBadge(ChannelOpenConfirmBadge)
-    | ChannelCloseInitMsg(_) => getBadge(ChannelCloseInitBadge)
-    | ChannelCloseConfirmMsg(_) => getBadge(ChannelCloseConfirmBadge)
-    | PacketMsg(_) => getBadge(PacketBadge)
-    | AcknowledgementMsg(_) => getBadge(AcknowledgementBadge)
-    | TimeoutMsg(_) => getBadge(TimeoutBadge)
     | DelegateMsgSuccess(_)
     | DelegateMsgFail(_) => getBadge(DelegateBadge)
     | UndelegateMsgSuccess(_)
@@ -1176,6 +1162,23 @@ module Msg = {
     | ActivateMsgSuccess(_) => getBadge(ActivateBadge)
     | ActivateMsgFail(_) => getBadge(ActivateBadge)
     | UnknownMsg => getBadge(UnknownBadge)
+    //TODO: Revisit IBC msg
+    | CreateClientMsg(_) => getBadge(CreateClientBadge)
+    | UpdateClientMsg(_) => getBadge(UpdateClientBadge)
+    | SubmitClientMisbehaviourMsg(_) => getBadge(SubmitClientMisbehaviourBadge)
+    | ConnectionOpenInitMsg(_) => getBadge(ConnectionOpenInitBadge)
+    | ConnectionOpenTryMsg(_) => getBadge(ConnectionOpenTryBadge)
+    | ConnectionOpenAckMsg(_) => getBadge(ConnectionOpenAckBadge)
+    | ConnectionOpenConfirmMsg(_) => getBadge(ConnectionOpenConfirmBadge)
+    | ChannelOpenInitMsg(_) => getBadge(ChannelOpenInitBadge)
+    | ChannelOpenTryMsg(_) => getBadge(ChannelOpenTryBadge)
+    | ChannelOpenAckMsg(_) => getBadge(ChannelOpenAckBadge)
+    | ChannelOpenConfirmMsg(_) => getBadge(ChannelOpenConfirmBadge)
+    | ChannelCloseInitMsg(_) => getBadge(ChannelCloseInitBadge)
+    | ChannelCloseConfirmMsg(_) => getBadge(ChannelCloseConfirmBadge)
+    | PacketMsg(_) => getBadge(PacketBadge)
+    | AcknowledgementMsg(_) => getBadge(AcknowledgementBadge)
+    | TimeoutMsg(_) => getBadge(TimeoutBadge)
     };
   };
 
@@ -1343,7 +1346,7 @@ let toExternal =
   timestamp: block.timestamp,
   messages: {
     let msg = messages |> Js.Json.decodeArray |> Belt.Option.getExn |> Belt.List.fromArray;
-    success ? msg->Belt.List.map(Msg.decodeAction) : msg->Belt.List.map(Msg.decodeFailAction);
+    msg->Belt.List.map(success ? Msg.decodeAction : Msg.decodeFailAction);
   },
   errMsg: errMsg->Belt.Option.getWithDefault(""),
 };
