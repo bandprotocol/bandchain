@@ -59,9 +59,10 @@ describe("Navigation", () => {
 
     describe("Should be able to render Validators page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="validatorsSection"] > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Validators");
+        cy.get('[id="validatorsSection"] h2').should(
+          "contain",
+          "All Validators"
+        );
       });
     });
   });
@@ -73,9 +74,7 @@ describe("Navigation", () => {
 
     describe("Should be able to render Blocks page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="blocksSection"] > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Blocks");
+        cy.get('[id="blocksSection"] h2').should("contain", "All Blocks");
       });
     });
   });
@@ -87,9 +86,10 @@ describe("Navigation", () => {
 
     describe("Should be able to render Transactions page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="transactionsSection"] > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Transactions");
+        cy.get('[id="transactionsSection"] h2').should(
+          "contain",
+          "All Transactions"
+        );
       });
     });
   });
@@ -101,9 +101,7 @@ describe("Navigation", () => {
 
     describe("Should be able to render Transactions page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="proposalsSection"] > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Proposals");
+        cy.get('[id="proposalsSection"] h2').should("contain", "All Proposals");
       });
     });
   });
@@ -115,9 +113,10 @@ describe("Navigation", () => {
 
     describe("Should be able to render Data Sources page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="datasourcesSection"] > div:nth-of-type(1) > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Data Sources");
+        cy.get('[id="datasourcesSection"] h2').should(
+          "contain",
+          "All Data Sources"
+        );
       });
     });
   });
@@ -129,9 +128,10 @@ describe("Navigation", () => {
 
     describe("Should be able to render Oracle Scripts page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="oraclescriptsSection"] > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Oracle Scripts");
+        cy.get('[id="oraclescriptsSection"] h2').should(
+          "contain",
+          "All Oracle Scripts"
+        );
       });
     });
   });
@@ -143,9 +143,7 @@ describe("Navigation", () => {
 
     describe("Should be able to render Requests page", () => {
       it("Validate title", () => {
-        cy.get(
-          '[id="requestsSection"] > div:nth-of-type(1) > div:nth-of-type(1) > *:nth-child(1)'
-        ).should("contain", "All Requests");
+        cy.get('[id="requestsSection"] h2').should("contain", "All Requests");
       });
     });
   });
