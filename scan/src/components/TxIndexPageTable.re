@@ -1036,7 +1036,7 @@ let make = (~messages: list(TxSub.Msg.t)) => {
          <TBody.Grid key={index |> string_of_int} paddingH={`px(24)}>
            <Row.Grid alignItems=Row.Start>
              <Col.Grid col=Col.Two>
-               //TODO: will remove when doing the ravamp style
+               //TODO: will remove when doing the revamp style
 
                  <div className=Styles.badgeContainer>
                    <MsgBadge name={theme.name} msgType={theme.category} />
