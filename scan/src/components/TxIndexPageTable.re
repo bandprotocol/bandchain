@@ -753,6 +753,18 @@ let renderBody = (msg: TxSub.Msg.t) =>
   switch (msg) {
   | SendMsgSuccess(send)
   | SendMsgFail(send) => <IndexTokenMsg.SendMsg send />
+  | DelegateMsgSuccess(delegation) => <IndexTokenMsg.DelegateMsg delegation />
+  | DelegateMsgFail(delegation) => <IndexTokenMsg.DelegateFailMsg delegation />
+  | UndelegateMsgSuccess(delegation) => <IndexTokenMsg.UndelegateMsg delegation />
+  | UndelegateMsgFail(delegation) => <IndexTokenMsg.UndelegateFailMsg delegation />
+  | RedelegateMsgSuccess(delegation) => <IndexTokenMsg.RedelegateMsg delegation />
+  | RedelegateMsgFail(delegation) => <IndexTokenMsg.RedelegateFailMsg delegation />
+  | WithdrawRewardMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawRewardMsg withdrawal />
+  | WithdrawRewardMsgFail(withdrawal) => <IndexTokenMsg.WithdrawRewardFailMsg withdrawal />
+  | WithdrawCommissionMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawComissionMsg withdrawal />
+  | WithdrawCommissionMsgFail(withdrawal) => <IndexTokenMsg.WithdrawComissionFailMsg withdrawal />
+  | MultiSendMsgSuccess(tx)
+  | MultiSendMsgFail(tx) => <IndexTokenMsg.MultisendMsg tx />
   | CreateDataSourceMsgSuccess(dataSource) => renderCreateDataSource(dataSource)
   | CreateDataSourceMsgFail(dataSource) => React.null
   | EditDataSourceMsgSuccess(dataSource) => renderEditDataSource(dataSource)
@@ -773,16 +785,6 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | CreateValidatorMsgFail(validator) => React.null
   | EditValidatorMsgSuccess(validator) => renderEditValidator(validator)
   | EditValidatorMsgFail(validator) => React.null
-  | DelegateMsgSuccess(delegation) => <IndexTokenMsg.DelegateMsg delegation />
-  | DelegateMsgFail(delegation) => <IndexTokenMsg.DelegateFailMsg delegation />
-  | UndelegateMsgSuccess(delegation) => <IndexTokenMsg.UndelegateMsg delegation />
-  | UndelegateMsgFail(delegation) => <IndexTokenMsg.UndelegateFailMsg delegation />
-  | RedelegateMsgSuccess(delegation) => <IndexTokenMsg.RedelegateMsg delegation />
-  | RedelegateMsgFail(delegation) => <IndexTokenMsg.RedelegateFailMsg delegation />
-  | WithdrawRewardMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawRewardMsg withdrawal />
-  | WithdrawRewardMsgFail(withdrawal) => <IndexTokenMsg.WithdrawRewardFailMsg withdrawal />
-  | WithdrawCommissionMsgSuccess(withdrawal) => <IndexTokenMsg.WithdrawComissionMsg withdrawal />
-  | WithdrawCommissionMsgFail(withdrawal) => <IndexTokenMsg.WithdrawComissionFailMsg withdrawal />
   | UnjailMsgSuccess(unjail) => renderUnjail(unjail)
   | UnjailMsgFail(unjail) => React.null
   | SetWithdrawAddressMsgSuccess(set) => renderSetWithdrawAddress(set)
@@ -793,8 +795,6 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | DepositMsgFail(deposit) => React.null
   | VoteMsgSuccess(vote) => renderVote(vote)
   | VoteMsgFail(vote) => React.null
-  | MultiSendMsgSuccess(tx)
-  | MultiSendMsgFail(tx) => <IndexTokenMsg.MultisendMsg tx />
   | ActivateMsgSuccess(activate) => renderActivate(activate)
   | ActivateMsgFail(activate) => React.null
   | UnknownMsg => renderUnknownMessage()
