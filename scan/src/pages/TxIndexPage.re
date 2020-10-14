@@ -167,10 +167,8 @@ let make = (~txHash) => {
           </Col.Grid>
         </Row.Grid>
         {switch (txSub) {
-         | Data({success, errMsg}) =>
-           <Row.Grid>
-             <Col.Grid> {success ? React.null : <TxError.Full msg=errMsg />} </Col.Grid>
-           </Row.Grid>
+         | Data({success, errMsg}) when !success =>
+           <Row.Grid> <Col.Grid> <TxError.Full msg=errMsg /> </Col.Grid> </Row.Grid>
          | _ => React.null
          }}
         <Row.Grid marginBottom=24>
