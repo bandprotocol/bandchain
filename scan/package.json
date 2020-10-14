@@ -54,7 +54,7 @@
     "@glennsl/bs-jest": "^0.5.1",
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
-    "css-loader": "^4.3.0",
+    "css-loader": "^5.0.0",
     "cypress": "^5.3.0",
     "html-webpack-plugin": "^4.5.0",
     "parcel-bundler": "^1.12.4",
