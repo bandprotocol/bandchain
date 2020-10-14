@@ -51,11 +51,12 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
       {switch (allSub) {
        | Data((_, {moniker})) =>
          <div>
-           <Text value=moniker size=Text.Lg code=true ellipsis=true align=Text.Right />
+           <Text value=moniker size=Text.Lg weight=Text.Thin ellipsis=true align=Text.Right />
            <Text
              value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
              size=Text.Md
-             color=Colors.blueGray6
+             weight=Text.Thin
+             color=Colors.gray6
              code=true
              block=true
            />
@@ -73,8 +74,9 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
+             weight=Text.Thin
            />
-           <Text value=" BAND" size=Text.Lg code=true />
+           <Text value=" BAND" size=Text.Lg weight=Text.Thin code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}

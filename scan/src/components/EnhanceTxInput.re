@@ -3,8 +3,6 @@ module Styles = {
 
   let container = style([position(`relative), paddingBottom(`px(24))]);
 
-  let rightContainer = style([display(`flex), alignItems(`center)]);
-
   let input =
     style([
       width(`percent(100.)),
@@ -17,6 +15,20 @@ module Styles = {
       border(`px(1), `solid, Colors.gray9),
       placeholder([color(Colors.gray5)]),
       focus([outline(`zero, `none, Colors.white)]),
+      fontFamilies([
+        `custom("Inter"),
+        `custom("-apple-system"),
+        `custom("BlinkMacSystemFont"),
+        `custom("Segoe UI"),
+        `custom("Roboto"),
+        `custom("Oxygen"),
+        `custom("Ubuntu"),
+        `custom("Cantarell"),
+        `custom("Fira Sans"),
+        `custom("Droid Sans"),
+        `custom("Helvatica Neue"),
+        `custom("sans-serif"),
+      ]),
     ]);
 
   let code =
@@ -77,7 +89,7 @@ let make =
   <div className=Styles.container>
     <Text value=msg size=Text.Md weight=Text.Medium nowrap=true block=true />
     <VSpacing size=Spacing.sm />
-    <div className=Styles.rightContainer>
+    <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
       <input
         id
         value={inputData.text}
@@ -128,7 +140,7 @@ module Loading2 = {
     <div className=Styles.container>
       <Text value=msg size=Text.Md weight=Text.Medium nowrap=true block=true />
       <VSpacing size=Spacing.sm />
-      <div className=Styles.rightContainer>
+      <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
         <input
           className={Css.merge([Styles.input, code ? Styles.code : ""])}
           placeholder

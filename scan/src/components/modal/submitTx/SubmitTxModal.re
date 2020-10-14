@@ -123,42 +123,43 @@ module SubmitTxStep = {
       <div className=Styles.seperatedLine />
       <div className=Styles.info>
         <Text value="Transaction Fee" size=Text.Md weight=Text.Medium nowrap=true block=true />
-        <Text value="0.005 BAND" size=Text.Lg code=true />
+        <Text value="0.005 BAND" size=Text.Lg weight=Text.Thin code=true />
       </div>
-      <button
-        id="nextButton"
-        className=Styles.nextBtn
-        disabled={msgsOpt->Belt.Option.isNone}
-        onClick={_ => {
-          let rawTxOpt =
-            {let%Opt memo' = memo.value;
-             let%Opt msgs = msgsOpt;
+      <div id="nextButtonContainer">
+        <Button
+          style=Styles.nextBtn
+          disabled={msgsOpt->Belt.Option.isNone}
+          onClick={_ => {
+            let rawTxOpt =
+              {let%Opt memo' = memo.value;
+               let%Opt msgs = msgsOpt;
 
-             Some(
-               TxCreator.createRawTx(
-                 ~address=account.address,
-                 ~msgs,
-                 ~chainID=account.chainID,
-                 ~feeAmount=fee |> Js.Float.toString,
-                 ~gas=gas |> string_of_int,
-                 ~memo=memo',
-                 (),
-               ),
-             )};
-          let _ =
-            switch (rawTxOpt) {
-            | Some(rawTxPromise) =>
-              let%Promise rawTx = rawTxPromise;
-              setRawTx(_ => Some(rawTx));
-              Promise.ret();
-            | None =>
-              Webapi.Dom.(window |> Window.alert("invalid msgs"));
-              Promise.ret();
-            };
-          ();
-        }}>
-        <Text value="Next" weight=Text.Medium size=Text.Lg />
-      </button>
+               Some(
+                 TxCreator.createRawTx(
+                   ~address=account.address,
+                   ~msgs,
+                   ~chainID=account.chainID,
+                   ~feeAmount=fee |> Js.Float.toString,
+                   ~gas=gas |> string_of_int,
+                   ~memo=memo',
+                   (),
+                 ),
+               )};
+            let _ =
+              switch (rawTxOpt) {
+              | Some(rawTxPromise) =>
+                let%Promise rawTx = rawTxPromise;
+                setRawTx(_ => Some(rawTx));
+                Promise.ret();
+              | None =>
+                Webapi.Dom.(window |> Window.alert("invalid msgs"));
+                Promise.ret();
+              };
+            ();
+          }}>
+          <Text value="Next" weight=Text.Medium size=Text.Lg />
+        </Button>
+      </div>
     </div>;
   };
 };
