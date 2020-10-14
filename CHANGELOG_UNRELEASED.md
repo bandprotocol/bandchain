@@ -40,6 +40,7 @@
 - (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
 - (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
+- (chore) [\#2755](https://github.com/bandprotocol/bandchain/pull/2755) Implemented Oracle tx msg restructure on txtable
 - (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
 - (impv) [\#2748](https://github.com/bandprotocol/bandchain/pull/2748) Implemented the token msg category on txindex page (both success and fail msgs)
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
