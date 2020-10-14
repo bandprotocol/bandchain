@@ -181,9 +181,8 @@ let make = () => {
             <Balance address />
             <VSpacing size={`px(16)} />
             <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
-              <FaucetBtn address />
-              <SendBtn send />
-            </div>
+              // <FaucetBtn address />
+               <SendBtn send /> </div>
           </div>
           <DisconnectBtn disconnect />
         </div>
