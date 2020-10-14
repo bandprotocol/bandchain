@@ -920,7 +920,6 @@ module Msg = {
       amount: list(Coin.t),
     };
     let decode = json => {
-      Js.log(json);
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
         proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
