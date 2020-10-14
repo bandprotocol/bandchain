@@ -6,46 +6,47 @@ module Styles = {
 
 module SubmitProposal = {
   [@react.component]
-  let make = (~proposer, ~title) => {
+  let make = (~proposalID, ~title) => {
     <div
       className={Css.merge([
         CssHelper.flexBox(~wrap=`nowrap, ()),
         CssHelper.overflowHidden,
         Styles.msgContainer,
       ])}>
-       <Text value=title size=Text.Md nowrap=true block=true /> </div>;
-      // TODO: Proposal ID
+      <TypeID.Proposal id=proposalID />
+      <Text value=title size=Text.Md nowrap=true block=true />
+    </div>;
   };
 };
 
 module Deposit = {
   [@react.component]
-  let make = (~depositor, ~amount, ~proposalID) => {
+  let make = (~amount, ~proposalID, ~title) => {
     <div
       className={Css.merge([
         CssHelper.flexBox(~wrap=`nowrap, ()),
         CssHelper.overflowHidden,
         Styles.msgContainer,
       ])}>
-
-        <AmountRender coins=amount />
-        <Text value={j| to |j} size=Text.Md nowrap=true block=true />
-        <TypeID.Proposal id=proposalID />
-      </div>;
-      // TODO: Proposal Name
+      <AmountRender coins=amount />
+      <Text value={j| to |j} size=Text.Md nowrap=true block=true />
+      <TypeID.Proposal id=proposalID />
+      <Text value=title size=Text.Md nowrap=true block=true />
+    </div>;
   };
 };
 
 module Vote = {
   [@react.component]
-  let make = (~voterAddress, ~proposalID, ~option) => {
+  let make = (~proposalID, ~title) => {
     <div
       className={Css.merge([
         CssHelper.flexBox(~wrap=`nowrap, ()),
         CssHelper.overflowHidden,
         Styles.msgContainer,
       ])}>
-       <TypeID.Proposal id=proposalID /> </div>;
-      // TODO: Proposal Name
+      <TypeID.Proposal id=proposalID />
+      <Text value=title size=Text.Md nowrap=true block=true />
+    </div>;
   };
 };

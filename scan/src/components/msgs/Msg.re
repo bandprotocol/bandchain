@@ -760,12 +760,12 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
      | UnjailMsgSuccess(_) => React.null
      | SetWithdrawAddressMsgSuccess({withdrawAddress}) =>
        <ValidatorMsg.SetWithdrawAddress withdrawAddress />
-     | SubmitProposalMsgSuccess({proposer, title}) =>
-       <ProposalMsg.SubmitProposal proposer title />
-     | DepositMsgSuccess({depositor, amount, proposalID}) =>
-       <ProposalMsg.Deposit depositor amount proposalID />
-     | VoteMsgSuccess({voterAddress, proposalID, option}) =>
-       <ProposalMsg.Vote voterAddress proposalID option />
+     | SubmitProposalMsgSuccess({proposalID, title}) =>
+       <ProposalMsg.SubmitProposal proposalID title />
+     | DepositMsgSuccess({amount, proposalID, title}) =>
+       <ProposalMsg.Deposit amount proposalID title />
+     | VoteMsgSuccess({voterAddress, proposalID, option, title}) =>
+       <ProposalMsg.Vote voterAddress proposalID option title />
      | ActivateMsgSuccess(_) => React.null
      | _ => React.null
      }}

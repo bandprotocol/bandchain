@@ -642,7 +642,7 @@ let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
     </div>
   </Col>;
 };
-let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
+let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="TITLE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -669,7 +669,7 @@ let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.t) => {
   </Col>;
 };
 
-let renderDeposit = (deposit: TxSub.Msg.Deposit.t) => {
+let renderDeposit = (deposit: TxSub.Msg.Deposit.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="DEPOSITOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
@@ -708,7 +708,7 @@ let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
   </Col>;
 };
 
-let renderVote = (vote: TxSub.Msg.Vote.t) => {
+let renderVote = (vote: TxSub.Msg.Vote.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
       <Text value="VOTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
