@@ -25,7 +25,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
       ),
-      Media.mobile([margin2(~h=`px(-15), ~v=`zero), padding2(~h=`px(16), ~v=`zero)]),
+      Media.mobile([margin2(~h=`px(-12), ~v=`zero), padding2(~h=`px(16), ~v=`zero)]),
     ]);
 
   let tableHeader =
@@ -146,8 +146,12 @@ let make = (~proposalID) => {
               <Col.Grid col=Col.Six mb=24>
                 <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
-                 | Data(({proposerAddress}, _, _)) =>
-                   <AddressRender address=proposerAddress position=AddressRender.Subtitle />
+                 | Data(({proposerAddressOpt}, _, _)) =>
+                   switch (proposerAddressOpt) {
+                   | Some(proposerAddress) =>
+                     <AddressRender address=proposerAddress position=AddressRender.Subtitle />
+                   | None => <Text value="Proposed on Wenchang" />
+                   }
                  | _ => <LoadingCensorBar width=270 height=15 />
                  }}
               </Col.Grid>
