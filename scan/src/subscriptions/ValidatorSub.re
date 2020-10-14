@@ -405,7 +405,16 @@ let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
         ->Belt.List.fromArray
       : [{timestamp: startDate, status: oracleStatus}];
 
-  let parsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
+  let rawParsedReports = HistoryOracleParser.parse(~oracleStatusReports, ~startDate, ());
+
+  let parsedReports =
+    if (!oracleStatus && x##historical_oracle_statuses->Belt.Array.size == 0) {
+      rawParsedReports->Belt.Array.map(({timestamp}) =>
+        HistoryOracleParser.{timestamp, status: false}
+      );
+    } else {
+      rawParsedReports;
+    };
 
   Sub.resolve({
     oracleStatusReports: parsedReports,
