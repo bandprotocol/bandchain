@@ -38,14 +38,14 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
          | _ => <LoadingCensorBar fullWidth=true height=15 />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.One>
-        <div className={CssHelper.flexBox(~justify=`center, ())}>
-          {switch (blockSub) {
-           | Data({txn}) => <Text value={txn |> Format.iPretty} code=true weight=Text.Medium />
-           | _ => <LoadingCensorBar width=40 height=15 />
-           }}
-        </div>
-      </Col.Grid>
+      // <Col.Grid col=Col.One>
+      //   <div className={CssHelper.flexBox(~justify=`center, ())}>
+      //     {switch (blockSub) {
+      //      | Data({txn}) => <Text value={txn |> Format.iPretty} code=true weight=Text.Medium />
+      //      | _ => <LoadingCensorBar width=40 height=15 />
+      //      }}
+      //   </div>
+      // </Col.Grid>
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (blockSub) {
@@ -79,7 +79,7 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
           "Proposer",
           Validator(validator.operatorAddress, validator.moniker, validator.identity),
         ),
-        ("Txn", Count(txn)),
+        // ("Txn", Count(txn)),
       ]
       key={height |> ID.Block.toString}
       idx={height |> ID.Block.toString}
@@ -90,7 +90,7 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
         ("Block", Loading(70)),
         ("Timestamp", Loading(166)),
         ("Proposer", Loading(136)),
-        ("Txn", Loading(20)),
+        // ("Txn", Loading(20)),
       ]
       key={reserveIndex |> string_of_int}
       idx={reserveIndex |> string_of_int}
@@ -156,16 +156,16 @@ let make = () => {
                      color=Colors.gray7
                    />
                  </Col.Grid>
-                 <Col.Grid col=Col.One>
-                   <Text
-                     block=true
-                     value="Txn"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                     align=Text.Center
-                   />
-                 </Col.Grid>
+                //  <Col.Grid col=Col.One>
+                //    <Text
+                //      block=true
+                //      value="Txn"
+                //      size=Text.Md
+                //      weight=Text.Semibold
+                //      color=Colors.gray7
+                //      align=Text.Center
+                //    />
+                //  </Col.Grid>
                  <Col.Grid col=Col.Two>
                    <Text
                      block=true

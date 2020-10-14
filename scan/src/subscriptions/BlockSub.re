@@ -10,7 +10,6 @@ type internal_t = {
   inflation: float,
   validator: ValidatorSub.Mini.t,
   timestamp: MomentRe.Moment.t,
-  transactions_aggregate: transactions_aggregate_t,
 };
 
 type t = {
@@ -22,17 +21,13 @@ type t = {
   txn: int,
 };
 
-let toExternal = ({height, hash, inflation, timestamp, validator, transactions_aggregate}) => {
+let toExternal = ({height, hash, inflation, timestamp, validator}: internal_t) => {
   height,
   hash,
   inflation,
   timestamp,
   validator,
-  txn:
-    switch (transactions_aggregate.aggregate) {
-    | Some(aggregate) => aggregate.count
-    | _ => 0
-    },
+  txn: 0,
 };
 
 module MultiConfig = [%graphql
@@ -49,11 +44,6 @@ module MultiConfig = [%graphql
         identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
-      transactions_aggregate @bsRecord {
-        aggregate @bsRecord {
-          count @bsDecoder(fn: "Belt_Option.getExn")
-        }
-      }
     }
   }
 |}
@@ -73,11 +63,6 @@ module MultiConsensusAddressConfig = [%graphql
         identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
-      transactions_aggregate @bsRecord {
-        aggregate @bsRecord {
-          count @bsDecoder(fn: "Belt_Option.getExn")
-        }
-      }
     }
   }
 |}
@@ -97,11 +82,6 @@ module SingleConfig = [%graphql
         identity
       }
       timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
-      transactions_aggregate @bsRecord {
-        aggregate @bsRecord {
-          count @bsDecoder(fn: "Belt_Option.getExn")
-        }
-      }
     }
   },
 |}
