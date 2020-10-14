@@ -86,10 +86,10 @@ module Content = {
               name: "Code",
               route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceCode),
             },
-            {
-              name: "Test Execution",
-              route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
-            },
+            // {
+            //   name: "Test Execution",
+            //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
+            // },
             // {
             //   name: "REVISIONS",
             //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
@@ -97,11 +97,12 @@ module Content = {
           |]
           currentRoute={dataSourceID |> ID.DataSource.getRouteWithTab(_, hashtag)}>
           {switch (hashtag) {
-           | DataSourceExecute =>
-             switch (dataSourceSub) {
-             | Data({executable}) => <DataSourceExecute executable />
-             | _ => <LoadingCensorBar fullWidth=true height=400 />
-             }
+           //  | DataSourceExecute =>
+           //    switch (dataSourceSub) {
+           //    | Data({executable}) => <DataSourceExecute executable />
+           //    | _ => <LoadingCensorBar fullWidth=true height=400 />
+           //    }
+           | DataSourceExecute => React.null
            | DataSourceCode =>
              switch (dataSourceSub) {
              | Data({executable}) => <DataSourceCode executable />

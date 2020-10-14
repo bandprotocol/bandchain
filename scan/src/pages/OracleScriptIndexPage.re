@@ -191,11 +191,11 @@ module Content = {
               route:
                 oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptBridgeCode),
             },
-            {
-              name: "Make New Request",
-              route:
-                oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
-            },
+            // {
+            //   name: "Make New Request",
+            //   route:
+            //     oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
+            // },
             // {
             //   name: "REVISIONS",
             //   route:
@@ -204,12 +204,12 @@ module Content = {
           |]
           currentRoute={oracleScriptID |> ID.OracleScript.getRouteWithTab(_, hashtag)}>
           {switch (hashtag) {
-           | OracleScriptExecute =>
-             switch (oracleScriptSub) {
-             | Data({schema}) => <OracleScriptExecute id=oracleScriptID schema />
-             | _ => <LoadingCensorBar fullWidth=true height=400 />
-             }
-
+           //  | OracleScriptExecute =>
+           //    switch (oracleScriptSub) {
+           //    | Data({schema}) => <OracleScriptExecute id=oracleScriptID schema />
+           //    | _ => <LoadingCensorBar fullWidth=true height=400 />
+           //    }
+           | OracleScriptExecute => React.null
            | OracleScriptCode =>
              switch (oracleScriptSub) {
              | Data({sourceCodeURL}) => <OracleScriptCode url=sourceCodeURL />
