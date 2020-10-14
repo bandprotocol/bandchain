@@ -96,7 +96,7 @@ module LoginMethod = {
 
 [@react.component]
 let make = (~chainID) => {
-  let (loginMethod, setLoginMethod) = React.useState(_ => Mnemonic);
+  let (loginMethod, setLoginMethod) = React.useState(_ => LedgerWithCosmos);
   <div className=Styles.container>
     <div className=Styles.innerContainer>
       <div className=Styles.modalTitle>
@@ -125,7 +125,7 @@ let make = (~chainID) => {
               <VSpacing size=Spacing.xl />
               <Text value="Select your connection method" size=Text.Lg color=Colors.gray7 />
               <VSpacing size=Spacing.md />
-              {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
+              {[|LedgerWithCosmos, LedgerWithBandChain|]
                ->Belt_Array.map(method =>
                    <React.Fragment key={method |> toLoginMethodString}>
                      <VSpacing size=Spacing.lg />
@@ -141,7 +141,7 @@ let make = (~chainID) => {
           </Col.Grid>
           <Col.Grid col=Col.Seven>
             {switch (loginMethod) {
-             | Mnemonic => <ConnectWithMnemonic chainID />
+             //  | Mnemonic => <ConnectWithMnemonic chainID />
              | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
              | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
              }}

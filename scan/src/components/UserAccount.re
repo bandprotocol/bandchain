@@ -174,10 +174,9 @@ let make = () => {
         <div className=Styles.innerProfileCard>
           <Balance address />
           <VSpacing size={`px(16)} />
-          <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
-            <FaucetBtn address />
-            <SendBtn send />
-          </div>
+          <div className={CssHelper.flexBox(~direction=`row, ~justify=`flexEnd, ())}>
+            // <FaucetBtn address />
+             <SendBtn send /> </div>
         </div>
         <DisconnectBtn disconnect />
       </div>
