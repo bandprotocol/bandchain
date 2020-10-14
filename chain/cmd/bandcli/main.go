@@ -26,15 +26,13 @@ import (
 	bandclient "github.com/bandprotocol/bandchain/chain/client"
 )
 
+const flagCosmosHDPath = "cosmos-hd-path"
+
 func main() {
 	// Configure cobra to sort commands
 	cobra.EnableCommandSorting = false
 	// Instantiate the codec for the command line application
 	cdc := app.MakeCodec()
-	// Read in the configuration file for the sdk
-	config := sdk.GetConfig()
-	app.SetBech32AddressPrefixesAndBip44CoinType(config)
-	config.Seal()
 
 	// TODO: setup keybase, viper object, etc. to be passed into
 	// the below functions and eliminate global vars, like we do
@@ -47,7 +45,16 @@ func main() {
 
 	// Add --chain-id to persistent flags and mark it required
 	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of tendermint node")
+	rootCmd.PersistentFlags().Bool(flagCosmosHDPath, false, fmt.Sprintf("Use Cosmos BIP-44 coin type (%d)", sdk.CoinType))
+
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
+		// Read in the configuration file for the sdk
+		config := sdk.GetConfig()
+		app.SetBech32AddressPrefixesAndBip44CoinType(config)
+		if viper.GetBool(flagCosmosHDPath) {
+			config.SetCoinType(sdk.CoinType)
+		}
+		config.Seal()
 		return initConfig(rootCmd)
 	}
 
