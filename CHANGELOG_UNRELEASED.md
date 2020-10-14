@@ -27,6 +27,7 @@
 
 ### Scan
 
+- (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
 - (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
 - (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
