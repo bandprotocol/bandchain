@@ -68,6 +68,7 @@ type chainID =
   | GuanYuDevnet
   | GuanYuTestnet
   | GuanYuPOA
+  | GuanYuMainnet
   | Unknown;
 
 let parseChainID =
@@ -83,12 +84,14 @@ let parseChainID =
   | "band-guanyu-testnet2"
   | "band-guanyu-testnet3" => GuanYuTestnet
   | "band-guanyu-poa" => GuanYuPOA
+  | "band-guanyu-mainnet" => GuanYuMainnet
   | _ => Unknown;
 
 let getLink =
   fun
   | WenchangTestnet => "https://wenchang-testnet3.cosmoscan.io/"
-  | WenchangMainnet => "https://cosmoscan.io/"
+  | WenchangMainnet
+  | GuanYuMainnet => "https://cosmoscan.io/"
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
@@ -101,6 +104,7 @@ let getName =
   | GuanYuDevnet => "guanyu-devnet"
   | GuanYuTestnet => "guanyu-testnet"
   | GuanYuPOA => "guanyu-poa"
+  | GuanYuMainnet => "guanyu-mainnet"
   | Unknown => "unknown";
 
 [@react.component]

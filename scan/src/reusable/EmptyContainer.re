@@ -1,7 +1,12 @@
 module Styles = {
   open Css;
   let emptyContainer =
-    style([justifyContent(`center), alignItems(`center), flexDirection(`column)]);
+    style([
+      justifyContent(`center),
+      alignItems(`center),
+      flexDirection(`column),
+      width(`percent(100.)),
+    ]);
 
   let height = he => style([height(he)]);
   let display = dp => style([display(dp ? `flex : `none)]);
