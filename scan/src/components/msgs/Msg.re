@@ -624,8 +624,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
        <ProposalMsg.SubmitProposal proposalID title />
      | DepositMsgSuccess({amount, proposalID, title}) =>
        <ProposalMsg.Deposit amount proposalID title />
-     | VoteMsgSuccess({voterAddress, proposalID, option, title}) =>
-       <ProposalMsg.Vote voterAddress proposalID option title />
+     | VoteMsgSuccess({proposalID, title}) => <ProposalMsg.Vote proposalID title />
      | ActivateMsgSuccess(_) => React.null
      | _ => React.null
      }}
