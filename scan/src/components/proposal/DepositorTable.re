@@ -17,15 +17,6 @@ module Styles = {
       flexDirection(`column),
       alignItems(`center),
     ]);
-  let emptyContainer =
-    style([
-      height(`px(300)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -47,7 +38,11 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
       </Col.Grid>
       <Col.Grid col=Col.Five>
         {switch (depositSub) {
-         | Data({txHash}) => <TxLink txHash width=240 />
+         | Data({txHashOpt}) =>
+           switch (txHashOpt) {
+           | Some(txHash) => <TxLink txHash width=240 />
+           | None => <Text value="Deposited on Wenchang" />
+           }
          | _ => <LoadingCensorBar width=100 height=15 />
          }}
       </Col.Grid>
@@ -70,11 +65,17 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
 
 let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {
   switch (depositSub) {
-  | Data({depositor, txHash, amount}) =>
+  | Data({depositor, txHashOpt, amount}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Depositor", Address(depositor, 200, `account)),
-        ("TX Hash", TxHash(txHash, 200)),
+        (
+          "TX Hash",
+          switch (txHashOpt) {
+          | Some(txHash) => TxHash(txHash, 200)
+          | None => Text("Deposited on Wenchang")
+          },
+        ),
         ("Amount", Coin({value: amount, hasDenom: false})),
       ]
       key={depositor |> Address.toBech32}
@@ -171,7 +172,7 @@ let make = (~proposalID) => {
                     ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
                 )
               ->React.array
-            : <div className=Styles.emptyContainer>
+            : <EmptyContainer>
                 <img src=Images.noBlock className=Styles.noDataImage />
                 <Heading
                   size=Heading.H4
@@ -180,7 +181,7 @@ let make = (~proposalID) => {
                   weight=Heading.Regular
                   color=Colors.bandBlue
                 />
-              </div>}
+              </EmptyContainer>}
          {isMobile
             ? React.null
             : <Pagination

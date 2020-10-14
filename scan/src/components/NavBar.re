@@ -19,7 +19,7 @@ module RenderDesktop = {
   let make = (~routes) => {
     let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
 
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())} id="navigationBar">
       {routes
        ->Belt.List.map(((v, route)) =>
            <div key=v className={CssHelper.flexBox(~justify=`spaceBetween, ())}>

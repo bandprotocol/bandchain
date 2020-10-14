@@ -83,8 +83,12 @@ module ProposalCard = {
           <Col.Grid col=Col.Four mbSm=16>
             <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
             {switch (proposalSub) {
-             | Data({proposerAddress}) =>
-               <AddressRender address=proposerAddress position=AddressRender.Subtitle />
+             | Data({proposerAddressOpt}) =>
+               switch (proposerAddressOpt) {
+               | Some(proposerAddress) =>
+                 <AddressRender address=proposerAddress position=AddressRender.Subtitle />
+               | None => <Text value="Proposed on Wenchang" />
+               }
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
           </Col.Grid>
@@ -159,7 +163,7 @@ let make = () => {
   let allSub = Sub.all3(proposalsSub, bondedTokenCountSub, voteStatSub);
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="proposalsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
       </Row.Grid>

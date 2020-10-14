@@ -22,16 +22,6 @@ module Styles = {
   let mobileCard =
     style([backgroundColor(Colors.profileBG), boxShadow(`none), marginTop(`px(8))]);
 
-  let emptyContainer =
-    style([
-      height(`px(250)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(Colors.blueGray1),
-    ]);
-
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -46,7 +36,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
             idx,
             {
               reportValidator: {operatorAddress, moniker, identity},
-              transaction: {hash},
+              transactionOpt,
               reportDetails,
             },
           ) => {
@@ -68,7 +58,10 @@ let make = (~reports: array(RequestSub.report_t)) => {
               <Col.Grid col=Col.Six>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
-                <TxLink txHash=hash width=280 />
+                {switch (transactionOpt) {
+                 | Some({hash}) => <TxLink txHash=hash width=280 />
+                 | None => <Text value="Genesis Transaction" />
+                 }}
               </Col.Grid>
             </Row.Grid>
             <div className=Styles.reportsTable>
@@ -117,7 +110,7 @@ let make = (~reports: array(RequestSub.report_t)) => {
           </div>
         })
       ->React.array
-    : <div className=Styles.emptyContainer>
+    : <EmptyContainer height={`px(250)} backgroundColor=Colors.blueGray1>
         <img src=Images.noSource className=Styles.noDataImage />
         <Heading
           size=Heading.H4
@@ -126,5 +119,5 @@ let make = (~reports: array(RequestSub.report_t)) => {
           weight=Heading.Regular
           color=Colors.bandBlue
         />
-      </div>;
+      </EmptyContainer>;
 };

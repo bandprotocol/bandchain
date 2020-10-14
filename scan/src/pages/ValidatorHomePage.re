@@ -60,7 +60,7 @@ let make = () => {
   let isMobile = Media.isMobile();
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="validatorsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid>
           <Heading value="All Validators" size=Heading.H2 marginBottom=40 marginBottomSm=24 />

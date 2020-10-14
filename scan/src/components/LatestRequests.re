@@ -80,7 +80,9 @@ let make = () => {
   let requestsSub = RequestSub.getList(~page=1, ~pageSize=requestCount, ());
 
   <>
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}>
+    <div
+      className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}
+      id="latestRequestsSectionHeader">
       <div>
         <Text
           value="Latest Requests"

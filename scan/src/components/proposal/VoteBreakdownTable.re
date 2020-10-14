@@ -7,7 +7,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
       ),
-      Media.mobile([margin2(~h=`px(-15), ~v=`zero)]),
+      Media.mobile([margin2(~h=`px(-12), ~v=`zero)]),
     ]);
 
   let header =
@@ -38,15 +38,6 @@ module Styles = {
     ]);
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-  let emptyContainer =
-    style([
-      height(`px(250)),
-      display(`flex),
-      justifyContent(`center),
-      alignItems(`center),
-      flexDirection(`column),
-      backgroundColor(white),
-    ]);
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
@@ -62,26 +53,45 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
     <Row.Grid alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (voteSub) {
-         | Data({voter}) => <AddressRender address=voter />
+         | Data({voter, validator}) =>
+           switch (validator) {
+           | Some({moniker, operatorAddress, identity}) =>
+             <ValidatorMonikerLink
+               validatorAddress=operatorAddress
+               moniker
+               identity
+               width={`percent(100.)}
+               avatarWidth=20
+             />
+           | None => <AddressRender address=voter />
+           }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (voteSub) {
-         | Data({txHash}) => <TxLink txHash width=200 />
+         | Data({txHashOpt}) =>
+           switch (txHashOpt) {
+           | Some(txHash) => <TxLink txHash width=200 />
+           | None => <Text value="Voted on Wenchang" />
+           }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (voteSub) {
-           | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+           | Data({timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp) =>
+               <Timestamp.Grid
+                 time=timestamp
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Created on Wenchang" />
+             }
            | _ => <LoadingCensorBar width=80 height=15 />
            }}
         </div>
@@ -92,14 +102,33 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
   switch (voteSub) {
-  | Data({voter, txHash, timestamp}) =>
+  | Data({voter, txHashOpt, timestampOpt, validator}) =>
     let key_ = voter |> Address.toBech32;
 
     <MobileCard
       values=InfoMobileCard.[
-        ("Voter", Address(voter, 200, `account)),
-        ("TX Hash", TxHash(txHash, 200)),
-        ("Timestamp", Timestamp(timestamp)),
+        (
+          "Voter",
+          {switch (validator) {
+           | Some({operatorAddress, moniker, identity}) =>
+             Validator(operatorAddress, moniker, identity)
+           | None => Address(voter, 200, `account)
+           }},
+        ),
+        (
+          "TX Hash",
+          switch (txHashOpt) {
+          | Some(txHash) => TxHash(txHash, 200)
+          | None => Text("Voted on Wenchang")
+          },
+        ),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp) => Timestamp(timestamp)
+          | None => Text("Created on Wenchang")
+          },
+        ),
       ]
       key=key_
       idx=key_
@@ -212,7 +241,7 @@ let make = (~proposalID) => {
                      ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
                  )
                ->React.array
-             : <div className=Styles.emptyContainer>
+             : <EmptyContainer height={`px(250)}>
                  <img src=Images.noAccount className=Styles.noDataImage />
                  <Heading
                    size=Heading.H4
@@ -221,7 +250,7 @@ let make = (~proposalID) => {
                    weight=Heading.Regular
                    color=Colors.bandBlue
                  />
-               </div>
+               </EmptyContainer>
          | _ =>
            Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>
