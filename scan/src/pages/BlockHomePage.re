@@ -107,7 +107,7 @@ let make = () => {
   let isMobile = Media.isMobile();
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="blocksSection">
       <div className=CssHelper.mobileSpacing>
         <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid col=Col.Twelve>

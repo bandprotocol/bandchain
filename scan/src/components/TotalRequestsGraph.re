@@ -182,6 +182,7 @@ let make = () => {
 
   <div className=Styles.card>
     <div
+      id="totalRequestsGraphSection"
       className={Css.merge([
         CssHelper.flexBox(),
         Styles.infoHeader,

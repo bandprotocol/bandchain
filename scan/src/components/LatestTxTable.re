@@ -86,7 +86,9 @@ let make = () => {
   let txsSub = TxSub.getList(~page=1, ~pageSize=txCount, ());
 
   <>
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}>
+    <div
+      className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}
+      id="latestTransactionsSectionHeader">
       <div>
         <Text
           value="Latest Transactions"
