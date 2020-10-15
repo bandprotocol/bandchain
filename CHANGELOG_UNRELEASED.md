@@ -37,6 +37,7 @@
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
 - (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
+- (impv) [\#2763](https://github.com/bandprotocol/bandchain/pull/2763) Implemented the data msg cat on tx index page
 - (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
 - (chore) [\#2755](https://github.com/bandprotocol/bandchain/pull/2755) Implemented Oracle tx msg restructure on txtable
 - (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
