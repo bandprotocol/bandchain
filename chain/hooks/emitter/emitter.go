@@ -27,6 +27,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
+// Emitter hook uses Kafka functionality to act as an event producer for all events in the blockchains.
 type EmitterHook struct {
 	cdc       *codec.Codec
 	txDecoder sdk.TxDecoder
