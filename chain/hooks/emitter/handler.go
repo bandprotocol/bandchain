@@ -26,7 +26,7 @@ func parseEvents(events sdk.StringEvents) common.EvMap {
 }
 
 // handleMsg handles the given message by publishing relevant events and populates accounts
-// that need balance update in 'app.accs'. Also fills in extra info for this message.
+// that need balance update in 'h.accs'. Also fills in extra info for this message.
 func (h *EmitterHook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
 	evMap := parseEvents(log.Events)
 	switch msg := msg.(type) {

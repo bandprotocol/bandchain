@@ -218,7 +218,7 @@ func (h *EmitterHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain,
 }
 
 func (h *EmitterHook) emitNonHistoricalState(ctx sdk.Context) {
-	h.emitAccountModule(ctx)
+	h.emitAuthModule(ctx)
 	h.emitStakingModule(ctx)
 	h.emitOracleModule(ctx)
 	h.Write("COMMIT", common.JsDict{"height": -1})
