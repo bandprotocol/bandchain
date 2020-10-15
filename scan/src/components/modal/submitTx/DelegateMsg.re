@@ -45,6 +45,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   );
 
   <>
+    <VSpacing size=Spacing.lg />
     <div className=Styles.container>
       <Text value="Delegate To" size=Text.Md weight=Text.Medium nowrap=true block=true />
       <VSpacing size=Spacing.sm />

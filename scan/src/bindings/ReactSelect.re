@@ -4,9 +4,12 @@ type react_select_option_t = {
 };
 
 [@bs.deriving jsConverter]
-type style_t('a, 'b) = {
+type style_t('a, 'b, 'c, 'd, 'e) = {
   control: 'a => 'a,
   option: 'b => 'b,
+  container: 'c => 'c,
+  singleValue: 'd => 'd,
+  indicatorSeparator: 'e => 'e,
 };
 
 [@bs.obj]
@@ -15,7 +18,7 @@ external makeProps:
     ~value: react_select_option_t,
     ~onChange: 'a => unit,
     ~options: array('a),
-    ~styles: style_t('b, 'c),
+    ~styles: style_t('b, 'c, 'd, 'e, 'f),
     unit
   ) =>
   _ =
@@ -28,6 +31,6 @@ external make:
     "value": react_select_option_t,
     "onChange": 'a => unit,
     "options": array('a),
-    "styles": style_t('b, 'c),
+    "styles": style_t('b, 'c, 'd, 'e, 'f),
   }) =
   "default";

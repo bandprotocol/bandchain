@@ -1,26 +1,19 @@
 module Styles = {
   open Css;
 
-  let info = style([display(`flex), justifyContent(`spaceBetween), alignItems(`center)]);
-
-  let validator =
-    style([display(`flex), flexDirection(`column), alignItems(`flexEnd), width(`px(330))]);
+  let container = style([paddingBottom(`px(24))]);
 
   let warning =
     style([
       display(`flex),
       flexDirection(`column),
-      padding(`px(10)),
-      color(Colors.yellow6),
-      backgroundColor(Colors.yellow1),
-      border(`px(1), `solid, Colors.yellow6),
+      padding2(~v=`px(16), ~h=`px(24)),
+      backgroundColor(Colors.profileBG),
       borderRadius(`px(4)),
+      marginBottom(`px(24)),
     ]);
 
   let select = style([width(`px(1000)), height(`px(1))]);
-
-  let distValidatorContainer =
-    style([display(`flex), flexDirection(`column), alignItems(`flexEnd)]);
 };
 
 module DstValidatorSelection = {
@@ -31,7 +24,7 @@ module DstValidatorSelection = {
     fontSize: string,
     backgroundColor: string,
     borderRadius: string,
-    boxShadow: string,
+    border: string,
   };
 
   type option_t = {
@@ -42,6 +35,28 @@ module DstValidatorSelection = {
     paddingLeft: string,
     cursor: string,
   };
+
+  type container_t = {
+    width: string,
+    position: string,
+    boxSizing: string,
+  };
+
+  type singleValue_t = {
+    margin: string,
+    maxWidth: string,
+    overflow: string,
+    position: string,
+    textOverflow: string,
+    whiteSpace: string,
+    top: string,
+    transform: string,
+    boxSizing: string,
+    fontWeight: string,
+    lineHeight: string,
+  };
+
+  type indicatorSeparator_t = {display: string};
 
   [@react.component]
   let make = (~filteredValidators: array(BandScan.ValidatorSub.t), ~setDstValidatorOpt) => {
@@ -55,7 +70,9 @@ module DstValidatorSelection = {
       );
 
     // TODO: Hack styles for react-select
-    <div className=Styles.distValidatorContainer id="redelegateContainer">
+    <div
+      className={CssHelper.flexBox(~align=`flexStart, ~direction=`column, ())}
+      id="redelegateContainer">
       <ReactSelect
         options=validatorList
         onChange={newOption => {
@@ -67,28 +84,48 @@ module DstValidatorSelection = {
         styles={
           ReactSelect.control: _ => {
             display: "flex",
-            height: "30px",
-            width: "300px",
-            fontSize: "11px",
+            height: "37px",
+            width: "100%",
+            fontSize: "14px",
             backgroundColor: "white",
             borderRadius: "4px",
-            boxShadow: "0 1px 4px 0 rgba(11,29,142,0.1) inset",
+            border: "#EAEAEA solid 1px",
           },
           ReactSelect.option: _ => {
-            fontSize: "11px",
-            height: "30px",
+            fontSize: "14px",
+            height: "37px",
             display: "flex",
             alignItems: "center",
             paddingLeft: "10px",
             cursor: "pointer",
           },
+          ReactSelect.container: _ => {
+            width: "100%",
+            position: "relative",
+            boxSizing: "border-box",
+          },
+          ReactSelect.singleValue: _ => {
+            margin: "0px 2px",
+            maxWidth: "calc(100% - 8px)",
+            overflow: "hidden",
+            position: "absolute",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            top: "50%",
+            transform: "translateY(-50%)",
+            boxSizing: "border-box",
+            fontWeight: "300",
+            lineHeight: "1.3em",
+          },
+          ReactSelect.indicatorSeparator: _ => {display: "none"},
         }
       />
-      <VSpacing size=Spacing.xs />
+      <VSpacing size=Spacing.sm />
       <Text
         value={"(" ++ selectedValidator.value ++ ")"}
-        size=Text.Sm
-        color=Colors.blueGray5
+        size=Text.Md
+        color=Colors.gray6
+        weight=Text.Thin
         code=true
       />
     </div>;
@@ -126,52 +163,36 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
     (dstValidatorOpt, amount),
   );
   <>
-    <VSpacing size=Spacing.sm />
     <div className=Styles.warning>
-      <Text value="Please read before proceeding:" />
+      <Text weight=Text.Semibold value="Please read before proceeding:" />
       <VSpacing size=Spacing.xs />
       <Text
+        weight=Text.Thin
         value="You can only redelegate a maximum of 7 times to/from the same validator pairs during any 21 day period."
       />
     </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.info>
-      <Text value="Current Stake" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
-      {switch (allSub) {
-       | Data((_, _, {amount: stakedAmount})) =>
-         <div>
-           <Text
-             value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
-             code=true
-             size=Text.Lg
-             weight=Text.Semibold
-           />
-           <Text value=" BAND" code=true />
-         </div>
-       | _ => <LoadingCensorBar width=150 height=18 />
-       }}
-    </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
-    <div className=Styles.info>
-      <Text value="Redelegate From" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
+    <div className=Styles.container>
+      <Text value="Redelegate From" size=Text.Md weight=Text.Medium nowrap=true block=true />
+      <VSpacing size=Spacing.sm />
       {switch (allSub) {
        | Data(({moniker}, _, _)) =>
-         <div className=Styles.validator>
-           <Text value=moniker code=true ellipsis=true align=Text.Right />
+         <div>
+           <Text value=moniker size=Text.Lg weight=Text.Thin ellipsis=true align=Text.Right />
            <Text
              value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
-             size=Text.Sm
-             color=Colors.blueGray5
+             size=Text.Md
+             weight=Text.Thin
+             color=Colors.gray6
              code=true
+             block=true
            />
          </div>
-       | _ => <LoadingCensorBar width=300 height=26 />
+       | _ => <LoadingCensorBar width=300 height=34 />
        }}
     </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.info>
-      <Text value="Redelegate To" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
+    <div className=Styles.container>
+      <Text value="Redelegate To" size=Text.Md weight=Text.Medium nowrap=true block=true />
+      <VSpacing size=Spacing.sm />
       {switch (allSub) {
        | Data(({operatorAddress}, validators, _)) =>
          let filteredValidators =
@@ -179,10 +200,26 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              validator.operatorAddress != operatorAddress && validator.commission != 100.
            );
          <DstValidatorSelection filteredValidators setDstValidatorOpt />;
-       | _ => <LoadingCensorBar width=300 height=43 />
+       | _ => <LoadingCensorBar width=300 height=59 />
        }}
     </div>
-    <VSpacing size=Spacing.lg />
+    <div className=Styles.container>
+      <Text value="Current Stake" size=Text.Md weight=Text.Medium nowrap=true block=true />
+      <VSpacing size=Spacing.sm />
+      {switch (allSub) {
+       | Data((_, _, {amount: stakedAmount})) =>
+         <div>
+           <Text
+             value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
+             code=true
+             size=Text.Lg
+             weight=Text.Thin
+           />
+           <Text value=" BAND" size=Text.Lg weight=Text.Thin code=true />
+         </div>
+       | _ => <LoadingCensorBar width=150 height=18 />
+       }}
+    </div>
     {switch (allSub) {
      | Data((_, _, {amount: stakedAmount})) =>
        let maxValInUband = stakedAmount |> Coin.getUBandAmountFromCoin;
@@ -192,8 +229,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
-         msg="Amount (BAND)"
-         placeholder="Insert amount"
+         msg="Amount"
+         placeholder="0.000000"
          inputType="number"
          code=true
          autoFocus=true
@@ -201,6 +238,5 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        />;
      | _ => <EnhanceTxInput.Loading msg="Amount (BAND)" width=300 />
      }}
-    <VSpacing size=Spacing.lg />
   </>;
 };
