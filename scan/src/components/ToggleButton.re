@@ -1,7 +1,6 @@
 module Styles = {
   open Css;
-  let buttonContainer =
-    style([selector("> button", [margin(`zero)]), Media.mobile([width(`percent(100.))])]);
+  let buttonContainer = style([Media.mobile([width(`percent(100.))])]);
   let baseBtn =
     style([
       border(`px(1), `solid, Colors.bandBlue),
