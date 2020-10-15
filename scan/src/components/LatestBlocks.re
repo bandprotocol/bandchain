@@ -121,7 +121,9 @@ let renderDesktop = (~blocksSub) => {
 [@react.component]
 let make = (~blocksSub) => {
   <>
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}>
+    <div
+      className={CssHelper.flexBox(~justify=`spaceBetween, ~align=`flexEnd, ())}
+      id="latestBlocksSectionHeader">
       <div>
         <Text
           value="Latest Blocks"

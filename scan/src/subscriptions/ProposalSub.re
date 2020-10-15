@@ -31,7 +31,7 @@ type internal_t = {
   depositEndTime: MomentRe.Moment.t,
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
-  account: account_t,
+  accountOpt: option(account_t),
   proposalType: string,
   totalDeposit: list(Coin.t),
 };
@@ -45,7 +45,7 @@ type t = {
   depositEndTime: MomentRe.Moment.t,
   votingStartTime: MomentRe.Moment.t,
   votingEndTime: MomentRe.Moment.t,
-  proposerAddress: Address.t,
+  proposerAddressOpt: option(Address.t),
   proposalType: string,
   totalDeposit: list(Coin.t),
 };
@@ -61,7 +61,7 @@ let toExternal =
         depositEndTime,
         votingStartTime,
         votingEndTime,
-        account,
+        accountOpt,
         proposalType,
         totalDeposit,
       },
@@ -74,7 +74,7 @@ let toExternal =
   depositEndTime,
   votingStartTime,
   votingEndTime,
-  proposerAddress: account.address,
+  proposerAddressOpt: accountOpt->Belt.Option.map(({address}) => address),
   proposalType,
   totalDeposit,
 };
@@ -92,7 +92,7 @@ module MultiConfig = [%graphql
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       proposalType: type
-      account @bsRecord {
+      accountOpt: account @bsRecord {
         address @bsDecoder(fn: "Address.fromBech32")
       }
       totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
@@ -114,7 +114,7 @@ module SingleConfig = [%graphql
       votingStartTime: voting_time @bsDecoder(fn: "GraphQLParser.timestamp")
       votingEndTime: voting_end_time @bsDecoder(fn: "GraphQLParser.timestamp")
       proposalType: type
-      account @bsRecord {
+      accountOpt: account @bsRecord {
           address @bsDecoder(fn: "Address.fromBech32")
       }
       totalDeposit: total_deposit @bsDecoder(fn: "GraphQLParser.coins")
