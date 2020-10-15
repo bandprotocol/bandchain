@@ -35,7 +35,7 @@ let make = (~category: TxSub.Msg.msg_cat_t) => {
      | TokenMsg => <Icon name="far fa-wallet" color=Colors.white size=14 />
      | ValidatorMsg => <Icon name="fas fa-user" color=Colors.white size=14 />
      | ProposalMsg => <Icon name="fal fa-file" color=Colors.white size=14 />
-     | DataMsg => <Icon name="far fa-wallet" color=Colors.white size=14 />
+     | DataMsg => <Icon name="fal fa-globe" color=Colors.white size=14 />
      | _ => <Icon name="far fa-wallet" color=Colors.white size=14 />
      }}
   </div>;
