@@ -65,7 +65,6 @@ func NewEmitterHook(
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
 		}),
-		emitStartState: emitStartState,
 		accountKeeper:  accountKeeper,
 		bankKeeper:     bankKeeper,
 		supplyKeeper:   supplyKeeper,
@@ -74,6 +73,7 @@ func NewEmitterHook(
 		distrKeeper:    distrKeeper,
 		govKeeper:      govKeeper,
 		oracleKeeper:   oracleKeeper,
+		emitStartState: emitStartState,
 	}
 }
 
@@ -234,16 +234,14 @@ func (h *EmitterHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBloc
 		h.emitStartState = false
 		h.emitNonHistoricalState(ctx)
 	} else {
-		{
-			for _, val := range req.GetLastCommitInfo().Votes {
-				validator := h.stakingKeeper.ValidatorByConsAddr(ctx, val.GetValidator().Address)
-				h.Write("NEW_VALIDATOR_VOTE", common.JsDict{
-					"consensus_address": validator.GetConsAddr().String(),
-					"block_height":      req.Header.GetHeight() - 1,
-					"voted":             val.GetSignedLastBlock(),
-				})
-				h.emitUpdateValidatorRewardAndAccumulatedCommission(ctx, validator.GetOperator())
-			}
+		for _, val := range req.GetLastCommitInfo().Votes {
+			validator := h.stakingKeeper.ValidatorByConsAddr(ctx, val.GetValidator().Address)
+			h.Write("NEW_VALIDATOR_VOTE", common.JsDict{
+				"consensus_address": validator.GetConsAddr().String(),
+				"block_height":      req.Header.GetHeight() - 1,
+				"voted":             val.GetSignedLastBlock(),
+			})
+			h.emitUpdateValidatorRewardAndAccumulatedCommission(ctx, validator.GetOperator())
 		}
 	}
 	h.Write("NEW_BLOCK", common.JsDict{
