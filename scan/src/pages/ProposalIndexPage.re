@@ -183,7 +183,7 @@ let make = (~proposalID) => {
       </Row>
       {switch (allSub) {
        | Data((
-           {status, name, votingStartTime, votingEndTime},
+           {status, name, votingStartTime, votingEndTime, id: proposalID},
            {
              total,
              totalYes,
@@ -302,52 +302,67 @@ let make = (~proposalID) => {
                  </div>
                </Col>
              </Row>
-             <Row marginBottom=24> <Col> <VoteBreakdownTable proposalID /> </Col> </Row>
+             // if proposal id is 1, then disable it.
+             {proposalID == ID.Proposal.ID(1)
+                ? React.null
+                : <Row marginBottom=24> <Col> <VoteBreakdownTable proposalID /> </Col> </Row>}
            </>
          }
        | _ => React.null
        }}
-      <Row marginBottom=24>
-        <Col>
-          <div className=Styles.infoContainer>
-            <Row>
-              <Col>
-                <Heading value="Deposit" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
-              </Col>
-              <Col col=Col.Six mbSm=24>
-                <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
-                {switch (proposalSub) {
-                 | Data({totalDeposit, status}) =>
-                   switch (status) {
-                   | ProposalSub.Deposit => <ProgressBar.Deposit totalDeposit />
-                   | _ =>
-                     <div className={CssHelper.flexBox()}>
-                       <img src=Images.success className=Styles.statusLogo />
-                       <HSpacing size=Spacing.sm />
-                       // TODO: remove hard-coded later
-                       <Text value="Completed Min Deposit 1,000 BAND" />
-                     </div>
-                   }
-                 | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
-                 }}
-              </Col>
-              <Col col=Col.Six>
-                <Heading value="Deposit End Time" size=Heading.H5 marginBottom=8 />
-                {switch (proposalSub) {
-                 | Data({depositEndTime}) => <Timestamp size=Text.Lg time=depositEndTime />
-                 | _ => <LoadingCensorBar width=90 height=15 />
-                 }}
-              </Col>
-            </Row>
-          </div>
-        </Col>
-      </Row>
-      <div className=Styles.tableContainer>
-        <Row>
-          <Col> <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader /> </Col>
-          <Col> <DepositorTable proposalID /> </Col>
-        </Row>
-      </div>
+      // if proposal id is 1, then disable it.
+      {proposalID == ID.Proposal.ID(1)
+         ? React.null
+         : <>
+             <Row marginBottom=24>
+               <Col>
+                 <div className=Styles.infoContainer>
+                   <Row>
+                     <Col>
+                       <Heading
+                         value="Deposit"
+                         size=Heading.H4
+                         style=Styles.infoHeader
+                         marginBottom=24
+                       />
+                     </Col>
+                     <Col col=Col.Six mbSm=24>
+                       <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
+                       {switch (proposalSub) {
+                        | Data({totalDeposit, status}) =>
+                          switch (status) {
+                          | ProposalSub.Deposit => <ProgressBar.Deposit totalDeposit />
+                          | _ =>
+                            <div className={CssHelper.flexBox()}>
+                              <img src=Images.success className=Styles.statusLogo />
+                              <HSpacing size=Spacing.sm />
+                              // TODO: remove hard-coded later
+                              <Text value="Completed Min Deposit 1,000 BAND" />
+                            </div>
+                          }
+                        | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
+                        }}
+                     </Col>
+                     <Col col=Col.Six>
+                       <Heading value="Deposit End Time" size=Heading.H5 marginBottom=8 />
+                       {switch (proposalSub) {
+                        | Data({depositEndTime}) => <Timestamp size=Text.Lg time=depositEndTime />
+                        | _ => <LoadingCensorBar width=90 height=15 />
+                        }}
+                     </Col>
+                   </Row>
+                 </div>
+               </Col>
+             </Row>
+             <div className=Styles.tableContainer>
+               <Row>
+                 <Col>
+                   <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader />
+                 </Col>
+                 <Col> <DepositorTable proposalID /> </Col>
+               </Row>
+             </div>
+           </>}
     </div>
   </Section>;
 };
