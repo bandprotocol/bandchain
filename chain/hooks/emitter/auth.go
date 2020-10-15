@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 )
 
-func (h *EmitterHook) emitAccountModule(ctx sdk.Context) {
+func (h *EmitterHook) emitAuthModule(ctx sdk.Context) {
 	h.accountKeeper.IterateAccounts(ctx, func(account exported.Account) bool {
 		h.Write("SET_ACCOUNT", common.JsDict{
 			"address": account.GetAddress(),
