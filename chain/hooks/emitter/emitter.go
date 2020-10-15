@@ -27,8 +27,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// App extends the standard Band Cosmos-SDK application with Kafka emitter
-// functionality to act as an event producer for all events in the blockchains.
 type EmitterHook struct {
 	cdc       *codec.Codec
 	txDecoder sdk.TxDecoder
