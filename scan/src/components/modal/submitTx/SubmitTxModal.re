@@ -16,14 +16,6 @@ module Styles = {
 
   let modalTitle = style([paddingBottom(`px(40))]);
 
-  let rowContainer =
-    style([
-      display(`flex),
-      alignItems(`center),
-      justifyContent(`spaceBetween),
-      paddingBottom(`px(24)),
-    ]);
-
   let selectWrapper =
     style([
       display(`flex),
