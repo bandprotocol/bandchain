@@ -33,21 +33,22 @@
 ### Scan
 
 - (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
-- (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
-- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
-- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
-- (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
 - (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
+- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
+- (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
+- (impv) [\#2763](https://github.com/bandprotocol/bandchain/pull/2763) Implemented the data msg cat on tx index page
 - (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
 - (chore) [\#2755](https://github.com/bandprotocol/bandchain/pull/2755) Implemented Oracle tx msg restructure on txtable
 - (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
+- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
 - (impv) [\#2748](https://github.com/bandprotocol/bandchain/pull/2748) Implemented the token msg category on txindex page (both success and fail msgs)
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
+- (chore) [\#2742](https://github.com/bandprotocol/bandchain/pull/2742) Validator and proposal message restructure
 - (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
 - (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
 - (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
-- (chore) [\#2742](https://github.com/bandprotocol/bandchain/pull/2742) Validator and proposal message restructure
+- (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
 - (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
 - (impv) [\#2723](https://github.com/bandprotocol/bandchain/pull/2723) Re-factor to Msg structure
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
