@@ -25,6 +25,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -143,6 +144,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			oids[idx] = types.OracleScriptID(oid)
 		}
 		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
+	}
+	if viper.IsSet(flagWithEmitter) {
+		bandApp.AddHook(emitter.NewEmitterHook(
+			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
+			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
+			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
 	}
 
 	return bandApp
