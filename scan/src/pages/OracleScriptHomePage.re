@@ -14,6 +14,7 @@ module Styles = {
   let descriptionBox = style([minHeight(`px(36)), margin2(~v=`px(16), ~h=`zero)]);
   let idBox = style([marginBottom(`px(4))]);
   let tbodyContainer = style([minHeight(`px(600))]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 type sort_by_t =
@@ -282,21 +283,30 @@ let make = () => {
     <div className=CssHelper.container id="oraclescriptsSection">
       <div className=CssHelper.mobileSpacing>
         <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-        <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-        <Row.Grid>
-          {switch (mostRequestedOracleScriptSub) {
-           | Data(oracleScripts) =>
-             <>
-               {oracleScripts
-                ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, Sub.resolve(e)))
+        {switch (mostRequestedOracleScriptSub) {
+         | Data(oracleScripts) =>
+           oracleScripts->Belt.Array.length > 0
+             ? <>
+                 <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
+                 <Row.Grid>
+                   {oracleScripts
+                    ->Belt_Array.mapWithIndex((i, e) =>
+                        renderMostRequestedCard(i, Sub.resolve(e))
+                      )
+                    ->React.array}
+                 </Row.Grid>
+               </>
+             : React.null
+         | _ =>
+           <>
+             <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
+             <Row.Grid>
+               {Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
+                ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
                 ->React.array}
-             </>
-           | _ =>
-             Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
-             ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
-             ->React.array
-           }}
-        </Row.Grid>
+             </Row.Grid>
+           </>
+         }}
         <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid>
             {switch (allSub) {
@@ -374,13 +384,24 @@ let make = () => {
          | Data((oracleScripts, oracleScriptsCount)) =>
            let pageCount = Page.getPageCount(oracleScriptsCount, pageSize);
            <div className=Styles.tbodyContainer>
-             {oracleScripts
-              ->sorting(sortedBy)
-              ->Belt_Array.mapWithIndex((i, e) =>
-                  isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-                )
-              ->React.array}
+             {oracleScripts->Belt.Array.length > 0
+                ? oracleScripts
+                  ->sorting(sortedBy)
+                  ->Belt_Array.mapWithIndex((i, e) =>
+                      isMobile
+                        ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                    )
+                  ->React.array
+                : <EmptyContainer>
+                    <img src=Images.noSource className=Styles.noDataImage />
+                    <Heading
+                      size=Heading.H4
+                      value="No Oracle Script"
+                      align=Heading.Center
+                      weight=Heading.Regular
+                      color=Colors.bandBlue
+                    />
+                  </EmptyContainer>}
              {isMobile
                 ? React.null
                 : <Pagination

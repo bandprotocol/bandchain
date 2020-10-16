@@ -1,3 +1,9 @@
+module Styles = {
+  open Css;
+
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
+};
+
 type sort_by_t =
   | MostRequested
   | LatestUpdate;
@@ -240,13 +246,24 @@ let make = () => {
          | Data((dataSources, dataSourcesCount)) =>
            let pageCount = Page.getPageCount(dataSourcesCount, pageSize);
            <>
-             {dataSources
-              ->sorting(sortedBy)
-              ->Belt_Array.mapWithIndex((i, e) =>
-                  isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-                )
-              ->React.array}
+             {dataSources->Belt.Array.length > 0
+                ? dataSources
+                  ->sorting(sortedBy)
+                  ->Belt_Array.mapWithIndex((i, e) =>
+                      isMobile
+                        ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                    )
+                  ->React.array
+                : <EmptyContainer>
+                    <img src=Images.noSource className=Styles.noDataImage />
+                    <Heading
+                      size=Heading.H4
+                      value="No Data Source"
+                      align=Heading.Center
+                      weight=Heading.Regular
+                      color=Colors.bandBlue
+                    />
+                  </EmptyContainer>}
              {isMobile
                 ? React.null
                 : <Pagination

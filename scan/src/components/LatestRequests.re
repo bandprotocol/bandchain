@@ -1,3 +1,21 @@
+module Styles = {
+  open Css;
+
+  let noDataImage =
+    style([
+      width(`auto),
+      height(`px(40)),
+      marginBottom(`px(16)),
+      Media.mobile([marginBottom(`px(8))]),
+    ]);
+  let container =
+    style([
+      boxShadow(
+        Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
+      ),
+    ]);
+};
+
 let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {
   <TBody.Grid
     key={
@@ -151,11 +169,22 @@ let make = () => {
          </THead.Grid>}
     {switch (requestsSub) {
      | Data(requests) =>
-       requests
-       ->Belt_Array.mapWithIndex((i, e) =>
-           isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-         )
-       ->React.array
+       requests->Belt.Array.length > 0
+         ? requests
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
+         : <EmptyContainer height={`calc((`sub, `percent(100.), `px(86)))} boxShadow=true>
+             <img src=Images.noSource className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No Request"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </EmptyContainer>
      | _ =>
        Belt_Array.make(requestCount, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
