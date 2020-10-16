@@ -92,20 +92,14 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
-         msg="Delegate Amount"
+         msg="Amount"
          placeholder="0.000000"
          inputType="number"
          code=true
          autoFocus=true
          id="delegateAmountInput"
        />;
-     | _ =>
-       <EnhanceTxInput.Loading2
-         msg="Delegate Amount"
-         code=true
-         useMax=true
-         placeholder="0.000000"
-       />
+     | _ => <EnhanceTxInput.Loading2 msg="Amount" code=true useMax=true placeholder="0.000000" />
      }}
   </>;
 };
