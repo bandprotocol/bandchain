@@ -92,35 +92,6 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	// TODO: Make emitter as hook
-
-	// if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
-	// 	panic("Cannot set flag with pricer and with emitter at the same time")
-	// }
-	// if viper.IsSet(flagWithEmitter) {
-	// 	bandApp = emitter.NewBandAppWithEmitter(
-	// 		viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-	// 		skipUpgradeHeights, viper.GetString(flags.FlagHome),
-	// 		viper.GetBool(flagDisableFeelessReports),
-	// 		viper.GetBool(flagEnableFastSync),
-	// 		baseapp.SetPruning(pruningOpts),
-	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-	// 		baseapp.SetInterBlockCache(cache),
-	// 	)
-	// } else {
-	// 	bandApp = app.NewBandApp(
-	// 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-	// 		viper.GetString(flags.FlagHome),
-	// 		viper.GetBool(flagDisableFeelessReports),
-	// 		baseapp.SetPruning(pruningOpts),
-	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-	// 		baseapp.SetInterBlockCache(cache),
-	// 	)
-	// }
 
 	bandApp := app.NewBandApp(
 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
