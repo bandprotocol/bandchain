@@ -27,6 +27,7 @@
 
 ### Scan
 
+- (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
 - (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
 - (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
