@@ -18,7 +18,7 @@ module Styles = {
 
   let leftContainer = style([display(`flex), alignItems(`center), width(`percent(100.))]);
   let bandLogo = style([width(`px(40)), Media.mobile([width(`px(34))])]);
-  let cmcLogo = style([width(`px(15))]);
+  let cmcLogo = style([width(`px(15)), height(`px(15))]);
   let blockImage = style([display(`block)]);
 
   let socialLink = style([marginLeft(`px(10)), display(`flex), textDecoration(`none)]);
