@@ -13,7 +13,7 @@ module Styles = {
       fontSize(`px(14)),
       fontWeight(`light),
       border(`px(1), `solid, Colors.gray9),
-      placeholder([color(Colors.gray5)]),
+      placeholder([color(Colors.gray5), fontFamily(`custom("Inter"))]),
       focus([outline(`zero, `none, Colors.white)]),
       fontFamilies([
         `custom("Inter"),

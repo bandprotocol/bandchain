@@ -1,7 +1,5 @@
 module Styles = {
   open Css;
-
-  let info = style([display(`flex), justifyContent(`spaceBetween)]);
 };
 [@react.component]
 let make = (~address, ~receiver, ~setMsgsOpt) => {
@@ -35,17 +33,8 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
   );
 
   <>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.info>
-      <Text
-        value="Available Balance"
-        size=Text.Lg
-        spacing={Text.Em(0.03)}
-        nowrap=true
-        block=true
-      />
-      <VSpacing size=Spacing.lg />
-      <VSpacing size=Spacing.md />
+    <Heading size=Heading.H5 value="Available Balance" marginBottom=8 />
+    <div className={CssHelper.mb(~size=24, ())}>
       {switch (accountSub) {
        | Data({balance}) =>
          <div>
@@ -53,15 +42,12 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
              value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
-             weight=Text.Semibold
            />
            <Text value=" BAND" code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
     <EnhanceTxInput
       width=302
       inputData=toAddress
@@ -78,8 +64,6 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
         }
       }
     />
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
     {switch (accountSub) {
      | Data({balance}) =>
        //  TODO: hard-coded tx fee
@@ -104,6 +88,5 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
        />;
      | _ => <EnhanceTxInput.Loading msg="Send Amount (BAND)" width=300 />
      }}
-    <VSpacing size=Spacing.lg />
   </>;
 };
