@@ -164,16 +164,25 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   );
   <>
     <div className=Styles.warning>
-      <Text weight=Text.Semibold value="Please read before proceeding:" />
-      <VSpacing size=Spacing.xs />
+      <Heading
+        value="Please read before proceeding:"
+        size=Heading.H5
+        marginBottom=4
+        align=Heading.Left
+      />
       <Text
         weight=Text.Thin
         value="You can only redelegate a maximum of 7 times to/from the same validator pairs during any 21 day period."
       />
     </div>
     <div className=Styles.container>
-      <Text value="Redelegate From" size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading
+        value="Redelegate from"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data(({moniker}, _, _)) =>
          <div>
@@ -191,8 +200,13 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        }}
     </div>
     <div className=Styles.container>
-      <Text value="Redelegate To" size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading
+        value="Redelegate to"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data(({operatorAddress}, validators, _)) =>
          let filteredValidators =
@@ -204,8 +218,13 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        }}
     </div>
     <div className=Styles.container>
-      <Text value="Current Stake" size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading
+        value="Current Stake"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data((_, _, {amount: stakedAmount})) =>
          <div>

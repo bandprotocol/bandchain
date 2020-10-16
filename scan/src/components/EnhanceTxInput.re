@@ -87,8 +87,7 @@ let make =
   };
 
   <div className=Styles.container>
-    <Text value=msg size=Text.Md weight=Text.Medium nowrap=true block=true />
-    <VSpacing size=Spacing.sm />
+    <Heading value=msg size=Heading.H5 marginBottom=8 align=Heading.Left weight=Heading.Medium />
     <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
       <input
         id
@@ -127,8 +126,7 @@ module Loading = {
   [@react.component]
   let make = (~msg, ~width) => {
     <div className=Styles.container>
-      <Text value=msg size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading value=msg size=Heading.H5 marginBottom=8 align=Heading.Left />
       <LoadingCensorBar width height=37 />
     </div>;
   };
@@ -138,8 +136,7 @@ module Loading2 = {
   [@react.component]
   let make = (~msg, ~useMax=false, ~code=false, ~placeholder) => {
     <div className=Styles.container>
-      <Text value=msg size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading value=msg size=Heading.H5 marginBottom=8 align=Heading.Left />
       <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
         <input
           className={Css.merge([Styles.input, code ? Styles.code : ""])}
