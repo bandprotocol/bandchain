@@ -14,7 +14,7 @@ module Styles = {
 
   let disable = isActive => style([display(isActive ? `flex : `none)]);
 
-  let modalTitle = style([paddingBottom(`px(40))]);
+  let modalTitle = style([paddingBottom(`px(24))]);
 
   let selectWrapper =
     style([
