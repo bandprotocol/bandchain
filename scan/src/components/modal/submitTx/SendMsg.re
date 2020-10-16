@@ -77,7 +77,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
          msg="Send Amount (BAND)"
          inputType="number"
          code=true
-         placeholder="Insert send amount"
+         placeholder="0.000000"
          autoFocus={
            switch (toAddress.text) {
            | "" => false
