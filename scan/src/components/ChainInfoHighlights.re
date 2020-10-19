@@ -48,6 +48,7 @@ module HighlightCard = {
        | _ => React.null
        }}
       <div
+        id={"highlight-" ++ label}
         className={Css.merge([
           Styles.innerCard,
           CssHelper.flexBox(~direction=`column, ~justify=`spaceBetween, ~align=`flexStart, ()),

@@ -13,7 +13,10 @@ module Styles = {
 
   let proofContainer =
     style([
-      selector("> div + div", [marginLeft(`px(24)), Media.mobile([marginLeft(`px(16))])]),
+      selector(
+        "> button + button",
+        [marginLeft(`px(24)), Media.mobile([marginLeft(`px(16))])],
+      ),
     ]);
 };
 
