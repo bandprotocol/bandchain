@@ -87,7 +87,7 @@ let make = (~headers=["Key", "Value"], ~rows) => {
       <Row.Grid>
         {headers
          ->Belt_List.mapWithIndex((i, header) => {
-             <Col.Grid key={i |> string_of_int} col=columnSize colSm=columnSize>
+             <Col.Grid key={header ++ (i |> string_of_int)} col=columnSize colSm=columnSize>
                <Text value=header weight=Text.Semibold height={Text.Px(18)} color=Colors.gray7 />
              </Col.Grid>
            })
@@ -97,11 +97,13 @@ let make = (~headers=["Key", "Value"], ~rows) => {
     </div>
     {rows
      ->Belt.List.mapWithIndex((i, row) => {
-         <div key={i |> string_of_int} className={Css.merge([Styles.tableSpacing])}>
+         <div
+           key={"outerRow" ++ (i |> string_of_int)} className={Css.merge([Styles.tableSpacing])}>
            <Row.Grid>
              {row
               ->Belt_List.mapWithIndex((j, value) => {
-                  <Col.Grid key={j |> string_of_int} col=columnSize colSm=columnSize>
+                  <Col.Grid
+                    key={"innerRow" ++ (j |> string_of_int)} col=columnSize colSm=columnSize>
                     {renderField(value, valueWidth)}
                   </Col.Grid>
                 })
