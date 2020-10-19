@@ -4,14 +4,14 @@ module CreateDataSourceMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={dataSource.owner} />
+        <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.DataSource id={dataSource.id} />
+          <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
           <HSpacing size=Spacing.sm />
-          <Text value={dataSource.name} />
+          <Text value={dataSource.name} size=Text.Lg />
         </div>
       </Col.Grid>
     </Row.Grid>;
@@ -24,11 +24,11 @@ module CreateDataSourceFailMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={dataSource.owner} />
+        <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
-        <Text value={dataSource.name} />
+        <Text value={dataSource.name} size=Text.Lg />
       </Col.Grid>
     </Row.Grid>;
   };
@@ -40,14 +40,14 @@ module EditDataSourceMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={dataSource.owner} />
+        <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.DataSource id={dataSource.id} />
+          <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
           <HSpacing size=Spacing.sm />
-          <Text value={dataSource.name} />
+          <Text value={dataSource.name} size=Text.Lg />
         </div>
       </Col.Grid>
     </Row.Grid>;
@@ -60,12 +60,12 @@ module CreateOracleScriptMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={oracleScript.owner} />
+        <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.OracleScript id={oracleScript.id} />
+          <TypeID.OracleScript position=TypeID.Subtitle id={oracleScript.id} />
           <HSpacing size=Spacing.sm />
           <Text value={oracleScript.name} />
         </div>
@@ -80,11 +80,11 @@ module CreateOracleScriptFailMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={oracleScript.owner} />
+        <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
-        <Text value={oracleScript.name} />
+        <Text value={oracleScript.name} size=Text.Lg />
       </Col.Grid>
     </Row.Grid>;
   };
@@ -96,12 +96,12 @@ module EditOracleScriptMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={oracleScript.owner} />
+        <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.OracleScript id={oracleScript.id} />
+          <TypeID.OracleScript position=TypeID.Subtitle id={oracleScript.id} />
           <HSpacing size=Spacing.sm />
           <Text value={oracleScript.name} />
         </div>
@@ -117,14 +117,18 @@ module RequestMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={request.sender} />
+        <AddressRender position=AddressRender.Subtitle address={request.sender} />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Request ID" size=Heading.H5 marginBottom=8 />
+        <TypeID.Request position=TypeID.Subtitle id={request.id} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Oracle Script" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.OracleScript id={request.oracleScriptID} />
+          <TypeID.OracleScript position=TypeID.Subtitle id={request.oracleScriptID} />
           <HSpacing size=Spacing.sm />
-          <Text value={request.oracleScriptName} />
+          <Text value={request.oracleScriptName} size=Text.Lg />
         </div>
       </Col.Grid>
       <Col.Grid mb=24>
@@ -156,16 +160,17 @@ module RequestMsg = {
              ellipsis=true
              code=true
              block=true
+             size=Text.Lg
            />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Request Validator Count" size=Heading.H5 marginBottom=8 />
-        <Text value={request.askCount |> string_of_int} />
+        <Text value={request.askCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
-        <Text value={request.minCount |> string_of_int} />
+        <Text value={request.minCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
     </Row.Grid>;
   };
@@ -177,29 +182,29 @@ module RequestFailMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={request.sender} />
+        <AddressRender position=AddressRender.Subtitle address={request.sender} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Oracle Script" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <TypeID.OracleScript id={request.oracleScriptID} />
+          <TypeID.OracleScript position=TypeID.Subtitle id={request.oracleScriptID} />
         </div>
       </Col.Grid>
       <Col.Grid mb=24>
         <Heading value="Calldata" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
-          <Text value={request.calldata |> JsBuffer.toHex} color=Colors.gray7 />
+          <Text value={request.calldata |> JsBuffer.toHex} color=Colors.gray7 size=Text.Lg />
           <HSpacing size=Spacing.sm />
           <CopyRender width=14 message={request.calldata |> JsBuffer.toHex} />
         </div>
       </Col.Grid>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Request Validator Count" size=Heading.H5 marginBottom=8 />
-        <Text value={request.askCount |> string_of_int} />
+        <Text value={request.askCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
-        <Text value={request.minCount |> string_of_int} />
+        <Text value={request.minCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
     </Row.Grid>;
   };
@@ -211,11 +216,11 @@ module ReportMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={report.reporter} />
+        <AddressRender position=AddressRender.Subtitle address={report.reporter} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Request ID" size=Heading.H5 marginBottom=8 />
-        <div className={CssHelper.flexBox()}> <TypeID.Request id={report.requestID} /> </div>
+        <TypeID.Request position=TypeID.Subtitle id={report.requestID} />
       </Col.Grid>
       <Col.Grid>
         <Heading value="Raw Data Report" size=Heading.H5 marginBottom=8 />
