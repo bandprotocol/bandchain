@@ -28,6 +28,7 @@
 ### Scan
 
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
+- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
 - (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
 - (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
 - (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB

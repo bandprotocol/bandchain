@@ -8,7 +8,7 @@ type t =
 
 let toString =
   fun
-  | Send(_) => "Send"
+  | Send(_) => "Send Token"
   | Delegate(_) => "Delegate"
   | Undelegate(_) => "Undelegate"
   | Redelegate(_) => "Redelegate"
