@@ -1,10 +1,11 @@
 package emitter
 
 import (
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
 var (
@@ -36,7 +37,7 @@ func (h *EmitterHook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64)
 
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
 func (app *EmitterHook) handleMsgSubmitProposal(
-	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap,
 ) {
 	proposalId := uint64(common.Atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
 	proposal, _ := app.govKeeper.GetProposal(ctx, proposalId)
@@ -59,7 +60,7 @@ func (app *EmitterHook) handleMsgSubmitProposal(
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
 func (h *EmitterHook) handleMsgDeposit(
-	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit,
 ) {
 	h.emitSetDeposit(ctx, txHash, msg.ProposalID, msg.Depositor)
 	h.emitUpdateProposalAfterDeposit(ctx, msg.ProposalID)
@@ -67,7 +68,7 @@ func (h *EmitterHook) handleMsgDeposit(
 
 // handleMsgVote implements emitter handler for MsgVote.
 func (h *EmitterHook) handleMsgVote(
-	ctx sdk.Context, txHash []byte, msg gov.MsgVote, evMap common.EvMap, extra common.JsDict,
+	txHash []byte, msg gov.MsgVote,
 ) {
 	h.Write("SET_VOTE", common.JsDict{
 		"proposal_id": msg.ProposalID,
@@ -77,7 +78,7 @@ func (h *EmitterHook) handleMsgVote(
 	})
 }
 
-func (h *EmitterHook) handleEventInactiveProposal(ctx sdk.Context, evMap common.EvMap) {
+func (h *EmitterHook) handleEventInactiveProposal(evMap common.EvMap) {
 	h.Write("UPDATE_PROPOSAL", common.JsDict{
 		"id":     common.Atoi(evMap[types.EventTypeInactiveProposal+"."+types.AttributeKeyProposalID][0]),
 		"status": StatusInactive,

@@ -35,47 +35,47 @@ func (h *EmitterHook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log
 	case oracle.MsgReportData:
 		h.handleMsgReportData(ctx, txHash, msg, evMap, extra)
 	case oracle.MsgCreateDataSource:
-		h.handleMsgCreateDataSource(ctx, txHash, msg, evMap, extra)
+		h.handleMsgCreateDataSource(ctx, txHash, evMap, extra)
 	case oracle.MsgCreateOracleScript:
-		h.handleMsgCreateOracleScript(ctx, txHash, msg, evMap, extra)
+		h.handleMsgCreateOracleScript(ctx, txHash, evMap, extra)
 	case oracle.MsgEditDataSource:
-		h.handleMsgEditDataSource(ctx, txHash, msg, evMap, extra)
+		h.handleMsgEditDataSource(ctx, txHash, msg)
 	case oracle.MsgEditOracleScript:
-		h.handleMsgEditOracleScript(ctx, txHash, msg, evMap, extra)
+		h.handleMsgEditOracleScript(ctx, txHash, msg)
 	case oracle.MsgAddReporter:
-		h.handleMsgAddReporter(ctx, txHash, msg, evMap, extra)
+		h.handleMsgAddReporter(ctx, msg, extra)
 	case oracle.MsgRemoveReporter:
-		h.handleMsgRemoveReporter(ctx, txHash, msg, evMap, extra)
+		h.handleMsgRemoveReporter(ctx, msg, extra)
 	case oracle.MsgActivate:
-		h.handleMsgActivate(ctx, txHash, msg, evMap, extra)
+		h.handleMsgActivate(ctx, msg)
 	case staking.MsgCreateValidator:
-		h.handleMsgCreateValidator(ctx, txHash, msg, evMap, extra)
+		h.handleMsgCreateValidator(ctx, msg)
 	case staking.MsgEditValidator:
-		h.handleMsgEditValidator(ctx, txHash, msg, evMap, extra)
+		h.handleMsgEditValidator(ctx, msg)
 	case staking.MsgDelegate:
-		h.handleMsgDelegate(ctx, txHash, msg, evMap, extra)
+		h.handleMsgDelegate(ctx, msg)
 	case staking.MsgUndelegate:
-		h.handleMsgUndelegate(ctx, txHash, msg, evMap, extra)
+		h.handleMsgUndelegate(ctx, msg, evMap)
 	case staking.MsgBeginRedelegate:
-		h.handleMsgBeginRedelegate(ctx, txHash, msg, evMap, extra)
+		h.handleMsgBeginRedelegate(ctx, msg, evMap)
 	case bank.MsgSend:
-		h.handleMsgSend(ctx, txHash, msg, evMap, extra)
+		h.handleMsgSend(msg)
 	case bank.MsgMultiSend:
-		h.handleMsgMultiSend(ctx, txHash, msg, evMap, extra)
+		h.handleMsgMultiSend(msg)
 	case dist.MsgWithdrawDelegatorReward:
-		h.handleMsgWithdrawDelegatorReward(ctx, txHash, msg, evMap, extra)
+		h.handleMsgWithdrawDelegatorReward(ctx, msg, evMap, extra)
 	case dist.MsgSetWithdrawAddress:
-		h.handleMsgSetWithdrawAddress(ctx, txHash, msg, evMap, extra)
+		h.handleMsgSetWithdrawAddress(msg)
 	case dist.MsgWithdrawValidatorCommission:
-		h.handleMsgWithdrawValidatorCommission(ctx, txHash, msg, evMap, extra)
+		h.handleMsgWithdrawValidatorCommission(ctx, msg, evMap, extra)
 	case slashing.MsgUnjail:
-		h.handleMsgUnjail(ctx, txHash, msg, evMap, extra)
+		h.handleMsgUnjail(ctx, msg)
 	case gov.MsgSubmitProposal:
-		h.handleMsgSubmitProposal(ctx, txHash, msg, evMap, extra)
+		h.handleMsgSubmitProposal(ctx, txHash, msg, evMap)
 	case gov.MsgVote:
-		h.handleMsgVote(ctx, txHash, msg, evMap, extra)
+		h.handleMsgVote(txHash, msg)
 	case gov.MsgDeposit:
-		h.handleMsgDeposit(ctx, txHash, msg, evMap, extra)
+		h.handleMsgDeposit(ctx, txHash, msg)
 	}
 }
 
@@ -92,13 +92,13 @@ func (h *EmitterHook) handleBeginBlockEndBlockEvent(ctx sdk.Context, event abci.
 	case EventTypeCompleteUnbonding:
 		h.handleEventTypeCompleteUnbonding(ctx, evMap)
 	case EventTypeCompleteRedelegation:
-		h.handEventTypeCompleteRedelegation(ctx, evMap)
+		h.handEventTypeCompleteRedelegation(ctx)
 	case EventTypeInactiveProposal:
-		h.handleEventInactiveProposal(ctx, evMap)
+		h.handleEventInactiveProposal(evMap)
 	case EventTypeActiveProposal:
 		h.handleEventTypeActiveProposal(ctx, evMap)
 	case bank.EventTypeTransfer:
-		h.handleEventTypeTransfer(ctx, evMap)
+		h.handleEventTypeTransfer(evMap)
 	default:
 		break
 	}

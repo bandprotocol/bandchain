@@ -22,7 +22,7 @@
 
 ### Emitter & Flusher
 
-- (impv) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Implemented hook for emitter
+- (impv) [\#2764](https://github.com/bandprotocol/bandchain/pull/2764) Implemented hook for emitter
 - (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
 - (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
 

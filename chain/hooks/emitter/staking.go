@@ -128,7 +128,7 @@ func (h *EmitterHook) emitDelegation(ctx sdk.Context, operatorAddress sdk.ValAdd
 
 // handleMsgCreateValidator implements emitter handler for MsgCreateValidator.
 func (h *EmitterHook) handleMsgCreateValidator(
-	ctx sdk.Context, txHash []byte, msg staking.MsgCreateValidator, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg staking.MsgCreateValidator,
 ) {
 	h.emitSetValidator(ctx, msg.ValidatorAddress)
 	h.emitDelegation(ctx, msg.ValidatorAddress, msg.DelegatorAddress)
@@ -136,7 +136,7 @@ func (h *EmitterHook) handleMsgCreateValidator(
 
 // handleMsgEditValidator implements emitter handler for MsgEditValidator.
 func (h *EmitterHook) handleMsgEditValidator(
-	ctx sdk.Context, txHash []byte, msg staking.MsgEditValidator, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg staking.MsgEditValidator,
 ) {
 	h.emitSetValidator(ctx, msg.ValidatorAddress)
 }
@@ -148,14 +148,14 @@ func (h *EmitterHook) emitUpdateValidatorAndDelegation(ctx sdk.Context, operator
 
 // handleMsgDelegate implements emitter handler for MsgDelegate
 func (h *EmitterHook) handleMsgDelegate(
-	ctx sdk.Context, txHash []byte, msg staking.MsgDelegate, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg staking.MsgDelegate,
 ) {
 	h.emitUpdateValidatorAndDelegation(ctx, msg.ValidatorAddress, msg.DelegatorAddress)
 }
 
 // handleMsgUndelegate implements emitter handler for MsgUndelegate
 func (h *EmitterHook) handleMsgUndelegate(
-	ctx sdk.Context, txHash []byte, msg staking.MsgUndelegate, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg staking.MsgUndelegate, evMap common.EvMap,
 ) {
 	h.emitUpdateValidatorAndDelegation(ctx, msg.ValidatorAddress, msg.DelegatorAddress)
 	h.emitUnbondingDelegation(ctx, msg, evMap)
@@ -174,7 +174,7 @@ func (h *EmitterHook) emitUnbondingDelegation(ctx sdk.Context, msg staking.MsgUn
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
 func (h *EmitterHook) handleMsgBeginRedelegate(
-	ctx sdk.Context, txHash []byte, msg staking.MsgBeginRedelegate, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg staking.MsgBeginRedelegate, evMap common.EvMap,
 ) {
 	h.emitUpdateValidatorAndDelegation(ctx, msg.ValidatorSrcAddress, msg.DelegatorAddress)
 	h.emitUpdateValidatorAndDelegation(ctx, msg.ValidatorDstAddress, msg.DelegatorAddress)
@@ -198,6 +198,6 @@ func (h *EmitterHook) handleEventTypeCompleteUnbonding(ctx sdk.Context, evMap co
 	h.AddAccountsInBlock(acc)
 }
 
-func (h *EmitterHook) handEventTypeCompleteRedelegation(ctx sdk.Context, evMap common.EvMap) {
+func (h *EmitterHook) handEventTypeCompleteRedelegation(ctx sdk.Context) {
 	h.Write("REMOVE_REDELEGATION", common.JsDict{"timestamp": ctx.BlockTime().UnixNano()})
 }
