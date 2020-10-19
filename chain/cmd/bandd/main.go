@@ -25,6 +25,7 @@ import (
 	dbm "github.com/tendermint/tm-db"
 
 	"github.com/bandprotocol/bandchain/chain/app"
+	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -91,35 +92,6 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if err != nil {
 		panic(err)
 	}
-	// TODO: Make emitter as hook
-
-	// if viper.IsSet(flagWithPricer) && viper.IsSet(flagWithEmitter) {
-	// 	panic("Cannot set flag with pricer and with emitter at the same time")
-	// }
-	// if viper.IsSet(flagWithEmitter) {
-	// 	bandApp = emitter.NewBandAppWithEmitter(
-	// 		viper.GetString(flagWithEmitter), logger, db, traceStore, true, invCheckPeriod,
-	// 		skipUpgradeHeights, viper.GetString(flags.FlagHome),
-	// 		viper.GetBool(flagDisableFeelessReports),
-	// 		viper.GetBool(flagEnableFastSync),
-	// 		baseapp.SetPruning(pruningOpts),
-	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-	// 		baseapp.SetInterBlockCache(cache),
-	// 	)
-	// } else {
-	// 	bandApp = app.NewBandApp(
-	// 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
-	// 		viper.GetString(flags.FlagHome),
-	// 		viper.GetBool(flagDisableFeelessReports),
-	// 		baseapp.SetPruning(pruningOpts),
-	// 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
-	// 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
-	// 		baseapp.SetHaltTime(viper.GetUint64(server.FlagHaltTime)),
-	// 		baseapp.SetInterBlockCache(cache),
-	// 	)
-	// }
 
 	bandApp := app.NewBandApp(
 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
@@ -143,6 +115,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			oids[idx] = types.OracleScriptID(oid)
 		}
 		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
+	}
+	if viper.IsSet(flagWithEmitter) {
+		bandApp.AddHook(emitter.NewEmitterHook(
+			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
+			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
+			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
 	}
 
 	return bandApp

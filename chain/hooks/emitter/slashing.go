@@ -3,14 +3,16 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
+
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
 // handleEventSlash implements emitter handler for Slashing event.
-func (app *App) handleEventSlash(event EvMap) {
+func (h *EmitterHook) handleEventSlash(ctx sdk.Context, event common.EvMap) {
 	if raw, ok := event[slashing.EventTypeSlash+"."+slashing.AttributeKeyJailed]; ok && len(raw) == 1 {
 		consAddress, _ := sdk.ConsAddressFromBech32(raw[0])
-		validator, _ := app.StakingKeeper.GetValidatorByConsAddr(app.DeliverContext, consAddress)
-		app.Write("UPDATE_VALIDATOR", JsDict{
+		validator, _ := h.stakingKeeper.GetValidatorByConsAddr(ctx, consAddress)
+		h.Write("UPDATE_VALIDATOR", common.JsDict{
 			"operator_address": validator.OperatorAddress.String(),
 			"tokens":           validator.Tokens.Uint64(),
 			"jailed":           validator.Jailed,
@@ -19,11 +21,11 @@ func (app *App) handleEventSlash(event EvMap) {
 }
 
 // handleMsgUnjail implements emitter handler for MsgUnjail.
-func (app *App) handleMsgUnjail(
-	txHash []byte, msg slashing.MsgUnjail, evMap EvMap, extra JsDict,
+func (h *EmitterHook) handleMsgUnjail(
+	ctx sdk.Context, msg slashing.MsgUnjail,
 ) {
-	validator, _ := app.StakingKeeper.GetValidator(app.DeliverContext, msg.ValidatorAddr)
-	app.Write("UPDATE_VALIDATOR", JsDict{
+	validator, _ := h.stakingKeeper.GetValidator(ctx, msg.ValidatorAddr)
+	h.Write("UPDATE_VALIDATOR", common.JsDict{
 		"operator_address": msg.ValidatorAddr.String(),
 		"jailed":           validator.Jailed,
 	})
