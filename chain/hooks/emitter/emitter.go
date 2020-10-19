@@ -129,7 +129,7 @@ func (h *EmitterHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain,
 		h.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if msg, ok := msg.(staking.MsgCreateValidator); ok {
-				h.handleMsgCreateValidator(ctx, nil, msg, nil, nil)
+				h.handleMsgCreateValidator(ctx, msg)
 			}
 		}
 	}

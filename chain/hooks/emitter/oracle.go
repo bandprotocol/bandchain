@@ -45,7 +45,7 @@ func (h *EmitterHook) emitOracleModule(ctx sdk.Context) {
 		h.emitRawRequestAndValRequest(rid, req)
 		reps := h.oracleKeeper.GetReports(ctx, rid)
 		for _, rep := range reps {
-			h.emitReportAndRawReport(ctx, nil, rid, rep.Validator, nil, rep.RawReports)
+			h.emitReportAndRawReport(nil, rid, rep.Validator, nil, rep.RawReports)
 		}
 	}
 }
@@ -101,7 +101,7 @@ func (h *EmitterHook) emitRawRequestAndValRequest(requestID types.RequestID, req
 }
 
 func (app *EmitterHook) emitReportAndRawReport(
-	ctx sdk.Context, txHash []byte, rid types.RequestID, validator sdk.ValAddress, reporter sdk.AccAddress, rawReports []types.RawReport,
+	txHash []byte, rid types.RequestID, validator sdk.ValAddress, reporter sdk.AccAddress, rawReports []types.RawReport,
 ) {
 	app.Write("NEW_REPORT", common.JsDict{
 		"tx_hash":    txHash,
@@ -160,12 +160,12 @@ func (h *EmitterHook) handleMsgRequestData(
 func (h *EmitterHook) handleMsgReportData(
 	ctx sdk.Context, txHash []byte, msg oracle.MsgReportData, evMap common.EvMap, extra common.JsDict,
 ) {
-	h.emitReportAndRawReport(ctx, txHash, msg.RequestID, msg.Validator, msg.Reporter, msg.RawReports)
+	h.emitReportAndRawReport(txHash, msg.RequestID, msg.Validator, msg.Reporter, msg.RawReports)
 }
 
 // handleMsgCreateDataSource implements emitter handler for MsgCreateDataSource.
 func (h *EmitterHook) handleMsgCreateDataSource(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgCreateDataSource, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, evMap common.EvMap, extra common.JsDict,
 ) {
 	id := types.DataSourceID(common.Atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := h.oracleKeeper.MustGetDataSource(ctx, id)
@@ -175,7 +175,7 @@ func (h *EmitterHook) handleMsgCreateDataSource(
 
 // handleMsgCreateOracleScript implements emitter handler for MsgCreateOracleScript.
 func (h *EmitterHook) handleMsgCreateOracleScript(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgCreateOracleScript, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, evMap common.EvMap, extra common.JsDict,
 ) {
 	id := types.OracleScriptID(common.Atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := h.oracleKeeper.MustGetOracleScript(ctx, id)
@@ -185,7 +185,7 @@ func (h *EmitterHook) handleMsgCreateOracleScript(
 
 // handleMsgEditDataSource implements emitter handler for MsgEditDataSource.
 func (h *EmitterHook) handleMsgEditDataSource(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgEditDataSource, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, msg oracle.MsgEditDataSource,
 ) {
 	id := msg.DataSourceID
 	ds := h.oracleKeeper.MustGetDataSource(ctx, id)
@@ -194,7 +194,7 @@ func (h *EmitterHook) handleMsgEditDataSource(
 
 // handleMsgEditOracleScript implements emitter handler for MsgEditOracleScript.
 func (h *EmitterHook) handleMsgEditOracleScript(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgEditOracleScript, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, txHash []byte, msg oracle.MsgEditOracleScript,
 ) {
 	id := msg.OracleScriptID
 	os := h.oracleKeeper.MustGetOracleScript(ctx, id)
@@ -208,7 +208,7 @@ func (h *EmitterHook) handleEventRequestExecute(ctx sdk.Context, evMap common.Ev
 
 // handleMsgAddReporter implements emitter handler for MsgAddReporter.
 func (h *EmitterHook) handleMsgAddReporter(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgAddReporter, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg oracle.MsgAddReporter, extra common.JsDict,
 ) {
 	val, _ := h.stakingKeeper.GetValidator(ctx, msg.Validator)
 	extra["validator_moniker"] = val.GetMoniker()
@@ -221,7 +221,7 @@ func (h *EmitterHook) handleMsgAddReporter(
 
 // handleMsgRemoveReporter implements emitter handler for MsgRemoveReporter.
 func (h *EmitterHook) handleMsgRemoveReporter(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgRemoveReporter, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg oracle.MsgRemoveReporter, extra common.JsDict,
 ) {
 	val, _ := h.stakingKeeper.GetValidator(ctx, msg.Validator)
 	extra["validator_moniker"] = val.GetMoniker()
@@ -234,7 +234,7 @@ func (h *EmitterHook) handleMsgRemoveReporter(
 
 // handleMsgActivate implements emitter handler for handleMsgActivate.
 func (h *EmitterHook) handleMsgActivate(
-	ctx sdk.Context, txHash []byte, msg oracle.MsgActivate, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg oracle.MsgActivate,
 ) {
 	h.emitUpdateValidatorStatus(ctx, msg.Validator)
 	h.emitHistoricalValidatorStatus(ctx, msg.Validator)

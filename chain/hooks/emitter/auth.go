@@ -1,9 +1,10 @@
 package emitter
 
 import (
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/exported"
+
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
 func (h *EmitterHook) emitAuthModule(ctx sdk.Context) {

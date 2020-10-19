@@ -1,9 +1,10 @@
 package emitter
 
 import (
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
+
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
 // handleEventSlash implements emitter handler for Slashing event.
@@ -21,7 +22,7 @@ func (h *EmitterHook) handleEventSlash(ctx sdk.Context, event common.EvMap) {
 
 // handleMsgUnjail implements emitter handler for MsgUnjail.
 func (h *EmitterHook) handleMsgUnjail(
-	ctx sdk.Context, txHash []byte, msg slashing.MsgUnjail, evMap common.EvMap, extra common.JsDict,
+	ctx sdk.Context, msg slashing.MsgUnjail,
 ) {
 	validator, _ := h.stakingKeeper.GetValidator(ctx, msg.ValidatorAddr)
 	h.Write("UPDATE_VALIDATOR", common.JsDict{
