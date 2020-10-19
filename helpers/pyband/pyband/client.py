@@ -8,18 +8,6 @@ class BandClientRequestException(Exception):
     pass
 
 
-class BandClientHTTPError(Exception):
-    pass
-
-
-class BandClientConnectionError(Exception):
-    pass
-
-
-class BandClientTimeout(Exception):
-    pass
-
-
 class Client(object):
     def __init__(self, rpc_url: str) -> None:
         self.rpc_url = rpc_url
@@ -29,14 +17,13 @@ class Client(object):
             r = requests.get(self.rpc_url + path, **kwargs)
             r.raise_for_status()
             return r.json()
-        except requests.exceptions.RequestException as err:
+        except (
+            requests.exceptions.RequestException,
+            requests.exceptions.HTTPError,
+            requests.exceptions.ConnectionError,
+            requests.exceptions.Timeout,
+        ) as err:
             raise BandClientRequestException(err)
-        except requests.exceptions.HTTPError as errh:
-            raise BandClientHTTPError(errh)
-        except requests.exceptions.ConnectionError as errc:
-            raise BandClientConnectionError(errc)
-        except requests.exceptions.Timeout as errt:
-            raise BandClientTimeout(errt)
         except:
             raise Exception()
 
