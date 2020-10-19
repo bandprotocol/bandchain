@@ -46,8 +46,9 @@ module EditDataSourceMsg = {
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
-          <HSpacing size=Spacing.sm />
-          <Text value={dataSource.name} size=Text.Lg />
+          {dataSource.name == Config.doNotModify
+             ? React.null
+             : <> <HSpacing size=Spacing.sm /> <Text value={dataSource.name} size=Text.Lg /> </>}
         </div>
       </Col.Grid>
     </Row.Grid>;
@@ -102,8 +103,9 @@ module EditOracleScriptMsg = {
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.OracleScript position=TypeID.Subtitle id={oracleScript.id} />
-          <HSpacing size=Spacing.sm />
-          <Text value={oracleScript.name} />
+          {oracleScript.name == Config.doNotModify
+             ? React.null
+             : <> <HSpacing size=Spacing.sm /> <Text value={oracleScript.name} size=Text.Lg /> </>}
         </div>
       </Col.Grid>
     </Row.Grid>;
