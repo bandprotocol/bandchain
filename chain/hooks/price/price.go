@@ -2,15 +2,16 @@ package price
 
 import (
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/syndtr/goleveldb/leveldb"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	"github.com/bandprotocol/bandchain/chain/pkg/obi"
-	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -18,20 +19,24 @@ import (
 type PriceHook struct {
 	cdc          *codec.Codec
 	stdOs        map[types.OracleScriptID]bool
-	priceCache   pricecache.Cache
 	oracleKeeper keeper.Keeper
+	db           *leveldb.DB
 }
 
-func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, priceCacheDir string) *PriceHook {
+func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, levelDBDir string) *PriceHook {
 	stdOs := make(map[types.OracleScriptID]bool)
 	for _, oid := range oids {
 		stdOs[oid] = true
 	}
+	db, err := leveldb.OpenFile(levelDBDir, nil)
+	if err != nil {
+		panic(err)
+	}
 	return &PriceHook{
 		cdc:          cdc,
 		stdOs:        stdOs,
-		priceCache:   pricecache.New(priceCacheDir),
 		oracleKeeper: oracleKeeper,
+		db:           db,
 	}
 }
 
@@ -61,8 +66,8 @@ func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res 
 					obi.MustDecode(result.RequestPacketData.Calldata, &input)
 					obi.MustDecode(result.ResponsePacketData.Result, &output)
 					for idx, symbol := range input.Symbols {
-						price := pricecache.NewPrice(symbol, input.Multiplier, output.Pxs[idx], result.ResponsePacketData.RequestID, result.ResponsePacketData.ResolveTime)
-						err := h.priceCache.SetPrice(pricecache.GetFilename(symbol, result.RequestPacketData.MinCount, result.RequestPacketData.AskCount), price)
+						price := NewPrice(symbol, input.Multiplier, output.Pxs[idx], result.ResponsePacketData.RequestID, result.ResponsePacketData.ResolveTime)
+						err := h.db.Put([]byte(fmt.Sprintf("%s,%d,%d", symbol, result.RequestPacketData.MinCount, result.RequestPacketData.AskCount)), h.cdc.MustMarshalBinaryBare(price), nil)
 						if err != nil {
 							panic(err)
 						}
@@ -82,11 +87,7 @@ func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, st
 			if len(paths) < 3 {
 				return common.QueryResultError(errors.New("no route for prices query specified")), true
 			}
-			price, err := h.priceCache.GetPrice(paths[2])
-			if err != nil {
-				return common.QueryResultError(err), true
-			}
-			bz, err := h.cdc.MarshalBinaryBare(price)
+			bz, err := h.db.Get([]byte(paths[2]), nil)
 			if err != nil {
 				return common.QueryResultError(err), true
 			}
