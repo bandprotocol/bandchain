@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2785](https://github.com/bandprotocol/bandchain/pull/2785) Save price to level db instead of price cache
 - (feat) [\#2757](https://github.com/bandprotocol/bandchain/pull/2757) Bring cosmos-hd-path flag
 - (bugs) [\#2730](https://github.com/bandprotocol/bandchain/pull/2730) Add Content-Type header on oracle module rest endpoints
 - (feat) [\#2718](https://github.com/bandprotocol/bandchain/pull/2718) Added more field in price cache
