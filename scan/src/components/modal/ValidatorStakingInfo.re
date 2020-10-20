@@ -17,7 +17,7 @@ module Styles = {
       borderBottom(`px(1), `solid, Colors.gray9),
       paddingBottom(`px(12)),
       marginBottom(`px(16)),
-      height(`px(41)),
+      minHeight(`px(41)),
     ]);
   let rewardContainer =
     style([backgroundColor(Colors.profileBG), padding2(~v=`px(16), ~h=`px(24))]);
