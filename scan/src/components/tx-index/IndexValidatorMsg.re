@@ -3,7 +3,7 @@ module CreateValidatorMsg = {
   let make = (~validator: TxSub.Msg.CreateValidator.t) => {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
-        <Heading value="Monikor" size=Heading.H5 marginBottom=8 />
+        <Heading value="Moniker" size=Heading.H5 marginBottom=8 />
         <ValidatorMonikerLink
           validatorAddress={validator.validatorAddress}
           moniker={validator.moniker}
@@ -86,7 +86,7 @@ module EditValidatorMsg = {
   let make = (~validator: BandScan.TxSub.Msg.EditValidator.t) => {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
-        <Heading value="Monikor" size=Heading.H5 marginBottom=8 />
+        <Heading value="Moniker" size=Heading.H5 marginBottom=8 />
         <Text
           value={validator.moniker == Config.doNotModify ? "Unchanged" : validator.moniker}
           size=Text.Lg
@@ -145,7 +145,41 @@ module EditValidatorMsg = {
   };
 };
 
-// module UnjailMsg = {};
+module UnjailMsg = {
+  [@react.component]
+  let make = (~unjail: TxSub.Msg.Unjail.success_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <ValidatorMonikerLink
+          validatorAddress={unjail.address}
+          moniker={unjail.moniker}
+          identity={unjail.identity}
+          width={`percent(100.)}
+          avatarWidth=20
+          size=Text.Lg
+          weight=Text.Thin
+        />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module UnjailFailMsg = {
+  [@react.component]
+  let make = (~unjail: TxSub.Msg.Unjail.fail_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six mb=24>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={unjail.address}
+          accountType=`validator
+        />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
 
 module AddReporterMsg = {
   [@react.component]
@@ -153,18 +187,112 @@ module AddReporterMsg = {
     <Row.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
-        <Text value={address.validatorMoniker} code=true />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={address.validator}
+          accountType=`validator
+        />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
-        <AddressRender address={address.reporter} />
+        <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
     </Row.Grid>;
   };
 };
 
-// module RemoveReporterMsg = {};
+module AddReporterFailMsg = {
+  [@react.component]
+  let make = (~address: TxSub.Msg.AddReporter.fail_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={address.validator}
+          accountType=`validator
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={address.reporter} />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
 
-// module ActivateMsg = {};
+module RemoveReporterMsg = {
+  [@react.component]
+  let make = (~address: TxSub.Msg.RemoveReporter.success_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={address.validator}
+          accountType=`validator
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={address.reporter} />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
 
-// module SetWithdrawAddressMsg = {};
+module RemoveReporterFailMsg = {
+  [@react.component]
+  let make = (~address: TxSub.Msg.RemoveReporter.fail_t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={address.validator}
+          accountType=`validator
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={address.reporter} />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module ActivateMsg = {
+  [@react.component]
+  let make = (~activate: TxSub.Msg.Activate.t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={activate.validatorAddress}
+          accountType=`validator
+        />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
+
+module SetWithdrawAddressMsg = {
+  [@react.component]
+  let make = (~set: TxSub.Msg.SetWithdrawAddress.t) => {
+    <Row.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender
+          position=AddressRender.Subtitle
+          address={set.delegatorAddress}
+          accountType=`validator
+        />
+      </Col.Grid>
+      <Col.Grid col=Col.Six>
+        <Heading value="Withdraw Address" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={set.withdrawAddress} />
+      </Col.Grid>
+    </Row.Grid>;
+  };
+};
