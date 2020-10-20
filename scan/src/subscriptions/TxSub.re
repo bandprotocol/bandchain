@@ -872,11 +872,27 @@ module Msg = {
   };
 
   module Unjail = {
-    type t = {address: Address.t};
+    type success_t = {
+      address: Address.t,
+      identity: string,
+      moniker: string,
+    };
 
-    let decode = json =>
+    type fail_t = {address: Address.t};
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        address: json |> at(["msg", "address"], string) |> Address.fromBech32,
+        identity: json |> at(["extra", "identity"], string),
+        moniker: json |> at(["extra", "moniker"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
+    };
   };
+
   module SetWithdrawAddress = {
     type t = {
       delegatorAddress: Address.t,
@@ -889,6 +905,7 @@ module Msg = {
       };
     };
   };
+
   module SubmitProposal = {
     type success_t = {
       proposer: Address.t,
@@ -1010,12 +1027,6 @@ module Msg = {
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
       };
     };
-
-    let decodeFail = json => {
-      JsonUtils.Decode.{
-        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
-      };
-    };
   };
 
   module MultiSend = {
@@ -1099,8 +1110,8 @@ module Msg = {
     | RedelegateMsgFail(Redelegate.fail_t)
     | WithdrawRewardMsgSuccess(WithdrawReward.success_t)
     | WithdrawRewardMsgFail(WithdrawReward.fail_t)
-    | UnjailMsgSuccess(Unjail.t)
-    | UnjailMsgFail(Unjail.t)
+    | UnjailMsgSuccess(Unjail.success_t)
+    | UnjailMsgFail(Unjail.fail_t)
     | SetWithdrawAddressMsgSuccess(SetWithdrawAddress.t)
     | SetWithdrawAddressMsgFail(SetWithdrawAddress.t)
     | SubmitProposalMsgSuccess(SubmitProposal.success_t)
@@ -1150,7 +1161,7 @@ module Msg = {
     | RedelegateMsgFail(delegation) => delegation.delegatorAddress
     | WithdrawRewardMsgSuccess(withdrawal) => withdrawal.delegatorAddress
     | WithdrawRewardMsgFail(withdrawal) => withdrawal.delegatorAddress
-    | UnjailMsgSuccess(validator)
+    | UnjailMsgSuccess(validator) => validator.address
     | UnjailMsgFail(validator) => validator.address
     | SetWithdrawAddressMsgSuccess(set)
     | SetWithdrawAddressMsgFail(set) => set.delegatorAddress
@@ -1332,7 +1343,7 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decodeSuccess)
       | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decodeSuccess)
       | WithdrawRewardBadge => WithdrawRewardMsgSuccess(json |> WithdrawReward.decodeSuccess)
-      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decode)
+      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decodeSuccess)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgSuccess(json |> SetWithdrawAddress.decode)
       | SubmitProposalBadge => SubmitProposalMsgSuccess(json |> SubmitProposal.decodeSuccess)
       | DepositBadge => DepositMsgSuccess(json |> Deposit.decodeSuccess)
@@ -1386,7 +1397,7 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decodeFail)
       | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decodeFail)
       | WithdrawRewardBadge => WithdrawRewardMsgFail(json |> WithdrawReward.decodeFail)
-      | UnjailBadge => UnjailMsgFail(json |> Unjail.decode)
+      | UnjailBadge => UnjailMsgFail(json |> Unjail.decodeFail)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgFail(json |> SetWithdrawAddress.decode)
       | SubmitProposalBadge => SubmitProposalMsgFail(json |> SubmitProposal.decodeFail)
       | DepositBadge => DepositMsgFail(json |> Deposit.decodeFail)

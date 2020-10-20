@@ -60,175 +60,6 @@ module Styles = {
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
-let renderAddReporter = (address: TxSub.Msg.AddReporter.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={address.validatorMoniker} code=true />
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={address.reporter} />
-    </div>
-  </Col>;
-};
-
-let renderRemoveReporter = (address: TxSub.Msg.RemoveReporter.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={address.validatorMoniker} code=true />
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="REPORTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={address.reporter} />
-    </div>
-  </Col>;
-};
-
-let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.moniker} code=true />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.identity} code=true />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={validator.website} code=true />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.detailContainer>
-        <Text value={validator.details} code=true height={Text.Px(16)} align=Text.Right />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="COMMISSION MAX RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.commissionMaxRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="COMMISSION MAX CHANGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.commissionMaxChange->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.delegatorAddress} />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.validatorAddress} accountType=`validator />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="PUBLIC KEY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <PubKeyRender pubKey={validator.publicKey} />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins=[validator.minSelfDelegation] />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins=[validator.selfDelegation] />
-    </div>
-  </Col>;
-};
-
-let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="MONIKER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.moniker == Config.doNotModify ? "Unchanged" : validator.moniker}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="IDENTITY" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.identity == Config.doNotModify ? "Unchanged" : validator.identity}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="WEBSITE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={validator.website == Config.doNotModify ? "Unchanged" : validator.website}
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="DETAILS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.detailContainer>
-        <Text
-          value={validator.details == Config.doNotModify ? "Unchanged" : validator.details}
-          code=true
-          height={Text.Px(16)}
-          align=Text.Right
-        />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text
-        value={
-          switch (validator.commissionRate) {
-          | Some(rate) => rate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
-          | None => "Unchanged"
-          }
-        }
-        code=true
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AddressRender address={validator.sender} accountType=`validator />
-    </div>
-    <VSpacing size=Spacing.md />
-    <div className=Styles.topicContainer>
-      <Text value="MIN SELF DELEGATION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      {switch (validator.minSelfDelegation) {
-       | Some(minSelfDelegation') => <AmountRender coins=[minSelfDelegation'] />
-       | None => <Text value="Unchanged" code=true />
-       }}
-    </div>
-  </Col>;
-};
-
 let renderCreateClient = (info: TxSub.Msg.CreateClient.t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -444,114 +275,6 @@ let renderConnectionVariant = (msg: TxSub.Msg.t, common: TxSub.Msg.ConnectionCom
   </Col>;
 };
 
-let renderUnjail = (unjail: TxSub.Msg.Unjail.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={unjail.address} accountType=`validator />
-      </div>
-    </div>
-  </Col>;
-};
-let renderSubmitProposal = (proposal: TxSub.Msg.SubmitProposal.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="TITLE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={proposal.title} code=true />
-    </div>
-    // <VSpacing size=Spacing.lg />
-    //TODO: Will re-visit
-    // <div className=Styles.topicContainer>
-    //   <Text value="DESCRIPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <Text value={proposal.description} code=true />
-    // </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="PROPOSER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={proposal.proposer} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={proposal.initialDeposit} pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
-let renderDeposit = (deposit: TxSub.Msg.Deposit.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DEPOSITOR" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={deposit.depositor} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={deposit.proposalID |> ID.Proposal.toString} code=true />
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="AMOUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <AmountRender coins={deposit.amount} pos=AmountRender.TxIndex />
-    </div>
-  </Col>;
-};
-
-let renderSetWithdrawAddress = (set: TxSub.Msg.SetWithdrawAddress.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="DELEGATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={set.delegatorAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="WITHDRAW ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={set.withdrawAddress} />
-      </div>
-    </div>
-  </Col>;
-};
-
-let renderVote = (vote: TxSub.Msg.Vote.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VOTER ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={vote.voterAddress} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="PROPOSAL ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex> <Text value={vote.proposalID |> ID.Proposal.toString} /> </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="OPTION" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex> <Text value={vote.option} /> </div>
-    </div>
-  </Col>;
-};
-
-let renderActivate = (activate: TxSub.Msg.Activate.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="VALIDATOR ADDRESS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={activate.validatorAddress} accountType=`validator />
-      </div>
-    </div>
-  </Col>;
-};
-
 let renderUnknownMessage = () => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -592,25 +315,25 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | ReportMsgSuccess(report)
   | ReportMsgFail(report) => <IndexDataMsg.ReportMsg report />
   | AddReporterMsgSuccess(address) => <IndexValidatorMsg.AddReporterMsg address />
-  | AddReporterMsgFail(address) => React.null
-  | RemoveReporterMsgSuccess(address) => renderRemoveReporter(address)
-  | RemoveReporterMsgFail(address) => React.null
-  | CreateValidatorMsgSuccess(validator) => <IndexValidatorMsg.CreateValidatorMsg validator />
+  | AddReporterMsgFail(address) => <IndexValidatorMsg.AddReporterFailMsg address />
+  | RemoveReporterMsgSuccess(address) => <IndexValidatorMsg.RemoveReporterMsg address />
+  | RemoveReporterMsgFail(address) => <IndexValidatorMsg.RemoveReporterFailMsg address />
+  | CreateValidatorMsgSuccess(validator)
   | CreateValidatorMsgFail(validator) => <IndexValidatorMsg.CreateValidatorMsg validator />
   | EditValidatorMsgSuccess(validator) => <IndexValidatorMsg.EditValidatorMsg validator />
   | EditValidatorMsgFail(validator) => React.null
-  | UnjailMsgSuccess(unjail) => renderUnjail(unjail)
-  | UnjailMsgFail(unjail) => React.null
-  | SetWithdrawAddressMsgSuccess(set) => renderSetWithdrawAddress(set)
-  | SetWithdrawAddressMsgFail(set) => React.null
+  | UnjailMsgSuccess(unjail) => <IndexValidatorMsg.UnjailMsg unjail />
+  | UnjailMsgFail(unjail) => <IndexValidatorMsg.UnjailFailMsg unjail />
+  | SetWithdrawAddressMsgSuccess(set)
+  | SetWithdrawAddressMsgFail(set) => <IndexValidatorMsg.SetWithdrawAddressMsg set />
   | SubmitProposalMsgSuccess(proposal) => <IndexProposalMsg.SubmitProposalMsg proposal />
-  | SubmitProposalMsgFail(proposal) => React.null
+  | SubmitProposalMsgFail(proposal) => <IndexProposalMsg.SubmitProposalFailMsg proposal />
   | DepositMsgSuccess(deposit) => <IndexProposalMsg.DepositMsg deposit />
   | DepositMsgFail(deposit) => <IndexProposalMsg.DepositFailMsg deposit />
   | VoteMsgSuccess(vote) => <IndexProposalMsg.VoteMsg vote />
-  | VoteMsgFail(vote) => React.null
-  | ActivateMsgSuccess(activate) => renderActivate(activate)
-  | ActivateMsgFail(activate) => React.null
+  | VoteMsgFail(vote) => <IndexProposalMsg.VoteFailMsg vote />
+  | ActivateMsgSuccess(activate)
+  | ActivateMsgFail(activate) => <IndexValidatorMsg.ActivateMsg activate />
   | UnknownMsg => renderUnknownMessage()
   //TODO: Re-visit IBC Msg
   | CreateClientMsg(info) => renderCreateClient(info)
