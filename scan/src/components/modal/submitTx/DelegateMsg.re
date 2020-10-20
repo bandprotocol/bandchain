@@ -46,8 +46,13 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
 
   <>
     <div className=Styles.container>
-      <Text value="Delegate To" size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading
+        value="Delegate to"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data((_, {moniker})) =>
          <div>
@@ -65,8 +70,13 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        }}
     </div>
     <div className=Styles.container>
-      <Text value="Account Balance" size=Text.Md weight=Text.Medium nowrap=true block=true />
-      <VSpacing size=Spacing.sm />
+      <Heading
+        value="Account Balance"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data(({balance}, _)) =>
          <div>
@@ -91,20 +101,14 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
-         msg="Delegate Amount"
+         msg="Amount"
          placeholder="0.000000"
          inputType="number"
          code=true
          autoFocus=true
          id="delegateAmountInput"
        />;
-     | _ =>
-       <EnhanceTxInput.Loading2
-         msg="Delegate Amount"
-         code=true
-         useMax=true
-         placeholder="0.000000"
-       />
+     | _ => <EnhanceTxInput.Loading2 msg="Amount" code=true useMax=true placeholder="0.000000" />
      }}
   </>;
 };

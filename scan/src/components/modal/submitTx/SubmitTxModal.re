@@ -57,13 +57,8 @@ module Styles = {
       color(Colors.white),
       transition(~duration=600, "all"),
       disabled([
-        backgroundImage(
-          `linearGradient((
-            `deg(90.),
-            [(`percent(0.), Colors.gray3), (`percent(100.), Colors.gray3)],
-          )),
-        ),
-        color(Colors.gray6),
+        backgroundColor(Colors.buttonDisabled),
+        color(Colors.white),
         cursor(`default),
       ]),
     ]);

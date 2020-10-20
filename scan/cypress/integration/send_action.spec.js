@@ -26,7 +26,7 @@ describe("Send", () => {
       .type("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")
       .get('[id="sendAmountInput"]')
       .type("2");
-    cy.get('[id="nextButton"]').contains("Next").click();
+    cy.get('[id="nextButtonContainer"] > button').contains("Next").click();
     cy.get('[id="broadcastButton"]').wait(1000).click();
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
@@ -46,10 +46,10 @@ describe("Delegation", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(1)')
       .wait(1000)
       .click();
-    cy.get('[id="nextButton"]').wait(1000).should("be.disabled");
+    cy.get('[id="nextButtonContainer"] > button').wait(1000).should("be.disabled");
     cy.get('[id="delegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
@@ -65,7 +65,7 @@ describe("Delegation", () => {
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="undelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
@@ -86,7 +86,7 @@ describe("Delegation", () => {
     ).click();
     cy.get('[id="redelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
@@ -98,7 +98,7 @@ describe("Delegation", () => {
   it("Should be able to withdraw reward with Carol", () => {
     cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButton"]').click().wait(1000);
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButton"]').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
