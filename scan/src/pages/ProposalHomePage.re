@@ -21,6 +21,8 @@ module Styles = {
   let badgeContainer = {
     style([Media.mobile([position(`absolute), right(`px(16)), top(`px(16))])]);
   };
+
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 module ProposalCard = {
@@ -170,23 +172,34 @@ let make = () => {
       <Row.Grid>
         {switch (allSub) {
          | Data((proposals, bondedTokenCount, voteStatSub)) =>
-           proposals
-           ->Belt_Array.mapWithIndex((i, proposal) => {
-               let turnoutRate =
-                 (
-                   voteStatSub->Belt_MapInt.get(proposal.id |> ID.Proposal.toInt)
-                   |> Belt_Option.getWithDefault(_, 0.)
-                 )
-                 /. (bondedTokenCount |> Coin.getBandAmountFromCoin)
-                 *. 100.;
-               <ProposalCard
-                 key={i |> string_of_int}
-                 reserveIndex=i
-                 proposalSub={Sub.resolve(proposal)}
-                 turnoutRate
-               />;
-             })
-           ->React.array
+           proposals->Belt.Array.size > 0
+             ? proposals
+               ->Belt_Array.mapWithIndex((i, proposal) => {
+                   let turnoutRate =
+                     (
+                       voteStatSub->Belt_MapInt.get(proposal.id |> ID.Proposal.toInt)
+                       |> Belt_Option.getWithDefault(_, 0.)
+                     )
+                     /. (bondedTokenCount |> Coin.getBandAmountFromCoin)
+                     *. 100.;
+                   <ProposalCard
+                     key={i |> string_of_int}
+                     reserveIndex=i
+                     proposalSub={Sub.resolve(proposal)}
+                     turnoutRate
+                   />;
+                 })
+               ->React.array
+             : <EmptyContainer>
+                 <img src=Images.noSource className=Styles.noDataImage />
+                 <Heading
+                   size=Heading.H4
+                   value="No Proposal"
+                   align=Heading.Center
+                   weight=Heading.Regular
+                   color=Colors.bandBlue
+                 />
+               </EmptyContainer>
          | _ =>
            Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>
