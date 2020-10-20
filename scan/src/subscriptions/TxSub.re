@@ -869,13 +869,6 @@ module Msg = {
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
       };
     };
-
-    let decodeFail = json => {
-      JsonUtils.Decode.{
-        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
-        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
-      };
-    };
   };
 
   module Unjail = {
@@ -923,7 +916,6 @@ module Msg = {
     };
 
     let decodeFail = json => {
-      Js.log(json);
       JsonUtils.Decode.{
         proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
         title: json |> at(["msg", "content", "title"], string),
