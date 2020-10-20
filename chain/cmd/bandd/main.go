@@ -142,7 +142,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			}
 			oids[idx] = types.OracleScriptID(oid)
 		}
-		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
+		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices.db")))
 	}
 
 	return bandApp
