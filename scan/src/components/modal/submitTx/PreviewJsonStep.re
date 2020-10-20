@@ -53,7 +53,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
 
   <div className=Styles.container>
     <div className=Styles.modalTitle>
-      <Text value="Connect with your wallet" weight=Text.Medium size=Text.Xl />
+      <Text value="Confirm Transaction" weight=Text.Medium size=Text.Xl />
     </div>
     {switch (state) {
      | Nothing =>
@@ -150,7 +150,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
            <Button py=8 px=13 variant=Button.Outline onClick={_ => {dispatchModal(CloseModal)}}>
              <Text
                block=true
-               value="View Detail"
+               value="View Details"
                weight=Text.Semibold
                ellipsis=true
                color=Colors.bandBlue
