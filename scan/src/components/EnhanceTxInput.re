@@ -124,16 +124,6 @@ let make =
 
 module Loading = {
   [@react.component]
-  let make = (~msg, ~width) => {
-    <div className=Styles.container>
-      <Heading value=msg size=Heading.H5 marginBottom=8 align=Heading.Left />
-      <LoadingCensorBar width height=37 />
-    </div>;
-  };
-};
-
-module Loading2 = {
-  [@react.component]
   let make = (~msg, ~useMax=false, ~code=false, ~placeholder) => {
     <div className=Styles.container>
       <Heading value=msg size=Heading.H5 marginBottom=8 align=Heading.Left />

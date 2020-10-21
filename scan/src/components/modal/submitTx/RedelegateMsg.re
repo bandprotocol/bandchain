@@ -255,7 +255,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          autoFocus=true
          id="redelegateAmountInput"
        />;
-     | _ => <EnhanceTxInput.Loading2 msg="Amount" code=true useMax=true placeholder="0.000000" />
+     | _ => <EnhanceTxInput.Loading msg="Amount" code=true useMax=true placeholder="0.000000" />
      }}
   </>;
 };

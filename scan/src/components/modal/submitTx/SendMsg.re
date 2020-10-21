@@ -87,7 +87,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
          id="sendAmountInput"
        />;
      | _ =>
-       <EnhanceTxInput.Loading2
+       <EnhanceTxInput.Loading
          msg="Send Amount (BAND)"
          code=true
          useMax=true
