@@ -129,7 +129,7 @@ let make = (~chainID) => {
       <VSpacing size=Spacing.xxl />
       <div className=Styles.modalTitle>
         <Text value="Connect With Your Wallet" weight=Text.Bold size=Text.Xxxl />
-        {chainID == "band-wenchang-mainnet"
+        {chainID == "band-guanyu-mainnet"
            ? <>
                <VSpacing size=Spacing.lg />
                <div className=Styles.warning>
