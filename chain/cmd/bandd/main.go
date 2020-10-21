@@ -27,6 +27,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
+	"github.com/bandprotocol/bandchain/chain/hooks/request"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -122,6 +123,8 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
 			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
 	}
+
+	bandApp.AddHook(request.NewRequestHook(bandApp.Codec(), bandApp.OracleKeeper, filepath.Join(viper.GetString(cli.HomeFlag), "requests.db")))
 
 	return bandApp
 }
