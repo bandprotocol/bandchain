@@ -27,7 +27,7 @@ describe("Send", () => {
       .get('[id="sendAmountInput"]')
       .type("2");
     cy.get('[id="nextButton"]').contains("Next").click();
-    cy.get('[id="broadcastButton"] > button').wait(1000).click();
+    cy.get('[id="broadcastButtonContainer"] > button').wait(1000).click();
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"
@@ -50,7 +50,7 @@ describe("Delegation", () => {
     cy.get('[id="delegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
-    cy.get('[id="broadcastButton"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"
@@ -66,7 +66,7 @@ describe("Delegation", () => {
     cy.get('[id="undelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
-    cy.get('[id="broadcastButton"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"
@@ -87,7 +87,7 @@ describe("Delegation", () => {
     cy.get('[id="redelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
-    cy.get('[id="broadcastButton"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"
@@ -99,7 +99,7 @@ describe("Delegation", () => {
     cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButton"]').click().wait(1000);
-    cy.get('[id="broadcastButton"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast Transaction Success"

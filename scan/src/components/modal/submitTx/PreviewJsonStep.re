@@ -8,7 +8,7 @@ module Styles = {
       borderRadius(`px(4)),
     ]);
 
-  let modalTitle = style([paddingBottom(`px(16))]);
+  let modalTitle = style([paddingBottom(`px(24))]);
 
   let resultContainer = style([minHeight(`px(400)), width(`percent(100.))]);
 
@@ -24,6 +24,7 @@ module Styles = {
   let jsonDisplay =
     style([
       resize(`none),
+      fontSize(`px(12)),
       backgroundColor(Colors.bg),
       border(`px(1), `solid, Colors.gray9),
       borderRadius(`px(4)),
@@ -31,6 +32,17 @@ module Styles = {
       height(`px(300)),
       overflowY(`scroll),
       marginBottom(`px(16)),
+      fontFamilies([
+        `custom("IBM Plex Mono"),
+        `custom("cousine"),
+        `custom("sfmono-regular"),
+        `custom("Consolas"),
+        `custom("Menlo"),
+        `custom("liberation mono"),
+        `custom("ubuntu mono"),
+        `custom("Courier"),
+        `monospace,
+      ]),
     ]);
 
   let resultIcon = style([width(`px(48)), marginBottom(`px(16))]);
@@ -69,7 +81,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
            disabled=true
            defaultValue={rawTx |> TxCreator.stringifyWithSpaces}
          />
-         <div id="broadcastButton">
+         <div id="broadcastButtonContainer">
            <Button
              py=10
              style=Styles.btn
@@ -144,7 +156,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          ])}>
          <img src=Images.success className=Styles.resultIcon />
          <div id="successMsgContainer" className={CssHelper.mb(~size=16, ())}>
-           <Text value="Broadcast Transaction Success" size=Text.Lg block=true align=Text.Center />
+           <Text value="Broadcast transaction success" size=Text.Lg block=true align=Text.Center />
          </div>
          <Link className=Styles.txhashContainer route={Route.TxIndexPage(txHash)}>
            <Button py=8 px=13 variant=Button.Outline onClick={_ => {dispatchModal(CloseModal)}}>
@@ -193,7 +205,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          ])}>
          <img src=Images.fail className=Styles.resultIcon />
          <div className={CssHelper.mb()}>
-           <Text value="Broadcast Transaction Success" size=Text.Lg block=true align=Text.Center />
+           <Text value="Broadcast transaction success" size=Text.Lg block=true align=Text.Center />
          </div>
          <Text value=err color=Colors.red3 align=Text.Center breakAll=true />
        </div>
