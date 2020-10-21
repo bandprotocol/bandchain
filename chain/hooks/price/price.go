@@ -23,12 +23,12 @@ type PriceHook struct {
 	db           *leveldb.DB
 }
 
-func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, levelDBDir string) *PriceHook {
+func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, priceDBDir string) *PriceHook {
 	stdOs := make(map[types.OracleScriptID]bool)
 	for _, oid := range oids {
 		stdOs[oid] = true
 	}
-	db, err := leveldb.OpenFile(levelDBDir, nil)
+	db, err := leveldb.OpenFile(priceDBDir, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -49,6 +49,7 @@ func (h PriceHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, 
 func (h PriceHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
 
 }
+
 func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
 	for _, event := range res.Events {
 		events := sdk.StringifyEvents([]abci.Event{event})
@@ -59,7 +60,7 @@ func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res 
 			result := h.oracleKeeper.MustGetResult(ctx, reqID)
 
 			if result.ResponsePacketData.ResolveStatus == types.ResolveStatus_Success {
-				// Check that we need to store data to price cache file
+				// Check that we need to store data to db
 				if h.stdOs[result.RequestPacketData.OracleScriptID] {
 					var input Input
 					var output Output
