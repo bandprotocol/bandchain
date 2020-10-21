@@ -88,7 +88,7 @@ let make = (~proposalID, ~proposalName, ~setMsgsOpt) => {
       <div className={CssHelper.flexBox()}>
         <TypeID.Proposal id=proposalID position=TypeID.Subtitle />
         <HSpacing size=Spacing.sm />
-        <Text value=proposalName size=Text.Lg weight=Text.Thin nowrap=true block=true />
+        <Text value=proposalName size=Text.Lg nowrap=true block=true />
       </div>
     </div>
     <VoteInput answerOpt setAnswerOpt />

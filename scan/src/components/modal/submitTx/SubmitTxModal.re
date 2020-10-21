@@ -110,7 +110,7 @@ module SubmitTxStep = {
       <div className=Styles.seperatedLine />
       <div className=Styles.info>
         <Text value="Transaction Fee" size=Text.Md weight=Text.Medium nowrap=true block=true />
-        <Text value="0.005 BAND" size=Text.Lg weight=Text.Thin code=true />
+        <Text value="0.005 BAND" size=Text.Lg code=true />
       </div>
       <div id="nextButtonContainer">
         <Button

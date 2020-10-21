@@ -125,7 +125,6 @@ module DstValidatorSelection = {
         value={"(" ++ selectedValidator.value ++ ")"}
         size=Text.Md
         color=Colors.gray6
-        weight=Text.Thin
         code=true
       />
     </div>;
@@ -171,7 +170,6 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
         align=Heading.Left
       />
       <Text
-        weight=Text.Thin
         value="You can only redelegate a maximum of 7 times to/from the same validator pairs during any 21 day period."
       />
     </div>
@@ -186,11 +184,10 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
       {switch (allSub) {
        | Data(({moniker}, _, _)) =>
          <div>
-           <Text value=moniker size=Text.Lg weight=Text.Thin ellipsis=true align=Text.Right />
+           <Text value=moniker size=Text.Lg ellipsis=true align=Text.Right />
            <Text
              value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
              size=Text.Md
-             weight=Text.Thin
              color=Colors.gray6
              code=true
              block=true
@@ -232,9 +229,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
-             weight=Text.Thin
            />
-           <Text value=" BAND" size=Text.Lg weight=Text.Thin code=true />
+           <Text value=" BAND" size=Text.Lg code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}

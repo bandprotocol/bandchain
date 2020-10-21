@@ -38,11 +38,10 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
       {switch (allSub) {
        | Data(({moniker}, _)) =>
          <div>
-           <Text value=moniker size=Text.Lg weight=Text.Thin ellipsis=true align=Text.Right />
+           <Text value=moniker size=Text.Lg ellipsis=true align=Text.Right />
            <Text
              value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
              size=Text.Md
-             weight=Text.Thin
              color=Colors.gray6
              code=true
              block=true
@@ -63,7 +62,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              weight=Text.Thin
              spacing={Text.Em(0.0)}
            />
-           <Text value=" BAND" size=Text.Lg weight=Text.Thin code=true />
+           <Text value=" BAND" size=Text.Lg code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}

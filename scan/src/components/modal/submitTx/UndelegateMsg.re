@@ -50,12 +50,10 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
       />
       <VSpacing size=Spacing.xs />
       <Text
-        weight=Text.Thin
         value="1. Undelegated balance are locked for 21 days. After the unbonding period, the balance will automatically be added to your account"
       />
       <VSpacing size=Spacing.xs />
       <Text
-        weight=Text.Thin
         value="2. You can have a maximum of 7 pending unbonding transactions at any one time."
       />
     </div>
@@ -70,11 +68,10 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
       {switch (allSub) {
        | Data(({moniker}, _)) =>
          <div>
-           <Text value=moniker size=Text.Lg weight=Text.Thin ellipsis=true align=Text.Right />
+           <Text value=moniker size=Text.Lg ellipsis=true align=Text.Right />
            <Text
              value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
              size=Text.Md
-             weight=Text.Thin
              color=Colors.gray6
              code=true
              block=true
@@ -98,9 +95,8 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              value={stakedAmount |> Coin.getBandAmountFromCoin |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
-             weight=Text.Thin
            />
-           <Text value=" BAND" size=Text.Lg weight=Text.Thin code=true />
+           <Text value=" BAND" size=Text.Lg code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}

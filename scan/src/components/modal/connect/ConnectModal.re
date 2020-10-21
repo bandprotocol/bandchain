@@ -105,7 +105,7 @@ let make = (~chainID) => {
            ? <>
                <VSpacing size=Spacing.md />
                <div className=Styles.warning>
-                 <Text value="Please check that you are visiting" size=Text.Lg weight=Text.Thin />
+                 <Text value="Please check that you are visiting" size=Text.Lg />
                  <HSpacing size=Spacing.sm />
                  <Text
                    value="https://www.cosmoscan.io"
@@ -123,12 +123,7 @@ let make = (~chainID) => {
           <Col.Grid col=Col.Five style=Styles.loginSelectionBackground>
             <div className=Styles.loginSelectionContainer>
               <VSpacing size=Spacing.xl />
-              <Text
-                value="Select your connection method"
-                size=Text.Lg
-                weight=Text.Thin
-                color=Colors.gray7
-              />
+              <Text value="Select your connection method" size=Text.Lg color=Colors.gray7 />
               <VSpacing size=Spacing.md />
               {[|Mnemonic, LedgerWithCosmos, LedgerWithBandChain|]
                ->Belt_Array.map(method =>
