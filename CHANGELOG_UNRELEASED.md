@@ -28,6 +28,7 @@
 
 ### Scan
 
+- (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
 - (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
 - (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
