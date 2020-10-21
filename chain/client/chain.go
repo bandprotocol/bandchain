@@ -7,6 +7,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 )
 
+func GetChainIDFn(cliCtx context.CLIContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		rest.PostProcessResponseBare(w, cliCtx, map[string]string{"chain_id": cliCtx.ChainID})
+	}
+}
+
 func GetGenesisHandlerFn(cliCtx context.CLIContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		node, err := cliCtx.GetNode()
