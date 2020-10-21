@@ -69,8 +69,7 @@ module ValidatorReportStatus = {
       ])}>
       {switch (isReport, resolveStatus) {
        | (true, _) => <Icon name="fas fa-check-circle" color=Colors.green4 />
-       | (false, RequestSub.Expired) => <Icon name="fas fa-times-circle" color=Colors.red4 />
-       | (false, _) => <Icon name="fas fa-clock" color=Colors.yellowAccent2 />
+       | (false, _) => <Icon name="fas fa-times-circle" color=Colors.red4 />
        }}
       <HSpacing size=Spacing.sm />
       <Text value=moniker color=Colors.gray7 ellipsis=true />
