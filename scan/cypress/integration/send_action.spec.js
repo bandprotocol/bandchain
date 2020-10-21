@@ -27,10 +27,10 @@ describe("Send", () => {
       .get('[id="sendAmountInput"]')
       .type("2");
     cy.get('[id="nextButtonContainer"] > button').contains("Next").click();
-    cy.get('[id="broadcastButton"]').wait(1000).click();
+    cy.get('[id="broadcastButtonContainer"] > button').wait(1000).click();
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -50,10 +50,10 @@ describe("Delegation", () => {
     cy.get('[id="delegateAmountInput').type("1");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
-    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -66,10 +66,10 @@ describe("Delegation", () => {
     cy.get('[id="undelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
-    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -87,10 +87,10 @@ describe("Delegation", () => {
     cy.get('[id="redelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
-    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -99,10 +99,10 @@ describe("Delegation", () => {
     cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
-    cy.get('[id="broadcastButton"]').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
