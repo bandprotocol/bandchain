@@ -30,7 +30,7 @@ describe("Send", () => {
     cy.get('[id="broadcastButtonContainer"] > button').wait(1000).click();
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -53,7 +53,7 @@ describe("Delegation", () => {
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -69,7 +69,7 @@ describe("Delegation", () => {
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -90,7 +90,7 @@ describe("Delegation", () => {
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
@@ -102,7 +102,7 @@ describe("Delegation", () => {
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
-      "Broadcast Transaction Success"
+      "Broadcast transaction success"
     );
     cy.get('[id="closeModal"]').click();
   });
