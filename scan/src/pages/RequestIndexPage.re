@@ -55,8 +55,6 @@ module Styles = {
   let dataSourceContainer = style([width(`percent(100.))]);
 
   let validatorReportStatus = style([marginBottom(`px(13))]);
-
-  let loading = style([width(`px(65)), height(`px(20)), marginBottom(`px(16))]);
 };
 
 module ValidatorReportStatus = {
@@ -380,7 +378,7 @@ let make = (~reqID) => {
                  <KVTableContainer decodesOpt />;
                | (Pending, _) =>
                  <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
-                   <img src=Images.loadingCircles className=Styles.loading />
+                   <Loading marginBottom={`px(16)} />
                    <Heading
                      size=Heading.H4
                      value="Waiting for result"
@@ -421,7 +419,7 @@ let make = (~reqID) => {
                | Success => <RequestProof request />
                | Pending =>
                  <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
-                   <img src=Images.loadingCircles className=Styles.loading />
+                   <Loading marginBottom={`px(16)} />
                    <Heading
                      size=Heading.H4
                      value="Waiting for result"

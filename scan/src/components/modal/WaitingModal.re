@@ -35,8 +35,6 @@ module Styles = {
 
   let icon = style([width(`px(30))]);
 
-  let loading = style([width(`px(100))]);
-
   let errorContainer =
     style([
       display(`flex),
@@ -75,7 +73,7 @@ let make = _ => {
              color=Colors.gray8
            />
            <VSpacing size=Spacing.xxl />
-           <img src=Images.loadingCircles className=Styles.loading />
+           <Loading width={`px(100)} height=`unset />
          </>
        | Success =>
          <>

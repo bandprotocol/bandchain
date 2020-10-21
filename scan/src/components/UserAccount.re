@@ -3,8 +3,6 @@ module Styles = {
 
   let container = style([position(`relative)]);
 
-  let loading = style([width(`px(65)), height(`px(20))]);
-
   let oval =
     style([
       display(`flex),
@@ -85,7 +83,7 @@ module FaucetBtn = {
   let make = (~address) => {
     let (isRequest, setIsRequest) = React.useState(_ => false);
     isRequest
-      ? <img src=Images.loadingCircles className=Styles.loading />
+      ? <Loading />
       : <div id="getFreeButton">
           <Button
             px=20

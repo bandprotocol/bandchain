@@ -107,9 +107,7 @@ type result_t =
   | Success(result_data_t);
 
 let loadingRender = (wDiv, wImg, h) => {
-  <div className={Styles.withWH(wDiv, h)}>
-    <img src=Images.loadingCircles className={Styles.withWH(wImg, h)} />
-  </div>;
+  <div className={Styles.withWH(wDiv, h)}> <Loading width=wImg height=h /> </div>;
 };
 
 let resultRender = result => {

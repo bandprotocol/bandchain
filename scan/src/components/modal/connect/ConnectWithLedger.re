@@ -52,8 +52,6 @@ module Styles = {
 
   let ledgerGuide = style([width(`px(106)), height(`px(25))]);
 
-  let loading = style([width(`px(100))]);
-
   let connectBtn = (~isLoading, ()) =>
     style([
       marginTop(`px(10)),
@@ -209,7 +207,7 @@ let make = (~chainID, ~ledgerApp) => {
              spacing={Text.Em(0.03)}
              weight=Text.Medium
            />
-           <img src=Images.loadingCircles className=Styles.loading />
+           <Loading width={`px(100)} height=`unset />
          </>
        | Error(err) =>
          <Text value=err color=Colors.red5 weight=Text.Medium spacing={Text.Em(0.03)} />

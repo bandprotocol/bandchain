@@ -69,7 +69,7 @@ let make = (~id: ID.Request.t) => {
        </div>
      | _ =>
        <div className={Styles.withWH(`percent(100.), `auto)}>
-         <img src=Images.loadingCircles className={Styles.withWH(`px(104), `px(30))} />
+         <Loading width={`px(104)} height={`px(30)} />
        </div>
      }}
   </div>;
