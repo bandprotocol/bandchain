@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2792](https://github.com/bandprotocol/bandchain/pull/2792) Implemented hook for request search
 - (impv) [\#2785](https://github.com/bandprotocol/bandchain/pull/2785) Save price to level db instead of price cache
 - (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) Added `bandchain/chain_id` endpoint
 - (feat) [\#2757](https://github.com/bandprotocol/bandchain/pull/2757) Bring cosmos-hd-path flag
