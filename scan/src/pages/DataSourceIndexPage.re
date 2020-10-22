@@ -91,7 +91,7 @@ module Content = {
               route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceExecute),
             },
             // {
-            //   name: "REVISIONS",
+            //   name: "Revisions",
             //   route: dataSourceID |> ID.DataSource.getRouteWithTab(_, Route.DataSourceRevisions),
             // },
           |]

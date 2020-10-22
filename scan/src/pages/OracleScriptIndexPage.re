@@ -197,7 +197,7 @@ module Content = {
                 oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
             },
             // {
-            //   name: "REVISIONS",
+            //   name: "Revisions",
             //   route:
             //     oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
             // },

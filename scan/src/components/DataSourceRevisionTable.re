@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-
   let nameContainer = style([width(`px(230))]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
@@ -23,72 +21,45 @@ let make = (~id) =>
     let%Sub numRevisions = numRevisionsSub;
     let%Sub revisions = revisionsSub;
 
-    <div className=Styles.tableWrapper>
-      <Row>
-        <HSpacing size={`px(25)} />
-        <Text value={numRevisions |> string_of_int} weight=Text.Bold />
-        <HSpacing size={`px(5)} />
-        <Text value="Revisions" />
-      </Row>
-      <VSpacing size=Spacing.lg />
+    <div>
       {numRevisions > 0
          ? <>
-             <THead>
-               <Row>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-                 <Col size=3.>
-                   <div className=TElement.Styles.hashContainer>
+             <THead.Grid>
+               <Row.Grid alignItems=Row.Center>
+                 <Col.Grid col=Col.Four>
+                   <div className={CssHelper.flexBox()}>
+                     <Text value={numRevisions |> string_of_int} weight=Text.Semibold />
+                     <HSpacing size={`px(5)} />
                      <Text
-                       block=true
-                       value="NAME"
-                       size=Text.Sm
-                       weight=Text.Bold
-                       color=Colors.gray6
+                       value={numRevisions == 1 ? "Revision" : "Revisions"}
+                       weight=Text.Semibold
                      />
                    </div>
-                 </Col>
-                 <Col size=2.>
-                   <Text
-                     block=true
-                     value="TIMESTAMP"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=1.5>
-                   <Text
-                     block=true
-                     value="BLOCK"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col size=3.5>
-                   <Text
-                     block=true
-                     value="TX HASH"
-                     size=Text.Sm
-                     weight=Text.Bold
-                     color=Colors.gray6
-                   />
-                 </Col>
-                 <Col> <HSpacing size=Spacing.lg /> </Col>
-               </Row>
-             </THead>
+                 </Col.Grid>
+                 <Col.Grid col=Col.Three>
+                   <Text block=true value="Timestamp" size=Text.Md weight=Text.Semibold />
+                 </Col.Grid>
+                 <Col.Grid col=Col.One>
+                   <Text block=true value="Block" size=Text.Md weight=Text.Semibold />
+                 </Col.Grid>
+                 <Col.Grid col=Col.Four>
+                   <Text block=true value="TX HASH" size=Text.Md weight=Text.Semibold />
+                 </Col.Grid>
+               </Row.Grid>
+             </THead.Grid>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
-                  <TBody
+                  <TBody.Grid
+                    paddingH={`px(24)}
                     key={
                       switch (transaction) {
                       | Some(tx) => tx.hash |> Hash.toHex(~upper=true)
                       | None => "Genesis"
                       }
                     }>
-                    <Row>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                      <Col size=3.>
+                    <Row.Grid>
+                      <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
+                      <Col.Grid col=Col.Four>
                         <div className=Styles.nameContainer>
                           <Text
                             block=true
@@ -99,21 +70,21 @@ let make = (~id) =>
                             ellipsis=true
                           />
                         </div>
-                      </Col>
-                      <Col size=2.>
+                      </Col.Grid>
+                      <Col.Grid col=Col.Three>
                         {switch (transaction) {
                          | Some(tx) =>
                            <TimeAgos time={tx.block.timestamp} size=Text.Md weight=Text.Medium />
                          | None => <Text value="Genesis" />
                          }}
-                      </Col>
-                      <Col size=1.5>
+                      </Col.Grid>
+                      <Col.Grid col=Col.One>
                         {switch (transaction) {
                          | Some(tx) => <TypeID.Block id={tx.blockHeight} />
                          | None => <Text value="Genesis" />
                          }}
-                      </Col>
-                      <Col size=3.5>
+                      </Col.Grid>
+                      <Col.Grid col=Col.Four>
                         {switch (transaction) {
                          | Some(tx) => <TxLink txHash={tx.hash} width=300 weight=Text.Medium />
                          | None =>
@@ -127,10 +98,10 @@ let make = (~id) =>
                              nowrap=true
                            />
                          }}
-                      </Col>
-                      <Col> <HSpacing size=Spacing.lg /> </Col>
-                    </Row>
-                  </TBody>
+                      </Col.Grid>
+                      <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
+                    </Row.Grid>
+                  </TBody.Grid>
                 })
               ->React.array}
            </>
