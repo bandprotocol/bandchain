@@ -104,7 +104,7 @@ func queryRequests(
 func QueryMultiSearchLatestRequest(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string, limit int,
 ) ([]byte, int64, error) {
-	requestIDs, err := queryMultitRequest(cliCtx, oid, calldata, askCount, minCount, fmt.Sprintf("%s", limit))
+	requestIDs, err := queryMultitRequest(cliCtx, oid, calldata, askCount, minCount, fmt.Sprintf("%d", limit))
 	if err != nil {
 		return nil, 0, err
 	}
