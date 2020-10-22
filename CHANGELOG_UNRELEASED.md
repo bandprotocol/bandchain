@@ -29,6 +29,10 @@
 
 ### Scan
 
+- (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
+- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
+- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
+- (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
 - (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
 - (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari

@@ -1,6 +1,8 @@
 module Styles = {
   open Css;
 
+  let container = style([paddingBottom(`px(24))]);
+
   let info = style([display(`flex), justifyContent(`spaceBetween)]);
 
   let validator =
@@ -43,9 +45,37 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
   );
 
   <>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.info>
-      <Text value="Account Balance" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
+    <div className=Styles.container>
+      <Heading
+        value="Delegate to"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
+      {switch (allSub) {
+       | Data((_, {moniker})) =>
+         <div>
+           <Text value=moniker size=Text.Lg ellipsis=true align=Text.Right />
+           <Text
+             value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
+             size=Text.Md
+             color=Colors.gray6
+             code=true
+             block=true
+           />
+         </div>
+       | _ => <LoadingCensorBar width=300 height=34 />
+       }}
+    </div>
+    <div className=Styles.container>
+      <Heading
+        value="Account Balance"
+        size=Heading.H5
+        marginBottom=8
+        align=Heading.Left
+        weight=Heading.Medium
+      />
       {switch (allSub) {
        | Data(({balance}, _)) =>
          <div>
@@ -53,32 +83,12 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
              value={balance |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6)}
              code=true
              size=Text.Lg
-             weight=Text.Semibold
            />
-           <Text value=" BAND" code=true />
+           <Text value=" BAND" size=Text.Lg code=true />
          </div>
        | _ => <LoadingCensorBar width=150 height=18 />
        }}
     </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
-    <div className=Styles.info>
-      <Text value="Delegate To" size=Text.Lg spacing={Text.Em(0.03)} nowrap=true block=true />
-      {switch (allSub) {
-       | Data((_, {moniker})) =>
-         <div className=Styles.validator>
-           <Text value=moniker code=true ellipsis=true align=Text.Right />
-           <Text
-             value={"(" ++ validator->Address.toOperatorBech32 ++ ")"}
-             size=Text.Sm
-             color=Colors.blueGray5
-             code=true
-           />
-         </div>
-       | _ => <LoadingCensorBar width=300 height=26 />
-       }}
-    </div>
-    <VSpacing size=Spacing.lg />
     {switch (allSub) {
      | Data(({balance}, _)) =>
        //  TODO: hard-coded tx fee
@@ -89,15 +99,14 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}
          maxValue={maxValInUband /. 1e6 |> Js.Float.toString}
-         msg="Delegate Amount (BAND)"
-         placeholder="Insert delegation amount"
+         msg="Amount"
+         placeholder="0.000000"
          inputType="number"
          code=true
          autoFocus=true
          id="delegateAmountInput"
        />;
-     | _ => <EnhanceTxInput.Loading msg="Delegate Amount (BAND)" width=300 />
+     | _ => <EnhanceTxInput.Loading msg="Amount" code=true useMax=true placeholder="0.000000" />
      }}
-    <VSpacing size=Spacing.lg />
   </>;
 };
