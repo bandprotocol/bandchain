@@ -37,6 +37,7 @@ const (
 	flagDisableFeelessReports = "disable-feeless-reports"
 	flagEnableFastSync        = "enable-fast-sync"
 	flagWithPricer            = "with-pricer"
+	flagWithRequestSearch     = "with-request-search"
 )
 
 var invCheckPeriod uint
@@ -70,8 +71,9 @@ func main() {
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
-	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in price cache")
+	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
+	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sqlite")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -123,9 +125,11 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
 			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
 	}
-
-	bandApp.AddHook(request.NewRequestHook(bandApp.Codec(), bandApp.OracleKeeper, filepath.Join(viper.GetString(cli.HomeFlag), "requests.db")))
-
+	if viper.IsSet(flagWithRequestSearch) {
+		bandApp.AddHook(request.NewRequestHook(
+			bandApp.Codec(), bandApp.OracleKeeper,
+			filepath.Join(viper.GetString(cli.HomeFlag), "request.db"), viper.GetString(flagWithRequestSearch)))
+	}
 	return bandApp
 }
 
