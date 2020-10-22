@@ -43,6 +43,9 @@ func initDb(sqliteDir string) *gorp.DbMap {
 		panic(err)
 	}
 	err = dbMap.CreateIndex()
+	if err != nil {
+		panic(err)
+	}
 	return dbMap
 }
 
