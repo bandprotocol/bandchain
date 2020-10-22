@@ -4,11 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client/context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -53,6 +50,19 @@ func QuerySearchLatestRequest(
 	return bz, h, err
 }
 
+func queryMultitRequest(cliCtx context.CLIContext, oid, calldata, askCount, minCount, limit string) ([]types.RequestID, error) {
+	bz, _, err := cliCtx.Query(fmt.Sprintf("band/multi_request/%s/%s/%s/%s/%s", oid, calldata, askCount, minCount, limit))
+	if err != nil {
+		return nil, err
+	}
+	var reqIDs []types.RequestID
+	err = cliCtx.Codec.UnmarshalBinaryBare(bz, &reqIDs)
+	if err != nil {
+		return nil, err
+	}
+	return reqIDs, nil
+}
+
 func queryRequests(
 	route string, cliCtx context.CLIContext, requestIDs []types.RequestID,
 ) ([]types.QueryRequestResult, int64, error) {
@@ -94,57 +104,9 @@ func queryRequests(
 func QueryMultiSearchLatestRequest(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string, limit int,
 ) ([]byte, int64, error) {
-	query := fmt.Sprintf("%s.%s='%s' AND %s.%s='%s' AND %s.%s='%s' AND %s.%s='%s'",
-		types.EventTypeRequest, types.AttributeKeyOracleScriptID, oid,
-		types.EventTypeRequest, types.AttributeKeyCalldata, calldata,
-		types.EventTypeRequest, types.AttributeKeyAskCount, askCount,
-		types.EventTypeRequest, types.AttributeKeyMinCount, minCount,
-	)
-	node, err := cliCtx.GetNode()
+	requestIDs, err := queryMultitRequest(cliCtx, oid, calldata, askCount, minCount, fmt.Sprintf("%s", limit))
 	if err != nil {
 		return nil, 0, err
-	}
-	resTxs, err := node.TxSearch(query, !cliCtx.TrustNode, 1, 30+limit, "desc")
-	if err != nil {
-		return nil, 0, err
-	}
-	requestIDs := make([]types.RequestID, 0)
-	for _, tx := range resTxs.Txs {
-		if !cliCtx.TrustNode {
-			err := utils.ValidateTxResult(cliCtx, tx)
-			if err != nil {
-				return nil, 0, err
-			}
-		}
-		logs, _ := sdk.ParseABCILogs(tx.TxResult.Log)
-		for _, log := range logs {
-			for _, ev := range log.Events {
-				if ev.Type != types.EventTypeRequest {
-					continue
-				}
-				rid := types.RequestID(0)
-				ok := true
-				for _, attr := range ev.Attributes {
-					if attr.Key == types.AttributeKeyID {
-						id, err := strconv.ParseUint(attr.Value, 10, 64)
-						if err != nil {
-							return nil, 0, err
-						}
-						rid = types.RequestID(id)
-					}
-					if attr.Key == types.AttributeKeyOracleScriptID && attr.Value != oid ||
-						attr.Key == types.AttributeKeyCalldata && attr.Value != calldata ||
-						attr.Key == types.AttributeKeyAskCount && attr.Value != askCount ||
-						attr.Key == types.AttributeKeyMinCount && attr.Value != minCount {
-						ok = false
-						break
-					}
-				}
-				if ok && rid != 0 {
-					requestIDs = append(requestIDs, rid)
-				}
-			}
-		}
 	}
 	queryRequestResults, h, err := queryRequests(route, cliCtx, requestIDs)
 	if err != nil {

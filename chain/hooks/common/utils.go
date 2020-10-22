@@ -27,6 +27,15 @@ func Atoi(val string) int64 {
 	return res
 }
 
+// atoi converts the given string into an uint64. Panics on errors.
+func Atoui(val string) uint64 {
+	res, err := strconv.ParseUint(val, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return res
+}
+
 func ParseEvents(events sdk.StringEvents) EvMap {
 	evMap := make(EvMap)
 	for _, event := range events {
