@@ -34,10 +34,10 @@ class Client(object):
         return requests.post(self.rpc_url + "/txs", json=data).json()
 
     def get_chain_id(self) -> str:
-        return self._get(self.rpc_url + "/bandchain/genesis")["chain_id"]
+        return self._get("/bandchain/chain_id")["chain_id"]
 
     def get_latest_block(self) -> dict:
-        return self._get(self.rpc_url + "/blocks/latest")
+        return self._get("/blocks/latest")
 
     def get_account(self, address: str) -> Account:
         return from_dict(
