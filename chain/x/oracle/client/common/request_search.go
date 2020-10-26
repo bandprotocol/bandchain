@@ -11,7 +11,7 @@ import (
 )
 
 func queryLatestRequest(cliCtx context.CLIContext, oid, calldata, askCount, minCount string) (types.RequestID, error) {
-	bz, _, err := cliCtx.Query(fmt.Sprintf("band/latest_request/%s/%s/%s/%s", oid, calldata, askCount, minCount))
+	bz, _, err := cliCtx.Query(fmt.Sprintf("band/multi_request/%s/%s/%s/%s/1", oid, calldata, askCount, minCount))
 	if err != nil {
 		return 0, err
 	}
