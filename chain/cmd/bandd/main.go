@@ -128,7 +128,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if viper.IsSet(flagWithRequestSearch) {
 		bandApp.AddHook(request.NewRequestHook(
 			bandApp.Codec(), bandApp.OracleKeeper,
-			filepath.Join(viper.GetString(cli.HomeFlag), viper.GetString(flagWithRequestSearch))))
+			viper.GetString(flagWithRequestSearch)))
 	}
 	return bandApp
 }
