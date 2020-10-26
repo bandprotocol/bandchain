@@ -114,6 +114,6 @@ func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery,
 func (h *RequestHook) BeforeCommit() {
 	err := h.trans.Commit()
 	if err != nil {
-		panic(err)
+		h.trans.Rollback()
 	}
 }
