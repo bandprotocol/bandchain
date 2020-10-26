@@ -2,6 +2,7 @@ package common
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 
@@ -15,12 +16,20 @@ func queryLatestRequest(cliCtx context.CLIContext, oid, calldata, askCount, minC
 	if err != nil {
 		return 0, err
 	}
-	var reqID types.RequestID
-	err = cliCtx.Codec.UnmarshalBinaryBare(bz, &reqID)
+	var reqIDs []types.RequestID
+	err = cliCtx.Codec.UnmarshalBinaryBare(bz, &reqIDs)
 	if err != nil {
 		return 0, err
 	}
-	return reqID, nil
+	if len(reqIDs) == 0 {
+		return 0, errors.New("request with specified specification not found")
+	}
+	if len(reqIDs) > 1 {
+		// NEVER EXPECT TO HIT.
+		panic("multi request limit=1")
+	}
+
+	return reqIDs[0], nil
 }
 
 func queryRequest(route string, cliCtx context.CLIContext, rid types.RequestID) (types.QueryRequestResult, int64, error) {

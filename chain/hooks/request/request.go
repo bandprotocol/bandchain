@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -20,19 +19,13 @@ import (
 )
 
 type RequestHook struct {
-	cdc            *codec.Codec
-	oracleKeeper   keeper.Keeper
-	dbMap          *gorp.DbMap
-	expireDuration time.Duration
-	removeHeight   int64
+	cdc          *codec.Codec
+	oracleKeeper keeper.Keeper
+	dbMap        *gorp.DbMap
 }
 
-const (
-	DefaultRemoveHeight = int64(1000)
-)
-
-func initDb(sqliteDir string) *gorp.DbMap {
-	db, err := sql.Open("sqlite3", sqliteDir)
+func initDb(connection string) *gorp.DbMap {
+	db, err := sql.Open("sqlite3", connection)
 	if err != nil {
 		panic(err)
 	}
@@ -49,22 +42,11 @@ func initDb(sqliteDir string) *gorp.DbMap {
 	return dbMap
 }
 
-func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, sqliteDir string, expireParamStr string) *RequestHook {
-	params := strings.Split(expireParamStr, ":")
-	if len(params) != 2 {
-		panic("Split expire param string failed")
-	}
-	expireDuration, err := time.ParseDuration(params[0])
-	if err != nil {
-		panic(err)
-	}
-	removeHeight := common.Atoi(params[1])
+func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connection string) *RequestHook {
 	return &RequestHook{
-		cdc:            cdc,
-		oracleKeeper:   oracleKeeper,
-		dbMap:          initDb(sqliteDir),
-		expireDuration: expireDuration,
-		removeHeight:   removeHeight,
+		cdc:          cdc,
+		oracleKeeper: oracleKeeper,
+		dbMap:        initDb(connection),
 	}
 }
 
@@ -78,10 +60,6 @@ func (h RequestHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, 
 }
 
 func (h RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
-	if req.Height%h.removeHeight == 0 {
-		h.DeleteExpiredData(ctx.BlockTime().Add(-h.expireDuration).Unix())
-	}
-
 	for _, event := range res.Events {
 		events := sdk.StringifyEvents([]abci.Event{event})
 		evMap := common.ParseEvents(events)
@@ -106,7 +84,7 @@ func (h RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, 
 		switch paths[1] {
 		case "multi_request":
 			if len(paths) != 7 {
-				return common.QueryResultError(errors.New(fmt.Sprintf("expect 6 arguments given %d", len(paths)))), true
+				return common.QueryResultError(errors.New(fmt.Sprintf("expect 7 arguments given %d", len(paths)))), true
 			}
 			oid := types.OracleScriptID(common.Atoi(paths[2]))
 			calldata, err := hex.DecodeString(paths[3])

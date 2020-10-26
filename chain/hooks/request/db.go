@@ -50,9 +50,3 @@ order by resolve_time desc limit ?`,
 	}
 	return requestIDs
 }
-
-func (h *RequestHook) DeleteExpiredData(resolveTime int64) {
-	h.dbMap.Exec(`delete from request
-where resolve_time < ?
-		`, resolveTime)
-}
