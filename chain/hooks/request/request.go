@@ -25,8 +25,12 @@ type RequestHook struct {
 	trans        *gorp.Transaction
 }
 
-func initDb(connection string) *gorp.DbMap {
-	db, err := sql.Open("sqlite3", connection)
+func initDb(connStr string) *gorp.DbMap {
+	connStrs := strings.Split(connStr, "://")
+	if len(connStrs) != 2 {
+		panic(fmt.Sprintf("failed to parse connection string"))
+	}
+	db, err := sql.Open(connStrs[0], connStrs[1])
 	if err != nil {
 		panic(err)
 	}
@@ -43,11 +47,11 @@ func initDb(connection string) *gorp.DbMap {
 	return dbMap
 }
 
-func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connection string) *RequestHook {
+func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connStr string) *RequestHook {
 	return &RequestHook{
 		cdc:          cdc,
 		oracleKeeper: oracleKeeper,
-		dbMap:        initDb(connection),
+		dbMap:        initDb(connStr),
 	}
 }
 
