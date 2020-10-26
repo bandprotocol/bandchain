@@ -14,7 +14,7 @@ type Request struct {
 }
 
 func (h *RequestHook) InsertRequest(requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, resolveTime int64) {
-	err := h.dbMap.Insert(&Request{
+	err := h.trans.Insert(&Request{
 		RequestID:      requestID,
 		OracleScriptID: oracleScriptID,
 		Calldata:       calldata,
