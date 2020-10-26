@@ -73,7 +73,7 @@ func main() {
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
 	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
-	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sqlite")
+	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in database")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -128,7 +128,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 	if viper.IsSet(flagWithRequestSearch) {
 		bandApp.AddHook(request.NewRequestHook(
 			bandApp.Codec(), bandApp.OracleKeeper,
-			filepath.Join(viper.GetString(cli.HomeFlag), "request.db"), viper.GetString(flagWithRequestSearch)))
+			filepath.Join(viper.GetString(cli.HomeFlag), viper.GetString(flagWithRequestSearch))))
 	}
 	return bandApp
 }
