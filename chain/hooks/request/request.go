@@ -104,20 +104,6 @@ func (h RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, 
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
-		case "latest_request":
-			if len(paths) != 6 {
-				return common.QueryResultError(errors.New(fmt.Sprintf("expect 6 arguments given %d", len(paths)))), true
-			}
-			oid := types.OracleScriptID(common.Atoi(paths[2]))
-			calldata, err := hex.DecodeString(paths[3])
-			if err != nil {
-				return common.QueryResultError(err), true
-			}
-			askCount := common.Atoui(paths[4])
-			minCount := common.Atoui(paths[5])
-			requestID := h.GetLatestRequestID(oid, calldata, askCount, minCount)
-			bz, err := h.cdc.MarshalBinaryBare(requestID)
-			return common.QueryResultSuccess(bz, req.Height), true
 		case "multi_request":
 			if len(paths) != 7 {
 				return common.QueryResultError(errors.New(fmt.Sprintf("expect 6 arguments given %d", len(paths)))), true
