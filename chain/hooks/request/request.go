@@ -88,7 +88,7 @@ func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery,
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
-		case "multi_request":
+		case "latest_request":
 			if len(paths) != 7 {
 				return common.QueryResultError(errors.New(fmt.Sprintf("expect 7 arguments given %d", len(paths)))), true
 			}
