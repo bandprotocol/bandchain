@@ -22,6 +22,7 @@ type RequestHook struct {
 	cdc          *codec.Codec
 	oracleKeeper keeper.Keeper
 	dbMap        *gorp.DbMap
+	trans        *gorp.Transaction
 }
 
 func initDb(connection string) *gorp.DbMap {
@@ -50,16 +51,21 @@ func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connection str
 	}
 }
 
-func (h RequestHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
+func (h *RequestHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
 }
 
-func (h RequestHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+func (h *RequestHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+	trans, err := h.dbMap.Begin()
+	if err != nil {
+		panic(err)
+	}
+	h.trans = trans
 }
 
-func (h RequestHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
+func (h *RequestHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
 }
 
-func (h RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
+func (h *RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
 	for _, event := range res.Events {
 		events := sdk.StringifyEvents([]abci.Event{event})
 		evMap := common.ParseEvents(events)
@@ -78,7 +84,7 @@ func (h RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, re
 	}
 }
 
-func (h RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
+func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
@@ -105,4 +111,9 @@ func (h RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, 
 	}
 }
 
-func (h RequestHook) BeforeCommit() {}
+func (h *RequestHook) BeforeCommit() {
+	err := h.trans.Commit()
+	if err != nil {
+		panic(err)
+	}
+}
