@@ -27,16 +27,6 @@ func (h *RequestHook) InsertRequest(requestID types.RequestID, oracleScriptID ty
 	}
 }
 
-func (h *RequestHook) GetLatestRequestID(oid types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64) types.RequestID {
-	var latestRequest Request
-	h.dbMap.SelectOne(&latestRequest,
-		`select * from request
-where oracle_script_id = ? and calldata = ? and min_count = ? and ask_count = ?
-order by resolve_time desc limit 1`,
-		oid, calldata, minCount, askCount)
-	return types.RequestID(latestRequest.RequestID)
-}
-
 func (h *RequestHook) GetMultiRequestID(oid types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, limit int64) []types.RequestID {
 	var requests []Request
 	h.dbMap.Select(&requests,
