@@ -5,8 +5,12 @@ from .wallet import Address
 
 
 class Message(object):
-    def __init__(self):
-        NotImplementedError()
+    def to_dict(self) -> dict:
+        pass
+
+    # for with_auto_account_info
+    def get_sender(self) -> Address:
+        pass
 
 
 @dataclass

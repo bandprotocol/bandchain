@@ -30,8 +30,10 @@ class Client(object):
     def _get_result(self, path, **kwargs):
         return self._get(path, **kwargs)["result"]
 
-    def send_tx(self, data: dict) -> dict:
-        return requests.post(self.rpc_url + "/txs", json=data).json()
+    def send_tx(self, data: dict, mode: str = "sync") -> dict:
+        return requests.post(
+            self.rpc_url + "/txs", json={"tx": data, "mode": mode,}
+        ).json()
 
     def get_chain_id(self) -> str:
         return self._get("/bandchain/chain_id")["chain_id"]

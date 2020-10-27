@@ -25,20 +25,15 @@ def main():
     ]
 
     t = Transaction.create(msgs)
-    t.sign_by(privkey)
-
-    raw_tx = t.get_raw_tx(
-        account_num=acc.account_number,
-        sequence=acc.sequence,
-        gas=500000,
-        fee=0,
-        memo="",
-        msgs=msgs,
-        chain_id="bandchain",
+    t = (
+        t.with_account_num(acc.account_number)
+        .with_sequence(acc.sequence)
+        .with_chain_id("bandchain")
     )
-    print(raw_tx)
 
-    result = c.send_tx(raw_tx)
+    raw_tx = t.as_json(privkey.sign(t.get_sign_data()))
+
+    result = c.send_tx(raw_tx, "block")
     print(result)
 
 
