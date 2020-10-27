@@ -25,18 +25,33 @@ type RequestHook struct {
 	trans        *gorp.Transaction
 }
 
+func getDB(driverName string, dataSourceName string) *sql.DB {
+	db, err := sql.Open(driverName, dataSourceName)
+	if err != nil {
+		panic(err)
+	}
+	return db
+}
+
 func initDb(connStr string) *gorp.DbMap {
 	connStrs := strings.Split(connStr, "://")
 	if len(connStrs) != 2 {
 		panic(fmt.Sprintf("failed to parse connection string"))
 	}
-	db, err := sql.Open(connStrs[0], connStrs[1])
-	if err != nil {
-		panic(err)
+	var dbMap *gorp.DbMap
+	switch connStrs[0] {
+	case "sqlite3":
+		dbMap = &gorp.DbMap{Db: getDB("sqlite3", connStrs[1]), Dialect: gorp.SqliteDialect{}}
+	case "postgres":
+		dbMap = &gorp.DbMap{Db: getDB("postgres", connStrs[1]), Dialect: gorp.PostgresDialect{}}
+	case "mysql":
+		dbMap = &gorp.DbMap{Db: getDB("mysql", connStrs[1]), Dialect: gorp.MySQLDialect{}}
+	default:
+		panic(fmt.Sprintf("unknown driver %s", connStrs[0]))
 	}
-	dbMap := &gorp.DbMap{Db: db, Dialect: gorp.SqliteDialect{}}
+
 	dbMap.AddTableWithName(Request{}, "request").AddIndex("ix_calldata_min_count_ask_count_oracle_script_id", "Btree", []string{"calldata", "min_count", "ask_count", "oracle_script_id"})
-	err = dbMap.CreateTablesIfNotExists()
+	err := dbMap.CreateTablesIfNotExists()
 	if err != nil {
 		panic(err)
 	}
