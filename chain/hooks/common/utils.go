@@ -18,7 +18,7 @@ type Message struct {
 	Value JsDict
 }
 
-// atoi converts the given string into an int64. Panics on errors.
+// Atoi converts the given string into an int64. Panics on errors.
 func Atoi(val string) int64 {
 	res, err := strconv.ParseInt(val, 10, 64)
 	if err != nil {
@@ -27,7 +27,7 @@ func Atoi(val string) int64 {
 	return res
 }
 
-// atoi converts the given string into an uint64. Panics on errors.
+// Atoui converts the given string into an uint64. Panics on errors.
 func Atoui(val string) uint64 {
 	res, err := strconv.ParseUint(val, 10, 64)
 	if err != nil {

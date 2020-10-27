@@ -13,7 +13,7 @@ type Request struct {
 	ResolveTime    int64                `db:"resolve_time" json:"resolve_time"`
 }
 
-func (h *RequestHook) InsertRequest(requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, resolveTime int64) {
+func (h *RequestHook) insertRequest(requestID types.RequestID, oracleScriptID types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, resolveTime int64) {
 	err := h.trans.Insert(&Request{
 		RequestID:      requestID,
 		OracleScriptID: oracleScriptID,
@@ -27,7 +27,7 @@ func (h *RequestHook) InsertRequest(requestID types.RequestID, oracleScriptID ty
 	}
 }
 
-func (h *RequestHook) GetMultiRequestID(oid types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, limit int64) []types.RequestID {
+func (h *RequestHook) getMultiRequestID(oid types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, limit int64) []types.RequestID {
 	var requests []Request
 	h.dbMap.Select(&requests,
 		`select * from request
