@@ -4,7 +4,7 @@ from .wallet import Address
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
 
 
-class Message:
+class Msg:
     def as_json(self) -> dict:
         raise NotImplementedError()
 
@@ -16,7 +16,7 @@ class Message:
 
 
 @dataclass
-class MsgRequest(Message):
+class MsgRequest(Msg):
     oracle_script_id: int
     calldata: bytes
     ask_count: int

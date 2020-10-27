@@ -4,8 +4,8 @@ from pyband.message import MsgRequest
 from pyband.wallet import Address
 
 
-def test_request_message_creation_success():
-    request_msg = MsgRequest(
+def test_msg_request_creation_success():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=4,
@@ -13,9 +13,9 @@ def test_request_message_creation_success():
         client_id="from_pyband",
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
-    assert request_msg.validate() == True
+    assert msg_request.validate() == True
 
-    assert request_msg.as_json() == {
+    assert msg_request.as_json() == {
         "type": "oracle/Request",
         "value": {
             "oracle_script_id": "1",
@@ -28,8 +28,8 @@ def test_request_message_creation_success():
     }
 
 
-def test_request_get_sender():
-    request_msg = MsgRequest(
+def test_msg_request_get_sender():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=4,
@@ -39,13 +39,13 @@ def test_request_get_sender():
     )
 
     assert (
-        request_msg.get_sender().to_acc_bech32()
+        msg_request.get_sender().to_acc_bech32()
         == "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"
     )
 
 
-def test_request_message_creation_oracle_script_id_fail():
-    request_msg = MsgRequest(
+def test_msg_request_creation_oracle_script_id_fail():
+    msg_request = MsgRequest(
         oracle_script_id=0,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=4,
@@ -54,11 +54,11 @@ def test_request_message_creation_oracle_script_id_fail():
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
     with pytest.raises(ValueError, match="oracle script id cannot less than zero"):
-        request_msg.validate()
+        msg_request.validate()
 
 
-def test_request_message_creation_calldata_fail():
-    request_msg = MsgRequest(
+def test_msg_request_creation_calldata_fail():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex(
             "000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001000000034254430000000000000001"
@@ -69,11 +69,11 @@ def test_request_message_creation_calldata_fail():
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
     with pytest.raises(ValueError, match="too large calldata"):
-        request_msg.validate()
+        msg_request.validate()
 
 
-def test_request_message_creation_ask_count_fail():
-    request_msg = MsgRequest(
+def test_msg_request_creation_ask_count_fail():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=3,
@@ -84,11 +84,11 @@ def test_request_message_creation_ask_count_fail():
     with pytest.raises(
         ValueError, match="invalid ask count got: min count: 4, ask count: 3"
     ):
-        request_msg.validate()
+        msg_request.validate()
 
 
-def test_request_message_creation_min_count_fail():
-    request_msg = MsgRequest(
+def test_msg_request_creation_min_count_fail():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=3,
@@ -97,11 +97,11 @@ def test_request_message_creation_min_count_fail():
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
     with pytest.raises(ValueError, match="invalid min count got: min count: 0"):
-        request_msg.validate()
+        msg_request.validate()
 
 
-def test_request_message_creation_client_id_count_fail():
-    request_msg = MsgRequest(
+def test_msg_request_creation_client_id_count_fail():
+    msg_request = MsgRequest(
         oracle_script_id=1,
         calldata=bytes.fromhex("000000034254430000000000000001"),
         ask_count=3,
@@ -110,4 +110,4 @@ def test_request_message_creation_client_id_count_fail():
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
     with pytest.raises(ValueError, match="too long client id"):
-        request_msg.validate()
+        msg_request.validate()
