@@ -10,6 +10,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/go-gorp/gorp"
+	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -36,16 +38,16 @@ func getDB(driverName string, dataSourceName string) *sql.DB {
 func initDb(connStr string) *gorp.DbMap {
 	connStrs := strings.Split(connStr, "://")
 	if len(connStrs) != 2 {
-		panic(fmt.Sprintf("failed to parse connection string"))
+		panic("failed to parse connection string")
 	}
 	var dbMap *gorp.DbMap
 	switch connStrs[0] {
 	case "sqlite3":
-		dbMap = &gorp.DbMap{Db: getDB("sqlite3", connStrs[1]), Dialect: gorp.SqliteDialect{}}
+		dbMap = &gorp.DbMap{Db: getDB(connStrs[0], connStrs[1]), Dialect: gorp.SqliteDialect{}}
 	case "postgres":
-		dbMap = &gorp.DbMap{Db: getDB("postgres", connStrs[1]), Dialect: gorp.PostgresDialect{}}
+		dbMap = &gorp.DbMap{Db: getDB(connStrs[0], connStrs[1]), Dialect: gorp.PostgresDialect{}}
 	case "mysql":
-		dbMap = &gorp.DbMap{Db: getDB("mysql", connStrs[1]), Dialect: gorp.MySQLDialect{}}
+		dbMap = &gorp.DbMap{Db: getDB(connStrs[0], connStrs[1]), Dialect: gorp.MySQLDialect{}}
 	default:
 		panic(fmt.Sprintf("unknown driver %s", connStrs[0]))
 	}
