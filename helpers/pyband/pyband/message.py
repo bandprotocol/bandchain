@@ -4,15 +4,15 @@ from .wallet import Address
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
 
 
-class Message(object):
+class Message:
     def as_json(self) -> dict:
-        pass
+        raise NotImplementedError()
 
     def get_sender(self) -> Address:
-        pass
+        raise NotImplementedError()
 
     def validate(self) -> bool:
-        pass
+        raise NotImplementedError()
 
 
 @dataclass
@@ -47,10 +47,14 @@ class MsgRequest(Message):
             raise ValueError("too large calldata")
         if self.min_count <= 0:
             raise ValueError(
-                "invalid min count got: min count: {}".format(self.min_count))
+                "invalid min count got: min count: {}".format(self.min_count)
+            )
         if self.ask_count < self.min_count:
-            raise ValueError("invalid ask count got: min count: {}, ask count: {}".format(
-                self.min_count, self.ask_count))
+            raise ValueError(
+                "invalid ask count got: min count: {}, ask count: {}".format(
+                    self.min_count, self.ask_count
+                )
+            )
         if len(self.client_id) > MAX_CLIENT_ID_LENGTH:
             raise ValueError("too long client id")
 
