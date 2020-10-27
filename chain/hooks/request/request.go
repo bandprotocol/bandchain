@@ -51,14 +51,16 @@ func initDb(connStr string) *gorp.DbMap {
 	default:
 		panic(fmt.Sprintf("unknown driver %s", connStrs[0]))
 	}
-
-	dbMap.AddTableWithName(Request{}, "request").AddIndex("ix_calldata_min_count_ask_count_oracle_script_id_resolve_time", "Btree", []string{"calldata", "min_count", "ask_count", "oracle_script_id", "resolve_time"})
+	indexName := "ix_calldata_min_count_ask_count_oracle_script_id_resolve_time"
+	dbMap.AddTableWithName(Request{}, "request").AddIndex(indexName, "Btree", []string{"calldata", "min_count", "ask_count", "oracle_script_id", "resolve_time"})
 	err := dbMap.CreateTablesIfNotExists()
 	if err != nil {
 		panic(err)
 	}
 	err = dbMap.CreateIndex()
-	if err != nil {
+	// Check error if it's not creating existed index, panic the process.
+	if err != nil && err.Error() != fmt.Sprintf("index %s already exists", indexName) {
+		fmt.Println(err)
 		panic(err)
 	}
 	return dbMap
