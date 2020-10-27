@@ -95,7 +95,7 @@ func (h *RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, r
 			reqID := types.RequestID(common.Atoi(evMap[types.EventTypeResolve+"."+types.AttributeKeyID][0]))
 			result := h.oracleKeeper.MustGetResult(ctx, reqID)
 			if result.ResponsePacketData.ResolveStatus == types.ResolveStatus_Success {
-				h.InsertRequest(reqID, result.RequestPacketData.OracleScriptID, result.RequestPacketData.Calldata,
+				h.insertRequest(reqID, result.RequestPacketData.OracleScriptID, result.RequestPacketData.Calldata,
 					result.RequestPacketData.MinCount, result.RequestPacketData.AskCount,
 					result.ResponsePacketData.ResolveTime)
 			}
@@ -121,7 +121,7 @@ func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery,
 			askCount := common.Atoui(paths[4])
 			minCount := common.Atoui(paths[5])
 			limit := common.Atoi(paths[6])
-			requestIDs := h.GetMultiRequestID(oid, calldata, askCount, minCount, limit)
+			requestIDs := h.getMultiRequestID(oid, calldata, askCount, minCount, limit)
 			bz, err := h.cdc.MarshalBinaryBare(requestIDs)
 			return common.QueryResultSuccess(bz, req.Height), true
 		default:
