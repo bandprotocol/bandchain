@@ -59,8 +59,8 @@ func QuerySearchLatestRequest(
 	return bz, h, err
 }
 
-func queryMultitRequest(cliCtx context.CLIContext, oid, calldata, askCount, minCount, limit string) ([]types.RequestID, error) {
-	bz, _, err := cliCtx.Query(fmt.Sprintf("band/latest_request/%s/%s/%s/%s/%s", oid, calldata, askCount, minCount, limit))
+func queryMultitRequest(cliCtx context.CLIContext, oid, calldata, askCount, minCount string, limit int) ([]types.RequestID, error) {
+	bz, _, err := cliCtx.Query(fmt.Sprintf("band/latest_request/%s/%s/%s/%s/%d", oid, calldata, askCount, minCount, limit))
 	if err != nil {
 		return nil, err
 	}
@@ -113,7 +113,7 @@ func queryRequests(
 func QueryMultiSearchLatestRequest(
 	route string, cliCtx context.CLIContext, oid, calldata, askCount, minCount string, limit int,
 ) ([]byte, int64, error) {
-	requestIDs, err := queryMultitRequest(cliCtx, oid, calldata, askCount, minCount, fmt.Sprintf("%d", limit))
+	requestIDs, err := queryMultitRequest(cliCtx, oid, calldata, askCount, minCount, limit)
 	if err != nil {
 		return nil, 0, err
 	}
