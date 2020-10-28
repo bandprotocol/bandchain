@@ -96,7 +96,7 @@ func (h *RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, r
 			result := h.oracleKeeper.MustGetResult(ctx, reqID)
 			if result.ResponsePacketData.ResolveStatus == types.ResolveStatus_Success {
 				h.insertRequest(reqID, result.RequestPacketData.OracleScriptID, result.RequestPacketData.Calldata,
-					result.RequestPacketData.MinCount, result.RequestPacketData.AskCount,
+					result.RequestPacketData.AskCount, result.RequestPacketData.MinCount,
 					result.ResponsePacketData.ResolveTime)
 			}
 		default:
