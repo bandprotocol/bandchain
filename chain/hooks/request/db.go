@@ -1,13 +1,15 @@
 package request
 
 import (
+	"encoding/hex"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 type Request struct {
 	RequestID      types.RequestID      `db:"request_id, primarykey" json:"request_id"`
 	OracleScriptID types.OracleScriptID `db:"oracle_script_id" json:"oracle_script_id"`
-	Calldata       []byte               `db:"calldata" json:"calldata"`
+	Calldata       string               `db:"calldata" json:"calldata"`
 	MinCount       uint64               `db:"min_count" json:"min_count"`
 	AskCount       uint64               `db:"ask_count" json:"ask_count"`
 	ResolveTime    int64                `db:"resolve_time" json:"resolve_time"`
@@ -17,7 +19,7 @@ func (h *RequestHook) insertRequest(requestID types.RequestID, oracleScriptID ty
 	err := h.trans.Insert(&Request{
 		RequestID:      requestID,
 		OracleScriptID: oracleScriptID,
-		Calldata:       calldata,
+		Calldata:       hex.EncodeToString(calldata),
 		MinCount:       minCount,
 		AskCount:       askCount,
 		ResolveTime:    resolveTime,
@@ -27,7 +29,7 @@ func (h *RequestHook) insertRequest(requestID types.RequestID, oracleScriptID ty
 	}
 }
 
-func (h *RequestHook) getMultiRequestID(oid types.OracleScriptID, calldata []byte, minCount uint64, askCount uint64, limit int64) []types.RequestID {
+func (h *RequestHook) getMultiRequestID(oid types.OracleScriptID, calldata string, minCount uint64, askCount uint64, limit int64) []types.RequestID {
 	var requests []Request
 	h.dbMap.Select(&requests,
 		`select * from request

@@ -2,8 +2,6 @@ package request
 
 import (
 	"database/sql"
-	"encoding/hex"
-	"errors"
 	"fmt"
 	"strings"
 
@@ -113,18 +111,18 @@ func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery,
 		switch paths[1] {
 		case "latest_request":
 			if len(paths) != 7 {
-				return common.QueryResultError(errors.New(fmt.Sprintf("expect 7 arguments given %d", len(paths)))), true
+				return common.QueryResultError(fmt.Errorf("expect 7 arguments given %d", len(paths))), true
 			}
 			oid := types.OracleScriptID(common.Atoi(paths[2]))
-			calldata, err := hex.DecodeString(paths[3])
-			if err != nil {
-				return common.QueryResultError(err), true
-			}
+			calldata := paths[3]
 			askCount := common.Atoui(paths[4])
 			minCount := common.Atoui(paths[5])
 			limit := common.Atoi(paths[6])
 			requestIDs := h.getMultiRequestID(oid, calldata, askCount, minCount, limit)
 			bz, err := h.cdc.MarshalBinaryBare(requestIDs)
+			if err != nil {
+				return common.QueryResultError(err), true
+			}
 			return common.QueryResultSuccess(bz, req.Height), true
 		default:
 			return abci.ResponseQuery{}, false
