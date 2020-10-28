@@ -68,7 +68,7 @@ func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res 
 					obi.MustDecode(result.ResponsePacketData.Result, &output)
 					for idx, symbol := range input.Symbols {
 						price := NewPrice(symbol, input.Multiplier, output.Pxs[idx], result.ResponsePacketData.RequestID, result.ResponsePacketData.ResolveTime)
-						err := h.db.Put([]byte(fmt.Sprintf("%s,%d,%d", symbol, result.RequestPacketData.MinCount, result.RequestPacketData.AskCount)), h.cdc.MustMarshalBinaryBare(price), nil)
+						err := h.db.Put([]byte(fmt.Sprintf("%s,%d,%d", symbol, result.RequestPacketData.AskCount, result.RequestPacketData.MinCount)), h.cdc.MustMarshalBinaryBare(price), nil)
 						if err != nil {
 							panic(err)
 						}
@@ -88,11 +88,14 @@ func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, st
 			if len(paths) < 5 {
 				return common.QueryResultError(errors.New("no route for prices query specified")), true
 			}
-			bz, err := h.db.Get([]byte(strings.Join(paths[2:], ",")), nil)
+			symbol := paths[2]
+			askCount := common.Atoui(paths[3])
+			minCount := common.Atoui(paths[4])
+			bz, err := h.db.Get([]byte(fmt.Sprintf("%s,%d,%d", symbol, askCount, minCount)), nil)
 			if err != nil {
 				return common.QueryResultError(fmt.Errorf(
 					"Cannot get price on this %s with %s/%s counts with error: %s",
-					paths[2], paths[3], paths[4], err.Error(),
+					symbol, minCount, askCount, err.Error(),
 				)), true
 			}
 			return common.QueryResultSuccess(bz, req.Height), true
