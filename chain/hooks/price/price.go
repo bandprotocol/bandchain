@@ -94,7 +94,7 @@ func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, st
 			bz, err := h.db.Get([]byte(fmt.Sprintf("%s,%d,%d", symbol, askCount, minCount)), nil)
 			if err != nil {
 				return common.QueryResultError(fmt.Errorf(
-					"Cannot get price on this %s with %s/%s counts with error: %s",
+					"Cannot get price of %s with %d/%d counts with error: %s",
 					symbol, minCount, askCount, err.Error(),
 				)), true
 			}
