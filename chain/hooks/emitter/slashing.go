@@ -8,7 +8,7 @@ import (
 )
 
 // handleEventSlash implements emitter handler for Slashing event.
-func (h *EmitterHook) handleEventSlash(ctx sdk.Context, event common.EvMap) {
+func (h *Hook) handleEventSlash(ctx sdk.Context, event common.EvMap) {
 	if raw, ok := event[slashing.EventTypeSlash+"."+slashing.AttributeKeyJailed]; ok && len(raw) == 1 {
 		consAddress, _ := sdk.ConsAddressFromBech32(raw[0])
 		validator, _ := h.stakingKeeper.GetValidatorByConsAddr(ctx, consAddress)
@@ -21,7 +21,7 @@ func (h *EmitterHook) handleEventSlash(ctx sdk.Context, event common.EvMap) {
 }
 
 // handleMsgUnjail implements emitter handler for MsgUnjail.
-func (h *EmitterHook) handleMsgUnjail(
+func (h *Hook) handleMsgUnjail(
 	ctx sdk.Context, msg slashing.MsgUnjail,
 ) {
 	validator, _ := h.stakingKeeper.GetValidator(ctx, msg.ValidatorAddr)

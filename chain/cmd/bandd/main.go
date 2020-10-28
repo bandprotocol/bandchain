@@ -107,6 +107,18 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		baseapp.SetInterBlockCache(cache),
 	)
 
+	// Add hooks based on flag
+	if viper.IsSet(flagWithEmitter) {
+		bandApp.AddHook(emitter.NewHook(
+			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
+			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
+			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
+	}
+	if viper.IsSet(flagWithRequestSearch) {
+		bandApp.AddHook(request.NewHook(
+			bandApp.Codec(), bandApp.OracleKeeper,
+			viper.GetString(flagWithRequestSearch)))
+	}
 	if viper.IsSet(flagWithPricer) {
 		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
 		oids := make([]types.OracleScriptID, len(rawOids))
@@ -117,18 +129,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			}
 			oids[idx] = types.OracleScriptID(oid)
 		}
-		bandApp.AddHook(price.NewPriceHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
-	}
-	if viper.IsSet(flagWithEmitter) {
-		bandApp.AddHook(emitter.NewEmitterHook(
-			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
-			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
-			bandApp.OracleKeeper, viper.GetString(flagWithEmitter), viper.GetBool(flagEnableFastSync)))
-	}
-	if viper.IsSet(flagWithRequestSearch) {
-		bandApp.AddHook(request.NewRequestHook(
-			bandApp.Codec(), bandApp.OracleKeeper,
-			viper.GetString(flagWithRequestSearch)))
+		bandApp.AddHook(price.NewHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
 	}
 	return bandApp
 }

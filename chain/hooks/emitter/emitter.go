@@ -27,8 +27,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-// Emitter hook uses Kafka functionality to act as an event producer for all events in the blockchains.
-type EmitterHook struct {
+// Hook uses Kafka functionality to act as an event producer for all events in the blockchains.
+type Hook struct {
 	cdc       *codec.Codec
 	txDecoder sdk.TxDecoder
 	// Main Kafka writer instance.
@@ -49,13 +49,14 @@ type EmitterHook struct {
 	oracleKeeper  oracle.Keeper
 }
 
-func NewEmitterHook(
+// NewHook creates an emitter hook instance that will be added in Band App.
+func NewHook(
 	cdc *codec.Codec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper,
 	stakingKeeper staking.Keeper, mintKeeper mint.Keeper, distrKeeper distr.Keeper, govKeeper gov.Keeper,
 	oracleKeeper keeper.Keeper, kafkaURI string, emitStartState bool,
-) *EmitterHook {
+) *Hook {
 	paths := strings.SplitN(kafkaURI, "@", 2)
-	return &EmitterHook{
+	return &Hook{
 		cdc:       cdc,
 		txDecoder: auth.DefaultTxDecoder(cdc),
 		writer: kafka.NewWriter(kafka.WriterConfig{
@@ -78,26 +79,26 @@ func NewEmitterHook(
 }
 
 // AddAccountsInBlock adds the given accounts to the list of accounts to update balances end-of-block.
-func (h *EmitterHook) AddAccountsInBlock(accs ...sdk.AccAddress) {
+func (h *Hook) AddAccountsInBlock(accs ...sdk.AccAddress) {
 	for _, acc := range accs {
 		h.accsInBlock[acc.String()] = true
 	}
 }
 
 // AddAccountsInTx adds the given accounts to the list of accounts to track related account in transaction.
-func (h *EmitterHook) AddAccountsInTx(accs ...sdk.AccAddress) {
+func (h *Hook) AddAccountsInTx(accs ...sdk.AccAddress) {
 	for _, acc := range accs {
 		h.accsInTx[acc.String()] = true
 	}
 }
 
 // Write adds the given key-value pair to the list of messages to publish during Commit.
-func (h *EmitterHook) Write(key string, val common.JsDict) {
+func (h *Hook) Write(key string, val common.JsDict) {
 	h.msgs = append(h.msgs, common.Message{Key: key, Value: val})
 }
 
 // FlushMessages publishes all pending messages to Kafka. Blocks until completion.
-func (h *EmitterHook) FlushMessages() {
+func (h *Hook) FlushMessages() {
 	kafkaMsgs := make([]kafka.Message, len(h.msgs))
 	for idx, msg := range h.msgs {
 		res, _ := json.Marshal(msg.Value) // Error must always be nil.
@@ -109,7 +110,8 @@ func (h *EmitterHook) FlushMessages() {
 	}
 }
 
-func (h *EmitterHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
+// AfterInitChain specify actions need to do after chain initialization (app.Hook interface).
+func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
 	var genesisState bandapp.GenesisState
 	h.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	// Auth module
@@ -217,7 +219,7 @@ func (h *EmitterHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain,
 	h.FlushMessages()
 }
 
-func (h *EmitterHook) emitNonHistoricalState(ctx sdk.Context) {
+func (h *Hook) emitNonHistoricalState(ctx sdk.Context) {
 	h.emitAuthModule(ctx)
 	h.emitStakingModule(ctx)
 	h.emitOracleModule(ctx)
@@ -226,7 +228,8 @@ func (h *EmitterHook) emitNonHistoricalState(ctx sdk.Context) {
 	h.msgs = []common.Message{}
 }
 
-func (h *EmitterHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+// AfterBeginBlock specify actions need to do after begin block period (app.Hook interface).
+func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
 	h.accsInBlock = make(map[string]bool)
 	h.accsInTx = make(map[string]bool)
 	h.msgs = []common.Message{}
@@ -257,7 +260,8 @@ func (h *EmitterHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBloc
 	}
 }
 
-func (h *EmitterHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
+// AfterDeliverTx specify actions need to do after transaction has been processed (app.Hook interface).
+func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
 	if ctx.BlockHeight() == 0 {
 		return
 	}
@@ -304,7 +308,7 @@ func (h *EmitterHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx,
 	}
 	h.AddAccountsInTx(stdTx.GetSigners()...)
 	relatedAccounts := make([]sdk.AccAddress, 0, len(h.accsInBlock))
-	for accStr, _ := range h.accsInTx {
+	for accStr := range h.accsInTx {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
 		relatedAccounts = append(relatedAccounts, acc)
 	}
@@ -314,14 +318,15 @@ func (h *EmitterHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx,
 	txDict["messages"] = messages
 }
 
-func (h *EmitterHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
+// AfterEndBlock specify actions need to do after end block period (app.Hook interface).
+func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
 	for _, event := range res.Events {
 		h.handleBeginBlockEndBlockEvent(ctx, event)
 	}
 	// Update balances of all affected accounts on this block.
 	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
 	modifiedMsgs := []common.Message{h.msgs[0]}
-	for accStr, _ := range h.accsInBlock {
+	for accStr := range h.accsInBlock {
 		acc, _ := sdk.AccAddressFromBech32(accStr)
 		modifiedMsgs = append(modifiedMsgs, common.Message{
 			Key: "SET_ACCOUNT",
@@ -334,10 +339,12 @@ func (h *EmitterHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, r
 	h.Write("COMMIT", common.JsDict{"height": req.Height})
 }
 
-func (h *EmitterHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
+// ApplyQuery catch the custom query that matches specific paths (app.Hook interface).
+func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
 	return abci.ResponseQuery{}, false
 }
 
-func (h *EmitterHook) BeforeCommit() {
+// BeforeCommit specify actions need to do before commit block (app.Hook interface).
+func (h *Hook) BeforeCommit() {
 	h.FlushMessages()
 }

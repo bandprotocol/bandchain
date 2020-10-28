@@ -14,7 +14,7 @@ var (
 	StatusInactive            = 6
 )
 
-func (h *EmitterHook) emitSetDeposit(ctx sdk.Context, txHash []byte, id uint64, depositor sdk.AccAddress) {
+func (h *Hook) emitSetDeposit(ctx sdk.Context, txHash []byte, id uint64, depositor sdk.AccAddress) {
 	deposit, _ := h.govKeeper.GetDeposit(ctx, id, depositor)
 	h.Write("SET_DEPOSIT", common.JsDict{
 		"proposal_id": id,
@@ -24,7 +24,7 @@ func (h *EmitterHook) emitSetDeposit(ctx sdk.Context, txHash []byte, id uint64, 
 	})
 }
 
-func (h *EmitterHook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64) {
+func (h *Hook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64) {
 	proposal, _ := h.govKeeper.GetProposal(ctx, id)
 	h.Write("UPDATE_PROPOSAL", common.JsDict{
 		"id":              id,
@@ -36,7 +36,7 @@ func (h *EmitterHook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64)
 }
 
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
-func (app *EmitterHook) handleMsgSubmitProposal(
+func (app *Hook) handleMsgSubmitProposal(
 	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap,
 ) {
 	proposalId := uint64(common.Atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
@@ -59,7 +59,7 @@ func (app *EmitterHook) handleMsgSubmitProposal(
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
-func (h *EmitterHook) handleMsgDeposit(
+func (h *Hook) handleMsgDeposit(
 	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit,
 ) {
 	h.emitSetDeposit(ctx, txHash, msg.ProposalID, msg.Depositor)
@@ -67,7 +67,7 @@ func (h *EmitterHook) handleMsgDeposit(
 }
 
 // handleMsgVote implements emitter handler for MsgVote.
-func (h *EmitterHook) handleMsgVote(
+func (h *Hook) handleMsgVote(
 	txHash []byte, msg gov.MsgVote,
 ) {
 	h.Write("SET_VOTE", common.JsDict{
@@ -78,14 +78,14 @@ func (h *EmitterHook) handleMsgVote(
 	})
 }
 
-func (h *EmitterHook) handleEventInactiveProposal(evMap common.EvMap) {
+func (h *Hook) handleEventInactiveProposal(evMap common.EvMap) {
 	h.Write("UPDATE_PROPOSAL", common.JsDict{
 		"id":     common.Atoi(evMap[types.EventTypeInactiveProposal+"."+types.AttributeKeyProposalID][0]),
 		"status": StatusInactive,
 	})
 }
 
-func (h *EmitterHook) handleEventTypeActiveProposal(ctx sdk.Context, evMap common.EvMap) {
+func (h *Hook) handleEventTypeActiveProposal(ctx sdk.Context, evMap common.EvMap) {
 	id := uint64(common.Atoi(evMap[types.EventTypeActiveProposal+"."+types.AttributeKeyProposalID][0]))
 	proposal, _ := h.govKeeper.GetProposal(ctx, id)
 	h.Write("UPDATE_PROPOSAL", common.JsDict{

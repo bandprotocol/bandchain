@@ -27,7 +27,7 @@ func parseEvents(events sdk.StringEvents) common.EvMap {
 
 // handleMsg handles the given message by publishing relevant events and populates accounts
 // that need balance update in 'h.accs'. Also fills in extra info for this message.
-func (h *EmitterHook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
+func (h *Hook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.ABCIMessageLog, extra common.JsDict) {
 	evMap := parseEvents(log.Events)
 	switch msg := msg.(type) {
 	case oracle.MsgRequestData:
@@ -79,7 +79,7 @@ func (h *EmitterHook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log
 	}
 }
 
-func (h *EmitterHook) handleBeginBlockEndBlockEvent(ctx sdk.Context, event abci.Event) {
+func (h *Hook) handleBeginBlockEndBlockEvent(ctx sdk.Context, event abci.Event) {
 	events := sdk.StringifyEvents([]abci.Event{event})
 	evMap := parseEvents(events)
 	switch event.Type {

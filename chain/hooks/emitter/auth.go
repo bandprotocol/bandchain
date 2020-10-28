@@ -7,7 +7,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
-func (h *EmitterHook) emitAuthModule(ctx sdk.Context) {
+func (h *Hook) emitAuthModule(ctx sdk.Context) {
 	h.accountKeeper.IterateAccounts(ctx, func(account exported.Account) bool {
 		h.Write("SET_ACCOUNT", common.JsDict{
 			"address": account.GetAddress(),

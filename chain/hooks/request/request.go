@@ -8,9 +8,12 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/go-gorp/gorp"
+
+	// DB driver
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/lib/pq"
 	_ "github.com/mattn/go-sqlite3"
+
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
@@ -18,7 +21,8 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-type RequestHook struct {
+// Hook inherits from Band app hook to save latest request into SQL database.
+type Hook struct {
 	cdc          *codec.Codec
 	oracleKeeper keeper.Keeper
 	dbMap        *gorp.DbMap
@@ -58,24 +62,26 @@ func initDb(connStr string) *gorp.DbMap {
 	err = dbMap.CreateIndex()
 	// Check error if it's not creating existed index, panic the process.
 	if err != nil && err.Error() != fmt.Sprintf("index %s already exists", indexName) {
-		fmt.Println(err)
 		panic(err)
 	}
 	return dbMap
 }
 
-func NewRequestHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connStr string) *RequestHook {
-	return &RequestHook{
+// NewHook creates a request hook instance that will be added in Band App.
+func NewHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, connStr string) *Hook {
+	return &Hook{
 		cdc:          cdc,
 		oracleKeeper: oracleKeeper,
 		dbMap:        initDb(connStr),
 	}
 }
 
-func (h *RequestHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
+// AfterInitChain specify actions need to do after chain initialization (app.Hook interface).
+func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
 }
 
-func (h *RequestHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+// AfterBeginBlock specify actions need to do after begin block period (app.Hook interface).
+func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
 	trans, err := h.dbMap.Begin()
 	if err != nil {
 		panic(err)
@@ -83,10 +89,12 @@ func (h *RequestHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBloc
 	h.trans = trans
 }
 
-func (h *RequestHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
+// AfterDeliverTx specify actions need to do after transaction has been processed (app.Hook interface).
+func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
 }
 
-func (h *RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
+// AfterEndBlock specify actions need to do after end block period (app.Hook interface).
+func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
 	for _, event := range res.Events {
 		events := sdk.StringifyEvents([]abci.Event{event})
 		evMap := common.ParseEvents(events)
@@ -105,7 +113,8 @@ func (h *RequestHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, r
 	}
 }
 
-func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
+// ApplyQuery catch the custom query that matches specific paths (app.Hook interface).
+func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
@@ -132,7 +141,8 @@ func (h *RequestHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery,
 	}
 }
 
-func (h *RequestHook) BeforeCommit() {
+// BeforeCommit specify actions need to do before commit block (app.Hook interface).
+func (h *Hook) BeforeCommit() {
 	err := h.trans.Commit()
 	if err != nil {
 		h.trans.Rollback()

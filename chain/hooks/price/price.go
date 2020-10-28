@@ -16,14 +16,16 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
-type PriceHook struct {
+// Hook uses levelDB to store the latest price of standard price reference.
+type Hook struct {
 	cdc          *codec.Codec
 	stdOs        map[types.OracleScriptID]bool
 	oracleKeeper keeper.Keeper
 	db           *leveldb.DB
 }
 
-func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, priceDBDir string) *PriceHook {
+// NewHook creates a price hook instance that will be added in Band App.
+func NewHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.OracleScriptID, priceDBDir string) *Hook {
 	stdOs := make(map[types.OracleScriptID]bool)
 	for _, oid := range oids {
 		stdOs[oid] = true
@@ -32,7 +34,7 @@ func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.Ora
 	if err != nil {
 		panic(err)
 	}
-	return &PriceHook{
+	return &Hook{
 		cdc:          cdc,
 		stdOs:        stdOs,
 		oracleKeeper: oracleKeeper,
@@ -40,17 +42,21 @@ func NewPriceHook(cdc *codec.Codec, oracleKeeper keeper.Keeper, oids []types.Ora
 	}
 }
 
-func (h PriceHook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
+// AfterInitChain specify actions need to do after chain initialization (app.Hook interface).
+func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
 }
 
-func (h PriceHook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+// AfterBeginBlock specify actions need to do after begin block period (app.Hook interface).
+func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
 }
 
-func (h PriceHook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
+// AfterDeliverTx specify actions need to do after transaction has been processed (app.Hook interface).
+func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
 
 }
 
-func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
+// AfterEndBlock specify actions need to do after end block period (app.Hook interface).
+func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
 	for _, event := range res.Events {
 		events := sdk.StringifyEvents([]abci.Event{event})
 		evMap := common.ParseEvents(events)
@@ -80,7 +86,9 @@ func (h PriceHook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res 
 		}
 	}
 }
-func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
+
+// ApplyQuery catch the custom query that matches specific paths (app.Hook interface).
+func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop bool) {
 	paths := strings.Split(req.Path, "/")
 	if paths[0] == "band" {
 		switch paths[1] {
@@ -107,4 +115,5 @@ func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, st
 	}
 }
 
-func (h PriceHook) BeforeCommit() {}
+// BeforeCommit specify actions need to do before commit block (app.Hook interface).
+func (h *Hook) BeforeCommit() {}

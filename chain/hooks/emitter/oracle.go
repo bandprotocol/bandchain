@@ -15,7 +15,7 @@ func parseBytes(b []byte) []byte {
 	return b
 }
 
-func (h *EmitterHook) emitOracleModule(ctx sdk.Context) {
+func (h *Hook) emitOracleModule(ctx sdk.Context) {
 	dataSources := h.oracleKeeper.GetAllDataSources(ctx)
 	for idx, ds := range dataSources {
 		id := types.DataSourceID(idx + 1)
@@ -50,7 +50,7 @@ func (h *EmitterHook) emitOracleModule(ctx sdk.Context) {
 	}
 }
 
-func (h *EmitterHook) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
+func (h *Hook) emitSetDataSource(id types.DataSourceID, ds types.DataSource, txHash []byte) {
 	h.Write("SET_DATA_SOURCE", common.JsDict{
 		"id":          id,
 		"name":        ds.Name,
@@ -61,7 +61,7 @@ func (h *EmitterHook) emitSetDataSource(id types.DataSourceID, ds types.DataSour
 	})
 }
 
-func (h *EmitterHook) emitSetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
+func (h *Hook) emitSetOracleScript(id types.OracleScriptID, os types.OracleScript, txHash []byte) {
 	h.Write("SET_ORACLE_SCRIPT", common.JsDict{
 		"id":              id,
 		"name":            os.Name,
@@ -74,7 +74,7 @@ func (h *EmitterHook) emitSetOracleScript(id types.OracleScriptID, os types.Orac
 	})
 }
 
-func (h *EmitterHook) emitHistoricalValidatorStatus(ctx sdk.Context, operatorAddress sdk.ValAddress) {
+func (h *Hook) emitHistoricalValidatorStatus(ctx sdk.Context, operatorAddress sdk.ValAddress) {
 	status := h.oracleKeeper.GetValidatorStatus(ctx, operatorAddress).IsActive
 	h.Write("SET_HISTORICAL_VALIDATOR_STATUS", common.JsDict{
 		"operator_address": operatorAddress,
@@ -83,7 +83,7 @@ func (h *EmitterHook) emitHistoricalValidatorStatus(ctx sdk.Context, operatorAdd
 	})
 }
 
-func (h *EmitterHook) emitRawRequestAndValRequest(requestID types.RequestID, req types.Request) {
+func (h *Hook) emitRawRequestAndValRequest(requestID types.RequestID, req types.Request) {
 	for _, raw := range req.RawRequests {
 		h.Write("NEW_RAW_REQUEST", common.JsDict{
 			"request_id":     requestID,
@@ -100,7 +100,7 @@ func (h *EmitterHook) emitRawRequestAndValRequest(requestID types.RequestID, req
 	}
 }
 
-func (app *EmitterHook) emitReportAndRawReport(
+func (app *Hook) emitReportAndRawReport(
 	txHash []byte, rid types.RequestID, validator sdk.ValAddress, reporter sdk.AccAddress, rawReports []types.RawReport,
 ) {
 	app.Write("NEW_REPORT", common.JsDict{
@@ -120,7 +120,7 @@ func (app *EmitterHook) emitReportAndRawReport(
 	}
 }
 
-func (h *EmitterHook) emitUpdateResult(ctx sdk.Context, id types.RequestID) {
+func (h *Hook) emitUpdateResult(ctx sdk.Context, id types.RequestID) {
 	result := h.oracleKeeper.MustGetResult(ctx, id)
 	h.Write("UPDATE_REQUEST", common.JsDict{
 		"id":             id,
@@ -132,7 +132,7 @@ func (h *EmitterHook) emitUpdateResult(ctx sdk.Context, id types.RequestID) {
 }
 
 // handleMsgRequestData implements emitter handler for MsgRequestData.
-func (h *EmitterHook) handleMsgRequestData(
+func (h *Hook) handleMsgRequestData(
 	ctx sdk.Context, txHash []byte, msg oracle.MsgRequestData, evMap common.EvMap, extra common.JsDict,
 ) {
 	id := types.RequestID(common.Atoi(evMap[types.EventTypeRequest+"."+types.AttributeKeyID][0]))
@@ -157,14 +157,14 @@ func (h *EmitterHook) handleMsgRequestData(
 }
 
 // handleMsgReportData implements emitter handler for MsgReportData.
-func (h *EmitterHook) handleMsgReportData(
+func (h *Hook) handleMsgReportData(
 	ctx sdk.Context, txHash []byte, msg oracle.MsgReportData, evMap common.EvMap, extra common.JsDict,
 ) {
 	h.emitReportAndRawReport(txHash, msg.RequestID, msg.Validator, msg.Reporter, msg.RawReports)
 }
 
 // handleMsgCreateDataSource implements emitter handler for MsgCreateDataSource.
-func (h *EmitterHook) handleMsgCreateDataSource(
+func (h *Hook) handleMsgCreateDataSource(
 	ctx sdk.Context, txHash []byte, evMap common.EvMap, extra common.JsDict,
 ) {
 	id := types.DataSourceID(common.Atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
@@ -174,7 +174,7 @@ func (h *EmitterHook) handleMsgCreateDataSource(
 }
 
 // handleMsgCreateOracleScript implements emitter handler for MsgCreateOracleScript.
-func (h *EmitterHook) handleMsgCreateOracleScript(
+func (h *Hook) handleMsgCreateOracleScript(
 	ctx sdk.Context, txHash []byte, evMap common.EvMap, extra common.JsDict,
 ) {
 	id := types.OracleScriptID(common.Atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
@@ -184,7 +184,7 @@ func (h *EmitterHook) handleMsgCreateOracleScript(
 }
 
 // handleMsgEditDataSource implements emitter handler for MsgEditDataSource.
-func (h *EmitterHook) handleMsgEditDataSource(
+func (h *Hook) handleMsgEditDataSource(
 	ctx sdk.Context, txHash []byte, msg oracle.MsgEditDataSource,
 ) {
 	id := msg.DataSourceID
@@ -193,7 +193,7 @@ func (h *EmitterHook) handleMsgEditDataSource(
 }
 
 // handleMsgEditOracleScript implements emitter handler for MsgEditOracleScript.
-func (h *EmitterHook) handleMsgEditOracleScript(
+func (h *Hook) handleMsgEditOracleScript(
 	ctx sdk.Context, txHash []byte, msg oracle.MsgEditOracleScript,
 ) {
 	id := msg.OracleScriptID
@@ -202,12 +202,12 @@ func (h *EmitterHook) handleMsgEditOracleScript(
 }
 
 // handleEventRequestExecute implements emitter handler for EventRequestExecute.
-func (h *EmitterHook) handleEventRequestExecute(ctx sdk.Context, evMap common.EvMap) {
+func (h *Hook) handleEventRequestExecute(ctx sdk.Context, evMap common.EvMap) {
 	h.emitUpdateResult(ctx, types.RequestID(common.Atoi(evMap[types.EventTypeResolve+"."+types.AttributeKeyID][0])))
 }
 
 // handleMsgAddReporter implements emitter handler for MsgAddReporter.
-func (h *EmitterHook) handleMsgAddReporter(
+func (h *Hook) handleMsgAddReporter(
 	ctx sdk.Context, msg oracle.MsgAddReporter, extra common.JsDict,
 ) {
 	val, _ := h.stakingKeeper.GetValidator(ctx, msg.Validator)
@@ -220,7 +220,7 @@ func (h *EmitterHook) handleMsgAddReporter(
 }
 
 // handleMsgRemoveReporter implements emitter handler for MsgRemoveReporter.
-func (h *EmitterHook) handleMsgRemoveReporter(
+func (h *Hook) handleMsgRemoveReporter(
 	ctx sdk.Context, msg oracle.MsgRemoveReporter, extra common.JsDict,
 ) {
 	val, _ := h.stakingKeeper.GetValidator(ctx, msg.Validator)
@@ -233,7 +233,7 @@ func (h *EmitterHook) handleMsgRemoveReporter(
 }
 
 // handleMsgActivate implements emitter handler for handleMsgActivate.
-func (h *EmitterHook) handleMsgActivate(
+func (h *Hook) handleMsgActivate(
 	ctx sdk.Context, msg oracle.MsgActivate,
 ) {
 	h.emitUpdateValidatorStatus(ctx, msg.Validator)
@@ -241,7 +241,7 @@ func (h *EmitterHook) handleMsgActivate(
 }
 
 // handleEventDeactivate implements emitter handler for EventDeactivate.
-func (h *EmitterHook) handleEventDeactivate(ctx sdk.Context, evMap common.EvMap) {
+func (h *Hook) handleEventDeactivate(ctx sdk.Context, evMap common.EvMap) {
 	addr, _ := sdk.ValAddressFromBech32(evMap[types.EventTypeDeactivate+"."+types.AttributeKeyValidator][0])
 	h.emitUpdateValidatorStatus(ctx, addr)
 	h.emitHistoricalValidatorStatus(ctx, addr)
