@@ -148,7 +148,7 @@ func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.Hand
 		prices := make([]price.Price, len(requestPrices.Symbols))
 		height := int64(0)
 		for idx, symbol := range requestPrices.Symbols {
-			bz, h, err := cliCtx.Query(fmt.Sprintf("band/prices/%s,%d,%d", symbol, requestPrices.MinCount, requestPrices.AskCount))
+			bz, h, err := cliCtx.Query(fmt.Sprintf("band/prices/%s/%d/%d", symbol, requestPrices.MinCount, requestPrices.AskCount))
 			height = h
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())

@@ -85,12 +85,15 @@ func (h PriceHook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, st
 	if paths[0] == "band" {
 		switch paths[1] {
 		case "prices":
-			if len(paths) < 3 {
+			if len(paths) < 5 {
 				return common.QueryResultError(errors.New("no route for prices query specified")), true
 			}
-			bz, err := h.db.Get([]byte(paths[2]), nil)
+			bz, err := h.db.Get([]byte(strings.Join(paths[2:], ",")), nil)
 			if err != nil {
-				return common.QueryResultError(err), true
+				return common.QueryResultError(fmt.Errorf(
+					"Cannot get price on this %s with %s/%s counts with error: %s",
+					paths[2], paths[3], paths[4], err.Error(),
+				)), true
 			}
 			return common.QueryResultSuccess(bz, req.Height), true
 		default:
