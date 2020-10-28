@@ -69,11 +69,11 @@ func main() {
 	// Prepare and add persistent flags.
 	executor := cli.PrepareBaseCmd(rootCmd, "BAND", app.DefaultNodeHome)
 	rootCmd.PersistentFlags().UintVar(&invCheckPeriod, flagInvCheckPeriod, 0, "Assert registered invariants every N blocks")
+	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	rootCmd.PersistentFlags().String(flagWithEmitter, "", "[Experimental] Use Kafka emitter")
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
-	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
-	rootCmd.PersistentFlags().Bool(flagDisableFeelessReports, false, "[Experimental] Disable allowance of feeless reports")
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
+	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
