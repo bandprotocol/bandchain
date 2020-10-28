@@ -1,7 +1,7 @@
 import base64
 import json
 
-from typing import List, Dict
+from typing import List, Dict, Optional
 from .wallet import PrivateKey, PublicKey
 from .message import Msg
 
@@ -9,39 +9,39 @@ from .message import Msg
 class Transaction:
     def __init__(self):
         self.msgs: List[Msg] = []
-        self.account_num: int = None
-        self.sequence: int = None
-        self.chain_id: str = None
+        self.account_num: Optional[int] = None
+        self.sequence: Optional[int] = None
+        self.chain_id: Optional[str] = None
         self.fee: int = 0
         self.gas: int = 200000
         self.memo: str = ""
 
-    def with_messages(self, *msgs: List[Msg]):
+    def with_messages(self, *msgs: Msg):
         self.msgs.extend(msgs)
         return self
 
-    def with_account_num(self, v):
-        self.account_num = v
+    def with_account_num(self, account_num: int) -> 'Transaction':
+        self.account_num = account_num
         return self
 
-    def with_sequence(self, v):
-        self.sequence = v
+    def with_sequence(self, sequence: int) -> 'Transaction':
+        self.sequence = sequence
         return self
 
-    def with_chain_id(self, v):
-        self.chain_id = v
+    def with_chain_id(self, chain_id: str) -> 'Transaction':
+        self.chain_id = chain_id
         return self
 
-    def with_fee(self, v):
-        self.fee = v
+    def with_fee(self, fee: int) -> 'Transaction':
+        self.fee = fee
         return self
 
-    def with_gas(self, v):
-        self.gas = v
+    def with_gas(self, gas: int) -> 'Transaction':
+        self.gas = gas
         return self
 
-    def with_memo(self, v):
-        self.memo = v
+    def with_memo(self, memo: str) -> 'Transaction':
+        self.memo = memo
         return self
 
     def get_data_for_sign(self) -> bytes:
