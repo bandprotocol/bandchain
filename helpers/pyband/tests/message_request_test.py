@@ -1,5 +1,6 @@
 import base64
 import pytest
+
 from pyband.message import MsgRequest
 from pyband.wallet import Address
 
