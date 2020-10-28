@@ -12,8 +12,7 @@
 
 ### Chain (Non-consensus)
 
-- (impv) [\#2792](https://github.com/bandprotocol/bandchain/pull/2792) Implemented hook for request search
-- (impv) [\#2785](https://github.com/bandprotocol/bandchain/pull/2785) Save price to level db instead of price cache
+- (impv) [\#2746](https://github.com/bandprotocol/bandchain/pull/2746) Implemented emitter, price, and latest request hooks
 - (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) Added `bandchain/chain_id` endpoint
 - (feat) [\#2757](https://github.com/bandprotocol/bandchain/pull/2757) Bring cosmos-hd-path flag
 - (bugs) [\#2730](https://github.com/bandprotocol/bandchain/pull/2730) Add Content-Type header on oracle module rest endpoints
@@ -26,7 +25,6 @@
 
 ### Emitter & Flusher
 
-- (impv) [\#2764](https://github.com/bandprotocol/bandchain/pull/2764) Implemented hook for emitter
 - (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
 - (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
 
