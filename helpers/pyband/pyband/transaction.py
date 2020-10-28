@@ -3,7 +3,6 @@ import json
 
 from typing import List, Dict
 from .wallet import PrivateKey, PublicKey
-from .client import Client
 from .message import Msg
 
 
