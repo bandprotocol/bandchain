@@ -36,7 +36,7 @@ module CreateValidatorMsg = {
           code=true
         />
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid mb=24>
         <Heading value="Commission Max Change" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
@@ -57,7 +57,7 @@ module CreateValidatorMsg = {
           accountType=`validator
         />
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid mb=24>
         <Heading value="Public Key" size=Heading.H5 marginBottom=8 />
         <PubKeyRender pubKey={validator.publicKey} alignLeft=true position=PubKeyRender.Subtitle />
       </Col.Grid>
@@ -69,11 +69,11 @@ module CreateValidatorMsg = {
         <Heading value="Self Delegation" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[validator.selfDelegation] pos=AmountRender.TxIndex />
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid mb=24>
         <Heading value="Details" size=Heading.H5 marginBottom=8 />
         <Text size=Text.Lg weight=Text.Thin value={validator.details} />
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid>
         <Heading value="Website" size=Heading.H5 marginBottom=8 />
         <Text size=Text.Lg weight=Text.Thin value={validator.website} />
       </Col.Grid>
@@ -125,7 +125,7 @@ module EditValidatorMsg = {
           accountType=`validator
         />
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid mb=24>
         <Heading value="Min Self Delegation" size=Heading.H5 marginBottom=8 />
         {switch (validator.minSelfDelegation) {
          | Some(minSelfDelegation') =>
@@ -133,7 +133,7 @@ module EditValidatorMsg = {
          | None => <Text value="Unchanged" code=true size=Text.Lg weight=Text.Thin />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.Twelve mb=24>
+      <Col.Grid>
         <Heading value="Details" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
@@ -149,7 +149,7 @@ module UnjailMsg = {
   [@react.component]
   let make = (~unjail: TxSub.Msg.Unjail.success_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <ValidatorMonikerLink
           validatorAddress={unjail.address}
@@ -169,7 +169,7 @@ module UnjailFailMsg = {
   [@react.component]
   let make = (~unjail: TxSub.Msg.Unjail.fail_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
@@ -185,7 +185,7 @@ module AddReporterMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.AddReporter.success_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
@@ -205,7 +205,7 @@ module AddReporterFailMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.AddReporter.fail_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
@@ -225,7 +225,7 @@ module RemoveReporterMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.RemoveReporter.success_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
@@ -245,7 +245,7 @@ module RemoveReporterFailMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.RemoveReporter.fail_t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
@@ -281,7 +281,7 @@ module SetWithdrawAddressMsg = {
   [@react.component]
   let make = (~set: TxSub.Msg.SetWithdrawAddress.t) => {
     <Row.Grid>
-      <Col.Grid col=Col.Six>
+      <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender
           position=AddressRender.Subtitle
