@@ -14,13 +14,13 @@ type t = {
 // |}
 // ];
 
-let getList = (~page, ~pageSize, ()) => {
-  // let offset = (page - 1) * pageSize;
-  // let (result, _) =
-  //   ApolloHooks.useSubscription(
-  //     MultiConfig.definition,
-  //     ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
-  //   );
-  // result |> Sub.map(_, x => x##packets);
-  Sub.resolve([||]);
-};
+// let getList = (~page, ~pageSize, ()) => {
+// let offset = (page - 1) * pageSize;
+// let (result, _) =
+//   ApolloHooks.useSubscription(
+//     MultiConfig.definition,
+//     ~variables=MultiConfig.makeVariables(~limit=pageSize, ~offset, ()),
+//   );
+// result |> Sub.map(_, x => x##packets);
+// Sub.resolve([||]);
+// };

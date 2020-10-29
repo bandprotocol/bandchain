@@ -94,7 +94,6 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
        //  TODO: hard-coded tx fee
        let maxValInUband = (balance |> Coin.getUBandAmountFromCoins) -. 5000.;
        <EnhanceTxInput
-         width=300
          inputData=amount
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}

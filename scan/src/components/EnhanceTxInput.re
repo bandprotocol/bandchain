@@ -68,7 +68,6 @@ let make =
       ~msg,
       ~parse,
       ~maxValue=?,
-      ~width,
       ~code=false,
       ~placeholder="",
       ~inputType="text",

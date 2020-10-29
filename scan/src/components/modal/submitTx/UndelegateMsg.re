@@ -105,7 +105,6 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
      | Data((_, {amount: stakedAmount})) =>
        let maxValInUband = stakedAmount |> Coin.getUBandAmountFromCoin;
        <EnhanceTxInput
-         width=300
          inputData=amount
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}

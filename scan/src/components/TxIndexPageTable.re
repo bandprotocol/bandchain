@@ -989,6 +989,7 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | ActivateMsg(activate) => renderActivate(activate)
   | FailMsg(_) => renderFailMessage()
   | UnknownMsg => renderUnknownMessage()
+  | _ => renderUnknownMessage()
   };
 
 module THead = {

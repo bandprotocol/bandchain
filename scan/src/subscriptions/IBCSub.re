@@ -143,6 +143,7 @@ module Internal = {
 // ];
 
 let getList = (~page=1, ~pageSize=10, ()): ApolloHooks.Subscription.variant(array(t)) => {
+  Js.Console.log2(page, pageSize);
   // let offset = (page - 1) * pageSize;
   // let (result, _) =
   //   ApolloHooks.useSubscription(

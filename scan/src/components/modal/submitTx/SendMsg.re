@@ -1,6 +1,3 @@
-module Styles = {
-  open Css;
-};
 [@react.component]
 let make = (~address, ~receiver, ~setMsgsOpt) => {
   let accountSub = AccountSub.get(address);
@@ -49,7 +46,6 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
        }}
     </div>
     <EnhanceTxInput
-      width=302
       inputData=toAddress
       setInputData=setToAddress
       parse=Parse.address
@@ -69,7 +65,6 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
        //  TODO: hard-coded tx fee
        let maxValInUband = (balance |> Coin.getUBandAmountFromCoins) -. 5000.;
        <EnhanceTxInput
-         width=300
          inputData=amount
          setInputData=setAmount
          parse={Parse.getBandAmount(maxValInUband)}

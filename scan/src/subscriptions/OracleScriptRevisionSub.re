@@ -1,5 +1,3 @@
-open TxSub.Mini;
-
 type t = {
   name: string,
   transaction: option(TxSub.Mini.t),
@@ -35,7 +33,7 @@ type t = {
 // |}
 // ];
 
-let get = id => {
+let get = _ => {
   // let (result, _) =
   //   ApolloHooks.useSubscription(
   //     RevisionsConfig.definition,
@@ -47,7 +45,7 @@ let get = id => {
   |]);
 };
 
-let count = id => {
+let count = _ => {
   // let (result, _) =
   //   ApolloHooks.useSubscription(
   //     RevisionCountConfig.definition,

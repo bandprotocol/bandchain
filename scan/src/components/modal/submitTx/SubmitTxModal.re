@@ -97,7 +97,6 @@ module SubmitTxStep = {
        | Vote(proposalID, proposalName) => <VoteMsg proposalID proposalName setMsgsOpt />
        }}
       <EnhanceTxInput
-        width=300
         inputData=memo
         setInputData=setMemo
         parse={newVal => {
