@@ -2,7 +2,8 @@ import base64
 import json
 
 from typing import List, Dict, Optional
-from .wallet import PrivateKey, PublicKey
+from .wallet import PublicKey
+from .constant import MAX_MEMO_CHARACTERS
 from .message import Msg
 
 
@@ -56,6 +57,9 @@ class Transaction:
 
         if self.chain_id is None:
             raise ValueError("chain_id should be defined")
+
+        if len(self.memo) > MAX_MEMO_CHARACTERS:
+            raise ValueError("memo is too large")
 
         for msg in self.msgs:
             msg.validate()

@@ -162,6 +162,33 @@ def test_get_sign_data_chain_id_fail():
         t.get_sign_data()
 
 
+def test_get_sign_data_memo_fail():
+    t = (
+        Transaction()
+        .with_messages(
+            MsgRequest(
+                oracle_script_id=1,
+                calldata=bytes.fromhex("000000034254430000000000000001"),
+                ask_count=4,
+                min_count=3,
+                client_id="from_pyband",
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"
+                ),
+            )
+        )
+        .with_account_num(100)
+        .with_sequence(30)
+        .with_chain_id("bandchain")
+        .with_memo(
+            "This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world."
+        )
+    )
+
+    with pytest.raises(ValueError, match="memo is too large"):
+        t.get_sign_data()
+
+
 def test_get_tx_data_success():
     priv = PrivateKey.from_mnemonic("s")
     pubkey = priv.to_pubkey()
