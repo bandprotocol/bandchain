@@ -5,7 +5,7 @@ from pyband.message import MsgRequest
 from pyband.wallet import Address, PrivateKey
 
 
-def test_get_data_for_sign_success():
+def test_get_sign_data_success():
     t = (
         Transaction()
         .with_messages(
@@ -26,12 +26,12 @@ def test_get_data_for_sign_success():
     )
 
     assert (
-        t.get_data_for_sign()
+        t.get_sign_data()
         == b'{"account_number":"100","chain_id":"bandchain","fee":{"amount":[{"amount":"0","denom":"uband"}],"gas":"200000"},"memo":"","msgs":[{"type":"oracle/Request","value":{"ask_count":"4","calldata":"AAAAA0JUQwAAAAAAAAAB","client_id":"from_pyband","min_count":"3","oracle_script_id":"1","sender":"band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"}}],"sequence":"30"}'
     )
 
 
-def test_get_data_for_sign_with_gas_success():
+def test_get_sign_data_with_gas_success():
     t = (
         Transaction()
         .with_messages(
@@ -54,12 +54,12 @@ def test_get_data_for_sign_with_gas_success():
     )
 
     assert (
-        t.get_data_for_sign()
+        t.get_sign_data()
         == b'{"account_number":"100","chain_id":"bandchain","fee":{"amount":[{"amount":"10","denom":"uband"}],"gas":"500000"},"memo":"","msgs":[{"type":"oracle/Request","value":{"ask_count":"4","calldata":"AAAAA0JUQwAAAAAAAAAB","client_id":"from_pyband","min_count":"3","oracle_script_id":"1","sender":"band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"}}],"sequence":"30"}'
     )
 
 
-def test_get_data_for_sign_with_memo_success():
+def test_get_sign_data_with_memo_success():
     t = (
         Transaction()
         .with_messages(
@@ -81,19 +81,19 @@ def test_get_data_for_sign_with_memo_success():
     )
 
     assert (
-        t.get_data_for_sign()
+        t.get_sign_data()
         == b'{"account_number":"100","chain_id":"bandchain","fee":{"amount":[{"amount":"0","denom":"uband"}],"gas":"200000"},"memo":"from_pyband_test","msgs":[{"type":"oracle/Request","value":{"ask_count":"4","calldata":"AAAAA0JUQwAAAAAAAAAB","client_id":"from_pyband","min_count":"3","oracle_script_id":"1","sender":"band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"}}],"sequence":"30"}'
     )
 
 
-def test_get_data_for_sign_msgs_fail():
+def test_get_sign_data_msgs_fail():
     t = Transaction().with_account_num(100).with_sequence(30).with_chain_id("bandchain")
 
     with pytest.raises(ValueError, match="messages is empty"):
-        t.get_data_for_sign()
+        t.get_sign_data()
 
 
-def test_get_data_for_sign_account_num_fail():
+def test_get_sign_data_account_num_fail():
     t = (
         Transaction()
         .with_messages(
@@ -113,10 +113,10 @@ def test_get_data_for_sign_account_num_fail():
     )
 
     with pytest.raises(ValueError, match="account_num should be defined"):
-        t.get_data_for_sign()
+        t.get_sign_data()
 
 
-def test_get_data_for_sign_sequence_fail():
+def test_get_sign_data_sequence_fail():
     t = (
         Transaction()
         .with_messages(
@@ -136,10 +136,10 @@ def test_get_data_for_sign_sequence_fail():
     )
 
     with pytest.raises(ValueError, match="sequence should be defined"):
-        t.get_data_for_sign()
+        t.get_sign_data()
 
 
-def test_get_data_for_sign_chain_id_fail():
+def test_get_sign_data_chain_id_fail():
     t = (
         Transaction()
         .with_messages(
@@ -159,10 +159,10 @@ def test_get_data_for_sign_chain_id_fail():
     )
 
     with pytest.raises(ValueError, match="chain_id should be defined"):
-        t.get_data_for_sign()
+        t.get_sign_data()
 
 
-def test_get_data_for_send_success():
+def test_get_tx_data_success():
     priv = PrivateKey.from_mnemonic("s")
     pubkey = priv.to_pubkey()
     addr = pubkey.to_address()
@@ -184,9 +184,9 @@ def test_get_data_for_send_success():
         .with_chain_id("bandchain")
     )
 
-    raw_data = t.get_data_for_sign()
+    raw_data = t.get_sign_data()
     signature = priv.sign(raw_data)
-    raw_tx = t.get_data_for_send(signature, pubkey)
+    raw_tx = t.get_tx_data(signature, pubkey)
 
     assert raw_tx == {
         "msg": [

@@ -20,31 +20,31 @@ class Transaction:
         self.msgs.extend(msgs)
         return self
 
-    def with_account_num(self, account_num: int) -> 'Transaction':
+    def with_account_num(self, account_num: int) -> "Transaction":
         self.account_num = account_num
         return self
 
-    def with_sequence(self, sequence: int) -> 'Transaction':
+    def with_sequence(self, sequence: int) -> "Transaction":
         self.sequence = sequence
         return self
 
-    def with_chain_id(self, chain_id: str) -> 'Transaction':
+    def with_chain_id(self, chain_id: str) -> "Transaction":
         self.chain_id = chain_id
         return self
 
-    def with_fee(self, fee: int) -> 'Transaction':
+    def with_fee(self, fee: int) -> "Transaction":
         self.fee = fee
         return self
 
-    def with_gas(self, gas: int) -> 'Transaction':
+    def with_gas(self, gas: int) -> "Transaction":
         self.gas = gas
         return self
 
-    def with_memo(self, memo: str) -> 'Transaction':
+    def with_memo(self, memo: str) -> "Transaction":
         self.memo = memo
         return self
 
-    def get_data_for_sign(self) -> bytes:
+    def get_sign_data(self) -> bytes:
         if len(self.msgs) == 0:
             raise ValueError("messages is empty")
 
@@ -69,15 +69,15 @@ class Transaction:
             },
             "memo": self.memo,
             "sequence": str(self.sequence),
-            "msgs": list(map(lambda x: x.as_json(), self.msgs)),
+            "msgs": [x.as_json() for x in self.msgs],
         }
 
         message_str = json.dumps(message_json, separators=(",", ":"), sort_keys=True)
         return message_str.encode("utf-8")
 
-    def get_data_for_send(self, signature: bytes, pubkey: PublicKey) -> Dict:
+    def get_tx_data(self, signature: bytes, pubkey: PublicKey) -> Dict:
         return {
-            "msg": list(map(lambda x: x.as_json(), self.msgs)),
+            "msg": [x.as_json() for x in self.msgs],
             "fee": {
                 "gas": str(self.gas),
                 "amount": [{"denom": "uband", "amount": str(self.fee)}],
