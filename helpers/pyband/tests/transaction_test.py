@@ -180,13 +180,12 @@ def test_get_sign_data_memo_fail():
         .with_account_num(100)
         .with_sequence(30)
         .with_chain_id("bandchain")
-        .with_memo(
-            "This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world."
-        )
     )
 
     with pytest.raises(ValueError, match="memo is too large"):
-        t.get_sign_data()
+        t.with_memo(
+            "This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world. This is the longest memo in the world.This is the longest memo in the world."
+        )
 
 
 def test_get_tx_data_success():
