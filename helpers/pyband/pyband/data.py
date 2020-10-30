@@ -98,3 +98,21 @@ class Account(object):
     account_number: int
     sequence: int
 
+
+@dataclass
+class TransactionSyncMode(object):
+    tx_hash: str
+
+
+@dataclass
+class TransactionAsyncMode(object):
+    tx_hash: str
+
+
+@dataclass
+class TransactionBlockMode(object):
+    height: str
+    tx_hash: str
+    gas_wanted: str
+    gas_used: str
+    raw_log: List[dict]
