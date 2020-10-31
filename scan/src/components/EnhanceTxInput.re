@@ -105,7 +105,6 @@ let make =
       />
       {switch (maxValue) {
        | Some(maxValue') =>
-         Js.Console.log(msg);
          <>
            <HSpacing size=Spacing.md />
            <MaxButton
@@ -116,7 +115,7 @@ let make =
                      Webapi.Dom.(
                        window
                        |> Window.confirm(
-                            {j|You will not have balance to do any action after using max balance |j},
+                            {j|You will not have balance to do any action after using max balance.|j},
                           )
                      );
                    isConfirm ? onNewText(maxValue') : ();
@@ -125,7 +124,7 @@ let make =
              }
              disabled={inputData.text == maxValue'}
            />
-         </>;
+         </>
        | None => React.null
        }}
     </div>
