@@ -1,7 +1,7 @@
 import base64
+
 from dataclasses import dataclass
 from typing import List, Optional
-
 from dacite import Config
 
 

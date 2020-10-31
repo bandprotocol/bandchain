@@ -1,4 +1,5 @@
 import pytest
+
 from pyband.client import Client
 from pyband.data import (
     TransactionSyncMode,

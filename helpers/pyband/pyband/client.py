@@ -1,8 +1,7 @@
 import requests
 import json
-from pyband.transaction import Transaction
-from dacite import from_dict
 
+from dacite import from_dict
 from .data import (
     Account,
     DataSource,
