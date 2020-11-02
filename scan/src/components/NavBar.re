@@ -136,7 +136,7 @@ let make = () => {
     ("Validators", ValidatorHomePage),
     ("Blocks", BlockHomePage),
     ("Transactions", TxHomePage),
-    ("Proposals", ProposalHomePage),
+    // ("Proposals", ProposalHomePage),
   ];
 
   exception WrongNetwork(string);
