@@ -33,17 +33,19 @@ class PrivateKey:
         self.signing_key = None
 
     @classmethod
-    def generate(cls) -> Tuple[str, "PrivateKey"]:
+    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> Tuple[str, "PrivateKey"]:
         """
         Generate new private key with random mnemonic phrase
+
+        :param path: the HD path that follows the BIP32 standard
 
         :return: A tuple of mnemonic phrase and PrivateKey instance
         """
         phrase = Mnemonic(language="english").generate(strength=256)
-        return (phrase, cls.from_mnemonic(phrase))
+        return (phrase, cls.from_mnemonic(phrase, path))
 
     @classmethod
-    def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> "PrivateKey":
+    def from_mnemonic(cls, words: str, path=DEFAULT_DERIVATION_PATH) -> "PrivateKey":
         """
         Create a PrivateKey instance from a given mnemonic phrase and a HD derivation path.
         If path is not given, default to Band's HD prefix 494 and all other indexes being zeroes.

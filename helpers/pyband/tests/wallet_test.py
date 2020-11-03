@@ -28,6 +28,15 @@ def test_private_key_from_mnemonic():
     )
 
 
+def test_private_key_generate():
+    mnemonic, privkey = PrivateKey.generate("m/44'/494'/0'/0/5")
+
+    assert (
+        PrivateKey.from_mnemonic(mnemonic, "m/44'/494'/0'/0/5").to_hex()
+        == privkey.to_hex()
+    )
+
+
 def test_private_key_from_hex():
     assert (
         PrivateKey.from_hex(
