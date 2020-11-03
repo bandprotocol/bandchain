@@ -308,8 +308,13 @@ func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx 
 }
 
 func (app *BandApp) Query(req abci.RequestQuery) abci.ResponseQuery {
+	hookReq := req
+	if hookReq.Height == 0 {
+		hookReq.Height = app.LastBlockHeight()
+	}
+
 	for _, hook := range app.hooks {
-		res, stop := hook.ApplyQuery(req)
+		res, stop := hook.ApplyQuery(hookReq)
 		if stop {
 			return res
 		}
