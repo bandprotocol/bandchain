@@ -38,7 +38,7 @@ class Client(object):
             error_log = data["raw_log"]
         else:
             code = 0
-            error_log = ""
+            error_log = None
 
         return TransactionSyncMode(
             tx_hash=data["txhash"], code=code, error_log=error_log
@@ -57,7 +57,7 @@ class Client(object):
         else:
             code = 0
             log = data["logs"]
-            error_log = ""
+            error_log = None
 
         return TransactionBlockMode(
             height=data["height"],
