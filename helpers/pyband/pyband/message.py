@@ -86,6 +86,7 @@ class MsgSend(Msg):
         if len(self.amount) == 0:
             raise ValueError("Expect at least 1 coin")
 
-        [x.validate() for x in self.amount]
+        for x in self.amount:
+            x.validate()
 
         return True

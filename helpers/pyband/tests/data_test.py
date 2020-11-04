@@ -5,6 +5,8 @@ from pyband.data import Coin
 def test_coin_success():
     coin = Coin(amount=5000, denom="uband")
 
+    assert coin.as_json() == {"amount": "5000", "denom": "uband"}
+
     assert coin.validate() == True
 
 
