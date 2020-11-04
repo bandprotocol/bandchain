@@ -85,6 +85,7 @@ let make = (~address, ~receiver, ~setMsgsOpt) => {
            }
          }
          id="sendAmountInput"
+         maxWarningMsg=true
        />;
      | _ =>
        <EnhanceTxInput.Loading

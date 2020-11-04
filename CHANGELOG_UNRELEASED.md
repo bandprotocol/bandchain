@@ -31,6 +31,7 @@
 
 ### Scan
 
+- (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
 - (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
 - (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
@@ -79,6 +80,8 @@
 
 ### Helpers
 
+- (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
+- (impv) [\#2803](https://github.com/bandprotocol/bandchain/pull/2803) pyband: Fix typing and add PrivateKey.from_hex on Wallet
 - (feat) [\#2799](https://github.com/bandprotocol/bandchain/pull/2799) pyband: Implemented Message class
 - (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) pyband: get chain id from specific rest endpoint.
 - (impv) [\#2739](https://github.com/bandprotocol/bandchain/pull/2739) pyband: fix client raise error when get fail

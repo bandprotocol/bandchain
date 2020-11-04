@@ -4261,10 +4261,10 @@ cli-width@^3.0.0:
   resolved "https://registry.yarnpkg.com/cli-width/-/cli-width-3.0.0.tgz#a2f48437a2caa9a22436e794bf071ec9e61cedf6"
   integrity sha512-FxqpkPPwu1HjuN93Omfm4h8uIanXofW0RxVEW3k5RKx+mJJYSthzNhp32Kzxxy3YAEZ/Dc/EWN1vZRY0+kOhbw==
 
-clipboard-copy@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/clipboard-copy/-/clipboard-copy-3.1.0.tgz#4c59030a43d4988990564a664baeafba99f78ca4"
-  integrity sha512-Xsu1NddBXB89IUauda5BIq3Zq73UWkjkaQlPQbLNvNsd5WBMnTWPNKYR6HGaySOxGYZ+BKxP2E9X4ElnI3yiPA==
+clipboard-copy@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/clipboard-copy/-/clipboard-copy-3.2.0.tgz#3c5b8651d3512dcfad295d77a9eb09e7fac8d5fb"
+  integrity sha512-vooFaGFL6ulEP1liiaWFBmmfuPm3cY3y7T9eB83ZTnYc/oFeAKsq3NcDrOkBC8XaauEE8zHQwI7k0+JSYiVQSQ==
 
 clipboardy@1.2.3:
   version "1.2.3"
@@ -6826,10 +6826,10 @@ html-minifier-terser@^5.0.1:
     relateurl "^0.2.7"
     terser "^4.6.3"
 
-html-react-parser@^0.14.0:
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.0.tgz#56038a23eeba5a40acc3eba7c2ae347cdc7fda5b"
-  integrity sha512-YpmqYg+36EAK65NgpBVyoV4sjKlmT9w71aS4+lrSjMMLrxhFOSVpm+HRwvAiu4CuiVboqjm4z3ymIdLnOZas7Q==
+html-react-parser@^0.14.1:
+  version "0.14.1"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.1.tgz#d7f253c0385238961651a839fc2b69566b2434c2"
+  integrity sha512-vS+u86vaOFY9g/h3e5gY9CqQZqmanJN3h+bNNCtKkdbTfjMxEiTOZ/Bnjjb/3TUBREA/FZu0XBVNE9urg/NwlQ==
   dependencies:
     "@types/htmlparser2" "3.10.1"
     html-dom-parser "0.3.0"
