@@ -78,6 +78,7 @@
 
 ### Helpers
 
+- (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
 - (impv) [\#2803](https://github.com/bandprotocol/bandchain/pull/2803) pyband: Fix typing and add PrivateKey.from_hex on Wallet
 - (feat) [\#2799](https://github.com/bandprotocol/bandchain/pull/2799) pyband: Implemented Message class
 - (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) pyband: get chain id from specific rest endpoint.
