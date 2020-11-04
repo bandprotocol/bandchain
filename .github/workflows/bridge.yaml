@@ -1,5 +1,5 @@
 name: Bridge Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   bridges-evm-test:

@@ -1,5 +1,5 @@
 name: Chain Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   chain-test:
