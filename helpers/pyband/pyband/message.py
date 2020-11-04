@@ -71,7 +71,7 @@ class MsgSend(Msg):
 
     def as_json(self) -> dict:
         return {
-            "type": "cosmo-sdk/MsgSend",
+            "type": "cosmos-sdk/MsgSend",
             "value": {
                 "to_address": self.to_address.to_acc_bech32(),
                 "from_address": self.from_address.to_acc_bech32(),
