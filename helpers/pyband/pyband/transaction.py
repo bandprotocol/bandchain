@@ -17,7 +17,7 @@ class Transaction:
         self.gas: int = 200000
         self.memo: str = ""
 
-    def with_messages(self, *msgs: Msg):
+    def with_messages(self, *msgs: Msg) -> "Transaction":
         self.msgs.extend(msgs)
         return self
 
