@@ -1,7 +1,7 @@
 import base64
 import json
 
-from typing import List, Dict, Optional
+from typing import List, Optional
 from .wallet import PublicKey
 from .constant import MAX_MEMO_CHARACTERS
 from .message import Msg
@@ -79,7 +79,7 @@ class Transaction:
         message_str = json.dumps(message_json, separators=(",", ":"), sort_keys=True)
         return message_str.encode("utf-8")
 
-    def get_tx_data(self, signature: bytes, pubkey: PublicKey) -> Dict:
+    def get_tx_data(self, signature: bytes, pubkey: PublicKey) -> dict:
         return {
             "msg": [x.as_json() for x in self.msgs],
             "fee": {
