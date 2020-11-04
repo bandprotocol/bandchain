@@ -78,19 +78,21 @@ func queryRequests(
 	type queryResult struct {
 		result types.QueryRequestResult
 		err    error
+		height int64
 	}
 	queryResultsChan := make(chan queryResult, len(requestIDs))
 	for _, rid := range requestIDs {
 		go func(rid types.RequestID) {
-			out, _, err := queryRequest(route, cliCtx, rid)
+			out, h, err := queryRequest(route, cliCtx, rid)
 			if err != nil {
 				queryResultsChan <- queryResult{err: err}
 				return
 			}
-			queryResultsChan <- queryResult{result: out}
+			queryResultsChan <- queryResult{result: out, height: h}
 		}(rid)
 	}
 	requests := make([]types.QueryRequestResult, 0)
+	height := int64(0)
 	for idx := 0; idx < len(requestIDs); idx++ {
 		select {
 		case req := <-queryResultsChan:
@@ -99,6 +101,9 @@ func queryRequests(
 			}
 			if req.result.Result != nil {
 				requests = append(requests, req.result)
+				if req.height > height {
+					height = req.height
+				}
 			}
 		}
 	}
@@ -107,7 +112,7 @@ func queryRequests(
 		return requests[i].Result.ResponsePacketData.ResolveTime > requests[j].Result.ResponsePacketData.ResolveTime
 	})
 
-	return requests, cliCtx.Height, nil
+	return requests, height, nil
 }
 
 func QueryMultiSearchLatestRequest(
