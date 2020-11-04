@@ -33,8 +33,6 @@ def test_msg_send_creation_success():
     assert msg_send.get_sender().to_acc_bech32(
     ) == "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
 
-    assert [x.validate() for x in msg_send.amount] == [True]
-
 
 def test_msg_send_nocoin_fail():
     msg_send = MsgSend(
@@ -63,4 +61,4 @@ def test_msg_send_validate_coin_fail():
     with pytest.raises(
             ValueError, match="Expect amount more than 0"
     ):
-        [x.validate() for x in msg_send.amount]
+        msg_send.validate()
