@@ -4,6 +4,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
+
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 )
 
 var (
@@ -12,9 +14,9 @@ var (
 	StatusInactive            = 6
 )
 
-func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddress) {
-	deposit, _ := app.GovKeeper.GetDeposit(app.DeliverContext, id, depositor)
-	app.Write("SET_DEPOSIT", JsDict{
+func (h *Hook) emitSetDeposit(ctx sdk.Context, txHash []byte, id uint64, depositor sdk.AccAddress) {
+	deposit, _ := h.govKeeper.GetDeposit(ctx, id, depositor)
+	h.Write("SET_DEPOSIT", common.JsDict{
 		"proposal_id": id,
 		"depositor":   depositor,
 		"amount":      deposit.Amount.String(),
@@ -22,9 +24,9 @@ func (app *App) emitSetDeposit(txHash []byte, id uint64, depositor sdk.AccAddres
 	})
 }
 
-func (app *App) emitUpdateProposalAfterDeposit(id uint64) {
-	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, id)
-	app.Write("UPDATE_PROPOSAL", JsDict{
+func (h *Hook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64) {
+	proposal, _ := h.govKeeper.GetProposal(ctx, id)
+	h.Write("UPDATE_PROPOSAL", common.JsDict{
 		"id":              id,
 		"status":          int(proposal.Status),
 		"total_deposit":   proposal.TotalDeposit.String(),
@@ -34,12 +36,12 @@ func (app *App) emitUpdateProposalAfterDeposit(id uint64) {
 }
 
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
-func (app *App) handleMsgSubmitProposal(
-	txHash []byte, msg gov.MsgSubmitProposal, evMap EvMap, extra JsDict,
+func (app *Hook) handleMsgSubmitProposal(
+	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap,
 ) {
-	proposalId := uint64(atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
-	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, proposalId)
-	app.Write("NEW_PROPOSAL", JsDict{
+	proposalId := uint64(common.Atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
+	proposal, _ := app.govKeeper.GetProposal(ctx, proposalId)
+	app.Write("NEW_PROPOSAL", common.JsDict{
 		"id":               proposalId,
 		"proposer":         msg.Proposer,
 		"type":             msg.Content.ProposalType(),
@@ -53,22 +55,22 @@ func (app *App) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
-	app.emitSetDeposit(txHash, proposalId, msg.Proposer)
+	app.emitSetDeposit(ctx, txHash, proposalId, msg.Proposer)
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
-func (app *App) handleMsgDeposit(
-	txHash []byte, msg gov.MsgDeposit, evMap EvMap, extra JsDict,
+func (h *Hook) handleMsgDeposit(
+	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit,
 ) {
-	app.emitSetDeposit(txHash, msg.ProposalID, msg.Depositor)
-	app.emitUpdateProposalAfterDeposit(msg.ProposalID)
+	h.emitSetDeposit(ctx, txHash, msg.ProposalID, msg.Depositor)
+	h.emitUpdateProposalAfterDeposit(ctx, msg.ProposalID)
 }
 
 // handleMsgVote implements emitter handler for MsgVote.
-func (app *App) handleMsgVote(
-	txHash []byte, msg gov.MsgVote, evMap EvMap, extra JsDict,
+func (h *Hook) handleMsgVote(
+	txHash []byte, msg gov.MsgVote,
 ) {
-	app.Write("SET_VOTE", JsDict{
+	h.Write("SET_VOTE", common.JsDict{
 		"proposal_id": msg.ProposalID,
 		"voter":       msg.Voter,
 		"answer":      int(msg.Option),
@@ -76,17 +78,17 @@ func (app *App) handleMsgVote(
 	})
 }
 
-func (app *App) handleEventInactiveProposal(evMap EvMap) {
-	app.Write("UPDATE_PROPOSAL", JsDict{
-		"id":     atoi(evMap[types.EventTypeInactiveProposal+"."+types.AttributeKeyProposalID][0]),
+func (h *Hook) handleEventInactiveProposal(evMap common.EvMap) {
+	h.Write("UPDATE_PROPOSAL", common.JsDict{
+		"id":     common.Atoi(evMap[types.EventTypeInactiveProposal+"."+types.AttributeKeyProposalID][0]),
 		"status": StatusInactive,
 	})
 }
 
-func (app *App) handleEventTypeActiveProposal(evMap EvMap) {
-	id := uint64(atoi(evMap[types.EventTypeActiveProposal+"."+types.AttributeKeyProposalID][0]))
-	proposal, _ := app.GovKeeper.GetProposal(app.DeliverContext, id)
-	app.Write("UPDATE_PROPOSAL", JsDict{
+func (h *Hook) handleEventTypeActiveProposal(ctx sdk.Context, evMap common.EvMap) {
+	id := uint64(common.Atoi(evMap[types.EventTypeActiveProposal+"."+types.AttributeKeyProposalID][0]))
+	proposal, _ := h.govKeeper.GetProposal(ctx, id)
+	h.Write("UPDATE_PROPOSAL", common.JsDict{
 		"id":     id,
 		"status": int(proposal.Status),
 	})
