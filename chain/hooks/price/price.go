@@ -1,7 +1,6 @@
 package price
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 	"strings"
@@ -9,6 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/syndtr/goleveldb/leveldb/util"
 	abci "github.com/tendermint/tendermint/abci/types"
 
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
@@ -115,16 +115,18 @@ func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop b
 			}
 			askCount := common.Atoui(paths[2])
 			minCount := common.Atoui(paths[3])
-			prefix := []byte(fmt.Sprintf("%d,%d,", askCount, minCount))
 
-			it := h.db.NewIterator(nil, nil)
-			it.Seek(prefix)
+			prefix := []byte(fmt.Sprintf("%d,%d,", askCount, minCount))
+			it := h.db.NewIterator(util.BytesPrefix(prefix), nil)
 
 			symbols := []string{}
-			for ; it.Valid() && bytes.HasPrefix(it.Key(), prefix); it.Next() {
-				var p Price
-				h.cdc.MustUnmarshalBinaryBare(it.Value(), &p)
-				symbols = append(symbols, p.Symbol)
+			for it.Next() {
+				symbols = append(symbols, string(it.Key()[len(prefix):]))
+			}
+
+			it.Release()
+			if err := it.Error(); err != nil {
+				return common.QueryResultError(fmt.Errorf("Error while iterate over prices list: %s", err.Error())), true
 			}
 
 			bz := h.cdc.MustMarshalBinaryBare(symbols)
