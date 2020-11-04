@@ -85,7 +85,7 @@ def test_send_tx_sync_mode_success(requests_mock):
     assert client.send_tx_sync_mode(TEST_MSG) == TransactionSyncMode(
         tx_hash="E204AAD58ACA8F00942B1BB66D9F745F5E2C21E04C5DF6A0CB73DF02B6B51121",
         code=0,
-        error_log="",
+        error_log=None,
     )
 
 
@@ -282,7 +282,7 @@ def test_send_tx_block_mode_success(requests_mock):
                 ],
             }
         ],
-        error_log="",
+        error_log=None,
         code=0,
     )
 
