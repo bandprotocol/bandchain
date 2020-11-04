@@ -35,6 +35,7 @@ module Styles = {
       left(`percent(50.)),
       backgroundColor(Css_Colors.white),
       borderRadius(`px(5)),
+      overflow(`hidden),
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(8), ~blur=`px(32), Css.rgba(0, 0, 0, `num(0.5))),
       ),
@@ -74,7 +75,7 @@ module Styles = {
 
   let closeButton =
     style([
-      width(`px(15)),
+      width(`px(10)),
       position(`absolute),
       top(`px(20)),
       right(`px(20)),
