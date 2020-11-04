@@ -34,8 +34,15 @@ class Client(object):
     def send_tx_sync_mode(self, data: dict) -> TransactionSyncMode:
         data = self._post("/txs", json={"tx": data, "mode": "sync"})
         if "code" in data:
-            raise ValueError(data["raw_log"])
-        return TransactionSyncMode(tx_hash=data["txhash"])
+            code = int(data["code"])
+            error_log = data["raw_log"]
+        else:
+            code = 0
+            error_log = ""
+
+        return TransactionSyncMode(
+            tx_hash=data["txhash"], code=code, error_log=error_log
+        )
 
     def send_tx_async_mode(self, data: dict) -> TransactionAsyncMode:
         data = self._post("/txs", json={"tx": data, "mode": "async"})
@@ -44,13 +51,22 @@ class Client(object):
     def send_tx_block_mode(self, data: dict) -> TransactionBlockMode:
         data = self._post("/txs", json={"tx": data, "mode": "block"})
         if "code" in data:
-            raise ValueError(data["raw_log"])
+            code = int(data["code"])
+            error_log = data["raw_log"]
+            log = []
+        else:
+            code = 0
+            log = data["logs"]
+            error_log = ""
+
         return TransactionBlockMode(
             height=data["height"],
             tx_hash=data["txhash"],
             gas_wanted=data["gas_wanted"],
             gas_used=data["gas_wanted"],
-            raw_log=json.loads(data["raw_log"]),
+            code=code,
+            log=log,
+            error_log=error_log,
         )
 
     def get_chain_id(self) -> str:

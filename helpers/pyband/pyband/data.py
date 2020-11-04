@@ -102,6 +102,9 @@ class Account(object):
 @dataclass
 class TransactionSyncMode(object):
     tx_hash: str
+    code: int
+    # log: List[dict]
+    error_log: str
 
 
 @dataclass
@@ -115,4 +118,6 @@ class TransactionBlockMode(object):
     tx_hash: str
     gas_wanted: str
     gas_used: str
-    raw_log: List[dict]
+    code: int
+    log: List[dict]
+    error_log: str
