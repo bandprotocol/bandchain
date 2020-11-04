@@ -120,14 +120,14 @@ func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop b
 			it := h.db.NewIterator(nil, nil)
 			it.Seek(prefix)
 
-			prices := []Price{}
+			symbols := []string{}
 			for ; it.Valid() && bytes.HasPrefix(it.Key(), prefix); it.Next() {
 				var p Price
 				h.cdc.MustUnmarshalBinaryBare(it.Value(), &p)
-				prices = append(prices, p)
+				symbols = append(symbols, p.Symbol)
 			}
 
-			bz := h.cdc.MustMarshalBinaryBare(prices)
+			bz := h.cdc.MustMarshalBinaryBare(symbols)
 			return common.QueryResultSuccess(bz, req.Height), true
 		default:
 			return abci.ResponseQuery{}, false

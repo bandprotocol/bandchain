@@ -178,28 +178,15 @@ func getRequestsPriceSymbolsHandler(cliCtx context.CLIContext, route string) htt
 			return
 		}
 
-		limit := -1
-		if rawLimit := r.FormValue("limit"); rawLimit != "" {
-			var err error
-			limit, err = strconv.Atoi(rawLimit)
-			if err != nil {
-				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
-			}
-		}
-
 		bz, height, err := cliCtx.Query(fmt.Sprintf("band/price_symbols/%s/%s", r.FormValue("ask_count"), r.FormValue("min_count")))
 
-		prices := []price.Price{}
-		if err := cliCtx.Codec.UnmarshalBinaryBare(bz, &prices); err != nil {
+		symbols := []string{}
+		if err := cliCtx.Codec.UnmarshalBinaryBare(bz, &symbols); err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
 
-		if limit > 0 && limit < len(prices) {
-			prices = prices[:limit]
-		}
-
-		bz, err = types.QueryOK(prices)
+		bz, err = types.QueryOK(symbols)
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
