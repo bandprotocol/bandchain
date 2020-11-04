@@ -103,7 +103,6 @@ class Account(object):
 class TransactionSyncMode(object):
     tx_hash: str
     code: int
-    # log: List[dict]
     error_log: str
 
 
