@@ -1,6 +1,7 @@
 package price
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"strings"
@@ -74,7 +75,8 @@ func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci
 					obi.MustDecode(result.ResponsePacketData.Result, &output)
 					for idx, symbol := range input.Symbols {
 						price := NewPrice(symbol, input.Multiplier, output.Pxs[idx], result.ResponsePacketData.RequestID, result.ResponsePacketData.ResolveTime)
-						err := h.db.Put([]byte(fmt.Sprintf("%s,%d,%d", symbol, result.RequestPacketData.AskCount, result.RequestPacketData.MinCount)), h.cdc.MustMarshalBinaryBare(price), nil)
+						err := h.db.Put([]byte(fmt.Sprintf("%d,%d,%s", result.RequestPacketData.AskCount, result.RequestPacketData.MinCount, symbol)),
+							h.cdc.MustMarshalBinaryBare(price), nil)
 						if err != nil {
 							panic(err)
 						}
@@ -99,13 +101,33 @@ func (h *Hook) ApplyQuery(req abci.RequestQuery) (res abci.ResponseQuery, stop b
 			symbol := paths[2]
 			askCount := common.Atoui(paths[3])
 			minCount := common.Atoui(paths[4])
-			bz, err := h.db.Get([]byte(fmt.Sprintf("%s,%d,%d", symbol, askCount, minCount)), nil)
+			bz, err := h.db.Get([]byte(fmt.Sprintf("%d,%d,%s", askCount, minCount, symbol)), nil)
 			if err != nil {
 				return common.QueryResultError(fmt.Errorf(
 					"Cannot get price of %s with %d/%d counts with error: %s",
 					symbol, minCount, askCount, err.Error(),
 				)), true
 			}
+			return common.QueryResultSuccess(bz, req.Height), true
+		case "price_symbols":
+			if len(paths) < 4 {
+				return common.QueryResultError(errors.New("no route for symbol prices query specified")), true
+			}
+			askCount := common.Atoui(paths[2])
+			minCount := common.Atoui(paths[3])
+			prefix := []byte(fmt.Sprintf("%d,%d,", askCount, minCount))
+
+			it := h.db.NewIterator(nil, nil)
+			it.Seek(prefix)
+
+			prices := []Price{}
+			for ; it.Valid() && bytes.HasPrefix(it.Key(), prefix); it.Next() {
+				var p Price
+				h.cdc.MustUnmarshalBinaryBare(it.Value(), &p)
+				prices = append(prices, p)
+			}
+
+			bz := h.cdc.MustMarshalBinaryBare(prices)
 			return common.QueryResultSuccess(bz, req.Height), true
 		default:
 			return abci.ResponseQuery{}, false
