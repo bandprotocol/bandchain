@@ -1,5 +1,5 @@
 name: Scan Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   scan-test:
