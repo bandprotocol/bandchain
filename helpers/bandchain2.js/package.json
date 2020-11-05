@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "clean": "rimraf coverage lib",
-    "tsc": "tsc -p tsconfig.json && tsc -p tsconfig.cjs.json",
+    "tsc": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
     "prepublish": "yarn clean && yarn tsc",
     "dev": "ts-node example.ts",
     "test": "jest --coverage",
