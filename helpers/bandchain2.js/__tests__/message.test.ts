@@ -1,5 +1,7 @@
-import { Coin } from '../src/data'
-import { MsgSend } from '../src/message'
+import { Message, Data } from '../src/index'
+
+const { MsgSend } = Message
+const { Coin } = Data
 
 describe('MsgSend', () => {
   const coin = new Coin(100000, 'uband')

@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "build",
+    "module": "CommonJS",
+    "outDir": "./lib/cjs",
     "removeComments": true
   },
   "include": ["src/**/*"]

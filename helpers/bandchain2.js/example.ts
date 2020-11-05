@@ -1,5 +1,7 @@
-import { MsgSend } from './src/message'
-import { Coin } from './src/data'
+import { Message, Data } from './src/index'
+
+const { MsgSend } = Message
+const { Coin } = Data
 
 const amount = [new Coin(10000, 'uband')]
 const msgSend = new MsgSend('asdkaskd', 'asdjasdkj', amount)
