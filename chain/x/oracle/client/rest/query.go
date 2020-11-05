@@ -182,7 +182,7 @@ func getRequestsPriceSymbolsHandler(cliCtx context.CLIContext, route string) htt
 
 		bz, height, err := cliCtx.Query(fmt.Sprintf("band/price_symbols/%s/%s", r.FormValue("ask_count"), r.FormValue("min_count")))
 
-		symbols := []string{}
+		var symbols []string
 		if err := cliCtx.Codec.UnmarshalBinaryBare(bz, &symbols); err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
