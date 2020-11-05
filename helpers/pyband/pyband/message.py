@@ -1,4 +1,5 @@
 import base64
+
 from dataclasses import dataclass
 from .wallet import Address
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
