@@ -1,11 +1,17 @@
 import requests
+import json
+
 from dacite import from_dict
-
-from .data import Account, DataSource, OracleScript, RequestInfo, DACITE_CONFIG
-
-
-class BandClientRequestException(Exception):
-    pass
+from .data import (
+    Account,
+    DataSource,
+    OracleScript,
+    RequestInfo,
+    DACITE_CONFIG,
+    TransactionSyncMode,
+    TransactionAsyncMode,
+    TransactionBlockMode,
+)
 
 
 class Client(object):
@@ -13,27 +19,55 @@ class Client(object):
         self.rpc_url = rpc_url
 
     def _get(self, path, **kwargs):
-        try:
-            r = requests.get(self.rpc_url + path, **kwargs)
-            r.raise_for_status()
-            return r.json()
-        except (
-            requests.exceptions.RequestException,
-            requests.exceptions.HTTPError,
-            requests.exceptions.ConnectionError,
-            requests.exceptions.Timeout,
-        ) as err:
-            raise BandClientRequestException(err)
-        except:
-            raise Exception()
+        r = requests.get(self.rpc_url + path, **kwargs)
+        r.raise_for_status()
+        return r.json()
+
+    def _post(self, path, **kwargs):
+        r = requests.post(self.rpc_url + path, **kwargs)
+        r.raise_for_status()
+        return r.json()
 
     def _get_result(self, path, **kwargs):
         return self._get(path, **kwargs)["result"]
 
-    def send_tx(self, data: dict, mode="sync") -> dict:
-        return requests.post(
-            self.rpc_url + "/txs", json={"tx": data, "mode": mode}
-        ).json()
+    def send_tx_sync_mode(self, data: dict) -> TransactionSyncMode:
+        data = self._post("/txs", json={"tx": data, "mode": "sync"})
+        if "code" in data:
+            code = int(data["code"])
+            error_log = data["raw_log"]
+        else:
+            code = 0
+            error_log = None
+
+        return TransactionSyncMode(
+            tx_hash=bytes.fromhex(data["txhash"]), code=code, error_log=error_log
+        )
+
+    def send_tx_async_mode(self, data: dict) -> TransactionAsyncMode:
+        data = self._post("/txs", json={"tx": data, "mode": "async"})
+        return TransactionAsyncMode(tx_hash=bytes.fromhex(data["txhash"]))
+
+    def send_tx_block_mode(self, data: dict) -> TransactionBlockMode:
+        data = self._post("/txs", json={"tx": data, "mode": "block"})
+        if "code" in data:
+            code = int(data["code"])
+            error_log = data["raw_log"]
+            log = []
+        else:
+            code = 0
+            error_log = None
+            log = data["logs"]
+
+        return TransactionBlockMode(
+            height=int(data["height"]),
+            tx_hash=bytes.fromhex(data["txhash"]),
+            gas_wanted=int(data["gas_wanted"]),
+            gas_used=int(data["gas_wanted"]),
+            code=code,
+            log=log,
+            error_log=error_log,
+        )
 
     def get_chain_id(self) -> str:
         return self._get("/bandchain/chain_id")["chain_id"]

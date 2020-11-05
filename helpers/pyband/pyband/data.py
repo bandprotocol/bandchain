@@ -1,7 +1,7 @@
 import base64
+
 from dataclasses import dataclass
 from typing import List, Optional
-
 from dacite import Config
 
 
@@ -91,6 +91,24 @@ class RequestInfo(object):
 
 
 @dataclass
+class Coin(object):
+    amount: int
+    denom: str
+
+    def as_json(self) -> dict:
+        return {"amount": str(self.amount), "denom": self.denom}
+
+    def validate(self) -> bool:
+        if self.amount < 0:
+            raise ValueError("Expect amount more than 0")
+
+        if len(self.denom) == 0:
+            raise ValueError("Expect denom")
+
+        return True
+
+
+@dataclass
 class Account(object):
     address: str
     coins: List[dict]
@@ -98,3 +116,24 @@ class Account(object):
     account_number: int
     sequence: int
 
+@dataclass
+class TransactionSyncMode(object):
+    tx_hash: bytes
+    code: int
+    error_log: Optional[str]
+
+
+@dataclass
+class TransactionAsyncMode(object):
+    tx_hash: bytes
+
+
+@dataclass
+class TransactionBlockMode(object):
+    height: int
+    tx_hash: bytes
+    gas_wanted: int
+    gas_used: int
+    code: int
+    log: List[dict]
+    error_log: Optional[str]

@@ -1,6 +1,9 @@
 import base64
+
 from dataclasses import dataclass
+from typing import List
 from .wallet import Address
+from .data import Coin
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
 
 
@@ -57,5 +60,34 @@ class MsgRequest(Msg):
             )
         if len(self.client_id) > MAX_CLIENT_ID_LENGTH:
             raise ValueError("too long client id")
+
+        return True
+
+
+@dataclass
+class MsgSend(Msg):
+    to_address: Address
+    from_address: Address
+    amount: List[Coin]
+
+    def as_json(self) -> dict:
+        return {
+            "type": "cosmos-sdk/MsgSend",
+            "value": {
+                "to_address": self.to_address.to_acc_bech32(),
+                "from_address": self.from_address.to_acc_bech32(),
+                "amount": [coin.as_json() for coin in self.amount],
+            },
+        }
+
+    def get_sender(self) -> Address:
+        return self.from_address
+
+    def validate(self) -> bool:
+        if len(self.amount) == 0:
+            raise ValueError("Expect at least 1 coin")
+
+        for coin in self.amount:
+            coin.validate()
 
         return True
