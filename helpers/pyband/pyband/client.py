@@ -41,12 +41,12 @@ class Client(object):
             error_log = None
 
         return TransactionSyncMode(
-            tx_hash=data["txhash"], code=code, error_log=error_log
+            tx_hash=bytes.fromhex(data["txhash"]), code=code, error_log=error_log
         )
 
     def send_tx_async_mode(self, data: dict) -> TransactionAsyncMode:
         data = self._post("/txs", json={"tx": data, "mode": "async"})
-        return TransactionAsyncMode(tx_hash=data["txhash"])
+        return TransactionAsyncMode(tx_hash=bytes.fromhex(data["txhash"]))
 
     def send_tx_block_mode(self, data: dict) -> TransactionBlockMode:
         data = self._post("/txs", json={"tx": data, "mode": "block"})
@@ -60,10 +60,10 @@ class Client(object):
             error_log = None
 
         return TransactionBlockMode(
-            height=data["height"],
-            tx_hash=data["txhash"],
-            gas_wanted=data["gas_wanted"],
-            gas_used=data["gas_wanted"],
+            height=int(data["height"]),
+            tx_hash=bytes.fromhex(data["txhash"]),
+            gas_wanted=int(data["gas_wanted"]),
+            gas_used=int(data["gas_wanted"]),
             code=code,
             log=log,
             error_log=error_log,

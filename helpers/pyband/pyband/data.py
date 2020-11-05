@@ -101,22 +101,22 @@ class Account(object):
 
 @dataclass
 class TransactionSyncMode(object):
-    tx_hash: str
+    tx_hash: bytes
     code: int
     error_log: Optional[str]
 
 
 @dataclass
 class TransactionAsyncMode(object):
-    tx_hash: str
+    tx_hash: bytes
 
 
 @dataclass
 class TransactionBlockMode(object):
-    height: str
-    tx_hash: str
-    gas_wanted: str
-    gas_used: str
+    height: int
+    tx_hash: bytes
+    gas_wanted: int
+    gas_used: int
     code: int
     log: List[dict]
     error_log: Optional[str]
