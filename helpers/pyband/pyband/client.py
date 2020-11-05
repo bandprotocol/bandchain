@@ -56,8 +56,8 @@ class Client(object):
             log = []
         else:
             code = 0
-            log = data["logs"]
             error_log = None
+            log = data["logs"]
 
         return TransactionBlockMode(
             height=int(data["height"]),
