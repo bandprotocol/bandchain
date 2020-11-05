@@ -75,7 +75,7 @@ class MsgSend(Msg):
             "value": {
                 "to_address": self.to_address.to_acc_bech32(),
                 "from_address": self.from_address.to_acc_bech32(),
-                "amount": [x.as_json() for x in self.amount],
+                "amount": [coin.as_json() for coin in self.amount],
             },
         }
 
@@ -86,7 +86,7 @@ class MsgSend(Msg):
         if len(self.amount) == 0:
             raise ValueError("Expect at least 1 coin")
 
-        for x in self.amount:
-            x.validate()
+        for coin in self.amount:
+            coin.validate()
 
         return True
