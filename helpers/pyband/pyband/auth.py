@@ -121,7 +121,9 @@ class Auth:
 
         :return: True if the reporter is a registered reporter of the validator.
         """
-        reporter = PublicKey.from_acc_bech32(reporter_pubkey).to_address().to_acc_bech32()
+        reporter = (
+            PublicKey.from_acc_bech32(reporter_pubkey).to_address().to_acc_bech32()
+        )
         reporters = self.client.get_reporters(validator)
         return reporter in reporters
 
@@ -135,7 +137,7 @@ class Auth:
         """
         latest_block = self.client.get_latest_block()
         return (
-            int(latest_block["block"]["header"]["height"]) - request.request_height
+            latest_block.block.header.height - request.request_height
             <= REQUEST_DURATION
         )
 
