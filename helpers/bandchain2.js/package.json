@@ -14,7 +14,7 @@
   },
   "scripts": {
     "clean": "rimraf coverage build dist",
-    "build": "tsc -p tsconfig.release.json",
+    "build": "yarn clean && tsc -p tsconfig.release.json",
     "dev": "ts-node index.ts",
     "test": "jest --coverage",
     "test:watch": "jest --watch"
