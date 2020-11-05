@@ -1,5 +1,5 @@
 from pyband.utils import parse_datetime
-from datetime import datetime, timezone
+from datetime import datetime
 
 
 def test_parse_datetime_to_epoch():
