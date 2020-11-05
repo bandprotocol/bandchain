@@ -91,3 +91,28 @@ class MsgSend(Msg):
             coin.validate()
 
         return True
+
+
+@dataclass
+class MsgDelegate(Msg):
+    delegator_address: Address
+    validator_address: Address
+    amount: Coin
+
+    def as_json(self) -> dict:
+        return {
+            "type": "cosmos-sdk/MsgDelegate",
+            "value": {
+                "delegator_address": self.delegator_address.to_acc_bech32(),
+                "validator_address": self.validator_address.to_val_bech32(),
+                "amount": self.amount.as_json(),
+            },
+        }
+
+    def get_sender(self) -> Address:
+        return self.delegator_address
+
+    def validate(self) -> bool:
+        self.amount.validate()
+
+        return True
