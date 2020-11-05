@@ -27,7 +27,7 @@ import (
 )
 
 const flagCosmosHDPath = "cosmos-hd-path"
-const customCoinType = "cointype"
+const flagCustomCoinType = "coin-type"
 
 func main() {
 	// Configure cobra to sort commands
@@ -47,7 +47,7 @@ func main() {
 	// Add --chain-id to persistent flags and mark it required
 	rootCmd.PersistentFlags().String(flags.FlagChainID, "", "Chain ID of tendermint node")
 	rootCmd.PersistentFlags().Bool(flagCosmosHDPath, false, fmt.Sprintf("Use Cosmos BIP-44 coin type (%d)", sdk.CoinType))
-	rootCmd.PersistentFlags().Uint32(customCoinType, app.Bip44CoinType, "Use custom coin type")
+	rootCmd.PersistentFlags().Uint32(flagCustomCoinType, app.Bip44CoinType, "Use custom coin type")
 
 	rootCmd.PersistentPreRunE = func(_ *cobra.Command, _ []string) error {
 		// Read in the configuration file for the sdk
@@ -56,8 +56,8 @@ func main() {
 		if viper.GetBool(flagCosmosHDPath) {
 			config.SetCoinType(sdk.CoinType)
 		}
-		if viper.IsSet(customCoinType) {
-			config.SetCoinType(viper.GetUint32(customCoinType))
+		if viper.IsSet(flagCustomCoinType) {
+			config.SetCoinType(viper.GetUint32(flagCustomCoinType))
 		}
 		config.Seal()
 		return initConfig(rootCmd)
