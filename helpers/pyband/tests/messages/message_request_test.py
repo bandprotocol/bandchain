@@ -1,4 +1,3 @@
-import base64
 import pytest
 
 from pyband.message import MsgRequest

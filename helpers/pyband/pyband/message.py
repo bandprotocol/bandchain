@@ -1,4 +1,5 @@
 import base64
+
 from dataclasses import dataclass
 from typing import List
 from .wallet import Address
