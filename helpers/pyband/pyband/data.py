@@ -91,13 +91,30 @@ class RequestInfo(object):
 
 
 @dataclass
+class Coin(object):
+    amount: int
+    denom: str
+
+    def as_json(self) -> dict:
+        return {"amount": str(self.amount), "denom": self.denom}
+
+    def validate(self) -> bool:
+        if self.amount < 0:
+            raise ValueError("Expect amount more than 0")
+
+        if len(self.denom) == 0:
+            raise ValueError("Expect denom")
+
+        return True
+
+
+@dataclass
 class Account(object):
     address: str
     coins: List[dict]
     public_key: Optional[dict]
     account_number: int
     sequence: int
-
 
 @dataclass
 class TransactionSyncMode(object):
