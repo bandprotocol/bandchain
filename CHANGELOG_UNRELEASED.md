@@ -81,6 +81,7 @@
 
 ### Helpers
 
+- (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
 - (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
 - (impv) [\#2807](https://github.com/bandprotocol/bandchain/pull/2807) pyband: Refactor and wrote tests for client and send tx
