@@ -9,6 +9,4 @@ def test_parse_datetime_to_epoch():
 
 def test_parse_epoch_to_datetime():
     raw_datetime = "2020-11-05T09:15:18.445494105Z"
-    assert datetime.utcfromtimestamp(parse_datetime(raw_datetime)) == datetime(
-        2020, 11, 5, 9, 15, 18
-    )
+    assert datetime.utcfromtimestamp(parse_datetime(raw_datetime)) == datetime(2020, 11, 5, 9, 15, 18)
