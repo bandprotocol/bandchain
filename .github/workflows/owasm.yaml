@@ -1,5 +1,5 @@
 name: Owasm Workflow
-on: [push, pull_request]
+on: push
 
 jobs:
   wasm-test:
