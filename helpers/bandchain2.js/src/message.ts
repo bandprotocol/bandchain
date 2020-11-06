@@ -1,7 +1,7 @@
 import { Coin } from 'data'
 
 abstract class Msg {
-  abstract asJson(): any
+  abstract asJson(): { type: string; value: any }
 }
 
 export class MsgSend extends Msg {
