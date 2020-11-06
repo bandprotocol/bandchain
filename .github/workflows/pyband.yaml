@@ -1,5 +1,5 @@
 name: PyBand Workflow
-on: [push, pull_request]
+on: push
 
 jobs:
   pyband-test:
