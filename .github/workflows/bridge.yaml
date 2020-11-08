@@ -13,8 +13,8 @@ jobs:
     
     - name: Setup node 12
       uses: actions/setup-node@v1
-        with:
-          node-version: '12'
+      with:
+        node-version: '12'
 
     - name: Cache node_modules
       id: bridges-node-modules-cache
