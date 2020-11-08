@@ -3,6 +3,10 @@ import pytest
 from pyband.client import Client
 from pyband.data import (
     Account,
+    Block,
+    BlockHeader,
+    BlockHeaderInfo,
+    BlockID,
     DataSource,
     OracleScript,
     RequestInfo,
@@ -13,11 +17,15 @@ from pyband.data import (
     Report,
     RequestPacketData,
     ResponsePacketData,
+    HexBytes,
+    Timestamp,
 )
+from pyband.utils import parse_datetime
 
-TEST_RPC = "https://api-mock.bandprotocol.com/rest"
+TEST_RPC = "https://api-mock.bandprotocol.com/rest/blocks/latest"
 
 client = Client(TEST_RPC)
+
 
 def test_get_chain_id(requests_mock):
 
@@ -37,71 +45,75 @@ def test_get_latest_block(requests_mock):
         "{}/blocks/latest".format(TEST_RPC),
         json={
             "block_id": {
-                "hash": "0E414A4ECA163CA4524334BCEB81C349AFCF1AC03CFE381A37BA199D5C174F0F",
+                "hash": "391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53",
                 "parts": {
                     "total": "1",
-                    "hash": "BBF7CE3AC38167B9201079EB60E1705675A27C78A48AEC0BD0AA888E0781F5F6",
+                    "hash": "9DC1DB39B7DDB97DE353DFB2898198BAADEFB7DF8090BF22678714F769D69F42",
                 },
             },
             "block": {
                 "header": {
                     "version": {"block": "10", "app": "0"},
                     "chain_id": "bandchain",
-                    "height": "653582",
-                    "time": "2020-10-28T09:54:25.830281151Z",
+                    "height": "1032007",
+                    "time": "2020-11-05T09:15:18.445494105Z",
                     "last_block_id": {
-                        "hash": "F0878F8A875B65477B019CD02FEC5666A30563106DAD212B9E508AF49E82C965",
+                        "hash": "4BC01E257662B5F9337D615D06D5D19D8D79F7BA5A4022A85B4DC4ED3C59F7CA",
                         "parts": {
                             "total": "1",
-                            "hash": "7DDC15AE1DDD5C2B5A4148F5092DDA2382CC3F87BC1A9A7433DBE5476D15425D",
+                            "hash": "6471C0A51FB7043171EAA76CAFA900B36A4494F47F975980732529D247E8EBA5",
                         },
                     },
-                    "last_commit_hash": "F499D6AFA34282E1054ED4E799253038799145A1FF40539F45E3121EA3B8AFA3",
-                    "data_hash": "",
-                    "validators_hash": "C0368C590DE186048CDBEE815E04E131564AA4AE98E875DDB57D76666A7E0023",
-                    "next_validators_hash": "C0368C590DE186048CDBEE815E04E131564AA4AE98E875DDB57D76666A7E0023",
+                    "last_commit_hash": "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92",
+                    "data_hash": "EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2",
+                    "validators_hash": "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151",
+                    "next_validators_hash": "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151",
                     "consensus_hash": "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45",
-                    "app_hash": "15BEA68127772B814CD9FECF07033C85FEC5E6C0DCBCF6B143EB2DF446B576D8",
+                    "app_hash": "6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF",
                     "last_results_hash": "",
                     "evidence_hash": "",
-                    "proposer_address": "F23391B5DBF982E37FB7DADEA64AAE21CAE4C172",
+                    "proposer_address": "BDB6A0728C8DFE2124536F16F2BA428FE767A8F9",
                 },
-                "data": {"txs": None},
+                "data": {
+                    "txs": [
+                        "yAEoKBapCj5CcI40CAESDwAAAANCVEMAAAAAAAAAARgEIAMqC2Zyb21fcHliYW5kMhSQ78AMmxLrubEOPhhIwKK5oyk9oBIQCgoKBXViYW5kEgEwEMCEPRpqCibrWumHIQP+cIvaZlJP0sa86QaC44VVqFHgPSruT2KbBd6Q9R7ZvBJANbPqLRAgwwULWWwb5O2/eb6ddtDr65kRFgDcOTTGIqQS5Iz1NvHWHfkPKRoM8egErMsgE9YnuE+pAqoc/YvNfiIEVEVTVA=="
+                    ]
+                },
                 "evidence": {"evidence": None},
                 "last_commit": {
-                    "height": "653581",
+                    "height": "1032006",
                     "round": "0",
                     "block_id": {
-                        "hash": "F0878F8A875B65477B019CD02FEC5666A30563106DAD212B9E508AF49E82C965",
+                        "hash": "4BC01E257662B5F9337D615D06D5D19D8D79F7BA5A4022A85B4DC4ED3C59F7CA",
                         "parts": {
                             "total": "1",
-                            "hash": "7DDC15AE1DDD5C2B5A4148F5092DDA2382CC3F87BC1A9A7433DBE5476D15425D",
+                            "hash": "6471C0A51FB7043171EAA76CAFA900B36A4494F47F975980732529D247E8EBA5",
                         },
                     },
                     "signatures": [
                         {
-                            "block_id_flag": 2,
+                            "block_id_flag": 3,
                             "validator_address": "5179B0BB203248E03D2A1342896133B5C58E1E44",
-                            "timestamp": "2020-10-28T09:54:25.830281151Z",
-                            "signature": "BAALWyNf36SCTXKpRuVhgCJ72ObPUeeEl4qRRacaiaEy4PlZffZQRqSGqwOqsZ6264Dq4Rh09QkzPmgeI3GT4w==",
+                            "timestamp": "2020-11-05T09:15:18.53815896Z",
+                            "signature": "TZY24CKwZOE8wqfE0NM3qzkQ7qCpCrGEHNZdf8n31L4otZzbKGfOL05kGtBsGkTnZkVv7aJmrJ7XbvIzv0SREQ==",
                         },
                         {
                             "block_id_flag": 2,
                             "validator_address": "BDB6A0728C8DFE2124536F16F2BA428FE767A8F9",
-                            "timestamp": "2020-10-28T09:54:25.82790319Z",
-                            "signature": "CUbjHaDrhP9iwgZu+fAy6OBqh2Jj03QlC4hq6QC8DTI97RBENYLh6BPmI3AZx0OIlMLgFIQtuDK4UvlBvjdnZg==",
+                            "timestamp": "2020-11-05T09:15:18.445494105Z",
+                            "signature": "mcUMQtCR38MK69IeUDri0zkfllsXKgnVFTsFwNaO/7cnBaIUUz9U4d3H9EjSH4kANJxWRFO3dSnPy1uOD36K6A==",
                         },
                         {
-                            "block_id_flag": 2,
+                            "block_id_flag": 3,
                             "validator_address": "F0C23921727D869745C4F9703CF33996B1D2B715",
-                            "timestamp": "2020-10-28T09:54:25.831665017Z",
-                            "signature": "dQZocP16dAXxhDRfqUyYI9n/bHcI8bhYQZiAQ1fNBDok4MRfV06EBAMj9+UR0tYSllUWsBeXsFt14Lgtt/yEgQ==",
+                            "timestamp": "2020-11-05T09:15:18.537783045Z",
+                            "signature": "fpr26xz+Gg5Rl7Fvx34a0QZpb5yJc5P4t5Z1OctIDQ0VMmh9vEWagsqQGErt1bm+CaKFtkFfZZ4CU0DKN27GbQ==",
                         },
                         {
-                            "block_id_flag": 2,
+                            "block_id_flag": 3,
                             "validator_address": "F23391B5DBF982E37FB7DADEA64AAE21CAE4C172",
-                            "timestamp": "2020-10-28T09:54:25.827893959Z",
-                            "signature": "1tTNNaJQSxZsVKKyHGlPwzwQul1O0egBoGaAj9gcMzB8Jt2DFrz71bjLxF1PSPmzqOOI1OH2CUFBC9Qycrr/sw==",
+                            "timestamp": "2020-11-05T09:15:18.539946947Z",
+                            "signature": "KGsiIaralMMr1M9A7Ulhbc0THt1pLgNIrNQ6Kx+oGtwjl2w5ke5iivAAtZMduhyIAUMhrp6PN7ZvKgv9TPCNNw==",
                         },
                     ],
                 },
@@ -110,78 +122,57 @@ def test_get_latest_block(requests_mock):
         status_code=200,
     )
 
-    assert client.get_latest_block() == {
-        "block_id": {
-            "hash": "0E414A4ECA163CA4524334BCEB81C349AFCF1AC03CFE381A37BA199D5C174F0F",
-            "parts": {
-                "total": "1",
-                "hash": "BBF7CE3AC38167B9201079EB60E1705675A27C78A48AEC0BD0AA888E0781F5F6",
-            },
-        },
-        "block": {
-            "header": {
-                "version": {"block": "10", "app": "0"},
-                "chain_id": "bandchain",
-                "height": "653582",
-                "time": "2020-10-28T09:54:25.830281151Z",
-                "last_block_id": {
-                    "hash": "F0878F8A875B65477B019CD02FEC5666A30563106DAD212B9E508AF49E82C965",
-                    "parts": {
-                        "total": "1",
-                        "hash": "7DDC15AE1DDD5C2B5A4148F5092DDA2382CC3F87BC1A9A7433DBE5476D15425D",
-                    },
-                },
-                "last_commit_hash": "F499D6AFA34282E1054ED4E799253038799145A1FF40539F45E3121EA3B8AFA3",
-                "data_hash": "",
-                "validators_hash": "C0368C590DE186048CDBEE815E04E131564AA4AE98E875DDB57D76666A7E0023",
-                "next_validators_hash": "C0368C590DE186048CDBEE815E04E131564AA4AE98E875DDB57D76666A7E0023",
-                "consensus_hash": "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45",
-                "app_hash": "15BEA68127772B814CD9FECF07033C85FEC5E6C0DCBCF6B143EB2DF446B576D8",
-                "last_results_hash": "",
-                "evidence_hash": "",
-                "proposer_address": "F23391B5DBF982E37FB7DADEA64AAE21CAE4C172",
-            },
-            "data": {"txs": None},
-            "evidence": {"evidence": None},
-            "last_commit": {
-                "height": "653581",
-                "round": "0",
-                "block_id": {
-                    "hash": "F0878F8A875B65477B019CD02FEC5666A30563106DAD212B9E508AF49E82C965",
-                    "parts": {
-                        "total": "1",
-                        "hash": "7DDC15AE1DDD5C2B5A4148F5092DDA2382CC3F87BC1A9A7433DBE5476D15425D",
-                    },
-                },
-                "signatures": [
-                    {
-                        "block_id_flag": 2,
-                        "validator_address": "5179B0BB203248E03D2A1342896133B5C58E1E44",
-                        "timestamp": "2020-10-28T09:54:25.830281151Z",
-                        "signature": "BAALWyNf36SCTXKpRuVhgCJ72ObPUeeEl4qRRacaiaEy4PlZffZQRqSGqwOqsZ6264Dq4Rh09QkzPmgeI3GT4w==",
-                    },
-                    {
-                        "block_id_flag": 2,
-                        "validator_address": "BDB6A0728C8DFE2124536F16F2BA428FE767A8F9",
-                        "timestamp": "2020-10-28T09:54:25.82790319Z",
-                        "signature": "CUbjHaDrhP9iwgZu+fAy6OBqh2Jj03QlC4hq6QC8DTI97RBENYLh6BPmI3AZx0OIlMLgFIQtuDK4UvlBvjdnZg==",
-                    },
-                    {
-                        "block_id_flag": 2,
-                        "validator_address": "F0C23921727D869745C4F9703CF33996B1D2B715",
-                        "timestamp": "2020-10-28T09:54:25.831665017Z",
-                        "signature": "dQZocP16dAXxhDRfqUyYI9n/bHcI8bhYQZiAQ1fNBDok4MRfV06EBAMj9+UR0tYSllUWsBeXsFt14Lgtt/yEgQ==",
-                    },
-                    {
-                        "block_id_flag": 2,
-                        "validator_address": "F23391B5DBF982E37FB7DADEA64AAE21CAE4C172",
-                        "timestamp": "2020-10-28T09:54:25.827893959Z",
-                        "signature": "1tTNNaJQSxZsVKKyHGlPwzwQul1O0egBoGaAj9gcMzB8Jt2DFrz71bjLxF1PSPmzqOOI1OH2CUFBC9Qycrr/sw==",
-                    },
-                ],
-            },
-        },
-    }
+    assert client.get_latest_block() == Block(
+        block=BlockHeader(
+            header=BlockHeaderInfo(
+                chain_id="bandchain",
+                height=1032007,
+                time=Timestamp(parse_datetime("2020-11-05T09:15:18.445494105Z")),
+                last_commit_hash=HexBytes(
+                    bytes.fromhex(
+                        "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
+                    )
+                ),
+                data_hash=HexBytes(
+                    bytes.fromhex(
+                        "EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2"
+                    )
+                ),
+                validators_hash=HexBytes(
+                    bytes.fromhex(
+                        "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                    )
+                ),
+                next_validators_hash=HexBytes(
+                    bytes.fromhex(
+                        "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                    )
+                ),
+                consensus_hash=HexBytes(
+                    bytes.fromhex(
+                        "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45"
+                    )
+                ),
+                app_hash=HexBytes(
+                    bytes.fromhex(
+                        "6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF"
+                    )
+                ),
+                last_results_hash=HexBytes(bytes.fromhex("")),
+                evidence_hash=HexBytes(bytes.fromhex("")),
+                proposer_address=HexBytes(
+                    bytes.fromhex("BDB6A0728C8DFE2124536F16F2BA428FE767A8F9")
+                ),
+            )
+        ),
+        block_id=BlockID(
+            hash=HexBytes(
+                bytes.fromhex(
+                    "391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53"
+                )
+            )
+        ),
+    )
 
 
 def test_get_account(requests_mock):
@@ -674,4 +665,3 @@ def test_get_reporters(requests_mock):
         "band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s",
         "band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy",
     ]
-
