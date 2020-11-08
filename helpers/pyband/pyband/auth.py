@@ -19,9 +19,7 @@ class Auth:
         self.client = client
 
     @staticmethod
-    def get_msg_sign_bytes(
-        chain_id: str, validator: str, request_id: str, external_id: str
-    ) -> bytes:
+    def get_msg_sign_bytes(chain_id: str, validator: str, request_id: str, external_id: str) -> bytes:
         """
         Return bytes message using in signature verification
         """
@@ -134,10 +132,7 @@ class Auth:
         :return: True if the request hasn't expired.
         """
         latest_block = self.client.get_latest_block()
-        return (
-            int(latest_block["block"]["header"]["height"]) - request.request_height
-            <= REQUEST_DURATION
-        )
+        return latest_block.block.header.height - request.request_height <= REQUEST_DURATION
 
     def verify_requested_validator(self, request: Request, validator: str) -> bool:
         """
