@@ -1,11 +1,12 @@
 import requests
-import json
 
 from dacite import from_dict
 from .data import (
     Account,
+    Block,
     DataSource,
     OracleScript,
+    HexBytes,
     RequestInfo,
     DACITE_CONFIG,
     TransactionSyncMode,
@@ -41,12 +42,14 @@ class Client(object):
             error_log = None
 
         return TransactionSyncMode(
-            tx_hash=bytes.fromhex(data["txhash"]), code=code, error_log=error_log
+            tx_hash=HexBytes(bytes.fromhex(data["txhash"])),
+            code=code,
+            error_log=error_log,
         )
 
     def send_tx_async_mode(self, data: dict) -> TransactionAsyncMode:
         data = self._post("/txs", json={"tx": data, "mode": "async"})
-        return TransactionAsyncMode(tx_hash=bytes.fromhex(data["txhash"]))
+        return TransactionAsyncMode(tx_hash=HexBytes(bytes.fromhex(data["txhash"])))
 
     def send_tx_block_mode(self, data: dict) -> TransactionBlockMode:
         data = self._post("/txs", json={"tx": data, "mode": "block"})
@@ -61,7 +64,7 @@ class Client(object):
 
         return TransactionBlockMode(
             height=int(data["height"]),
-            tx_hash=bytes.fromhex(data["txhash"]),
+            tx_hash=HexBytes(bytes.fromhex(data["txhash"])),
             gas_wanted=int(data["gas_wanted"]),
             gas_used=int(data["gas_wanted"]),
             code=code,
@@ -72,8 +75,12 @@ class Client(object):
     def get_chain_id(self) -> str:
         return self._get("/bandchain/chain_id")["chain_id"]
 
-    def get_latest_block(self) -> dict:
-        return self._get("/blocks/latest")
+    def get_latest_block(self) -> Block:
+        return from_dict(
+            data_class=Block,
+            data=self._get("/blocks/latest"),
+            config=DACITE_CONFIG,
+        )
 
     def get_account(self, address: str) -> Account:
         return from_dict(
