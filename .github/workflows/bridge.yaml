@@ -9,7 +9,10 @@ jobs:
 
     steps:
     - name: Code Checkout
-      uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+      with:
+        node-version: '12'
 
     - name: Cache node_modules
       id: bridges-node-modules-cache
