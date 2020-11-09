@@ -95,7 +95,15 @@ let make = () => {
   switch (modalStateOpt) {
   | None => React.null
   | Some({modal, canExit, closing}) =>
-    <div className={Styles.overlay(closing)} onClick={_ => {canExit ? closeModal() : ()}}>
+    <div
+      className={Styles.overlay(closing)}
+      onClick={_ => {canExit ? closeModal() : ()}}
+      onKeyDown={event => {
+        switch (ReactEvent.Keyboard.key(event)) {
+        | "Escape" => closeModal()
+        | _ => ()
+        }
+      }}>
       <div
         className={Styles.content(closing)} onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
         <img
