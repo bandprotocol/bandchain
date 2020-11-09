@@ -138,3 +138,18 @@ class Client(object):
                 "ask_count": ask_count,
             },
         )
+    def get_request_id_by_tx_hash(self, tx_hash: HexBytes) -> List[int]:
+        msgs = self._get("/txs/{}".format(tx_hash.hex()))["logs"]
+        request_ids = []
+        for msg in msgs:
+            request_event = [event for event in msg["events"] if event["type"] == "request"]
+            if len(request_event) == 0:
+                pass
+            else:
+                attrs = request_event[0]["attributes"]
+                filtered_attr = [attr for attr in attrs if attr["key"] == "id"]
+                request_id = filtered_attr[0]["value"]
+                request_ids.append(int(request_id))
+        if len(request_ids) == 0:
+            raise ValueError("There is no request message in this tx")
+        return request_ids
