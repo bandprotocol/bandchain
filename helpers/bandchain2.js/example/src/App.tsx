@@ -4,10 +4,13 @@ import './App.css'
 import { Message, Data } from 'bandchain2.js'
 
 function App() {
-  const { MsgSend } = Message
+  const { MsgSend, MsgRequest } = Message
   const { Coin } = Data
   const msgSend = new MsgSend('aaa', 'aaa', [new Coin(100000, 'uband')])
+  const msgRequest = new MsgRequest(1, "000000034254430000000000000001", 4, 2, "from_bandchain2.js", "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c")
   console.log(msgSend)
+  console.log(msgRequest)
+  console.log(msgRequest.asJson())
   return (
     <div className="App">
       <header className="App-header">

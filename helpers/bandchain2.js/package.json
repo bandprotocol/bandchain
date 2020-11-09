@@ -29,5 +29,9 @@
     "trailingComma": "all",
     "semi": false,
     "singleQuote": true
+  },
+  "dependencies": {
+    "@types/base64-js": "^1.3.0",
+    "buffer": "^6.0.1"
   }
 }
