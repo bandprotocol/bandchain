@@ -32,6 +32,7 @@
 
 ### Scan
 
+- (impv) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 - (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
 - (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
