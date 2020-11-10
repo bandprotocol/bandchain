@@ -143,6 +143,20 @@ module StakingInfo = {
     let withdrawReward = () =>
       dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
 
+    let reinvest = () =>
+      dispatchModal(
+        OpenModal(
+          SubmitTx(
+            SubmitMsg.Reinvest(
+              validatorAddress,
+              switch (balanceAtStakeSub) {
+              | Data({reward: {amount}}) => amount
+              | _ => 0.
+              },
+            ),
+          ),
+        ),
+      );
     <>
       <Row.Grid marginBottom=24>
         <Col.Grid>
@@ -199,9 +213,15 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <Button px=20 py=5 onClick={_ => withdrawReward()}>
-              <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
-            </Button>
+            <div className={CssHelper.flexBox()}>
+              <Button px=20 py=5 onClick={_ => withdrawReward()}>
+                <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
+              </Button>
+              <HSpacing size=Spacing.sm />
+              <Button px=20 py=5 onClick={_ => reinvest()}>
+                <Text value="Reinvest" weight=Text.Medium nowrap=true block=true />
+              </Button>
+            </div>
           </div>
         </Col.Grid>
       </Row.Grid>
