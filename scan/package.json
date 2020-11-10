@@ -55,7 +55,7 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^5.0.1",
-    "cypress": "^5.5.0",
+    "cypress": "^5.6.0",
     "html-webpack-plugin": "^4.5.0",
     "parcel-bundler": "^1.12.4",
     "style-loader": "^2.0.0",
