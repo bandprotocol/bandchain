@@ -39,7 +39,7 @@ describe("Send", () => {
 describe("Delegation", () => {
   it("Should be able to delegate with Carol", () => {
     cy.get('[id="navigationBar"] > div > a').contains("Validator").click().wait(1000);
-    cy.get('[id="validatorsSection"] > div > div > div > a > span', {timeout: 1000})
+    cy.get('[id="validatorsSection"] > div > div > div > a > span', {timeout: 2000})
       .contains("Carol")
       .should('be.visible')
       .click();
@@ -58,7 +58,7 @@ describe("Delegation", () => {
   });
 
   it("Should be able to undelegate with Carol", () => {
-    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)', {timeout: 1000})
+    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)', {timeout: 2000})
       .should('be.visible')
       .click();
     cy.get('[id="undelegateAmountInput').type("0.5");
@@ -73,7 +73,7 @@ describe("Delegation", () => {
   });
 
   it("Should be able to redelegate with Carol", () => {
-    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(3)', {timeout: 1000})
+    cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(3)', {timeout: 2000})
       .should('be.visible')
       .click();
     cy.get('[id="redelegateContainer"] > div:nth-of-type(1)').click();
@@ -93,7 +93,7 @@ describe("Delegation", () => {
   });
 
   it("Should be able to withdraw reward with Carol", () => {
-    cy.get('[id="withdrawRewardContainer"] > button', {timeout: 1000})
+    cy.get('[id="withdrawRewardContainer"] > button', {timeout: 2000})
     .should('be.visible')
     .click();
     cy.get('[id="memoInput"]').type("cypress");
