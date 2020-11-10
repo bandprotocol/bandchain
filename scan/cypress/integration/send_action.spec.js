@@ -38,7 +38,7 @@ describe("Send", () => {
 
 describe("Delegation", () => {
   it("Should be able to delegate with Carol", () => {
-    cy.get('[id="navigationBar"] > div > a').contains("Validator").click();
+    cy.get('[id="navigationBar"] > div > a').contains("Validator").click().wait(1000);
     cy.get('[id="validatorsSection"] > div > div > div > a > span', {timeout: 1000})
       .contains("Carol")
       .should('be.visible')
