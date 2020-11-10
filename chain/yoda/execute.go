@@ -23,42 +23,6 @@ var (
 	cdc = app.MakeCodec()
 )
 
-// TODO: Improve precision of equation.
-// const (
-// 	rawReportMultiplier   = uint64(10)
-// 	dataSizeMultiplier    = uint64(10)
-// 	msgReportDataConstant = uint64(10)
-// 	txSizeConstant        = uint64(10)
-// 	baseTransaction       = uint64(30000)
-// )
-
-// Constant used to estimate gas price of reports transaction.
-const (
-	dataSizeMultiplier    = uint64(50)
-	msgReportDataConstant = uint64(16000)
-	txSizeConstant        = uint64(5) // Using DefaultTxSizeCostPerByte of BandChain
-	baseTransaction       = uint64(40000)
-	pendingRequests       = uint64(4000)
-)
-
-func estimatedReportsGas(msgs []sdk.Msg) uint64 {
-	est := baseTransaction
-	txSize := uint64(0)
-	for _, msg := range msgs {
-		msg, ok := msg.(types.MsgReportData)
-		if !ok {
-			panic("Don't support non-report data message")
-		}
-		calldataSize := uint64(0)
-		for _, c := range msg.RawReports {
-			calldataSize += uint64(len(c.Data))
-		}
-		est += dataSizeMultiplier*calldataSize + msgReportDataConstant
-		txSize += uint64(len(msg.GetSignBytes()))
-	}
-	return est + txSize*txSizeConstant + pendingRequests
-}
-
 func signAndBroadcast(
 	c *Context, key keys.Info, msgs []sdk.Msg, gasLimit uint64, memo string,
 ) (string, error) {
@@ -100,6 +64,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 	versionMap := make(map[string]bool)
 	msgs := make([]sdk.Msg, len(reports))
 	ids := make([]types.RequestID, len(reports))
+	feeEstimations := make([]FeeEstimationData, len(reports))
 
 	for i, report := range reports {
 		if err := report.msg.ValidateBasic(); err != nil {
@@ -108,6 +73,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 		}
 		msgs[i] = report.msg
 		ids[i] = report.msg.RequestID
+		feeEstimations[i] = report.feeEstimationData
 		for _, exec := range report.execVersion {
 			versionMap[exec] = true
 		}
@@ -121,7 +87,7 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 	memo := fmt.Sprintf("yoda:%s/exec:%s", version.Version, strings.Join(versions, ","))
 	key := c.keys[keyIndex]
 	cliCtx := sdkCtx.CLIContext{Client: c.client, TrustNode: true, Codec: cdc}
-	gasLimit := estimatedReportsGas(msgs)
+	gasLimit := estimateGas(*c, msgs, feeEstimations)
 	// We want to resend transaction only if tx returns Out of gas error.
 	for sendAttempt := uint64(1); sendAttempt <= c.maxTry; sendAttempt++ {
 		var txHash string

@@ -1,6 +1,7 @@
 package yoda
 
 import (
+	"encoding/hex"
 	"strconv"
 	"sync"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -141,9 +143,37 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		return true
 	})
 
+	rawMinCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyMinCount)
+	if len(rawMinCount) != 1 {
+		panic("Fail to get min count")
+	}
+	minCount := common.Atoi(rawMinCount[0])
+
+	rawCallData := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyCalldata)
+	if len(rawCallData) != 1 {
+		panic("Fail to get call data")
+	}
+	callData, err := hex.DecodeString(rawCallData[0])
+	if err != nil {
+		l.Error(":skull: Fail to parse call data: %s", err.Error())
+	}
+
+	var clientId string
+	rawClientId := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyClientID)
+	if len(rawClientId) > 0 {
+		clientId = rawClientId[0]
+	}
+
 	c.pendingMsgs <- ReportMsgWithKey{
 		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
 		execVersion: execVersions,
 		keyIndex:    keyIndex,
+		feeEstimationData: FeeEstimationData{
+			minCount:    minCount,
+			callData:    callData,
+			validators:  validators,
+			rawRequests: reqs,
+			clientId:    clientId,
+		},
 	}
 }
