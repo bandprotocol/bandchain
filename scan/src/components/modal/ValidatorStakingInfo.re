@@ -201,9 +201,7 @@ module StakingInfo = {
       </Row.Grid>
       <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
         <Col.Grid>
-          <div
-            className={CssHelper.flexBox(~justify=`spaceBetween, ())}
-            id="withdrawRewardContainer">
+          <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div>
               <Heading value="Reward" size=Heading.H5 />
               <VSpacing size={`px(8)} />
@@ -213,7 +211,7 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <div className={CssHelper.flexBox()}>
+            <div className={CssHelper.flexBox()} id="withdrawRewardContainer">
               <Button px=20 py=5 onClick={_ => withdrawReward()}>
                 <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
               </Button>

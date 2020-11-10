@@ -96,7 +96,7 @@ describe("Delegation", () => {
   });
 
   it("Should be able to withdraw reward with Carol", () => {
-    cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
+    cy.get('[id="withdrawRewardContainer"] > button:nth-of-type(1)').click().wait(1000);
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
