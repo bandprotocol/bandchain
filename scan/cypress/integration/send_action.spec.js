@@ -22,7 +22,7 @@ describe("Send", () => {
     cy.get('[id="getFreeButton"] > button').click();
     cy.get('[id="sendToken"] > button', {timeout: 500}).contains("Send").click();
     cy.get('[id="recipientAddressInput"]')
-      .wait(1000)
+      .wait(2000)
       .type("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")
       .get('[id="sendAmountInput"]')
       .type("2");
@@ -41,6 +41,7 @@ describe("Delegation", () => {
     cy.get('[id="navigationBar"] > div > a').contains("Validator").click();
     cy.get('[id="validatorsSection"] > div > div > div > a > span', {timeout: 1000})
       .contains("Carol")
+      .should('be.visible')
       .click();
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(1)', {timeout: 1000})
       .click();
@@ -58,6 +59,7 @@ describe("Delegation", () => {
 
   it("Should be able to undelegate with Carol", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(2)', {timeout: 1000})
+      .should('be.visible')
       .click();
     cy.get('[id="undelegateAmountInput').type("0.5");
     cy.get('[id="memoInput"]').type("cypress");
@@ -72,6 +74,7 @@ describe("Delegation", () => {
 
   it("Should be able to redelegate with Carol", () => {
     cy.get('[id="validatorDelegationinfoDlegate"] button:nth-of-type(3)', {timeout: 1000})
+      .should('be.visible')
       .click();
     cy.get('[id="redelegateContainer"] > div:nth-of-type(1)').click();
     cy.get('[id="redelegateContainer"] input').wait(500).type("Bobby.fish 🐡");
@@ -90,10 +93,12 @@ describe("Delegation", () => {
   });
 
   it("Should be able to withdraw reward with Carol", () => {
-    cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
+    cy.get('[id="withdrawRewardContainer"] > button', {timeout: 1000})
+    .should('be.visible')
+    .click();
     cy.get('[id="memoInput"]').type("cypress");
-    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
-    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
+    cy.get('[id="nextButtonContainer"] > button', {timeout: 1000}).click();
+    cy.get('[id="broadcastButtonContainer"] > button', {timeout: 1000}).click();
     cy.get('[id="successMsgContainer"] > span').should(
       "contain",
       "Broadcast transaction success"
