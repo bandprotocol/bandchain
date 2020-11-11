@@ -58,6 +58,8 @@ module Styles = {
 
   let infoHeader =
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
+
+  let msgContainer = style([selector("+ div", [marginTop(`px(24))])]);
 };
 
 let renderAddReporter = (address: TxSub.Msg.AddReporter.success_t) => {
@@ -638,7 +640,9 @@ let make = (~messages: list(TxSub.Msg.t)) => {
     {messages
      ->Belt.List.mapWithIndex((index, msg) => {
          let theme = msg |> TxSub.Msg.getBadgeTheme;
-         <div className=CssHelper.infoContainer key={(index |> string_of_int) ++ theme.name}>
+         <div
+           className={Css.merge([CssHelper.infoContainer, Styles.msgContainer])}
+           key={(index |> string_of_int) ++ theme.name}>
            <div
              className={Css.merge([
                CssHelper.flexBox(),
