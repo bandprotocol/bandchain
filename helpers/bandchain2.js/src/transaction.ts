@@ -1,7 +1,7 @@
 import {Msg} from './message'
 
 export default class Transaction {
-  msgs: Array<Msg>
+  msgs: Msg[] = []
   accountNum?: number
   sequence?: number
   chainID?: string
@@ -9,12 +9,8 @@ export default class Transaction {
   gas: number = 200000
   memo: string = ""
 
-  constructor(msgs: Array<Msg>) {
-    this.msgs = msgs
-  }
-
-  withMessages(msgs: Msg): Transaction {
-    this.msgs.push(msgs)
+  withMessages(...msg: Msg[]): Transaction {
+    this.msgs.push(...msg)
     return this
   }
 
