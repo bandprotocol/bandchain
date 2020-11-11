@@ -20,7 +20,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Install modules
+        working-directory: ${{env.working-directory}}
         run: yarn
 
       - name: Run tests
+        working-directory: ${{env.working-directory}}
         run: yarn test
