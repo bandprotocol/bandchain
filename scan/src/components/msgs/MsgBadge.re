@@ -14,6 +14,7 @@ module Styles = {
       borderRadius(`px(50)),
       margin2(~v=`zero, ~h=`px(5)),
       padding2(~v=`px(3), ~h=`px(8)),
+      whiteSpace(`pre),
     ]);
 };
 

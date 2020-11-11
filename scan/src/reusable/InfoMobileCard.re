@@ -103,7 +103,6 @@ let make = (~info) => {
   | Float(value, digits) => <Text value={value |> Format.fPretty(~digits?)} />
   | KVTableReport(heading, rawReports) =>
     <KVTable
-      tableWidth=480
       headers=heading
       rows={
         rawReports
@@ -120,7 +119,6 @@ let make = (~info) => {
     switch (calldataKVsOpt) {
     | Some(calldataKVs) =>
       <KVTable
-        tableWidth=480
         rows={
           calldataKVs
           ->Belt_Array.map(({fieldName, fieldValue}) =>

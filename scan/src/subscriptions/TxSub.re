@@ -872,11 +872,27 @@ module Msg = {
   };
 
   module Unjail = {
-    type t = {address: Address.t};
+    type success_t = {
+      address: Address.t,
+      identity: string,
+      moniker: string,
+    };
 
-    let decode = json =>
+    type fail_t = {address: Address.t};
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        address: json |> at(["msg", "address"], string) |> Address.fromBech32,
+        identity: json |> at(["extra", "identity"], string),
+        moniker: json |> at(["extra", "moniker"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
+    };
   };
+
   module SetWithdrawAddress = {
     type t = {
       delegatorAddress: Address.t,
@@ -889,14 +905,34 @@ module Msg = {
       };
     };
   };
+
   module SubmitProposal = {
-    type t = {
+    type success_t = {
+      proposer: Address.t,
+      title: string,
+      description: string,
+      initialDeposit: list(Coin.t),
+      proposalID: ID.Proposal.t,
+    };
+
+    type fail_t = {
       proposer: Address.t,
       title: string,
       description: string,
       initialDeposit: list(Coin.t),
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
+        title: json |> at(["msg", "content", "title"], string),
+        description: json |> at(["msg", "content", "description"], string),
+        initialDeposit: json |> at(["msg", "initial_deposit"], list(Coin.decodeCoin)),
+        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJson),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
         title: json |> at(["msg", "content", "title"], string),
@@ -907,29 +943,63 @@ module Msg = {
   };
 
   module Deposit = {
-    type t = {
+    type success_t = {
       depositor: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
+      amount: list(Coin.t),
+      title: string,
+    };
+
+    type fail_t = {
+      depositor: Address.t,
+      proposalID: ID.Proposal.t,
       amount: list(Coin.t),
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
+        title: json |> at(["extra", "title"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
     };
   };
   module Vote = {
-    type t = {
+    type success_t = {
       voterAddress: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
+      option: string,
+      title: string,
+    };
+
+    type fail_t = {
+      voterAddress: Address.t,
+      proposalID: ID.Proposal.t,
       option: string,
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        option: json |> at(["msg", "option"], string),
+        title: json |> at(["extra", "title"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         option: json |> at(["msg", "option"], string),
       };
     };
@@ -1040,16 +1110,16 @@ module Msg = {
     | RedelegateMsgFail(Redelegate.fail_t)
     | WithdrawRewardMsgSuccess(WithdrawReward.success_t)
     | WithdrawRewardMsgFail(WithdrawReward.fail_t)
-    | UnjailMsgSuccess(Unjail.t)
-    | UnjailMsgFail(Unjail.t)
+    | UnjailMsgSuccess(Unjail.success_t)
+    | UnjailMsgFail(Unjail.fail_t)
     | SetWithdrawAddressMsgSuccess(SetWithdrawAddress.t)
     | SetWithdrawAddressMsgFail(SetWithdrawAddress.t)
-    | SubmitProposalMsgSuccess(SubmitProposal.t)
-    | SubmitProposalMsgFail(SubmitProposal.t)
-    | DepositMsgSuccess(Deposit.t)
-    | DepositMsgFail(Deposit.t)
-    | VoteMsgSuccess(Vote.t)
-    | VoteMsgFail(Vote.t)
+    | SubmitProposalMsgSuccess(SubmitProposal.success_t)
+    | SubmitProposalMsgFail(SubmitProposal.fail_t)
+    | DepositMsgSuccess(Deposit.success_t)
+    | DepositMsgFail(Deposit.fail_t)
+    | VoteMsgSuccess(Vote.success_t)
+    | VoteMsgFail(Vote.fail_t)
     | WithdrawCommissionMsgSuccess(WithdrawCommission.success_t)
     | WithdrawCommissionMsgFail(WithdrawCommission.fail_t)
     | MultiSendMsgSuccess(MultiSend.t)
@@ -1091,15 +1161,15 @@ module Msg = {
     | RedelegateMsgFail(delegation) => delegation.delegatorAddress
     | WithdrawRewardMsgSuccess(withdrawal) => withdrawal.delegatorAddress
     | WithdrawRewardMsgFail(withdrawal) => withdrawal.delegatorAddress
-    | UnjailMsgSuccess(validator)
+    | UnjailMsgSuccess(validator) => validator.address
     | UnjailMsgFail(validator) => validator.address
     | SetWithdrawAddressMsgSuccess(set)
     | SetWithdrawAddressMsgFail(set) => set.delegatorAddress
-    | SubmitProposalMsgSuccess(proposal)
+    | SubmitProposalMsgSuccess(proposal) => proposal.proposer
     | SubmitProposalMsgFail(proposal) => proposal.proposer
-    | DepositMsgSuccess(deposit)
+    | DepositMsgSuccess(deposit) => deposit.depositor
     | DepositMsgFail(deposit) => deposit.depositor
-    | VoteMsgSuccess(vote)
+    | VoteMsgSuccess(vote) => vote.voterAddress
     | VoteMsgFail(vote) => vote.voterAddress
     | WithdrawCommissionMsgSuccess(withdrawal) => withdrawal.validatorAddress
     | WithdrawCommissionMsgFail(withdrawal) => withdrawal.validatorAddress
@@ -1273,11 +1343,11 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decodeSuccess)
       | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decodeSuccess)
       | WithdrawRewardBadge => WithdrawRewardMsgSuccess(json |> WithdrawReward.decodeSuccess)
-      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decode)
+      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decodeSuccess)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgSuccess(json |> SetWithdrawAddress.decode)
-      | SubmitProposalBadge => SubmitProposalMsgSuccess(json |> SubmitProposal.decode)
-      | DepositBadge => DepositMsgSuccess(json |> Deposit.decode)
-      | VoteBadge => VoteMsgSuccess(json |> Vote.decode)
+      | SubmitProposalBadge => SubmitProposalMsgSuccess(json |> SubmitProposal.decodeSuccess)
+      | DepositBadge => DepositMsgSuccess(json |> Deposit.decodeSuccess)
+      | VoteBadge => VoteMsgSuccess(json |> Vote.decodeSuccess)
       | WithdrawCommissionBadge =>
         WithdrawCommissionMsgSuccess(json |> WithdrawCommission.decodeSuccess)
       | MultiSendBadge => MultiSendMsgSuccess(json |> MultiSend.decode)
@@ -1327,11 +1397,11 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decodeFail)
       | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decodeFail)
       | WithdrawRewardBadge => WithdrawRewardMsgFail(json |> WithdrawReward.decodeFail)
-      | UnjailBadge => UnjailMsgFail(json |> Unjail.decode)
+      | UnjailBadge => UnjailMsgFail(json |> Unjail.decodeFail)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgFail(json |> SetWithdrawAddress.decode)
-      | SubmitProposalBadge => SubmitProposalMsgFail(json |> SubmitProposal.decode)
-      | DepositBadge => DepositMsgFail(json |> Deposit.decode)
-      | VoteBadge => VoteMsgFail(json |> Vote.decode)
+      | SubmitProposalBadge => SubmitProposalMsgFail(json |> SubmitProposal.decodeFail)
+      | DepositBadge => DepositMsgFail(json |> Deposit.decodeFail)
+      | VoteBadge => VoteMsgFail(json |> Vote.decodeFail)
       | WithdrawCommissionBadge =>
         WithdrawCommissionMsgFail(json |> WithdrawCommission.decodeFail)
       | MultiSendBadge => MultiSendMsgFail(json |> MultiSend.decode)
