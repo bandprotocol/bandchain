@@ -150,6 +150,8 @@ let make = () => {
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (show, setShow) = React.useState(_ => false);
 
+  let clickOutside = ClickOutside.useClickOutside(_ => setShow(_ => false));
+
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
   let disconnect = () => {
     dispatchAccount(Disconnect);
@@ -168,7 +170,10 @@ let make = () => {
         <HSpacing size=Spacing.sm />
         <Icon name="fas fa-caret-down" color=Colors.bandBlue />
       </div>
-      <div className={Styles.profileCard(show)} id="addressWrapper">
+      <div
+        ref={ReactDOMRe.Ref.domRef(clickOutside)}
+        className={Styles.profileCard(show)}
+        id="addressWrapper">
         <AddressRender address position=AddressRender.Text />
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
