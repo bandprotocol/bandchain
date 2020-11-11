@@ -16,7 +16,7 @@ import (
 type FeeEstimationData struct {
 	minCount    int64
 	callData    []byte
-	validators  []string
+	validators  int
 	rawRequests []rawRequest
 	clientId    string
 }

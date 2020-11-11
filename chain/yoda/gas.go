@@ -18,11 +18,12 @@ const (
 	readingCostPerByte = uint64(3)
 	writingCostPerByte = uint64(30)
 
+	payingFeeCost = uint64(15200)
+
 	// band
-	baseReportCost     = uint64(4006)
-	payingFeeCost      = uint64(15200)
-	countingReportCost = uint64(1479)
-	addingPendingCost  = uint64(3400)
+	baseReportCost        = uint64(4006)
+	countingPerReportCost = uint64(1479)
+	addingPendingCost     = uint64(3400)
 
 	baseRequestSize = uint64(32)
 	addressSize     = uint64(20)
@@ -30,7 +31,7 @@ const (
 	baseRawRequestSize = uint64(16)
 )
 
-func estimateTxSize(c Context, msgs []sdk.Msg) uint64 {
+func estimateTxSize(msgs []sdk.Msg) uint64 {
 	// base tx + reports
 	size := baseTransactionSize
 
@@ -47,19 +48,19 @@ func estimateTxSize(c Context, msgs []sdk.Msg) uint64 {
 	return size
 }
 
-func estimateStoringReportCost(c Context, msg sdk.Msg) uint64 {
+func estimateStoringReportCost(msg sdk.Msg) uint64 {
 	cost := writingBaseCost
 	cost += uint64(len(cdc.MustMarshalBinaryBare(msg))) * writingCostPerByte
 
 	return cost
 }
 
-func estimateReadingRequestCost(c Context, f FeeEstimationData) uint64 {
+func estimateReadingRequestCost(f FeeEstimationData) uint64 {
 	cost := readingBaseCost
 
 	size := baseRequestSize
 	size += uint64(len(f.callData))
-	size += uint64(len(f.validators)) * addressSize
+	size += uint64(f.validators) * addressSize
 	size += uint64(len(f.clientId))
 
 	for _, r := range f.rawRequests {
@@ -71,17 +72,17 @@ func estimateReadingRequestCost(c Context, f FeeEstimationData) uint64 {
 	return cost
 }
 
-func estimateReportHandleCost(c Context, msg sdk.Msg, f FeeEstimationData) uint64 {
+func estimateReportHandleCost(msg sdk.Msg, f FeeEstimationData) uint64 {
 	cost := baseReportCost
 
 	// read request twice
-	cost += 2 * estimateReadingRequestCost(c, f)
+	cost += 2 * estimateReadingRequestCost(f)
 
 	// write report once
-	cost += estimateStoringReportCost(c, msg)
+	cost += estimateStoringReportCost(msg)
 
 	// count report
-	cost += countingReportCost * uint64(f.minCount+1)
+	cost += countingPerReportCost * uint64(f.minCount+1)
 
 	// add pending
 	cost += addingPendingCost
@@ -89,10 +90,10 @@ func estimateReportHandleCost(c Context, msg sdk.Msg, f FeeEstimationData) uint6
 	return cost
 }
 
-func estimateGas(c Context, msgs []sdk.Msg, feeEstimations []FeeEstimationData) uint64 {
+func estimateGas(c *Context, msgs []sdk.Msg, feeEstimations []FeeEstimationData) uint64 {
 	gas := baseFixedGas
 
-	txSize := estimateTxSize(c, msgs)
+	txSize := estimateTxSize(msgs)
 	gas += txCostPerByte * txSize
 
 	// process paying fee
@@ -101,7 +102,7 @@ func estimateGas(c Context, msgs []sdk.Msg, feeEstimations []FeeEstimationData) 
 	}
 
 	for i := range msgs {
-		gas += estimateReportHandleCost(c, msgs[i], feeEstimations[i])
+		gas += estimateReportHandleCost(msgs[i], feeEstimations[i])
 	}
 
 	return gas

@@ -171,7 +171,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		feeEstimationData: FeeEstimationData{
 			minCount:    minCount,
 			callData:    callData,
-			validators:  validators,
+			validators:  len(validators),
 			rawRequests: reqs,
 			clientId:    clientId,
 		},
