@@ -2,7 +2,7 @@ name: Bandchain.js Workflow
 on: push
 
 jobs:
-  bandchain-test
+  bandchain-test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./helpers/bandchain2.js
@@ -21,6 +21,6 @@ jobs:
 
     - name: Install modules
       run: yarn
-      
+
     - name: Run tests
       run: yarn test
