@@ -60,194 +60,6 @@ module Styles = {
     style([borderBottom(`px(1), `solid, Colors.gray9), paddingBottom(`px(16))]);
 };
 
-// TODO: move it to file later.
-let renderRequest = (request: TxSub.Msg.Request.success_t) => {
-  let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.OracleScript id={request.oracleScriptID} />
-        <HSpacing size=Spacing.sm />
-        <Text value={request.oracleScriptName} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.md />
-    <div className=Styles.hFlex>
-      <Text value="CALLDATA" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <HSpacing size=Spacing.md />
-      <CopyButton
-        data={request.calldata |> JsBuffer.toHex(~with0x=false)}
-        title="Copy as bytes"
-        width=125
-      />
-    </div>
-    <VSpacing size=Spacing.md />
-    {switch (calldataKVsOpt) {
-     | Some(calldataKVs) =>
-       <KVTable
-         tableWidth=480
-         rows={
-           calldataKVs
-           ->Belt_Array.map(({fieldName, fieldValue}) =>
-               [KVTable.Value(fieldName), KVTable.Value(fieldValue)]
-             )
-           ->Belt_List.fromArray
-         }
-       />
-     | None =>
-       <Text
-         value="Could not decode calldata."
-         spacing={Text.Em(0.02)}
-         nowrap=true
-         ellipsis=true
-         code=true
-         block=true
-       />
-     }}
-    <VSpacing size=Spacing.xl />
-    <div className=Styles.topicContainer>
-      <Text value="ASK COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={request.askCount |> string_of_int} weight=Text.Bold />
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="MIN COUNT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <Text value={request.minCount |> string_of_int} weight=Text.Bold />
-    </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.lg />
-  </Col>;
-};
-
-let renderReport = (report: TxSub.Msg.Report.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex> <TypeID.Request id={report.requestID} /> </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <VSpacing size=Spacing.sm />
-    <div className=Styles.hFlex>
-      <Text value="RAW DATA REPORTS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <HSpacing size=Spacing.md />
-    </div>
-    <VSpacing size=Spacing.md />
-    <KVTable
-      tableWidth=480
-      headers=["EXTERNAL ID", "EXIT CODE", "VALUE"]
-      rows={
-        report.rawReports
-        |> Belt_List.map(_, rawReport =>
-             [
-               KVTable.Value(rawReport.externalDataID |> string_of_int),
-               KVTable.Value(rawReport.exitCode |> string_of_int),
-               KVTable.Value(rawReport.data |> JsBuffer.toUTF8),
-             ]
-           )
-      }
-    />
-    <VSpacing size=Spacing.lg />
-  </Col>;
-};
-
-let renderCreateDataSource = (dataSource: TxSub.Msg.CreateDataSource.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={dataSource.owner} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.DataSource id={dataSource.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={dataSource.name} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
-    // <div className=Styles.topicContainer>
-    //   <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
-    // </div>
-    <VSpacing size=Spacing.md />
-  </Col>;
-};
-
-let renderEditDataSource = (dataSource: TxSub.Msg.EditDataSource.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={dataSource.owner} />
-      </div>
-    </div>
-    // TODO : Redesign edit messages
-    // <VSpacing size=Spacing.lg />
-    // <div className=Styles.topicContainer>
-    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <div className=Styles.hFlex>
-    //     <TypeID.DataSource id={dataSource.id} />
-    //     <HSpacing size=Spacing.sm />
-    //     <Text value={dataSource.name} />
-    //   </div>
-    // </div>
-    // <VSpacing size=Spacing.md />
-    //  <div className=Styles.topicContainer>
-    //    <Text value="FEE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //    <AmountRender coins={dataSource.fee} pos=AmountRender.TxIndex />
-    //  </div>
-    <VSpacing size=Spacing.md />
-  </Col>;
-};
-
-let renderCreateOracleScript = (oracleScript: TxSub.Msg.CreateOracleScript.success_t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={oracleScript.owner} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.lg />
-    <div className=Styles.topicContainer>
-      <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className=Styles.hFlex>
-        <TypeID.OracleScript id={oracleScript.id} />
-        <HSpacing size=Spacing.sm />
-        <Text value={oracleScript.name} />
-      </div>
-    </div>
-    <VSpacing size=Spacing.md />
-  </Col>;
-};
-
-let renderEditOracleScript = (oracleScript: TxSub.Msg.EditOracleScript.t) => {
-  <Col size=Styles.thirdCol alignSelf=Col.Start>
-    <div className=Styles.topicContainer>
-      <Text value="OWNER" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-      <div className={Styles.addressContainer(300)}>
-        <AddressRender address={oracleScript.owner} />
-      </div>
-    </div>
-    // TODO : Redesign edit messages
-    // <VSpacing size=Spacing.lg />
-    // <div className=Styles.topicContainer>
-    //   <Text value="NAME" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-    //   <div className=Styles.hFlex>
-    //     <TypeID.OracleScript id={oracleScript.id} />
-    //     <HSpacing size=Spacing.sm />
-    //     <Text value={oracleScript.name} />
-    //   </div>
-    // </div>
-    <VSpacing size=Spacing.md />
-  </Col>;
-};
-
 let renderAddReporter = (address: TxSub.Msg.AddReporter.success_t) => {
   <Col size=Styles.thirdCol alignSelf=Col.Start>
     <div className=Styles.topicContainer>
@@ -765,18 +577,20 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | WithdrawCommissionMsgFail(withdrawal) => <IndexTokenMsg.WithdrawComissionFailMsg withdrawal />
   | MultiSendMsgSuccess(tx)
   | MultiSendMsgFail(tx) => <IndexTokenMsg.MultisendMsg tx />
-  | CreateDataSourceMsgSuccess(dataSource) => renderCreateDataSource(dataSource)
-  | CreateDataSourceMsgFail(dataSource) => React.null
-  | EditDataSourceMsgSuccess(dataSource) => renderEditDataSource(dataSource)
-  | EditDataSourceMsgFail(dataSource) => React.null
-  | CreateOracleScriptMsgSuccess(oracleScript) => renderCreateOracleScript(oracleScript)
-  | CreateOracleScriptMsgFail(oracleScript) => React.null
-  | EditOracleScriptMsgSuccess(oracleScript) => renderEditOracleScript(oracleScript)
-  | EditOracleScriptMsgFail(oracleScript) => React.null
-  | RequestMsgSuccess(request) => renderRequest(request)
-  | RequestMsgFail(request) => React.null
-  | ReportMsgSuccess(report) => renderReport(report)
-  | ReportMsgFail(report) => React.null
+  | CreateDataSourceMsgSuccess(dataSource) => <IndexDataMsg.CreateDataSourceMsg dataSource />
+  | CreateDataSourceMsgFail(dataSource) => <IndexDataMsg.CreateDataSourceFailMsg dataSource />
+  | EditDataSourceMsgSuccess(dataSource)
+  | EditDataSourceMsgFail(dataSource) => <IndexDataMsg.EditDataSourceMsg dataSource />
+  | CreateOracleScriptMsgSuccess(oracleScript) =>
+    <IndexDataMsg.CreateOracleScriptMsg oracleScript />
+  | CreateOracleScriptMsgFail(oracleScript) =>
+    <IndexDataMsg.CreateOracleScriptFailMsg oracleScript />
+  | EditOracleScriptMsgSuccess(oracleScript)
+  | EditOracleScriptMsgFail(oracleScript) => <IndexDataMsg.EditOracleScriptMsg oracleScript />
+  | RequestMsgSuccess(request) => <IndexDataMsg.RequestMsg request />
+  | RequestMsgFail(request) => <IndexDataMsg.RequestFailMsg request />
+  | ReportMsgSuccess(report)
+  | ReportMsgFail(report) => <IndexDataMsg.ReportMsg report />
   | AddReporterMsgSuccess(address) => renderAddReporter(address)
   | AddReporterMsgFail(address) => React.null
   | RemoveReporterMsgSuccess(address) => renderRemoveReporter(address)
