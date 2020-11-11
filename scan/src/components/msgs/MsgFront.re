@@ -1,6 +1,6 @@
 module Styles = {
   open Css;
-  let addressWrapper = style([width(`px(120))]);
+  let addressWrapper = style([width(`px(120)), Media.smallMobile([width(`px(80))])]);
 };
 
 [@react.component]
