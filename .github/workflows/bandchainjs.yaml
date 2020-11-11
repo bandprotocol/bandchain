@@ -9,18 +9,18 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
-    
+
     steps:
-    - name: Code Checkout
+      - name: Code Checkout
         uses: actions/checkout@v2
 
-    - name: Setup node ${{ matrix.node-version }}
+      - name: Setup node ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
 
-    - name: Install modules
-      run: yarn
+      - name: Install modules
+        run: yarn
 
-    - name: Run tests
-      run: yarn test
+      - name: Run tests
+        run: yarn test
