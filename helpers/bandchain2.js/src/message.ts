@@ -1,6 +1,6 @@
 import { Coin } from 'data'
 
-abstract class Msg {
+export abstract class Msg {
   abstract asJson(): { type: string; value: any }
 }
 
