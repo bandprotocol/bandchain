@@ -2,6 +2,7 @@ import { Coin } from 'data'
 
 export abstract class Msg {
   abstract asJson(): { type: string; value: any }
+  abstract validate(): boolean
 }
 
 export class MsgSend extends Msg {
@@ -20,10 +21,15 @@ export class MsgSend extends Msg {
     return {
       type: 'cosmos-sdk/MsgSend',
       value: {
-        to_address: this.toAddress,
-        from_address: this.fromAddress,
         amount: this.amount.map((each) => each.asJson()),
+        from_address: this.fromAddress,
+        to_address: this.toAddress,
       },
     }
+  }
+
+  validate() {
+    // TODO: Validate
+    return true
   }
 }

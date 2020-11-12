@@ -62,23 +62,28 @@ export default class Transaction {
     }
 
     // TODO: Validate Msgs
+    this.msgs.forEach(msg => msg.validate())
 
-    let messageJson = {
+    let messageJson: {[key: string]: any } = {
       chain_id: this.chainID,
       account_number: this.accountNum.toString(),
       fee: {
-        gas: this.gas.toString(),
-        amount: {
+        amount: [{
           amount: this.fee.toString(),
           denom: "uband"
-        }
+        }],
+        gas: this.gas.toString(),
       },
       memo: this.memo,
       sequence: this.sequence.toString(),
-      msgs: this.msgs.map(msg => msg.asJson)
+      msgs: this.msgs.map(msg => msg.asJson())
     }
 
-    return Buffer.from(JSON.stringify(messageJson))
+    const sortedKey = Object.keys(messageJson).sort()
+    const result: {[key: string]: any } = {}
+    sortedKey.forEach(key => result[key] = messageJson[key])
+
+    return Buffer.from(JSON.stringify(result))
   }
 
 }
