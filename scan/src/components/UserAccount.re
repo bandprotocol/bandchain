@@ -109,9 +109,15 @@ module FaucetBtn = {
 
 module SendBtn = {
   [@react.component]
-  let make = (~send) => {
+  let make = (~send, ~setShow) => {
     <div id="sendToken">
-      <Button px=20 py=5 onClick={_ => {send()}}>
+      <Button
+        px=20
+        py=5
+        onClick={_ => {
+          send();
+          setShow(_ => false);
+        }}>
         <Text value="Send" weight=Text.Medium nowrap=true block=true />
       </Button>
     </div>;
@@ -173,7 +179,8 @@ let make = () => {
       <div
         ref={ReactDOMRe.Ref.domRef(clickOutside)}
         className={Styles.profileCard(show)}
-        id="addressWrapper">
+        id="addressWrapper"
+        onClick={_ => setShow(_ => false)}>
         <AddressRender address position=AddressRender.Text />
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
@@ -181,7 +188,7 @@ let make = () => {
           <VSpacing size={`px(16)} />
           <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
             <FaucetBtn address />
-            <SendBtn send />
+            <SendBtn send setShow />
           </div>
         </div>
         <DisconnectBtn disconnect />
