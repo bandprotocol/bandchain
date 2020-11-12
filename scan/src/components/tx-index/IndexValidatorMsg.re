@@ -11,20 +11,17 @@ module CreateValidatorMsg = {
           width={`percent(100.)}
           avatarWidth=20
           size=Text.Lg
-          weight=Text.Thin
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Identity" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg value={validator.identity} weight=Text.Thin code=true />
+        <Text size=Text.Lg value={validator.identity} />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Commission Rate" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
           value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
@@ -32,8 +29,6 @@ module CreateValidatorMsg = {
         <Text
           size=Text.Lg
           value={validator.commissionMaxRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid mb=24>
@@ -41,8 +36,6 @@ module CreateValidatorMsg = {
         <Text
           size=Text.Lg
           value={validator.commissionMaxChange->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
@@ -71,11 +64,11 @@ module CreateValidatorMsg = {
       </Col.Grid>
       <Col.Grid mb=24>
         <Heading value="Details" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg weight=Text.Thin value={validator.details} />
+        <Text size=Text.Lg value={validator.details} />
       </Col.Grid>
       <Col.Grid>
         <Heading value="Website" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg weight=Text.Thin value={validator.website} />
+        <Text size=Text.Lg value={validator.website} />
       </Col.Grid>
     </Row.Grid>;
   };
@@ -90,8 +83,6 @@ module EditValidatorMsg = {
         <Text
           value={validator.moniker == Config.doNotModify ? "Unchanged" : validator.moniker}
           size=Text.Lg
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
@@ -99,8 +90,6 @@ module EditValidatorMsg = {
         <Text
           size=Text.Lg
           value={validator.identity == Config.doNotModify ? "Unchanged" : validator.identity}
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
@@ -113,8 +102,6 @@ module EditValidatorMsg = {
             | None => "Unchanged"
             }
           }
-          weight=Text.Thin
-          code=true
         />
       </Col.Grid>
       <Col.Grid col=Col.Six mb=24>
@@ -130,14 +117,13 @@ module EditValidatorMsg = {
         {switch (validator.minSelfDelegation) {
          | Some(minSelfDelegation') =>
            <AmountRender coins=[minSelfDelegation'] pos=AmountRender.TxIndex />
-         | None => <Text value="Unchanged" code=true size=Text.Lg weight=Text.Thin />
+         | None => <Text value="Unchanged" size=Text.Lg />
          }}
       </Col.Grid>
       <Col.Grid>
         <Heading value="Details" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
-          weight=Text.Thin
           value={validator.details == Config.doNotModify ? "Unchanged" : validator.details}
         />
       </Col.Grid>
@@ -158,7 +144,6 @@ module UnjailMsg = {
           width={`percent(100.)}
           avatarWidth=20
           size=Text.Lg
-          weight=Text.Thin
         />
       </Col.Grid>
     </Row.Grid>;

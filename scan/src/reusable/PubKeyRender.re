@@ -35,7 +35,6 @@ let make = (~pubKey, ~position=Text, ~alignLeft=false, ~display=`flex) => {
     <Text
       value={"bandvalconspub" ++ noPrefixAddress}
       size={position |> pubKeyFontSize}
-      weight=Text.Thin
       code=true
       align=?{alignLeft ? None : Some(Text.Right)}
     />

@@ -54,6 +54,10 @@ module DepositMsg = {
         <Heading value="Proposal ID" size=Heading.H5 marginBottom=8 />
         <TypeID.Proposal position=TypeID.Subtitle id={deposit.proposalID} />
       </Col.Grid>
+      <Col.Grid col=Col.Six mbSm=24>
+        <Heading value="Title" size=Heading.H5 marginBottom=8 />
+        <Text size=Text.Lg value={deposit.title} />
+      </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={deposit.amount} pos=AmountRender.TxIndex />
@@ -93,6 +97,10 @@ module VoteMsg = {
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Proposal ID" size=Heading.H5 marginBottom=8 />
         <TypeID.Proposal position=TypeID.Subtitle id={vote.proposalID} />
+      </Col.Grid>
+      <Col.Grid col=Col.Six mbSm=24>
+        <Heading value="Title" size=Heading.H5 marginBottom=8 />
+        <Text size=Text.Lg value={vote.title} />
       </Col.Grid>
       <Col.Grid col=Col.Six>
         <Heading value="Option" size=Heading.H5 marginBottom=8 />

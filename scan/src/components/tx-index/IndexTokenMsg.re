@@ -242,7 +242,7 @@ module MultisendMsg = {
         borderStyle(`none),
         backgroundColor(Colors.gray9),
         height(`px(1)),
-        margin3(~top=`zero, ~h=`auto, ~bottom=`px(24)),
+        margin3(~top=`px(8), ~h=`auto, ~bottom=`px(24)),
       ]);
   };
 
@@ -260,10 +260,10 @@ module MultisendMsg = {
         {tx.inputs
          ->Belt_List.mapWithIndex((idx, input) =>
              <React.Fragment key={(idx |> string_of_int) ++ (input.address |> Address.toBech32)}>
-               <Col.Grid col=Col.Six mb=24 mbSm=8>
+               <Col.Grid col=Col.Six mb=16 mbSm=8>
                  <AddressRender address={input.address} />
                </Col.Grid>
-               <Col.Grid col=Col.Six mb=24 mbSm=12>
+               <Col.Grid col=Col.Six mb=16 mbSm=12>
                  <AmountRender coins={input.coins} pos=AmountRender.TxIndex />
                </Col.Grid>
              </React.Fragment>
@@ -277,10 +277,10 @@ module MultisendMsg = {
         {tx.outputs
          ->Belt_List.mapWithIndex((idx, output) =>
              <React.Fragment key={(idx |> string_of_int) ++ (output.address |> Address.toBech32)}>
-               <Col.Grid col=Col.Six mb=24 mbSm=8>
+               <Col.Grid col=Col.Six mb=16 mbSm=8>
                  <AddressRender address={output.address} />
                </Col.Grid>
-               <Col.Grid col=Col.Six mb=24 mbSm=12>
+               <Col.Grid col=Col.Six mb=16 mbSm=12>
                  <AmountRender coins={output.coins} pos=AmountRender.TxIndex />
                </Col.Grid>
              </React.Fragment>
