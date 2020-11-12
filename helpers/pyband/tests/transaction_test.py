@@ -22,7 +22,8 @@ def test_get_sign_data_success():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
@@ -46,7 +47,8 @@ def test_get_sign_data_with_gas_success():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
@@ -66,13 +68,14 @@ def test_get_sign_data_with_auto_success(requests_mock):
 
     requests_mock.register_uri(
         "GET",
-        "{}/auth/accounts/band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c".format(TEST_RPC),
+        "{}/auth/accounts/band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c".format(
+            TEST_RPC),
         json={
             "height": "650788",
             "result": {
                 "type": "cosmos-sdk/Account",
                 "value": {
-                    "address": "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte",
+                    "address": "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c",
                     "coins": [{"denom": "uband", "amount": "104082359107"}],
                     "public_key": {
                         "type": "tendermint/PubKeySecp256k1",
@@ -95,7 +98,8 @@ def test_get_sign_data_with_auto_success(requests_mock):
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_auto(client)
@@ -114,13 +118,14 @@ def test_create_transaction_with_auto_fail(requests_mock):
 
     requests_mock.register_uri(
         "GET",
-        "{}/auth/accounts/band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c".format(TEST_RPC),
+        "{}/auth/accounts/band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c".format(
+            TEST_RPC),
         json={
             "height": "650788",
             "result": {
                 "type": "cosmos-sdk/Account",
                 "value": {
-                    "address": "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte",
+                    "address": "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c",
                     "coins": [{"denom": "uband", "amount": "104082359107"}],
                     "public_key": {
                         "type": "tendermint/PubKeySecp256k1",
@@ -148,7 +153,8 @@ def test_get_sign_data_with_memo_success():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
@@ -164,7 +170,8 @@ def test_get_sign_data_with_memo_success():
 
 
 def test_get_sign_data_msgs_fail():
-    t = Transaction().with_account_num(100).with_sequence(30).with_chain_id("bandchain")
+    t = Transaction().with_account_num(
+        100).with_sequence(30).with_chain_id("bandchain")
 
     with pytest.raises(ValueError, match="message is empty"):
         t.get_sign_data()
@@ -180,7 +187,8 @@ def test_get_sign_data_account_num_fail():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_sequence(30)
@@ -201,7 +209,8 @@ def test_get_sign_data_sequence_fail():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
@@ -222,7 +231,8 @@ def test_get_sign_data_chain_id_fail():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
@@ -243,7 +253,8 @@ def test_get_sign_data_memo_fail():
                 ask_count=4,
                 min_count=3,
                 client_id="from_pyband",
-                sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
+                sender=Address.from_acc_bech32(
+                    "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
             )
         )
         .with_account_num(100)
