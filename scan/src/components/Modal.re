@@ -92,18 +92,26 @@ let make = () => {
     dispatchModal(CloseModal);
   };
 
+  React.useEffect1(
+    () => {
+      let handleKey = event =>
+        if (ReactEvent.Keyboard.keyCode(event) == 27) {
+          switch (modalStateOpt) {
+          | Some({canExit}) => canExit ? closeModal() : ()
+          | None => ()
+          };
+        };
+
+      Document.addKeyboardEventListener("keydown", handleKey);
+      Some(() => Document.removeKeyboardEventListener("keydown", handleKey));
+    },
+    [|modalStateOpt|],
+  );
+
   switch (modalStateOpt) {
   | None => React.null
   | Some({modal, canExit, closing}) =>
-    <div
-      className={Styles.overlay(closing)}
-      onClick={_ => {canExit ? closeModal() : ()}}
-      onKeyDown={event => {
-        switch (ReactEvent.Keyboard.key(event)) {
-        | "Escape" => closeModal()
-        | _ => ()
-        }
-      }}>
+    <div className={Styles.overlay(closing)} onClick={_ => {canExit ? closeModal() : ()}}>
       <div
         className={Styles.content(closing)} onClick={e => ReactEvent.Mouse.stopPropagation(e)}>
         <img
