@@ -144,19 +144,17 @@ module StakingInfo = {
       dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
 
     let reinvest = () =>
-      dispatchModal(
-        OpenModal(
-          SubmitTx(
-            SubmitMsg.Reinvest(
-              validatorAddress,
-              switch (balanceAtStakeSub) {
-              | Data({reward: {amount}}) => amount
-              | _ => 0.
-              },
-            ),
-          ),
-        ),
-      );
+      (
+        validatorAddress,
+        switch (balanceAtStakeSub) {
+        | Data({reward: {amount}}) => amount
+        | _ => 0.
+        },
+      )
+      ->SubmitMsg.Reinvest
+      ->SubmitTx
+      ->OpenModal
+      ->dispatchModal;
     <>
       <Row.Grid marginBottom=24>
         <Col.Grid>
