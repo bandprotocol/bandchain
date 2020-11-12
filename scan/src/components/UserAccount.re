@@ -109,15 +109,9 @@ module FaucetBtn = {
 
 module SendBtn = {
   [@react.component]
-  let make = (~send, ~setShow) => {
+  let make = (~send) => {
     <div id="sendToken">
-      <Button
-        px=20
-        py=5
-        onClick={_ => {
-          send();
-          setShow(_ => false);
-        }}>
+      <Button px=20 py=5 onClick={_ => {send()}}>
         <Text value="Send" weight=Text.Medium nowrap=true block=true />
       </Button>
     </div>;
@@ -163,7 +157,10 @@ let make = () => {
     dispatchAccount(Disconnect);
     setShow(_ => false);
   };
-  let send = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(None))));
+  let send = () => {
+    None->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+    setShow(_ => false);
+  };
 
   switch (accountOpt) {
   | Some({address}) =>
@@ -179,16 +176,17 @@ let make = () => {
       <div
         ref={ReactDOMRe.Ref.domRef(clickOutside)}
         className={Styles.profileCard(show)}
-        id="addressWrapper"
-        onClick={_ => setShow(_ => false)}>
-        <AddressRender address position=AddressRender.Text />
+        id="addressWrapper">
+        <div onClick={_ => setShow(_ => false)}>
+          <AddressRender address position=AddressRender.Text />
+        </div>
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
           <Balance address />
           <VSpacing size={`px(16)} />
           <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
             <FaucetBtn address />
-            <SendBtn send setShow />
+            <SendBtn send />
           </div>
         </div>
         <DisconnectBtn disconnect />
