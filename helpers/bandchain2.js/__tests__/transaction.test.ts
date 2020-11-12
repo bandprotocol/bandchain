@@ -82,4 +82,18 @@ describe('Transaction', () => {
 
   })
 
+  it('getTxData successfully', () => {
+    const tsc = new Transaction()
+      .withMessages(msgSend)
+      .withAccountNum(100)
+      .withSequence(30)
+      .withChainID('bandchain')
+      .withGas(500000)
+      .withFee(10)
+      .withMemo('bandchain2.js test')
+
+    const signedData = tsc.getSignData()
+    // TODO: sign signature and get txData
+  })
+
 })
