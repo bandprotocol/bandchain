@@ -5,7 +5,7 @@ type btn_style_t =
 module Styles = {
   open Css;
 
-  let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ~pxSm=px, ~pySm=py, ~disable, ()) => {
+  let btn = (~variant=Primary, ~fsize=12, ~px=25, ~py=13, ~pxSm=px, ~pySm=py, ()) => {
     let base =
       style([
         display(`block),
@@ -13,10 +13,11 @@ module Styles = {
         transition(~duration=200, "all"),
         borderRadius(`px(4)),
         fontSize(`px(fsize)),
-        cursor(disable ? `default : `pointer),
+        cursor(`pointer),
         outlineStyle(`none),
         borderStyle(`none),
         margin(`zero),
+        disabled([cursor(`default)]),
         Media.mobile([padding2(~v=`px(pySm), ~h=`px(pxSm))]),
       ]);
 
@@ -60,7 +61,7 @@ let make =
     ) => {
   <button
     className={Css.merge([
-      Styles.btn(~variant, ~px, ~py, ~pxSm, ~pySm, ~fsize, ~disable=disabled, ()),
+      Styles.btn(~variant, ~px, ~py, ~pxSm, ~pySm, ~fsize, ()),
       CssHelper.flexBox(~align=`center, ~justify=`center, ()),
       style,
     ])}
