@@ -23,7 +23,7 @@ const (
 	// band
 	baseReportCost        = uint64(4006)
 	countingPerReportCost = uint64(1479)
-	addingPendingCost     = uint64(3400)
+	addingPendingCost     = uint64(4500)
 
 	baseRequestSize = uint64(32)
 	addressSize     = uint64(20)
