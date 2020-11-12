@@ -1,6 +1,5 @@
 import { Coin } from 'data'
 import { Buffer } from 'buffer'
-import base64 from 'base64-js'
 
 abstract class Msg {
   abstract asJson(): {type: string, value: any}
@@ -29,7 +28,7 @@ export class MsgRequest extends Msg {
       type: 'oracle/Request',
       value: {
         oracle_script_id: String(this.oracleScriptID),
-        calldata: base64.fromByteArray(this.calldata),
+        calldata: this.calldata.toString('base64'),
         ask_count: this.askCount.toString(),
         min_count: this.minCount.toString(),
         client_id: this.clientID,
