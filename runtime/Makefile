@@ -23,7 +23,7 @@ gcf:
 	mv $(CURRENT_DIR)/google-cloud-functions/main.py $(CURRENT_DIR)/google-cloud-functions/main.bak
 	RUNTIME_VERSION="google-cloud-function:$(VERSION)" envsubst < $(CURRENT_DIR)/google-cloud-functions/google_cloud_function.py > $(CURRENT_DIR)/google-cloud-functions/main.py
 	cat requirements.txt $(CURRENT_DIR)/google-cloud-functions/extra_requirements.txt >> $(CURRENT_DIR)/google-cloud-functions/requirements.txt
-	cd google-cloud-functions && zip -g google_cloud_function.zip main.py requirements.txt & cd ..
+	cd google-cloud-functions && zip google_cloud_function.zip main.py requirements.txt && cd ..
 	mv $(CURRENT_DIR)/google-cloud-functions/main.bak $(CURRENT_DIR)/google-cloud-functions/main.py
 	rm $(CURRENT_DIR)/google-cloud-functions/requirements.txt
 
