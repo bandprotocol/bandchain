@@ -81,6 +81,7 @@
 
 ### Helpers
 
+- (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
 - (impv) [\#2838](https://github.com/bandprotocol/bandchain/pull/2838) pyband: refactor get_latest_block on client module
 - (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
