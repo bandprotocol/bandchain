@@ -43,4 +43,42 @@ export default class Transaction {
     this.memo = memo
     return this
   }
+
+  getSignData(): Buffer {
+    if (this.msgs.length == 0) {
+      throw Error("message is empty")
+    }
+
+    if (this.accountNum == null) {
+      throw Error("accountNum should be defined")
+    }
+
+    if (this.sequence == null) {
+      throw Error("sequence should be defined")
+    }
+
+    if (this.chainID == null) {
+      throw Error("chainID should be defined")
+    }
+
+    // TODO: Validate Msgs
+
+    let messageJson = {
+      chain_id: this.chainID,
+      account_number: this.accountNum.toString(),
+      fee: {
+        gas: this.gas.toString(),
+        amount: {
+          amount: this.fee.toString(),
+          denom: "uband"
+        }
+      },
+      memo: this.memo,
+      sequence: this.sequence.toString(),
+      msgs: this.msgs.map(msg => msg.asJson)
+    }
+
+    return Buffer.from(JSON.stringify(messageJson))
+  }
+
 }
