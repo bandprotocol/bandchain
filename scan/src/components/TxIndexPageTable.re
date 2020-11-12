@@ -322,8 +322,8 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | RemoveReporterMsgFail(address) => <IndexValidatorMsg.RemoveReporterFailMsg address />
   | CreateValidatorMsgSuccess(validator)
   | CreateValidatorMsgFail(validator) => <IndexValidatorMsg.CreateValidatorMsg validator />
-  | EditValidatorMsgSuccess(validator) => <IndexValidatorMsg.EditValidatorMsg validator />
-  | EditValidatorMsgFail(validator) => React.null
+  | EditValidatorMsgSuccess(validator)
+  | EditValidatorMsgFail(validator) => <IndexValidatorMsg.EditValidatorMsg validator />
   | UnjailMsgSuccess(unjail) => <IndexValidatorMsg.UnjailMsg unjail />
   | UnjailMsgFail(unjail) => <IndexValidatorMsg.UnjailFailMsg unjail />
   | SetWithdrawAddressMsgSuccess(set)
