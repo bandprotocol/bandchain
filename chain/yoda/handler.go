@@ -143,11 +143,11 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		return true
 	})
 
-	rawMinCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyMinCount)
-	if len(rawMinCount) != 1 {
+	rawAskCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyAskCount)
+	if len(rawAskCount) != 1 {
 		panic("Fail to get min count")
 	}
-	minCount := common.Atoi(rawMinCount[0])
+	askCount := common.Atoi(rawAskCount[0])
 
 	rawCallData := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyCalldata)
 	if len(rawCallData) != 1 {
@@ -169,7 +169,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		execVersion: execVersions,
 		keyIndex:    keyIndex,
 		feeEstimationData: FeeEstimationData{
-			minCount:    minCount,
+			askCount:    askCount,
 			callData:    callData,
 			validators:  len(validators),
 			rawRequests: reqs,

@@ -18,12 +18,11 @@ const (
 	readingCostPerByte = uint64(3)
 	writingCostPerByte = uint64(30)
 
-	payingFeeCost = uint64(15200)
+	payingFeeCost = uint64(16500)
 
 	// band
-	baseReportCost        = uint64(4006)
-	countingPerReportCost = uint64(1479)
-	addingPendingCost     = uint64(4500)
+	baseReportCost    = uint64(4024)
+	addingPendingCost = uint64(4500)
 
 	baseRequestSize = uint64(32)
 	addressSize     = uint64(20)
@@ -82,7 +81,8 @@ func estimateReportHandleCost(msg sdk.Msg, f FeeEstimationData) uint64 {
 	cost += estimateStoringReportCost(msg)
 
 	// count report
-	cost += countingPerReportCost * uint64(f.minCount+1)
+	countingPerReportCost := 30 + readingCostPerByte*uint64(len(cdc.MustMarshalBinaryBare(msg)))
+	cost += countingPerReportCost * uint64(f.askCount+1)
 
 	// add pending
 	cost += addingPendingCost
