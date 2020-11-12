@@ -10,7 +10,7 @@ describe("Login", () => {
     cy.get('[id="mnemonicInput"]').type("s");
     cy.get('[id="mnemonicConnectButton"] > button').click();
     cy.get('[id="userInfoButton"]').click();
-    cy.get('[id="addressWrapper"] > a > span').should(
+    cy.get('[id="addressWrapper"]> div > a > span').should(
       "contain",
       "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"
     );
