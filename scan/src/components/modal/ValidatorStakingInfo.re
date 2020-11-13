@@ -143,18 +143,8 @@ module StakingInfo = {
       validatorAddress->SubmitMsg.WithdrawReward->SubmitTx->OpenModal->dispatchModal;
     };
 
-    let reinvest = () =>
-      (
-        validatorAddress,
-        switch (balanceAtStakeSub) {
-        | Data({reward: {amount}}) => amount
-        | _ => 0.
-        },
-      )
-      ->SubmitMsg.Reinvest
-      ->SubmitTx
-      ->OpenModal
-      ->dispatchModal;
+    let reinvest = reward =>
+      (validatorAddress, reward)->SubmitMsg.Reinvest->SubmitTx->OpenModal->dispatchModal;
     <>
       <Row.Grid marginBottom=24>
         <Col.Grid>
@@ -210,31 +200,24 @@ module StakingInfo = {
                }}
             </div>
             <div className={CssHelper.flexBox()} id="withdrawRewardContainer">
-              <Button
-                px=20
-                py=5
-                onClick={_ => withdrawReward()}
-                disabled={
-                  switch (allSub) {
-                  | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
-                  | _ => true
-                  }
-                }>
-                <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
-              </Button>
-              <HSpacing size=Spacing.sm />
-              <Button
-                px=20
-                py=5
-                onClick={_ => reinvest()}
-                disabled={
-                  switch (allSub) {
-                  | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
-                  | _ => true
-                  }
-                }>
-                <Text value="Reinvest" weight=Text.Medium nowrap=true block=true />
-              </Button>
+              {let (disable, reward) =
+                 switch (allSub) {
+                 | Data((_, balanceAtStake, _)) => (
+                     balanceAtStake.reward.amount <= 0.,
+                     balanceAtStake.reward.amount,
+                   )
+                 | _ => (true, 0.)
+                 };
+
+               <>
+                 <Button px=20 py=5 onClick={_ => withdrawReward()} disabled=disable>
+                   <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
+                 </Button>
+                 <HSpacing size=Spacing.sm />
+                 <Button px=20 py=5 onClick={_ => reinvest(reward)} disabled=disable>
+                   <Text value="Reinvest" weight=Text.Medium nowrap=true block=true />
+                 </Button>
+               </>}
             </div>
           </div>
         </Col.Grid>
