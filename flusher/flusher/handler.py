@@ -278,7 +278,6 @@ class Handler(object):
         self.conn.execute(proposals.insert(), msg)
 
     def handle_set_deposit(self, msg):
-        print(msg)
         msg["depositor_id"] = self.get_account_id(msg["depositor"])
         del msg["depositor"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
