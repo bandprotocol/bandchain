@@ -19,9 +19,16 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      - name: Cache node_modules
+        id: bandchainjs-node-modules-cache
+        uses: actions/cache@v1
+        with:
+          path: ./helpers/bandchain2.js/node_modules
+          key: ${{ runner.OS }}-bandchainjs-test-${{ hashFiles('**/yarn.lock') }}-node-v${{ matrix.node-version }}
+
       - name: Install modules
         working-directory: ${{env.working-directory}}
-        run: yarn
+        run: yarn install
 
       - name: Run tests
         working-directory: ${{env.working-directory}}
