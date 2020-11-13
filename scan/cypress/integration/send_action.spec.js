@@ -106,4 +106,16 @@ describe("Delegation", () => {
     );
     cy.get('[id="closeModal"]').click();
   });
+
+  it("Should be able to reinvest with Carol", () => {
+    cy.get('[id="withdrawRewardContainer"] > button:nth-of-type(2)').click().wait(1000);
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast transaction success"
+    );
+    cy.get('[id="closeModal"]').click();
+  })
 });
