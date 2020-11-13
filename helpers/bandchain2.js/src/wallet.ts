@@ -102,8 +102,7 @@ export class PublicKey {
       this.verifyKey,
     ])
     const words = bech32.toWords(Buffer.from(hex))
-    if (words.length == 0)
-      throw new Error('Unsuccessful bech32.convertbits call')
+    if (words.length == 0) throw new Error('Unsuccessful bech32.toWords call')
 
     return bech32.encode(prefix, words)
   }
