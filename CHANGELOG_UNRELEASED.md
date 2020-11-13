@@ -82,6 +82,7 @@
 
 ### Helpers
 
+- (feat) [\#2865](https://github.com/bandprotocol/bandchain/pull/2865) bandchain.js: Add Private Key and verify on Public Key on Wallet
 - (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
 - (impv) [\#2838](https://github.com/bandprotocol/bandchain/pull/2838) pyband: refactor get_latest_block on client module
