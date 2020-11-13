@@ -15,7 +15,7 @@ let make = (~validator, ~amount, ~setMsgsOpt) => {
         TxCreator.WithdrawReward(validator),
         TxCreator.Delegate(
           validator,
-          {amount: amountValue |> Js.Float.toFixedWithPrecision(~digits=0), denom: "uband"},
+          {amount: amountValue->Js.Math.floor_float->Js.Float.toString, denom: "uband"},
         ),
       |]);
     };
