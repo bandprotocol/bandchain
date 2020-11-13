@@ -32,6 +32,7 @@
 
 ### Scan
 
+- (bugs) [\#2868](https://github.com/bandprotocol/bandchain/pull/2868) Fixed click outside icon bug
 - (impv) [\#2851](https://github.com/bandprotocol/bandchain/pull/2851) Add ESC key event listener
 - (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
 - (impv) [\#2858](https://github.com/bandprotocol/bandchain/pull/2858) Added click outside function to user account panel
