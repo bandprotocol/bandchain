@@ -210,9 +210,9 @@ module StakingInfo = {
                }}
             </div>
             <div className={CssHelper.flexBox()} id="withdrawRewardContainer">
-              <Button 
-                px=20 
-                py=5 
+              <Button
+                px=20
+                py=5
                 onClick={_ => withdrawReward()}
                 disabled={
                   switch (allSub) {
@@ -223,7 +223,16 @@ module StakingInfo = {
                 <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
               </Button>
               <HSpacing size=Spacing.sm />
-              <Button px=20 py=5 onClick={_ => reinvest()}>
+              <Button
+                px=20
+                py=5
+                onClick={_ => reinvest()}
+                disabled={
+                  switch (allSub) {
+                  | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
+                  | _ => true
+                  }
+                }>
                 <Text value="Reinvest" weight=Text.Medium nowrap=true block=true />
               </Button>
             </div>
