@@ -1,4 +1,4 @@
-import {Msg} from './message'
+import { Msg } from './message'
 
 export default class Transaction {
   msgs: Msg[] = []
@@ -7,7 +7,7 @@ export default class Transaction {
   chainID?: string
   fee: number = 0
   gas: number = 200000
-  memo: string = ""
+  memo: string = ''
 
   withMessages(...msg: Msg[]): Transaction {
     this.msgs.push(...msg)
@@ -46,75 +46,77 @@ export default class Transaction {
 
   getSignData(): Buffer {
     if (this.msgs.length == 0) {
-      throw Error("message is empty")
+      throw Error('message is empty')
     }
 
     if (this.accountNum == null) {
-      throw Error("accountNum should be defined")
+      throw Error('accountNum should be defined')
     }
 
     if (this.sequence == null) {
-      throw Error("sequence should be defined")
+      throw Error('sequence should be defined')
     }
 
     if (this.chainID == null) {
-      throw Error("chainID should be defined")
+      throw Error('chainID should be defined')
     }
 
     // TODO: Validate Msgs
-    this.msgs.forEach(msg => msg.validate())
+    this.msgs.forEach((msg) => msg.validate())
 
-    let messageJson: {[key: string]: any } = {
+    let messageJson: { [key: string]: any } = {
       chain_id: this.chainID,
       account_number: this.accountNum.toString(),
       fee: {
-        amount: [{
-          amount: this.fee.toString(),
-          denom: "uband"
-        }],
+        amount: [
+          {
+            amount: this.fee.toString(),
+            denom: 'uband',
+          },
+        ],
         gas: this.gas.toString(),
       },
       memo: this.memo,
       sequence: this.sequence.toString(),
-      msgs: this.msgs.map(msg => msg.asJson())
+      msgs: this.msgs.map((msg) => msg.asJson()),
     }
 
     const sortedKey = Object.keys(messageJson).sort()
-    const result: {[key: string]: any } = {}
-    sortedKey.forEach(key => result[key] = messageJson[key])
+    const result: { [key: string]: any } = {}
+    sortedKey.forEach((key) => (result[key] = messageJson[key]))
 
     return Buffer.from(JSON.stringify(result))
   }
 
   getTxData(signature: Buffer, pubkey: string): Object {
-    
     if (this.accountNum == null) {
-      throw Error("accountNum should be defined")
+      throw Error('accountNum should be defined')
     }
 
     if (this.sequence == null) {
-      throw Error("sequence should be defined")
+      throw Error('sequence should be defined')
     }
 
     //TODO: pubkey from type PublicKey
 
     return {
       fee: {
-        amount: [{"amount": this.fee.toString(), "denom": "uband"}],
+        amount: [{ amount: this.fee.toString(), denom: 'uband' }],
         gas: this.gas.toString(),
       },
       memo: this.memo,
-      msg: this.msgs.map(msg => msg.asJson()),
-      signature: [{
-        signature: signature.toString('utf-8'),
-        pub_key: {
-          type: "tendermint/PubKeySecp256k1",
-          value: pubkey
+      msg: this.msgs.map((msg) => msg.asJson()),
+      signature: [
+        {
+          signature: signature.toString('utf-8'),
+          pub_key: {
+            type: 'tendermint/PubKeySecp256k1',
+            value: pubkey,
+          },
+          account_number: this.accountNum.toString(),
+          sequence: this.sequence.toString(),
         },
-        account_number: this.accountNum.toString(),
-        sequence: this.sequence.toString()
-      }]
+      ],
     }
   }
-
 }
