@@ -2,7 +2,6 @@ module Styles = {
   open Css;
 
   let tableWrapper = style([Media.mobile([padding2(~v=`px(16), ~h=`zero)])]);
-
 };
 
 let transform = (account, msg: TxSub.Msg.t) => {

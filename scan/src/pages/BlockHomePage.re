@@ -100,21 +100,27 @@ let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant
 
 [@react.component]
 let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-  let pageSize = 10;
-
-  let allSub = Sub.all2(BlockSub.getList(~pageSize, ~page, ()), BlockSub.count());
+  let blocksSub = BlockSub.getList(~pageSize=10, ~page=1, ());
   let isMobile = Media.isMobile();
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="blocksSection">
       <div className=CssHelper.mobileSpacing>
         <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid col=Col.Twelve>
             <Heading value="All Blocks" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-            {switch (allSub) {
-             | Data((_, blocksCount)) =>
-               <Heading value={(blocksCount |> Format.iPretty) ++ " In total"} size=Heading.H3 />
+            {switch (blocksSub) {
+             | Data(blocks) =>
+               <Heading
+                 value={
+                   blocks
+                   ->Belt.Array.get(0)
+                   ->Belt.Option.mapWithDefault(0, ({height}) => height |> ID.Block.toInt)
+                   ->Format.iPretty
+                   ++ " In total"
+                 }
+                 size=Heading.H3
+               />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
@@ -172,24 +178,13 @@ let make = () => {
                  </Col.Grid>
                </Row.Grid>
              </THead.Grid>}
-        {switch (allSub) {
-         | Data((blocks, blocksCount)) =>
-           let pageCount = Page.getPageCount(blocksCount, pageSize);
-           <>
-             {blocks
-              ->Belt_Array.mapWithIndex((i, e) =>
-                  isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
-                )
-              ->React.array}
-             {isMobile
-                ? React.null
-                : <Pagination
-                    currentPage=page
-                    pageCount
-                    onPageChange={newPage => setPage(_ => newPage)}
-                  />}
-           </>;
+        {switch (blocksSub) {
+         | Data(blocks) =>
+           blocks
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+             )
+           ->React.array
          | _ =>
            Belt_Array.make(10, ApolloHooks.Subscription.NoData)
            ->Belt_Array.mapWithIndex((i, noData) =>

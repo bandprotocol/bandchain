@@ -19,7 +19,7 @@ module RenderDesktop = {
   let make = (~routes) => {
     let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
 
-    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+    <div className={CssHelper.flexBox(~justify=`spaceBetween, ())} id="navigationBar">
       {routes
        ->Belt.List.map(((v, route)) =>
            <div key=v className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
@@ -62,7 +62,7 @@ module RenderMobile = {
     let menuContainer =
       style([padding4(~top=`px(10), ~bottom=`px(10), ~left=`px(10), ~right=`px(5))]);
     let menu = style([width(`px(20)), display(`block)]);
-    let cmcLogo = style([width(`px(19))]);
+    let cmcLogo = style([width(`px(19)), height(`px(19))]);
     let socialContainer = style([display(`flex), flexDirection(`row), marginTop(`px(10))]);
     let socialLink =
       style([

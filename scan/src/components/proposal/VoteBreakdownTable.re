@@ -7,7 +7,7 @@ module Styles = {
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), Css.rgba(0, 0, 0, `num(0.08))),
       ),
-      Media.mobile([margin2(~h=`px(-15), ~v=`zero)]),
+      Media.mobile([margin2(~h=`px(-12), ~v=`zero)]),
     ]);
 
   let header =
@@ -70,20 +70,28 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       </Col.Grid>
       <Col.Grid col=Col.Four>
         {switch (voteSub) {
-         | Data({txHash}) => <TxLink txHash width=200 />
+         | Data({txHashOpt}) =>
+           switch (txHashOpt) {
+           | Some(txHash) => <TxLink txHash width=200 />
+           | None => <Text value="Voted on Wenchang" />
+           }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
       </Col.Grid>
       <Col.Grid col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (voteSub) {
-           | Data({timestamp}) =>
-             <Timestamp.Grid
-               time=timestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+           | Data({timestampOpt}) =>
+             switch (timestampOpt) {
+             | Some(timestamp) =>
+               <Timestamp.Grid
+                 time=timestamp
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Created on Wenchang" />
+             }
            | _ => <LoadingCensorBar width=80 height=15 />
            }}
         </div>
@@ -94,7 +102,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
   switch (voteSub) {
-  | Data({voter, txHash, timestamp, validator}) =>
+  | Data({voter, txHashOpt, timestampOpt, validator}) =>
     let key_ = voter |> Address.toBech32;
 
     <MobileCard
@@ -107,8 +115,20 @@ let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(
            | None => Address(voter, 200, `account)
            }},
         ),
-        ("TX Hash", TxHash(txHash, 200)),
-        ("Timestamp", Timestamp(timestamp)),
+        (
+          "TX Hash",
+          switch (txHashOpt) {
+          | Some(txHash) => TxHash(txHash, 200)
+          | None => Text("Voted on Wenchang")
+          },
+        ),
+        (
+          "Timestamp",
+          switch (timestampOpt) {
+          | Some(timestamp) => Timestamp(timestamp)
+          | None => Text("Created on Wenchang")
+          },
+        ),
       ]
       key=key_
       idx=key_

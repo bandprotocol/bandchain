@@ -94,6 +94,7 @@ video {
 p {
   font-size: 14px;
   line-height: 1.3;
+  margin-bottom: 1em;
 }
 
 h1,
@@ -214,6 +215,12 @@ body {
     sans-serif;
   -moz-osx-font-smoothing: grayscale;
   background: #FCFCFC;
+}
+
+button, input {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
 }
 
 code {

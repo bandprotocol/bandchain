@@ -111,13 +111,13 @@ let make = (~id) =>
                              size=Text.Md
                              height={Text.Px(16)}
                            />
-                         | None => <Text value="GENESIS" weight=Text.Regular code=true />
+                         | None => <Text value="Genesis" weight=Text.Regular code=true />
                          }}
                       </Col>
                       <Col size=1.6>
                         {switch (transaction) {
                          | Some(tx) => <TypeID.Block id={tx.blockHeight} />
-                         | None => <Text value="GENESIS" />
+                         | None => <Text value="Genesis" />
                          }}
                       </Col>
                       <Col size=3.9>

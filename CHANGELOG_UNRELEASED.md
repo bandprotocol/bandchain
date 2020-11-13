@@ -12,6 +12,11 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2829](https://github.com/bandprotocol/bandchain/pull/2829) Added `price_symbols` endpoint
+- (bugs) [\#2828](https://github.com/bandprotocol/bandchain/pull/2828) Add missing height on `multi_request_search` and `request_prices` endpoints
+- (impv) [\#2746](https://github.com/bandprotocol/bandchain/pull/2746) Implemented emitter, price, and latest request hooks
+- (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) Added `bandchain/chain_id` endpoint
+- (feat) [\#2757](https://github.com/bandprotocol/bandchain/pull/2757) Bring cosmos-hd-path flag
 - (bugs) [\#2730](https://github.com/bandprotocol/bandchain/pull/2730) Add Content-Type header on oracle module rest endpoints
 - (feat) [\#2718](https://github.com/bandprotocol/bandchain/pull/2718) Added more field in price cache
 - (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added pricer to cache latest price
@@ -27,6 +32,21 @@
 
 ### Scan
 
+- (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
+- (impv) [\#2858](https://github.com/bandprotocol/bandchain/pull/2858) Added click outside function to user account panel
+- (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
+- (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
+- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
+- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
+- (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
+- (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
+- (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
+- (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
+- (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
+- (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
+- (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
+- (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
+- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
 - (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
 - (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
 - (bugs) [\#2716](https://github.com/bandprotocol/bandchain/pull/2716) Fixed no decimal balance bug on account index
@@ -58,12 +78,25 @@
 
 ### Runtime
 
+- (impv) [\#2494](https://github.com/bandprotocol/bandchain/pull/2494) Patch google cloud function
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
 
+- (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
+- (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
+- (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
+- (impv) [\#2838](https://github.com/bandprotocol/bandchain/pull/2838) pyband: refactor get_latest_block on client module
+- (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
+- (impv) [\#2807](https://github.com/bandprotocol/bandchain/pull/2807) pyband: Refactor and wrote tests for client and send tx
+- (impv) [\#2803](https://github.com/bandprotocol/bandchain/pull/2803) pyband: Fix typing and add PrivateKey.from_hex on Wallet
+- (impv) [\#2802](https://github.com/bandprotocol/bandchain/pull/2802) pyband: Transaction class, add test cases
+- (feat) [\#2799](https://github.com/bandprotocol/bandchain/pull/2799) pyband: Implemented Message class
+- (impv) [\#2789](https://github.com/bandprotocol/bandchain/pull/2789) pyband: get chain id from specific rest endpoint.
+- (impv) [\#2739](https://github.com/bandprotocol/bandchain/pull/2739) pyband: fix client raise error when get fail
 - (impv) [\#2652](https://github.com/bandprotocol/bandchain/pull/2652) pyband: use string instead of class annotation for Python3.6
 - (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get latest block
 

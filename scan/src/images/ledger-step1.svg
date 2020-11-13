@@ -1,23 +1,22 @@
-<svg width="106" height="25" viewBox="0 0 106 25" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="24" width="82" height="25" rx="4" fill="#555555"/>
-<rect x="63" y="8" width="7" height="10" fill="white"/>
-<rect x="53" y="8" width="7" height="10" fill="white"/>
-<rect x="73" y="8" width="7" height="10" fill="white"/>
-<rect x="83" y="8" width="7" height="10" fill="white"/>
-<rect x="93" y="8" width="7" height="10" fill="white"/>
-<path d="M55.7315 15.1818H56.6562L56.5753 13.3835L58.0923 14.3594L58.5568 13.5497L56.946 12.7273L58.5568 11.9048L58.0923 11.0952L56.5753 12.071L56.6562 10.2727H55.7315L55.8125 12.071L54.2954 11.0952L53.831 11.9048L55.4417 12.7273L53.831 13.5497L54.2954 14.3594L55.8125 13.3835L55.7315 15.1818ZM65.8851 15.1818H66.8098L66.7289 13.3835L68.2459 14.3594L68.7104 13.5497L67.0996 12.7273L68.7104 11.9048L68.2459 11.0952L66.7289 12.071L66.8098 10.2727H65.8851L65.9661 12.071L64.449 11.0952L63.9845 11.9048L65.5953 12.7273L63.9845 13.5497L64.449 14.3594L65.9661 13.3835L65.8851 15.1818ZM76.0387 15.1818H76.9634L76.8825 13.3835L78.3995 14.3594L78.864 13.5497L77.2532 12.7273L78.864 11.9048L78.3995 11.0952L76.8825 12.071L76.9634 10.2727H76.0387L76.1197 12.071L74.6026 11.0952L74.1381 11.9048L75.7489 12.7273L74.1381 13.5497L74.6026 14.3594L76.1197 13.3835L76.0387 15.1818ZM86.1923 15.1818H87.117L87.0361 13.3835L88.5531 14.3594L89.0176 13.5497L87.4068 12.7273L89.0176 11.9048L88.5531 11.0952L87.0361 12.071L87.117 10.2727H86.1923L86.2733 12.071L84.7562 11.0952L84.2917 11.9048L85.9025 12.7273L84.2917 13.5497L84.7562 14.3594L86.2733 13.3835L86.1923 15.1818ZM96.3459 15.1818H97.2706L97.1896 13.3835L98.7067 14.3594L99.1712 13.5497L97.5604 12.7273L99.1712 11.9048L98.7067 11.0952L97.1896 12.071L97.2706 10.2727H96.3459L96.4269 12.071L94.9098 11.0952L94.4453 11.9048L96.0561 12.7273L94.4453 13.5497L94.9098 14.3594L96.4269 13.3835L96.3459 15.1818Z" fill="#5269FF"/>
-<rect width="36" height="25" rx="4" fill="url(#paint0_linear)"/>
-<circle cx="33.5" cy="12.5" r="12.5" fill="url(#paint1_linear)"/>
-<circle cx="34" cy="13" r="7" fill="#333333"/>
-<circle cx="34" cy="13" r="5" fill="#EEEEEE"/>
-<defs>
-<linearGradient id="paint0_linear" x1="18" y1="0" x2="18" y2="25" gradientUnits="userSpaceOnUse">
-<stop stop-color="#AAAAAA"/>
-<stop offset="1" stop-color="#888888"/>
-</linearGradient>
-<linearGradient id="paint1_linear" x1="33.5" y1="0" x2="33.5" y2="25" gradientUnits="userSpaceOnUse">
-<stop stop-color="#AAAAAA"/>
-<stop offset="1" stop-color="#888888"/>
-</linearGradient>
-</defs>
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="249px" height="40px" viewBox="0 0 249 40" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>2290460F-CB26-482A-BCA0-07E4487C75E4</title>
+    <g id="Validator" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Popup_Connect1" transform="translate(-846.000000, -547.000000)">
+            <g id="Ledger1" transform="translate(846.000000, 548.000000)">
+                <path d="M40.5,0 L161.25,0 L161.25,0 L161.25,37.5 L40.5,37.5 C38.8431458,37.5 37.5,36.1568542 37.5,34.5 L37.5,3 C37.5,1.34314575 38.8431458,3.04359188e-16 40.5,0 Z" id="Rectangle" fill="#555555"></path>
+                <path d="M244.5,0 C246.156854,-3.04359188e-16 247.5,1.34314575 247.5,3 L247.5,34.5 C247.5,36.1568542 246.156854,37.5 244.5,37.5 L142.5,37.5 C132.144661,37.5 123.75,29.1053391 123.75,18.75 C123.75,8.39466094 132.144661,0 142.5,0 L142.5,0 L244.5,0 Z" id="Combined-Shape" stroke="#EDEDED" stroke-width="1.5" fill="#EDEDED"></path>
+                <circle id="Oval" fill="#555555" cx="142.5" cy="18.75" r="9"></circle>
+                <path d="M21,11.25 L37.5,11.25 L37.5,11.25 L37.5,26.25 L21,26.25 C20.1715729,26.25 19.5,25.5784271 19.5,24.75 L19.5,12.75 C19.5,11.9215729 20.1715729,11.25 21,11.25 Z" id="Rectangle" fill="#555555"></path>
+                <path d="M16.5,15.75 L19.5,15.75 L19.5,15.75 L19.5,21.75 L16.5,21.75 C15.6715729,21.75 15,21.0784271 15,20.25 L15,17.25 C15,16.4215729 15.6715729,15.75 16.5,15.75 Z" id="Rectangle" fill="#555555"></path>
+                <path d="M1.5,17.25 L15,17.25 L15,17.25 L15,20.25 L1.5,20.25 C0.671572875,20.25 1.01453063e-16,19.5784271 0,18.75 C-1.01453063e-16,17.9215729 0.671572875,17.25 1.5,17.25 Z" id="Rectangle" fill="#555555"></path>
+                <circle id="Oval" fill="#FFFFFF" cx="51.75" cy="18.75" r="2.25"></circle>
+                <circle id="Oval-Copy" fill="#FFFFFF" cx="60.75" cy="18.75" r="2.25"></circle>
+                <circle id="Oval-Copy-2" fill="#FFFFFF" cx="69.75" cy="18.75" r="2.25"></circle>
+                <circle id="Oval-Copy-3" fill="#FFFFFF" cx="78.75" cy="18.75" r="2.25"></circle>
+                <circle id="Oval-Copy-4" fill="#FFFFFF" cx="87.75" cy="18.75" r="2.25"></circle>
+                <circle id="Oval-Copy-5" fill="#FFFFFF" cx="96.75" cy="18.75" r="2.25"></circle>
+            </g>
+        </g>
+    </g>
 </svg>

@@ -2,6 +2,7 @@ module Styles = {
   open Css;
 
   let statusImg = style([width(`px(20)), marginTop(`px(-3))]);
+  let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
 let renderBody =
@@ -123,13 +124,24 @@ let make =
   <>
     {switch (txsSub) {
      | Data(txs) =>
-       txs
-       ->Belt_Array.mapWithIndex((i, e) =>
-           isMobile
-             ? renderBodyMobile(i, Sub.resolve(e), msgTransform)
-             : renderBody(i, Sub.resolve(e), msgTransform)
-         )
-       ->React.array
+       txs->Belt.Array.size > 0
+         ? txs
+           ->Belt_Array.mapWithIndex((i, e) =>
+               isMobile
+                 ? renderBodyMobile(i, Sub.resolve(e), msgTransform)
+                 : renderBody(i, Sub.resolve(e), msgTransform)
+             )
+           ->React.array
+         : <EmptyContainer>
+             <img src=Images.noBlock className=Styles.noDataImage />
+             <Heading
+               size=Heading.H4
+               value="No Transaction"
+               align=Heading.Center
+               weight=Heading.Regular
+               color=Colors.bandBlue
+             />
+           </EmptyContainer>
      | _ =>
        Belt_Array.make(10, ApolloHooks.Subscription.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>

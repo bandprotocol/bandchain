@@ -17,6 +17,7 @@ module Styles = {
       borderBottom(`px(1), `solid, Colors.gray9),
       paddingBottom(`px(12)),
       marginBottom(`px(16)),
+      minHeight(`px(41)),
     ]);
   let rewardContainer =
     style([backgroundColor(Colors.profileBG), padding2(~v=`px(16), ~h=`px(24))]);
@@ -37,7 +38,7 @@ module ButtonSection = {
 
     switch (validatorInfoSub) {
     | Data(validatorInfo) =>
-      <div className={CssHelper.flexBox()}>
+      <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
           py=5
@@ -186,7 +187,9 @@ module StakingInfo = {
       </Row.Grid>
       <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
         <Col.Grid>
-          <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
+          <div
+            className={CssHelper.flexBox(~justify=`spaceBetween, ())}
+            id="withdrawRewardContainer">
             <div>
               <Heading value="Reward" size=Heading.H5 />
               <VSpacing size={`px(8)} />
@@ -196,7 +199,16 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <Button px=20 py=5 onClick={_ => withdrawReward()}>
+            <Button
+              px=20
+              py=5
+              onClick={_ => withdrawReward()}
+              disabled={
+                switch (allSub) {
+                | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
+                | _ => true
+                }
+              }>
               <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
             </Button>
           </div>

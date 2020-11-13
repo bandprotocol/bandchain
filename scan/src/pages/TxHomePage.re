@@ -4,18 +4,28 @@ let make = () => {
   let pageSize = 10;
 
   let txsSub = TxSub.getList(~pageSize, ~page, ());
+  let latestTxsSub = TxSub.getList(~pageSize=1, ~page=1, ());
   let txsCountSub = TxSub.count();
 
   let isMobile = Media.isMobile();
 
   <Section>
-    <div className=CssHelper.container>
+    <div className=CssHelper.container id="transactionsSection">
       <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve>
           <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-          {switch (txsCountSub) {
-           | Data(txsCountSub) =>
-             <Heading value={(txsCountSub |> Format.iPretty) ++ " In total"} size=Heading.H3 />
+          {switch (latestTxsSub) {
+           | Data(txs) =>
+             <Heading
+               value={
+                 txs
+                 ->Belt.Array.get(0)
+                 ->Belt.Option.mapWithDefault(0, ({id}) => id)
+                 ->Format.iPretty
+                 ++ " In total"
+               }
+               size=Heading.H3
+             />
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
         </Col.Grid>

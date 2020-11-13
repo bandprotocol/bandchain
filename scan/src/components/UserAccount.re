@@ -150,12 +150,17 @@ let make = () => {
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (show, setShow) = React.useState(_ => false);
 
+  let clickOutside = ClickOutside.useClickOutside(_ => setShow(_ => false));
+
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
   let disconnect = () => {
     dispatchAccount(Disconnect);
     setShow(_ => false);
   };
-  let send = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(None))));
+  let send = () => {
+    None->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+    setShow(_ => false);
+  };
 
   switch (accountOpt) {
   | Some({address}) =>
@@ -168,8 +173,13 @@ let make = () => {
         <HSpacing size=Spacing.sm />
         <Icon name="fas fa-caret-down" color=Colors.bandBlue />
       </div>
-      <div className={Styles.profileCard(show)} id="addressWrapper">
-        <AddressRender address position=AddressRender.Text />
+      <div
+        ref={ReactDOMRe.Ref.domRef(clickOutside)}
+        className={Styles.profileCard(show)}
+        id="addressWrapper">
+        <div onClick={_ => setShow(_ => false)}>
+          <AddressRender address position=AddressRender.Text />
+        </div>
         <VSpacing size={`px(16)} />
         <div className=Styles.innerProfileCard>
           <Balance address />

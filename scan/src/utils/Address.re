@@ -1,14 +1,27 @@
 type t =
   | Address(string); // string is hex (without 0x)
 
-let fromBech32 = bech32str => {
-  Address(bech32str->Bech32.decode->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex);
+exception WrongPrefixAddress(string);
+
+let validatePrefix = bech32Address => {
+  let prefix = bech32Address->Bech32.prefixGet;
+  prefix == "band" || prefix == "bandvaloper" || prefix == "bandvalconspub";
 };
 
-let fromBech32Opt = bech32str =>
-  bech32str
-  |> Bech32.decodeOpt
-  |> Belt.Option.map(_, x => Address(x->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex));
+let fromBech32 = bech32str => {
+  let decoded = bech32str->Bech32.decode;
+  validatePrefix(decoded)
+    ? Address(decoded->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex)
+    : raise(WrongPrefixAddress("Address is not correct prefix."));
+};
+
+let fromBech32Opt = bech32str => {
+  let decodedOpt = bech32str |> Bech32.decodeOpt;
+  let%Opt decoded = decodedOpt;
+
+  validatePrefix(decoded)
+    ? Some(Address(decoded->Bech32.wordsGet->Bech32.fromWords->JsBuffer.arrayToHex)) : None;
+};
 
 let fromHex = hexstr => Address(hexstr->HexUtils.normalizeHexString);
 

@@ -2,7 +2,9 @@ from pyband.wallet import PrivateKey, PublicKey, Address
 
 TEST_MNEMONIC = "coach pond canoe lake solution empty vacuum term pave toe burst top violin purpose umbrella color disease thrive diamond found track need filter wait"
 
-TEST_ACC_PUBKEY = "bandpub1addwnpepqdg7nrsmuztj2re07svgcz4vuzn3de56nykdwlualepkk05txs5q6mw8s9v"
+TEST_ACC_PUBKEY = (
+    "bandpub1addwnpepqdg7nrsmuztj2re07svgcz4vuzn3de56nykdwlualepkk05txs5q6mw8s9v"
+)
 TEST_VAL_PUBKEY = (
     "bandvaloperpub1addwnpepqdg7nrsmuztj2re07svgcz4vuzn3de56nykdwlualepkk05txs5q69gsm29"
 )
@@ -26,9 +28,30 @@ def test_private_key_from_mnemonic():
     )
 
 
+def test_private_key_generate():
+    mnemonic, privkey = PrivateKey.generate("m/44'/494'/0'/0/5")
+
+    assert (
+        PrivateKey.from_mnemonic(mnemonic, "m/44'/494'/0'/0/5").to_hex()
+        == privkey.to_hex()
+    )
+
+
+def test_private_key_from_hex():
+    assert (
+        PrivateKey.from_hex(
+            "2159f40dda9e4c9d8ed9d6f8c353e247a2658993a9d53a94ff17410cd0ea471d"
+        ).to_hex()
+        == "2159f40dda9e4c9d8ed9d6f8c353e247a2658993a9d53a94ff17410cd0ea471d"
+    )
+
+
 def test_private_key_to_public_key():
     pub_key = PrivateKey.from_mnemonic(TEST_MNEMONIC).to_pubkey()
-    assert pub_key.to_hex() == "0351e98e1be097250f2ff4188c0aace0a716e69a992cd77f9dfe436b3e8b34280d"
+    assert (
+        pub_key.to_hex()
+        == "0351e98e1be097250f2ff4188c0aace0a716e69a992cd77f9dfe436b3e8b34280d"
+    )
 
 
 def test_private_key_sign():
