@@ -33,6 +33,7 @@
 ### Scan
 
 - (impv) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
+- (bugs) [\#2868](https://github.com/bandprotocol/bandchain/pull/2868) Fixed click outside icon bug
 - (impv) [\#2851](https://github.com/bandprotocol/bandchain/pull/2851) Add ESC key event listener
 - (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
 - (impv) [\#2858](https://github.com/bandprotocol/bandchain/pull/2858) Added click outside function to user account panel
@@ -87,6 +88,7 @@
 
 ### Helpers
 
+- (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
 - (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
 - (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
