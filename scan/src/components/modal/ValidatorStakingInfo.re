@@ -29,12 +29,11 @@ module ButtonSection = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
 
-    let delegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
+    let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+      validatorAddress->SubmitMsg.Undelegate->SubmitTx->OpenModal->dispatchModal;
     let redelegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Redelegate(validatorAddress))));
+      validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
     switch (validatorInfoSub) {
     | Data(validatorInfo) =>
@@ -140,8 +139,9 @@ module StakingInfo = {
 
     let allSub = Sub.all3(infoSub, balanceAtStakeSub, unbondingSub);
 
-    let withdrawReward = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
+    let withdrawReward = () => {
+      validatorAddress->SubmitMsg.WithdrawReward->SubmitTx->OpenModal->dispatchModal;
+    };
 
     let reinvest = () =>
       (
