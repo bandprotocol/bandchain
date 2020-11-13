@@ -199,7 +199,16 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <Button px=20 py=5 onClick={_ => withdrawReward()}>
+            <Button
+              px=20
+              py=5
+              onClick={_ => withdrawReward()}
+              disabled={
+                switch (allSub) {
+                | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
+                | _ => true
+                }
+              }>
               <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
             </Button>
           </div>
