@@ -1,4 +1,5 @@
 import { Msg } from './message'
+import { PublicKey } from './wallet'
 
 export default class Transaction {
   msgs: Msg[] = []
@@ -88,7 +89,7 @@ export default class Transaction {
     return Buffer.from(JSON.stringify(result))
   }
 
-  getTxData(signature: Buffer, pubkey: string): Object {
+  getTxData(signature: Buffer, pubkey: PublicKey): Object {
     if (this.accountNum == null) {
       throw Error('accountNum should be defined')
     }
@@ -97,8 +98,6 @@ export default class Transaction {
       throw Error('sequence should be defined')
     }
 
-    //TODO: pubkey from type PublicKey
-
     return {
       fee: {
         amount: [{ amount: this.fee.toString(), denom: 'uband' }],
@@ -106,12 +105,12 @@ export default class Transaction {
       },
       memo: this.memo,
       msg: this.msgs.map((msg) => msg.asJson()),
-      signature: [
+      signatures: [
         {
-          signature: signature.toString('utf-8'),
+          signature: signature.toString('base64'),
           pub_key: {
             type: 'tendermint/PubKeySecp256k1',
-            value: pubkey,
+            value: Buffer.from(pubkey.toHex(), 'hex').toString('base64'),
           },
           account_number: this.accountNum.toString(),
           sequence: this.sequence.toString(),

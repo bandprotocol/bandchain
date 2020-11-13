@@ -1,7 +1,8 @@
-import { Message, Data, Transaction } from '../src/index'
+import { Message, Data, Transaction, Wallet } from '../src/index'
 
 const { MsgSend } = Message
 const { Coin } = Data
+const { PrivateKey } = Wallet
 
 describe('Transaction', () => {
   const coin = new Coin(100000, 'uband')
@@ -83,11 +84,44 @@ describe('Transaction', () => {
       .withAccountNum(100)
       .withSequence(30)
       .withChainID('bandchain')
-      .withGas(500000)
-      .withFee(10)
-      .withMemo('bandchain2.js test')
+      .withGas(200000)
 
-    const signedData = tsc.getSignData()
-    // TODO: sign signature and get txData
+    const rawData = tsc.getSignData()
+    const privKey = PrivateKey.fromMnemonic('s')
+    const pubkey = privKey.toPubkey()
+    const signature = privKey.sign(rawData)
+    const rawTx = tsc.getTxData(signature, pubkey)
+
+    expect(rawTx).toEqual({
+      msg: [
+        {
+          type: 'cosmos-sdk/MsgSend',
+          value: {
+            amount: [
+              {
+                amount: '100000',
+                denom: 'uband',
+              },
+            ],
+            from_address: 'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
+            to_address: 'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
+          },
+        },
+      ],
+      fee: { gas: '200000', amount: [{ denom: 'uband', amount: '0' }] },
+      memo: '',
+      signatures: [
+        {
+          signature:
+            'LLnpUzoB7gmQd+9XxQiRyiEv3O04FWWgyX2Agm2xOoMF0iwab3BzG1L5Szl0OGfJezmMm016gF/Gjy0l9niB5w==',
+          pub_key: {
+            type: 'tendermint/PubKeySecp256k1',
+            value: 'A/5wi9pmUk/SxrzpBoLjhVWoUeA9Ku5PYpsF3pD1Htm8',
+          },
+          account_number: '100',
+          sequence: '30',
+        },
+      ],
+    })
   })
 })
