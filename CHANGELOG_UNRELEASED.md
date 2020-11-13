@@ -32,6 +32,10 @@
 
 ### Scan
 
+- (bugs) [\#2868](https://github.com/bandprotocol/bandchain/pull/2868) Fixed click outside icon bug
+- (impv) [\#2851](https://github.com/bandprotocol/bandchain/pull/2851) Add ESC key event listener
+- (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
+- (impv) [\#2858](https://github.com/bandprotocol/bandchain/pull/2858) Added click outside function to user account panel
 - (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
 - (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
@@ -75,6 +79,8 @@
 
 ### Runtime
 
+- (impv) [\#2494](https://github.com/bandprotocol/bandchain/pull/2494) Patch google cloud function
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
@@ -82,6 +88,11 @@
 ### Helpers
 
 - (impv) [\#2862](https://github.com/bandprotocol/bandchain/pull/2862) bandchain.js: Implement `getSignData`, `getTxData` and all `with_*` methods on Transaction module
+- (feat) [\#2872](https://github.com/bandprotocol/bandchain/pull/2872) Bandchain.js: Added new Address class and added more fn on PublicKey class
+- (feat) [\#2865](https://github.com/bandprotocol/bandchain/pull/2865) bandchain.js: Add Private Key and verify on Public Key on Wallet
+- (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
+- (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
+- (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
 - (impv) [\#2838](https://github.com/bandprotocol/bandchain/pull/2838) pyband: refactor get_latest_block on client module
 - (impv) [\#2826](https://github.com/bandprotocol/bandchain/pull/2826) pyband: Add Pyband test on Github Action
