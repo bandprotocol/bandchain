@@ -5,7 +5,7 @@ import { Message, Data, Wallet } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
-  const { PrivateKey } = Wallet
+  const { PrivateKey, PublicKey } = Wallet
   const { Coin } = Data
   const msgSend = new MsgSend('aaa', 'aaa', [new Coin(100000, 'uband')])
   console.log(msgSend)
@@ -16,6 +16,8 @@ function App() {
   console.log(signature.toString('base64'))
 
   console.log(pubkey.verify(msg, signature))
+
+  console.log(pubkey.toAddress().toAccBech32())
 
   return (
     <div className="App">
