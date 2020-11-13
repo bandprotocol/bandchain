@@ -19,7 +19,7 @@ type FeeEstimationData struct {
 	callData    []byte
 	validators  int
 	rawRequests []rawRequest
-	clientId    string
+	clientID    string
 }
 
 type ReportMsgWithKey struct {

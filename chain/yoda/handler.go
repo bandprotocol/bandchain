@@ -180,7 +180,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			callData:    callData,
 			validators:  len(validators),
 			rawRequests: reqs,
-			clientId:    clientID,
+			clientID:    clientID,
 		},
 	}
 }
