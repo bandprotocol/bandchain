@@ -33,6 +33,8 @@
 ### Scan
 
 - (impv) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
+- (impv) [\#2851](https://github.com/bandprotocol/bandchain/pull/2851) Add ESC key event listener
+- (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
 - (impv) [\#2858](https://github.com/bandprotocol/bandchain/pull/2858) Added click outside function to user account panel
 - (impv) [\#2798](https://github.com/bandprotocol/bandchain/pull/2798) Added the warning msg to max button on send/delegate msg
 - (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
@@ -77,12 +79,15 @@
 
 ### Runtime
 
+- (impv) [\#2494](https://github.com/bandprotocol/bandchain/pull/2494) Patch google cloud function
+
 ### Owasm
 
 ### Oracle Binary Encoding (OBI)
 
 ### Helpers
 
+- (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
 - (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
 - (impv) [\#2838](https://github.com/bandprotocol/bandchain/pull/2838) pyband: refactor get_latest_block on client module

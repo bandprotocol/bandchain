@@ -210,7 +210,16 @@ module StakingInfo = {
                }}
             </div>
             <div className={CssHelper.flexBox()} id="withdrawRewardContainer">
-              <Button px=20 py=5 onClick={_ => withdrawReward()}>
+              <Button 
+                px=20 
+                py=5 
+                onClick={_ => withdrawReward()}
+                disabled={
+                  switch (allSub) {
+                  | Data((_, balanceAtStake, _)) => balanceAtStake.reward.amount <= 0.
+                  | _ => true
+                  }
+                }>
                 <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
               </Button>
               <HSpacing size=Spacing.sm />
