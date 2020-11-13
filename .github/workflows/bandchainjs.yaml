@@ -28,7 +28,7 @@ jobs:
 
       - name: Install modules
         working-directory: ${{env.working-directory}}
-        run: yarn install
+        run: yarn
 
       - name: Run tests
         working-directory: ${{env.working-directory}}
