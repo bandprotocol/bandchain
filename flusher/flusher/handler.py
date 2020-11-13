@@ -46,8 +46,7 @@ class Handler(object):
 
     def get_validator_id(self, val):
         return self.conn.execute(
-            select([validators.c.id]).where(
-                validators.c.operator_address == val)
+            select([validators.c.id]).where(validators.c.operator_address == val)
         ).scalar()
 
     def get_account_id(self, address):
@@ -57,8 +56,7 @@ class Handler(object):
 
     def get_request_count(self, date):
         return self.conn.execute(
-            select([request_count_per_days.c.count]).where(
-                request_count_per_days.c.date == date)
+            select([request_count_per_days.c.count]).where(request_count_per_days.c.date == date)
         ).scalar()
 
     def handle_new_block(self, msg):
@@ -130,8 +128,7 @@ class Handler(object):
             self.handle_set_request_count_per_days({"date": msg["timestamp"]})
             del msg["timestamp"]
         self.conn.execute(requests.insert(), msg)
-        self.handle_set_oracle_script_request(
-            {"oracle_script_id": msg["oracle_script_id"]})
+        self.handle_set_oracle_script_request({"oracle_script_id": msg["oracle_script_id"]})
 
     def handle_update_request(self, msg):
         condition = True
@@ -150,8 +147,7 @@ class Handler(object):
         self.handle_update_related_ds_os(
             {
                 "oracle_script_id": self.conn.execute(
-                    select([requests.c.oracle_script_id]).where(
-                        requests.c.id == msg["request_id"])
+                    select([requests.c.oracle_script_id]).where(requests.c.id == msg["request_id"])
                 ).scalar(),
                 "data_source_id": msg["data_source_id"],
             }
@@ -189,8 +185,7 @@ class Handler(object):
             condition = True
             for col in validators.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
-            self.conn.execute(validators.update().where(
-                condition).values(**msg))
+            self.conn.execute(validators.update().where(condition).values(**msg))
         self.handle_new_historical_bonded_token_on_validator(
             {
                 "validator_id": self.get_validator_id(msg["operator_address"]),
@@ -266,18 +261,15 @@ class Handler(object):
     def handle_new_redelegation(self, msg):
         msg["delegator_id"] = self.get_account_id(msg["delegator_address"])
         del msg["delegator_address"]
-        msg["validator_src_id"] = self.get_validator_id(
-            msg["operator_src_address"])
+        msg["validator_src_id"] = self.get_validator_id(msg["operator_src_address"])
         del msg["operator_src_address"]
-        msg["validator_dst_id"] = self.get_validator_id(
-            msg["operator_dst_address"])
+        msg["validator_dst_id"] = self.get_validator_id(msg["operator_dst_address"])
         del msg["operator_dst_address"]
         self.conn.execute(insert(redelegations).values(**msg))
 
     def handle_remove_redelegation(self, msg):
         self.conn.execute(
-            redelegations.delete().where(
-                redelegations.c.completion_time <= msg["timestamp"])
+            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
         )
 
     def handle_new_proposal(self, msg):
@@ -286,6 +278,7 @@ class Handler(object):
         self.conn.execute(proposals.insert(), msg)
 
     def handle_set_deposit(self, msg):
+        print(msg)
         msg["depositor_id"] = self.get_account_id(msg["depositor"])
         del msg["depositor"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
@@ -302,8 +295,7 @@ class Handler(object):
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
         self.conn.execute(
-            insert(votes).values(
-                **msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
+            insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
         )
 
     def handle_update_proposal(self, msg):
@@ -350,8 +342,7 @@ class Handler(object):
         for col in data_source_requests.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
         self.conn.execute(
-            data_source_requests.update(condition).values(
-                count=data_source_requests.c.count + 1)
+            data_source_requests.update(condition).values(count=data_source_requests.c.count + 1)
         )
 
     def handle_set_oracle_script_request(self, msg):
