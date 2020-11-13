@@ -94,19 +94,19 @@ describe('Public Key', () => {
 })
 
 describe('Address', () => {
-  it('public key from bech32', () => {
-    expect(Address.fromAccBech32(TEST_ACC_PUBKEY).toHex()).toEqual(
-      '0351e98e1be097250f2ff4188c0aace0a716e69a992cd77f9dfe436b3e8b34280d',
+  it('Address from bech32', () => {
+    expect(Address.fromAccBech32(TEST_ACC_ADDRESS).toHex()).toEqual(
+      '8e453e66fb009b119ea9b1b8775be6fa9435013b',
     )
-    expect(Address.fromValBech32(TEST_VAL_PUBKEY).toHex()).toEqual(
-      '0351e98e1be097250f2ff4188c0aace0a716e69a992cd77f9dfe436b3e8b34280d',
+    expect(Address.fromValBech32(TEST_VAL_ADDRESS).toHex()).toEqual(
+      '8e453e66fb009b119ea9b1b8775be6fa9435013b',
     )
-    expect(Address.fromConsBech32(TEST_CONS_PUBKEY).toHex()).toEqual(
-      '0351e98e1be097250f2ff4188c0aace0a716e69a992cd77f9dfe436b3e8b34280d',
+    expect(Address.fromConsBech32(TEST_CONS_ADDRESS).toHex()).toEqual(
+      '8e453e66fb009b119ea9b1b8775be6fa9435013b',
     )
   })
 
-  it('public key to bech32', () => {
+  it('Address to bech32', () => {
     const address = PrivateKey.fromMnemonic(TEST_MNEMONIC)
       .toPubkey()
       .toAddress()

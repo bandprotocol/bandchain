@@ -84,15 +84,15 @@ export class PublicKey {
     return new PublicKey(Buffer.from(pub, 'hex'))
   }
 
-  static fromAccBech32(bech: string) {
+  static fromAccBech32(bech: string): PublicKey {
     return this.fromBech32(bech, BECH32_PUBKEY_ACC_PREFIX)
   }
 
-  static fromValBech32(bech: string) {
+  static fromValBech32(bech: string): PublicKey {
     return this.fromBech32(bech, BECH32_PUBKEY_VAL_PREFIX)
   }
 
-  static fromConsBech32(bech: string) {
+  static fromConsBech32(bech: string): PublicKey {
     return this.fromBech32(bech, BECH32_PUBKEY_CONS_PREFIX)
   }
 
@@ -151,29 +151,28 @@ export class Address {
     if (prefix != _prefix) throw new Error('Invalid bech32 prefix')
     if (words.length == 0) throw new Error('Cannot decode bech32')
 
-    return new Address(Buffer.from(bech32.fromWords(words).slice(5)))
+    return new Address(Buffer.from(bech32.fromWords(words)))
   }
 
   static fromHex(hex: string): Address {
     return new Address(Buffer.from(hex, 'hex'))
   }
 
-  static fromAccBech32(bech: string) {
-    return this.fromBech32(bech, BECH32_PUBKEY_ACC_PREFIX)
+  static fromAccBech32(bech: string): Address {
+    return this.fromBech32(bech, BECH32_ADDR_ACC_PREFIX)
   }
 
-  static fromValBech32(bech: string) {
-    return this.fromBech32(bech, BECH32_PUBKEY_VAL_PREFIX)
+  static fromValBech32(bech: string): Address {
+    return this.fromBech32(bech, BECH32_ADDR_VAL_PREFIX)
   }
 
-  static fromConsBech32(bech: string) {
-    return this.fromBech32(bech, BECH32_PUBKEY_CONS_PREFIX)
+  static fromConsBech32(bech: string): Address {
+    return this.fromBech32(bech, BECH32_ADDR_CONS_PREFIX)
   }
 
   private toBech32(prefix: string): string {
     const words = bech32.toWords(this.addr)
-    if (words.length == 0)
-      throw new Error('Unsuccessful bech32.convertbits call')
+    if (words.length == 0) throw new Error('Unsuccessful bech32.toWords call')
 
     return bech32.encode(prefix, words)
   }
