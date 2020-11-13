@@ -145,9 +145,15 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 
 	rawAskCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyAskCount)
 	if len(rawAskCount) != 1 {
-		panic("Fail to get min count")
+		panic("Fail to get ask count")
 	}
 	askCount := common.Atoi(rawAskCount[0])
+
+	rawMinCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyMinCount)
+	if len(rawMinCount) != 1 {
+		panic("Fail to get min count")
+	}
+	minCount := common.Atoi(rawMinCount[0])
 
 	rawCallData := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyCalldata)
 	if len(rawCallData) != 1 {
@@ -158,10 +164,10 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		l.Error(":skull: Fail to parse call data: %s", err.Error())
 	}
 
-	var clientId string
-	rawClientId := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyClientID)
-	if len(rawClientId) > 0 {
-		clientId = rawClientId[0]
+	var clientID string
+	rawClientID := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyClientID)
+	if len(rawClientID) > 0 {
+		clientID = rawClientID[0]
 	}
 
 	c.pendingMsgs <- ReportMsgWithKey{
@@ -170,10 +176,11 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 		keyIndex:    keyIndex,
 		feeEstimationData: FeeEstimationData{
 			askCount:    askCount,
+			minCount:    minCount,
 			callData:    callData,
 			validators:  len(validators),
 			rawRequests: reqs,
-			clientId:    clientId,
+			clientId:    clientID,
 		},
 	}
 }
