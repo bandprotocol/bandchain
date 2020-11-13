@@ -28,7 +28,8 @@ jobs:
 
       - name: Install modules
         working-directory: ${{env.working-directory}}
-        run: yarn
+        if: steps.bandchainjs-node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn install --frozen-lockfile
 
       - name: Run tests
         working-directory: ${{env.working-directory}}
