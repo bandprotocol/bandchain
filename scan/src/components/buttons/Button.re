@@ -17,6 +17,7 @@ module Styles = {
         outlineStyle(`none),
         borderStyle(`none),
         margin(`zero),
+        disabled([cursor(`default)]),
         Media.mobile([padding2(~v=`px(pySm), ~h=`px(pxSm))]),
       ]);
 

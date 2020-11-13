@@ -1,6 +1,7 @@
 import requests
 
 from dacite import from_dict
+from .wallet import Address
 from .data import (
     Account,
     Block,
@@ -82,10 +83,10 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_account(self, address: str) -> Account:
+    def get_account(self, address: Address) -> Account:
         return from_dict(
             data_class=Account,
-            data=self._get_result("/auth/accounts/{}".format(address))["value"],
+            data=self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"],
             config=DACITE_CONFIG,
         )
 
@@ -110,9 +111,7 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_latest_request(
-        self, oid: int, calldata: bytes, min_count: int, ask_count: int
-    ) -> RequestInfo:
+    def get_latest_request(self, oid: int, calldata: bytes, min_count: int, ask_count: int) -> RequestInfo:
         return from_dict(
             data_class=RequestInfo,
             data=self._get_result(
