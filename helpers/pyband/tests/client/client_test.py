@@ -1,5 +1,6 @@
 import pytest
 
+from pyband.wallet import Address
 from pyband.client import Client
 from pyband.data import (
     Account,
@@ -22,7 +23,7 @@ from pyband.data import (
 )
 from pyband.utils import parse_datetime
 
-TEST_RPC = "https://api-mock.bandprotocol.com/rest/blocks/latest"
+TEST_RPC = "https://api-mock.bandprotocol.com/rest/"
 
 client = Client(TEST_RPC)
 
@@ -129,48 +130,26 @@ def test_get_latest_block(requests_mock):
                 height=1032007,
                 time=Timestamp(parse_datetime("2020-11-05T09:15:18.445494105Z")),
                 last_commit_hash=HexBytes(
-                    bytes.fromhex(
-                        "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
-                    )
+                    bytes.fromhex("17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92")
                 ),
-                data_hash=HexBytes(
-                    bytes.fromhex(
-                        "EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2"
-                    )
-                ),
+                data_hash=HexBytes(bytes.fromhex("EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2")),
                 validators_hash=HexBytes(
-                    bytes.fromhex(
-                        "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
-                    )
+                    bytes.fromhex("E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151")
                 ),
                 next_validators_hash=HexBytes(
-                    bytes.fromhex(
-                        "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
-                    )
+                    bytes.fromhex("E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151")
                 ),
                 consensus_hash=HexBytes(
-                    bytes.fromhex(
-                        "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45"
-                    )
+                    bytes.fromhex("0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45")
                 ),
-                app_hash=HexBytes(
-                    bytes.fromhex(
-                        "6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF"
-                    )
-                ),
+                app_hash=HexBytes(bytes.fromhex("6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF")),
                 last_results_hash=HexBytes(bytes.fromhex("")),
                 evidence_hash=HexBytes(bytes.fromhex("")),
-                proposer_address=HexBytes(
-                    bytes.fromhex("BDB6A0728C8DFE2124536F16F2BA428FE767A8F9")
-                ),
+                proposer_address=HexBytes(bytes.fromhex("BDB6A0728C8DFE2124536F16F2BA428FE767A8F9")),
             )
         ),
         block_id=BlockID(
-            hash=HexBytes(
-                bytes.fromhex(
-                    "391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53"
-                )
-            )
+            hash=HexBytes(bytes.fromhex("391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53"))
         ),
     )
 
@@ -198,7 +177,7 @@ def test_get_account(requests_mock):
         status_code=200,
     )
 
-    assert client.get_account("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte") == Account(
+    assert client.get_account(Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")) == Account(
         address="band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte",
         coins=[{"denom": "uband", "amount": "104082359107"}],
         public_key={
@@ -275,9 +254,7 @@ def test_get_request_by_id(requests_mock):
                 "request": {
                     "oracle_script_id": "1",
                     "calldata": "AAAAA0JUQwAAAAAAAABk",
-                    "requested_validators": [
-                        "bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst"
-                    ],
+                    "requested_validators": ["bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst"],
                     "min_count": "1",
                     "request_height": "118",
                     "request_time": "2020-10-14T09:47:23.818758882Z",
@@ -638,9 +615,7 @@ def test_get_reporters(requests_mock):
 
     requests_mock.register_uri(
         "GET",
-        "{}/oracle/reporters/bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre".format(
-            TEST_RPC
-        ),
+        "{}/oracle/reporters/bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre".format(TEST_RPC),
         json={
             "height": "2245131",
             "result": [
@@ -655,9 +630,7 @@ def test_get_reporters(requests_mock):
         status_code=200,
     )
 
-    assert client.get_reporters(
-        "bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre"
-    ) == [
+    assert client.get_reporters("bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre") == [
         "band1yyv5jkqaukq0ajqn7vhkyhpff7h6e99ja7gvwg",
         "band19nf0sqnjycnvpexlxs6hjz9qrhhlhsu9pdty0r",
         "band1fndxcmg0h5vhr8cph7gryryqfn9yqp90lysjtm",
