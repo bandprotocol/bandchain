@@ -143,12 +143,10 @@ class Client(object):
         request_ids = []
         for msg in msgs:
             request_event = [event for event in msg["events"] if event["type"] == "request"]
-            if len(request_event) == 0:
-                pass
-            else:
+            if len(request_event) == 1:
                 attrs = request_event[0]["attributes"]
-                filtered_attr = [attr for attr in attrs if attr["key"] == "id"]
-                request_id = filtered_attr[0]["value"]
+                attr_id = [attr for attr in attrs if attr["key"] == "id"]
+                request_id = attr_id[0]["value"]
                 request_ids.append(int(request_id))
         if len(request_ids) == 0:
             raise ValueError("There is no request message in this tx")
