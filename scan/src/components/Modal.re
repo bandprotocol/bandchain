@@ -87,7 +87,7 @@ module Styles = {
 [@react.component]
 let make = () => {
   let (modalStateOpt, dispatchModal) = React.useContext(ModalContext.context);
-
+  Js.log("test github action");
   let closeModal = () => {
     dispatchModal(CloseModal);
   };
