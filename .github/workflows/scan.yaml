@@ -1,50 +1,50 @@
-name: Scan Workflow
-on: push
+# name: Scan Workflow
+# on: push
 
-jobs:
-  scan-test:
-    runs-on: ubuntu-latest
-    env:
-      working-directory: ./scan
+# jobs:
+#   scan-test:
+#     runs-on: ubuntu-latest
+#     env:
+#       working-directory: ./scan
 
-    steps:
-      - name: Code Checkout
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Code Checkout
+#         uses: actions/checkout@v2
 
-      - name: Setup node 12
-        uses: actions/setup-node@v1
-        with:
-          node-version: "12"
+#       - name: Setup node 12
+#         uses: actions/setup-node@v1
+#         with:
+#           node-version: "12"
 
-      - name: Cache node_modules
-        id: scan-node-modules-cache
-        uses: actions/cache@v1
-        with:
-          path: scan/node_modules
-          key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
+#       - name: Cache node_modules
+#         id: scan-node-modules-cache
+#         uses: actions/cache@v1
+#         with:
+#           path: scan/node_modules
+#           key: ${{ runner.OS }}-scan-test-${{ hashFiles('**/yarn.lock') }}
 
-      - name: Yarn install deps with node_modules cache
-        run: |
-          yarn install --frozen-lockfile
-        if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
-        working-directory: ${{env.working-directory}}
+#       - name: Yarn install deps with node_modules cache
+#         run: |
+#           yarn install --frozen-lockfile
+#         if: steps.scan-node-modules-cache.outputs.cache-hit != 'true'
+#         working-directory: ${{env.working-directory}}
 
-      - name: Run yarn build
-        run: yarn build
-        env:
-          RPC_URL: "https://d3n.bandprotocol.com/rest"
-          GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
-          NETWORK: "GUANYU38"
-        working-directory: ${{env.working-directory}}
+#       - name: Run yarn build
+#         run: yarn build
+#         env:
+#           RPC_URL: "https://d3n.bandprotocol.com/rest"
+#           GRAPHQL_URL: "wss://d3n.bandprotocol.com/v1/graphql"
+#           NETWORK: "GUANYU38"
+#         working-directory: ${{env.working-directory}}
 
-      - name: Run install cypress
-        run: yarn cypress install
-        working-directory: ${{env.working-directory}}
+#       - name: Run install cypress
+#         run: yarn cypress install
+#         working-directory: ${{env.working-directory}}
 
-      - name: Run yarn test
-        run: yarn test
-        working-directory: ${{env.working-directory}}
+#       - name: Run yarn test
+#         run: yarn test
+#         working-directory: ${{env.working-directory}}
 
-      - name: Run yarn integration-test
-        run: yarn integration-test
-        working-directory: ${{env.working-directory}}
+#       - name: Run yarn integration-test
+#         run: yarn integration-test
+#         working-directory: ${{env.working-directory}}

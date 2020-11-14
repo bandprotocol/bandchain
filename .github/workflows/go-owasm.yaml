@@ -1,56 +1,56 @@
-name: go-owasm Workflow
-on: push
+# name: go-owasm Workflow
+# on: push
 
-jobs:
-  go-wasm-test:
-    runs-on: ubuntu-latest
-    env:
-      working-directory: ./go-owasm
+# jobs:
+#   go-wasm-test:
+#     runs-on: ubuntu-latest
+#     env:
+#       working-directory: ./go-owasm
 
-    steps:
-      - name: Code checkout
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Code checkout
+#         uses: actions/checkout@v2
 
-      - name: Install Rust and rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          override: true
+#       - name: Install Rust and rust toolchain
+#         uses: actions-rs/toolchain@v1
+#         with:
+#           toolchain: nightly
+#           override: true
 
-      - name: Install Go
-        uses: actions/setup-go@v2-beta
-        with:
-          go-version: "^1.14.4"
+#       - name: Install Go
+#         uses: actions/setup-go@v2-beta
+#         with:
+#           go-version: "^1.14.4"
 
-      - name: Install Wabt (wat2wasm)
-        run: |
-          wget https://github.com/WebAssembly/wabt/releases/download/1.0.17/wabt-1.0.17-ubuntu.tar.gz
-          tar -zxf wabt-1.0.17-ubuntu.tar.gz
-          sudo cp wabt-1.0.17/bin/wat2wasm /usr/local/bin
+#       - name: Install Wabt (wat2wasm)
+#         run: |
+#           wget https://github.com/WebAssembly/wabt/releases/download/1.0.17/wabt-1.0.17-ubuntu.tar.gz
+#           tar -zxf wabt-1.0.17-ubuntu.tar.gz
+#           sudo cp wabt-1.0.17/bin/wat2wasm /usr/local/bin
 
-      - name: Check go mod cache
-        uses: actions/cache@v1
-        with:
-          path: ~/go/pkg/mod
-          key: ${{ runner.os }}-go-owasmer-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-go-owasmer-
+#       - name: Check go mod cache
+#         uses: actions/cache@v1
+#         with:
+#           path: ~/go/pkg/mod
+#           key: ${{ runner.os }}-go-owasmer-${{ hashFiles('**/go.sum') }}
+#           restore-keys: |
+#             ${{ runner.os }}-go-owasmer-
 
-      - name: Check cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-            target
-          key: ${{ runner.os }}-rust-owasmer-${{ hashFiles('**/Cargo.lock') }}
+#       - name: Check cargo cache
+#         uses: actions/cache@v2
+#         with:
+#           path: |
+#             ~/.cargo/registry
+#             ~/.cargo/git
+#             target
+#           key: ${{ runner.os }}-rust-owasmer-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Run rust tests
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
-          args: --manifest-path ${{env.working-directory}}/Cargo.toml --all
+#       - name: Run rust tests
+#         uses: actions-rs/cargo@v1
+#         with:
+#           command: test
+#           args: --manifest-path ${{env.working-directory}}/Cargo.toml --all
 
-      - name: Run go tests
-        run: go test ./...
-        working-directory: ${{env.working-directory}}
+#       - name: Run go tests
+#         run: go test ./...
+#         working-directory: ${{env.working-directory}}
