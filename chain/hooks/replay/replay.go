@@ -1,4 +1,4 @@
-package emitter
+package replay
 
 import (
 	"context"
@@ -11,7 +11,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/bank"
 	distr "github.com/cosmos/cosmos-sdk/x/distribution"
-	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/staking"
@@ -20,11 +19,9 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 
-	bandapp "github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 // Hook uses Kafka functionality to act as an event producer for all events in the blockchains.
@@ -34,10 +31,9 @@ type Hook struct {
 	// Main Kafka writer instance.
 	writer *kafka.Writer
 	// Temporary variables that are reset on every block.
-	accsInBlock    map[string]bool  // The accounts that need balance update at the end of block.
-	accsInTx       map[string]bool  // The accounts related to the current processing transaction.
-	msgs           []common.Message // The list of all messages to publish for this block.
-	emitStartState bool             // If emitStartState is true will emit all non historical state to Kafka
+	accsInBlock map[string]bool  // The accounts that need balance update at the end of block.
+	accsInTx    map[string]bool  // The accounts related to the current processing transaction.
+	msgs        []common.Message // The list of all messages to publish for this block.
 
 	accountKeeper auth.AccountKeeper
 	bankKeeper    bank.Keeper
@@ -53,7 +49,7 @@ type Hook struct {
 func NewHook(
 	cdc *codec.Codec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper,
 	stakingKeeper staking.Keeper, mintKeeper mint.Keeper, distrKeeper distr.Keeper, govKeeper gov.Keeper,
-	oracleKeeper keeper.Keeper, kafkaURI string, emitStartState bool,
+	oracleKeeper keeper.Keeper, kafkaURI string,
 ) *Hook {
 	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &Hook{
@@ -66,15 +62,14 @@ func NewHook(
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
 		}),
-		accountKeeper:  accountKeeper,
-		bankKeeper:     bankKeeper,
-		supplyKeeper:   supplyKeeper,
-		stakingKeeper:  stakingKeeper,
-		mintKeeper:     mintKeeper,
-		distrKeeper:    distrKeeper,
-		govKeeper:      govKeeper,
-		oracleKeeper:   oracleKeeper,
-		emitStartState: emitStartState,
+		accountKeeper: accountKeeper,
+		bankKeeper:    bankKeeper,
+		supplyKeeper:  supplyKeeper,
+		stakingKeeper: stakingKeeper,
+		mintKeeper:    mintKeeper,
+		distrKeeper:   distrKeeper,
+		govKeeper:     govKeeper,
+		oracleKeeper:  oracleKeeper,
 	}
 }
 
@@ -112,130 +107,6 @@ func (h *Hook) FlushMessages() {
 
 // AfterInitChain specify actions need to do after chain initialization (app.Hook interface).
 func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
-	if h.emitStartState {
-		return
-	}
-	var genesisState bandapp.GenesisState
-	h.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
-	// Auth module
-	var genaccountsState auth.GenesisState
-	auth.ModuleCdc.MustUnmarshalJSON(genesisState[auth.ModuleName], &genaccountsState)
-	for _, account := range genaccountsState.Accounts {
-		h.Write("SET_ACCOUNT", common.JsDict{
-			"address": account.GetAddress(),
-			"balance": h.bankKeeper.GetCoins(ctx, account.GetAddress()).String(),
-		})
-	}
-	// GenUtil module for create validator genesis transactions.
-	var genutilState genutil.GenesisState
-	h.cdc.MustUnmarshalJSON(genesisState[genutil.ModuleName], &genutilState)
-	for _, genTx := range genutilState.GenTxs {
-		var tx auth.StdTx
-		h.cdc.MustUnmarshalJSON(genTx, &tx)
-		for _, msg := range tx.Msgs {
-			if msg, ok := msg.(staking.MsgCreateValidator); ok {
-				h.handleMsgCreateValidator(ctx, msg)
-			}
-		}
-	}
-
-	// Staking module
-	var stakingState staking.GenesisState
-	h.cdc.MustUnmarshalJSON(genesisState[staking.ModuleName], &stakingState)
-	for _, val := range stakingState.Validators {
-		h.emitSetValidator(ctx, val.OperatorAddress)
-	}
-
-	for _, del := range stakingState.Delegations {
-		h.emitDelegation(ctx, del.ValidatorAddress, del.DelegatorAddress)
-	}
-
-	for _, unbonding := range stakingState.UnbondingDelegations {
-		for _, entry := range unbonding.Entries {
-			common.EmitNewUnbondingDelegation(
-				h,
-				unbonding.DelegatorAddress,
-				unbonding.ValidatorAddress,
-				entry.CompletionTime.UnixNano(),
-				entry.Balance,
-			)
-		}
-	}
-
-	for _, redelegate := range stakingState.Redelegations {
-		for _, entry := range redelegate.Entries {
-			common.EmitNewRedelegation(
-				h,
-				redelegate.DelegatorAddress,
-				redelegate.ValidatorSrcAddress,
-				redelegate.ValidatorDstAddress,
-				entry.CompletionTime.UnixNano(),
-				entry.InitialBalance,
-			)
-		}
-	}
-
-	// Gov module
-	var govState gov.GenesisState
-	h.cdc.MustUnmarshalJSON(genesisState[gov.ModuleName], &govState)
-	for _, proposal := range govState.Proposals {
-		h.Write("NEW_PROPOSAL", common.JsDict{
-			"id":               proposal.ProposalID,
-			"proposer":         nil,
-			"type":             proposal.ProposalType(),
-			"title":            proposal.Content.GetTitle(),
-			"description":      proposal.Content.GetDescription(),
-			"proposal_route":   proposal.Content.ProposalRoute(),
-			"status":           int(proposal.Status),
-			"submit_time":      proposal.SubmitTime.UnixNano(),
-			"deposit_end_time": proposal.DepositEndTime.UnixNano(),
-			"total_deposit":    proposal.TotalDeposit.String(),
-			"voting_time":      proposal.VotingStartTime.UnixNano(),
-			"voting_end_time":  proposal.VotingEndTime.UnixNano(),
-		})
-	}
-	for _, deposit := range govState.Deposits {
-		h.Write("SET_DEPOSIT", common.JsDict{
-			"proposal_id": deposit.ProposalID,
-			"depositor":   deposit.Depositor,
-			"amount":      deposit.Amount.String(),
-			"tx_hash":     nil,
-		})
-	}
-	for _, vote := range govState.Votes {
-		h.Write("SET_VOTE", common.JsDict{
-			"proposal_id": vote.ProposalID,
-			"voter":       vote.Voter,
-			"answer":      int(vote.Option),
-			"tx_hash":     nil,
-		})
-	}
-
-	// Oracle module
-	var oracleState oracle.GenesisState
-	h.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
-	for idx, ds := range oracleState.DataSources {
-		id := types.DataSourceID(idx + 1)
-		h.emitSetDataSource(id, ds, nil)
-		common.EmitNewDataSourceRequest(h, id)
-	}
-	for idx, os := range oracleState.OracleScripts {
-		id := types.OracleScriptID(idx + 1)
-		h.emitSetOracleScript(id, os, nil)
-		common.EmitNewOracleScriptRequest(h, id)
-	}
-	h.Write("COMMIT", common.JsDict{"height": 0})
-	h.FlushMessages()
-}
-
-func (h *Hook) emitNonHistoricalState(ctx sdk.Context) {
-	h.emitAuthModule(ctx)
-	h.emitStakingModule(ctx)
-	h.emitGovModule(ctx)
-	h.emitOracleModule(ctx)
-	common.EmitCommit(h, -1)
-	h.FlushMessages()
-	h.msgs = []common.Message{}
 }
 
 // AfterBeginBlock specify actions need to do after begin block period (app.Hook interface).
@@ -243,30 +114,14 @@ func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res 
 	h.accsInBlock = make(map[string]bool)
 	h.accsInTx = make(map[string]bool)
 	h.msgs = []common.Message{}
-	if h.emitStartState {
-		h.emitStartState = false
-		h.emitNonHistoricalState(ctx)
-	} else {
-		for _, val := range req.GetLastCommitInfo().Votes {
-			validator := h.stakingKeeper.ValidatorByConsAddr(ctx, val.GetValidator().Address)
-			common.EmitNewValidatorVote(
-				h,
-				validator.GetConsAddr().String(),
-				req.Header.GetHeight()-1,
-				val.GetSignedLastBlock(),
-			)
-			h.emitUpdateValidatorRewardAndAccumulatedCommission(ctx, validator.GetOperator())
-		}
-	}
-	common.EmitNewBlock(
-		h,
-		req.Header.GetHeight(),
-		ctx.BlockTime().UnixNano(),
-		sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
-		req.GetHash(),
-		h.mintKeeper.GetMinter(ctx).Inflation.String(),
-		h.supplyKeeper.GetSupply(ctx).GetTotal().String(),
-	)
+	h.Write("NEW_BLOCK", common.JsDict{
+		"height":    req.Header.GetHeight(),
+		"timestamp": ctx.BlockTime().UnixNano(),
+		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
+		"hash":      req.GetHash(),
+		"inflation": h.mintKeeper.GetMinter(ctx).Inflation.String(),
+		"supply":    h.supplyKeeper.GetSupply(ctx).GetTotal().String(),
+	})
 	for _, event := range res.Events {
 		h.handleBeginBlockEndBlockEvent(ctx, event)
 	}
@@ -334,19 +189,6 @@ func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci
 	for _, event := range res.Events {
 		h.handleBeginBlockEndBlockEvent(ctx, event)
 	}
-	// Update balances of all affected accounts on this block.
-	// Index 0 is message NEW_BLOCK, we insert SET_ACCOUNT messages right after it.
-	modifiedMsgs := []common.Message{h.msgs[0]}
-	for accStr := range h.accsInBlock {
-		acc, _ := sdk.AccAddressFromBech32(accStr)
-		modifiedMsgs = append(modifiedMsgs, common.Message{
-			Key: "SET_ACCOUNT",
-			Value: common.JsDict{
-				"address": acc,
-				"balance": h.bankKeeper.GetCoins(ctx, acc).String(),
-			}})
-	}
-	h.msgs = append(modifiedMsgs, h.msgs[1:]...)
 	h.Write("COMMIT", common.JsDict{"height": req.Height})
 }
 

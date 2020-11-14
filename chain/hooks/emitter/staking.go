@@ -73,8 +73,8 @@ func (h *Hook) emitSetValidator(ctx sdk.Context, addr sdk.ValAddress) {
 		"current_reward":         currentReward,
 		"current_ratio":          currentRatio,
 		"accumulated_commission": accCommission.String(),
-		"last_update":            ctx.BlockTime().UnixNano(),
 	})
+	common.EmitSetHistoricalBondedTokenOnValidator(h, addr, val.Tokens.Uint64(), ctx.BlockTime().UnixNano())
 }
 
 func (h *Hook) emitUpdateValidator(ctx sdk.Context, addr sdk.ValAddress) {
@@ -86,8 +86,8 @@ func (h *Hook) emitUpdateValidator(ctx sdk.Context, addr sdk.ValAddress) {
 		"delegator_shares": val.DelegatorShares.String(),
 		"current_reward":   currentReward,
 		"current_ratio":    currentRatio,
-		"last_update":      ctx.BlockTime().UnixNano(),
 	})
+	common.EmitSetHistoricalBondedTokenOnValidator(h, addr, val.Tokens.Uint64(), ctx.BlockTime().UnixNano())
 }
 
 func (h *Hook) emitUpdateValidatorStatus(ctx sdk.Context, addr sdk.ValAddress) {
@@ -170,6 +170,13 @@ func (h *Hook) emitUnbondingDelegation(ctx sdk.Context, msg staking.MsgUndelegat
 		"completion_time":   completeTime.UnixNano(),
 		"amount":            evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0],
 	})
+	common.EmitNewUnbondingDelegation(
+		h,
+		msg.DelegatorAddress,
+		msg.ValidatorAddress,
+		completeTime.UnixNano(),
+		sdk.NewInt(common.Atoi(evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0])),
+	)
 }
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
@@ -190,6 +197,14 @@ func (h *Hook) emitUpdateRedelation(operatorSrcAddress sdk.ValAddress, operatorD
 		"completion_time":      completeTime.UnixNano(),
 		"amount":               evMap[types.EventTypeRedelegate+"."+sdk.AttributeKeyAmount][0],
 	})
+	common.EmitNewRedelegation(
+		h,
+		delegatorAddress,
+		operatorSrcAddress,
+		operatorDstAddress,
+		completeTime.UnixNano(),
+		sdk.NewInt(common.Atoi(evMap[types.EventTypeRedelegate+"."+sdk.AttributeKeyAmount][0])),
+	)
 }
 
 func (h *Hook) handleEventTypeCompleteUnbonding(ctx sdk.Context, evMap common.EvMap) {
