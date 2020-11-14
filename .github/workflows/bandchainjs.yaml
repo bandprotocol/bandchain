@@ -1,5 +1,8 @@
 name: Bandchain.js Workflow
-on: push
+on:
+  push:
+    paths:
+      - "helpers/bandchain2.js/**"
 
 jobs:
   bandchain-test:
@@ -9,9 +12,6 @@ jobs:
     strategy:
       matrix:
         node-version: [10.x, 12.x, 14.x]
-    defaults:
-      run:
-        working-directory: ./helpers/bandchain2.js
 
     steps:
       - name: Code Checkout
