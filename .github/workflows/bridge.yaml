@@ -1,33 +1,36 @@
-# name: Bridge Workflow
-# on: push
+name: Bridge Workflow
+on:
+  push:
+    paths:
+      - "bridges/evm/**"
 
-# jobs:
-#   bridges-evm-test:
-#     runs-on: ubuntu-latest
-#     env:
-#       working-directory: ./bridges/evm
+jobs:
+  bridges-evm-test:
+    runs-on: ubuntu-latest
+    env:
+      working-directory: ./bridges/evm
 
-#     steps:
-#     - name: Code Checkout
-#       uses: actions/checkout@v2
+    steps:
+      - name: Code Checkout
+        uses: actions/checkout@v2
 
-#     - name: Setup node 12
-#       uses: actions/setup-node@v1
-#       with:
-#         node-version: '12'
+      - name: Setup node 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
 
-#     - name: Cache node_modules
-#       id: bridges-node-modules-cache
-#       uses: actions/cache@v1
-#       with:
-#         path: bridges/evm/node_modules
-#         key: ${{ runner.OS }}-bridges-evm-test-${{ hashFiles('**/yarn.lock') }}
+      - name: Cache node_modules
+        id: bridges-node-modules-cache
+        uses: actions/cache@v1
+        with:
+          path: bridges/evm/node_modules
+          key: ${{ runner.OS }}-bridges-evm-test-${{ hashFiles('**/yarn.lock') }}
 
-#     - name: Run yarn
-#       if: steps.bridges-node-modules-cache.outputs.cache-hit != 'true'
-#       run: yarn
-#       working-directory: ${{env.working-directory}}
+      - name: Run yarn
+        if: steps.bridges-node-modules-cache.outputs.cache-hit != 'true'
+        run: yarn
+        working-directory: ${{env.working-directory}}
 
-#     - name: Run yarn test
-#       run: yarn truffle test
-#       working-directory: ${{env.working-directory}}
+      - name: Run yarn test
+        run: yarn truffle test
+        working-directory: ${{env.working-directory}}
