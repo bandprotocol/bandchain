@@ -17,8 +17,6 @@ export class MsgSend extends Msg {
   }
 
   asJson() {
-    let temp = 'test github action'
-    console.log(temp)
     return {
       type: 'cosmos-sdk/MsgSend',
       value: {
