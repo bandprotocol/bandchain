@@ -55,7 +55,7 @@ module Styles = {
     | Title => style([Media.mobile([width(`percent(90.))])])
     | _ => "";
 
-  let mobileWidth = style([Media.mobile([width(`calc((`sub, `percent(100.), `px(20))))])]);
+  let mobileWidth = style([ width(`calc((`sub, `percent(100.), `px(45)))) ,Media.mobile([width(`calc((`sub, `percent(100.), `px(20))))])]);
 };
 
 [@react.component]
