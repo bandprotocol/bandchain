@@ -222,6 +222,7 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 func (h *Hook) emitNonHistoricalState(ctx sdk.Context) {
 	h.emitAuthModule(ctx)
 	h.emitStakingModule(ctx)
+	h.emitGovModule(ctx)
 	h.emitOracleModule(ctx)
 	h.Write("COMMIT", common.JsDict{"height": -1})
 	h.FlushMessages()
