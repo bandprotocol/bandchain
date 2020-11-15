@@ -1,4 +1,5 @@
 import { Message, Data, Transaction, Wallet } from '../src/index'
+import { Address } from '../src/wallet'
 
 const { MsgSend } = Message
 const { Coin } = Data
@@ -7,8 +8,8 @@ const { PrivateKey } = Wallet
 describe('Transaction', () => {
   const coin = new Coin(100000, 'uband')
   const msgSend = new MsgSend(
-    'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
-    'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
+    Address.fromAccBech32('band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte'),
+    Address.fromAccBech32('band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79'),
     [coin],
   )
 
