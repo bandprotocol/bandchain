@@ -57,6 +57,13 @@ module Msg = {
     | ActivateBadge
     | UnknownBadge;
 
+  type msg_cat_t =
+    | TokenMsg
+    | ValidatorMsg
+    | ProposalMsg
+    | DataMsg
+    | UnknownMsg;
+
   let getBadgeVariantFromString = badge => {
     switch (badge) {
     | "send" => SendBadge
@@ -127,7 +134,7 @@ module Msg = {
   };
 
   module CreateDataSource = {
-    type t = {
+    type success_t = {
       id: ID.DataSource.t,
       owner: Address.t,
       name: string,
@@ -135,9 +142,24 @@ module Msg = {
       sender: Address.t,
     };
 
-    let decode = json =>
+    type fail_t = {
+      owner: Address.t,
+      name: string,
+      executable: JsBuffer.t,
+      sender: Address.t,
+    };
+
+    let decodeSuccess = json =>
       JsonUtils.Decode.{
         id: json |> at(["extra", "id"], ID.DataSource.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+      };
+
+    let decodeFail = json =>
+      JsonUtils.Decode.{
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
@@ -165,7 +187,7 @@ module Msg = {
   };
 
   module CreateOracleScript = {
-    type t = {
+    type success_t = {
       id: ID.OracleScript.t,
       owner: Address.t,
       name: string,
@@ -173,9 +195,24 @@ module Msg = {
       sender: Address.t,
     };
 
-    let decode = json =>
+    type fail_t = {
+      owner: Address.t,
+      name: string,
+      code: JsBuffer.t,
+      sender: Address.t,
+    };
+
+    let decodeSuccess = json =>
       JsonUtils.Decode.{
         id: json |> at(["extra", "id"], ID.OracleScript.fromJson),
+        owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
+        name: json |> at(["msg", "name"], string),
+        code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+      };
+
+    let decodeFail = json =>
+      JsonUtils.Decode.{
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
@@ -203,7 +240,7 @@ module Msg = {
   };
 
   module Request = {
-    type t = {
+    type success_t = {
       id: ID.Request.t,
       oracleScriptID: ID.OracleScript.t,
       oracleScriptName: string,
@@ -214,7 +251,15 @@ module Msg = {
       sender: Address.t,
     };
 
-    let decode = json => {
+    type fail_t = {
+      oracleScriptID: ID.OracleScript.t,
+      calldata: JsBuffer.t,
+      askCount: int,
+      minCount: int,
+      sender: Address.t,
+    };
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         id: json |> at(["extra", "id"], ID.Request.fromJson),
         oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
@@ -223,6 +268,16 @@ module Msg = {
         askCount: json |> at(["msg", "ask_count"], int),
         minCount: json |> at(["msg", "min_count"], int),
         schema: json |> at(["extra", "schema"], string),
+        sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
+        askCount: json |> at(["msg", "ask_count"], int),
+        minCount: json |> at(["msg", "min_count"], int),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
     };
@@ -245,30 +300,54 @@ module Msg = {
       };
   };
   module AddReporter = {
-    type t = {
+    type success_t = {
       validator: Address.t,
       reporter: Address.t,
       validatorMoniker: string,
     };
-    let decode = json =>
+
+    type fail_t = {
+      validator: Address.t,
+      reporter: Address.t,
+    };
+
+    let decodeSuccess = json =>
       JsonUtils.Decode.{
         validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
         reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
         validatorMoniker: json |> at(["extra", "validator_moniker"], string),
       };
+
+    let decodeFail = json =>
+      JsonUtils.Decode.{
+        validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
+        reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
+      };
   };
 
   module RemoveReporter = {
-    type t = {
+    type success_t = {
       validator: Address.t,
       reporter: Address.t,
       validatorMoniker: string,
     };
-    let decode = json =>
+
+    type fail_t = {
+      validator: Address.t,
+      reporter: Address.t,
+    };
+
+    let decodeSuccess = json =>
       JsonUtils.Decode.{
         validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
         reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
         validatorMoniker: json |> at(["extra", "validator_moniker"], string),
+      };
+
+    let decodeFail = json =>
+      JsonUtils.Decode.{
+        validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
+        reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
       };
   };
 
@@ -650,26 +729,31 @@ module Msg = {
     };
   };
 
-  module FailMessage = {
-    type t = {
-      sender: Address.t,
-      message: badge_t,
-    };
-    let decode = (json, sender) =>
-      JsonUtils.Decode.{
-        sender,
-        message: json |> field("type", string) |> getBadgeVariantFromString,
-      };
-  };
-
   module Delegate = {
-    type t = {
+    type success_t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      moniker: string,
+      identity: string,
+    };
+    type fail_t = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
 
-    let decode = json => {
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
@@ -679,12 +763,30 @@ module Msg = {
   };
 
   module Undelegate = {
-    type t = {
+    type success_t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      moniker: string,
+      identity: string,
+    };
+    type fail_t = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
@@ -694,13 +796,39 @@ module Msg = {
   };
 
   module Redelegate = {
-    type t = {
+    type success_t = {
+      validatorSourceAddress: Address.t,
+      validatorDestinationAddress: Address.t,
+      delegatorAddress: Address.t,
+      amount: Coin.t,
+      monikerSource: string,
+      monikerDestination: string,
+      identitySource: string,
+      identityDestination: string,
+    };
+
+    type fail_t = {
       validatorSourceAddress: Address.t,
       validatorDestinationAddress: Address.t,
       delegatorAddress: Address.t,
       amount: Coin.t,
     };
-    let decode = json => {
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        validatorSourceAddress:
+          json |> at(["msg", "validator_src_address"], string) |> Address.fromBech32,
+        validatorDestinationAddress:
+          json |> at(["msg", "validator_dst_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
+        amount: json |> at(["msg", "amount"], Coin.decodeCoin),
+        monikerSource: json |> at(["extra", "val_src_moniker"], string),
+        monikerDestination: json |> at(["extra", "val_dst_moniker"], string),
+        identitySource: json |> at(["extra", "val_src_identity"], string),
+        identityDestination: json |> at(["extra", "val_dst_identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         validatorSourceAddress:
           json |> at(["msg", "validator_src_address"], string) |> Address.fromBech32,
@@ -713,26 +841,58 @@ module Msg = {
   };
 
   module WithdrawReward = {
-    type t = {
+    type success_t = {
       validatorAddress: Address.t,
       delegatorAddress: Address.t,
       amount: list(Coin.t),
+      moniker: string,
+      identity: string,
     };
-    let decode = json => {
+    type fail_t = {
+      validatorAddress: Address.t,
+      delegatorAddress: Address.t,
+    };
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         amount: json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins,
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "moniker"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
+        delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
       };
     };
   };
 
   module Unjail = {
-    type t = {address: Address.t};
+    type success_t = {
+      address: Address.t,
+      identity: string,
+      moniker: string,
+    };
 
-    let decode = json =>
+    type fail_t = {address: Address.t};
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        address: json |> at(["msg", "address"], string) |> Address.fromBech32,
+        identity: json |> at(["extra", "identity"], string),
+        moniker: json |> at(["extra", "moniker"], string),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
+    };
   };
+
   module SetWithdrawAddress = {
     type t = {
       delegatorAddress: Address.t,
@@ -745,14 +905,34 @@ module Msg = {
       };
     };
   };
+
   module SubmitProposal = {
-    type t = {
+    type success_t = {
+      proposer: Address.t,
+      title: string,
+      description: string,
+      initialDeposit: list(Coin.t),
+      proposalID: ID.Proposal.t,
+    };
+
+    type fail_t = {
       proposer: Address.t,
       title: string,
       description: string,
       initialDeposit: list(Coin.t),
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
+      JsonUtils.Decode.{
+        proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
+        title: json |> at(["msg", "content", "title"], string),
+        description: json |> at(["msg", "content", "description"], string),
+        initialDeposit: json |> at(["msg", "initial_deposit"], list(Coin.decodeCoin)),
+        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJson),
+      };
+    };
+
+    let decodeFail = json => {
       JsonUtils.Decode.{
         proposer: json |> at(["msg", "proposer"], string) |> Address.fromBech32,
         title: json |> at(["msg", "content", "title"], string),
@@ -763,42 +943,88 @@ module Msg = {
   };
 
   module Deposit = {
-    type t = {
+    type success_t = {
       depositor: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
+      amount: list(Coin.t),
+      title: string,
+    };
+
+    type fail_t = {
+      depositor: Address.t,
+      proposalID: ID.Proposal.t,
       amount: list(Coin.t),
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
+        title: json |> at(["extra", "title"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
     };
   };
   module Vote = {
-    type t = {
+    type success_t = {
       voterAddress: Address.t,
-      proposalID: int,
+      proposalID: ID.Proposal.t,
+      option: string,
+      title: string,
+    };
+
+    type fail_t = {
+      voterAddress: Address.t,
+      proposalID: ID.Proposal.t,
       option: string,
     };
-    let decode = json => {
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], int),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        option: json |> at(["msg", "option"], string),
+        title: json |> at(["extra", "title"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
         option: json |> at(["msg", "option"], string),
       };
     };
   };
   module WithdrawCommission = {
-    type t = {
+    type success_t = {
       validatorAddress: Address.t,
       amount: list(Coin.t),
+      moniker: string,
+      identity: string,
     };
-    let decode = json => {
+    type fail_t = {validatorAddress: Address.t};
+
+    let decodeSuccess = json => {
       JsonUtils.Decode.{
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
         amount: json |> at(["extra", "commission_amount"], string) |> GraphQLParser.coins,
+        moniker: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
+      };
+    };
+
+    let decodeFail = json => {
+      JsonUtils.Decode.{
+        validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
       };
     };
   };
@@ -837,18 +1063,29 @@ module Msg = {
   };
 
   type t =
-    | SendMsg(Send.t)
+    | SendMsgSuccess(Send.t)
+    | SendMsgFail(Send.t)
     | ReceiveMsg(Receive.t)
-    | CreateDataSourceMsg(CreateDataSource.t)
-    | EditDataSourceMsg(EditDataSource.t)
-    | CreateOracleScriptMsg(CreateOracleScript.t)
-    | EditOracleScriptMsg(EditOracleScript.t)
-    | RequestMsg(Request.t)
-    | ReportMsg(Report.t)
-    | AddReporterMsg(AddReporter.t)
-    | RemoveReporterMsg(RemoveReporter.t)
-    | CreateValidatorMsg(CreateValidator.t)
-    | EditValidatorMsg(EditValidator.t)
+    | CreateDataSourceMsgSuccess(CreateDataSource.success_t)
+    | CreateDataSourceMsgFail(CreateDataSource.fail_t)
+    | EditDataSourceMsgSuccess(EditDataSource.t)
+    | EditDataSourceMsgFail(EditDataSource.t)
+    | CreateOracleScriptMsgSuccess(CreateOracleScript.success_t)
+    | CreateOracleScriptMsgFail(CreateOracleScript.fail_t)
+    | EditOracleScriptMsgSuccess(EditOracleScript.t)
+    | EditOracleScriptMsgFail(EditOracleScript.t)
+    | RequestMsgSuccess(Request.success_t)
+    | RequestMsgFail(Request.fail_t)
+    | ReportMsgSuccess(Report.t)
+    | ReportMsgFail(Report.t)
+    | AddReporterMsgSuccess(AddReporter.success_t)
+    | AddReporterMsgFail(AddReporter.fail_t)
+    | RemoveReporterMsgSuccess(RemoveReporter.success_t)
+    | RemoveReporterMsgFail(RemoveReporter.fail_t)
+    | CreateValidatorMsgSuccess(CreateValidator.t)
+    | CreateValidatorMsgFail(CreateValidator.t)
+    | EditValidatorMsgSuccess(EditValidator.t)
+    | EditValidatorMsgFail(EditValidator.t)
     | CreateClientMsg(CreateClient.t)
     | UpdateClientMsg(UpdateClient.t)
     | SubmitClientMisbehaviourMsg(SubmitClientMisbehaviour.t)
@@ -865,35 +1102,84 @@ module Msg = {
     | PacketMsg(Packet.t)
     | AcknowledgementMsg(Acknowledgement.t)
     | TimeoutMsg(Timeout.t)
-    | FailMsg(FailMessage.t)
-    | DelegateMsg(Delegate.t)
-    | UndelegateMsg(Undelegate.t)
-    | RedelegateMsg(Redelegate.t)
-    | WithdrawRewardMsg(WithdrawReward.t)
-    | UnjailMsg(Unjail.t)
-    | SetWithdrawAddressMsg(SetWithdrawAddress.t)
-    | SubmitProposalMsg(SubmitProposal.t)
-    | DepositMsg(Deposit.t)
-    | VoteMsg(Vote.t)
-    | WithdrawCommissionMsg(WithdrawCommission.t)
-    | MultiSendMsg(MultiSend.t)
-    | ActivateMsg(Activate.t)
+    | DelegateMsgSuccess(Delegate.success_t)
+    | DelegateMsgFail(Delegate.fail_t)
+    | UndelegateMsgSuccess(Undelegate.success_t)
+    | UndelegateMsgFail(Undelegate.fail_t)
+    | RedelegateMsgSuccess(Redelegate.success_t)
+    | RedelegateMsgFail(Redelegate.fail_t)
+    | WithdrawRewardMsgSuccess(WithdrawReward.success_t)
+    | WithdrawRewardMsgFail(WithdrawReward.fail_t)
+    | UnjailMsgSuccess(Unjail.success_t)
+    | UnjailMsgFail(Unjail.fail_t)
+    | SetWithdrawAddressMsgSuccess(SetWithdrawAddress.t)
+    | SetWithdrawAddressMsgFail(SetWithdrawAddress.t)
+    | SubmitProposalMsgSuccess(SubmitProposal.success_t)
+    | SubmitProposalMsgFail(SubmitProposal.fail_t)
+    | DepositMsgSuccess(Deposit.success_t)
+    | DepositMsgFail(Deposit.fail_t)
+    | VoteMsgSuccess(Vote.success_t)
+    | VoteMsgFail(Vote.fail_t)
+    | WithdrawCommissionMsgSuccess(WithdrawCommission.success_t)
+    | WithdrawCommissionMsgFail(WithdrawCommission.fail_t)
+    | MultiSendMsgSuccess(MultiSend.t)
+    | MultiSendMsgFail(MultiSend.t)
+    | ActivateMsgSuccess(Activate.t)
+    | ActivateMsgFail(Activate.t)
     | UnknownMsg;
 
   let getCreator = msg => {
     switch (msg) {
-    | SendMsg(send) => send.fromAddress
-    | CreateDataSourceMsg(dataSource) => dataSource.sender
-    | EditDataSourceMsg(dataSource) => dataSource.sender
-    | CreateOracleScriptMsg(oracleScript) => oracleScript.sender
-    | EditOracleScriptMsg(oracleScript) => oracleScript.sender
-    | RequestMsg(request) => request.sender
-    | ReportMsg(report) => report.reporter
-    | AddReporterMsg(address) => address.validator
-    | RemoveReporterMsg(address) => address.validator
-    | CreateValidatorMsg(validator) => validator.delegatorAddress
-    | EditValidatorMsg(validator) => validator.sender
-    | FailMsg(fail) => fail.sender
+    | ReceiveMsg(receive) => receive.fromAddress
+    | SendMsgSuccess(send)
+    | SendMsgFail(send) => send.fromAddress
+    | CreateDataSourceMsgSuccess(dataSource) => dataSource.sender
+    | CreateDataSourceMsgFail(dataSource) => dataSource.sender
+    | EditDataSourceMsgSuccess(dataSource) => dataSource.sender
+    | EditDataSourceMsgFail(dataSource) => dataSource.sender
+    | CreateOracleScriptMsgSuccess(oracleScript) => oracleScript.sender
+    | CreateOracleScriptMsgFail(oracleScript) => oracleScript.sender
+    | EditOracleScriptMsgSuccess(oracleScript) => oracleScript.sender
+    | EditOracleScriptMsgFail(oracleScript) => oracleScript.sender
+    | RequestMsgSuccess(request) => request.sender
+    | RequestMsgFail(request) => request.sender
+    | ReportMsgSuccess(report)
+    | ReportMsgFail(report) => report.reporter
+    | AddReporterMsgSuccess(address) => address.validator
+    | AddReporterMsgFail(address) => address.validator
+    | RemoveReporterMsgSuccess(address) => address.validator
+    | RemoveReporterMsgFail(address) => address.validator
+    | CreateValidatorMsgSuccess(validator)
+    | CreateValidatorMsgFail(validator) => validator.delegatorAddress
+    | EditValidatorMsgSuccess(validator)
+    | EditValidatorMsgFail(validator) => validator.sender
+    | DelegateMsgSuccess(delegation) => delegation.delegatorAddress
+    | DelegateMsgFail(delegation) => delegation.delegatorAddress
+    | UndelegateMsgSuccess(delegation) => delegation.delegatorAddress
+    | UndelegateMsgFail(delegation) => delegation.delegatorAddress
+    | RedelegateMsgSuccess(delegation) => delegation.delegatorAddress
+    | RedelegateMsgFail(delegation) => delegation.delegatorAddress
+    | WithdrawRewardMsgSuccess(withdrawal) => withdrawal.delegatorAddress
+    | WithdrawRewardMsgFail(withdrawal) => withdrawal.delegatorAddress
+    | UnjailMsgSuccess(validator) => validator.address
+    | UnjailMsgFail(validator) => validator.address
+    | SetWithdrawAddressMsgSuccess(set)
+    | SetWithdrawAddressMsgFail(set) => set.delegatorAddress
+    | SubmitProposalMsgSuccess(proposal) => proposal.proposer
+    | SubmitProposalMsgFail(proposal) => proposal.proposer
+    | DepositMsgSuccess(deposit) => deposit.depositor
+    | DepositMsgFail(deposit) => deposit.depositor
+    | VoteMsgSuccess(vote) => vote.voterAddress
+    | VoteMsgFail(vote) => vote.voterAddress
+    | WithdrawCommissionMsgSuccess(withdrawal) => withdrawal.validatorAddress
+    | WithdrawCommissionMsgFail(withdrawal) => withdrawal.validatorAddress
+    | MultiSendMsgSuccess(tx)
+    | MultiSendMsgFail(tx) =>
+      let firstInput = tx.inputs |> Belt_List.getExn(_, 0);
+      firstInput.address;
+    | ActivateMsgSuccess(activator)
+    | ActivateMsgFail(activator) => activator.validatorAddress
+    //TODO: Revisit IBC msg
     | CreateClientMsg(client) => client.address
     | UpdateClientMsg(client) => client.address
     | SubmitClientMisbehaviourMsg(client) => client.address
@@ -910,186 +1196,113 @@ module Msg = {
     | PacketMsg(packet) => packet.sender
     | AcknowledgementMsg(ack) => ack.sender
     | TimeoutMsg(timeout) => timeout.sender
-    | DelegateMsg(delegation) => delegation.delegatorAddress
-    | UndelegateMsg(delegation) => delegation.delegatorAddress
-    | RedelegateMsg(delegation) => delegation.delegatorAddress
-    | WithdrawRewardMsg(withdrawal) => withdrawal.delegatorAddress
-    | UnjailMsg(validator) => validator.address
-    | SetWithdrawAddressMsg(set) => set.delegatorAddress
-    | SubmitProposalMsg(proposal) => proposal.proposer
-    | DepositMsg(deposit) => deposit.depositor
-    | VoteMsg(vote) => vote.voterAddress
-    | WithdrawCommissionMsg(withdrawal) => withdrawal.validatorAddress
-    | MultiSendMsg(tx) =>
-      let firstInput = tx.inputs |> Belt_List.getExn(_, 0);
-      firstInput.address;
-    | ActivateMsg(activator) => activator.validatorAddress
     | _ => "" |> Address.fromHex
     };
   };
 
   type badge_theme_t = {
-    text: string,
-    textColor: Css.Types.Color.t,
-    bgColor: Css.Types.Color.t,
+    name: string,
+    category: msg_cat_t,
   };
 
   let getBadge = badgeVariant => {
     switch (badgeVariant) {
-    | SendBadge => {text: "SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | ReceiveBadge => {text: "RECEIVE", textColor: Colors.green1, bgColor: Colors.green7}
-    | CreateDataSourceBadge => {
-        text: "CREATE DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | EditDataSourceBadge => {
-        text: "EDIT DATA SOURCE",
-        textColor: Colors.yellow5,
-        bgColor: Colors.yellow1,
-      }
-    | CreateOracleScriptBadge => {
-        text: "CREATE ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | EditOracleScriptBadge => {
-        text: "EDIT ORACLE SCRIPT",
-        textColor: Colors.pink6,
-        bgColor: Colors.pink1,
-      }
-    | RequestBadge => {text: "REQUEST", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | ReportBadge => {text: "REPORT", textColor: Colors.orange6, bgColor: Colors.orange1}
-    | AddReporterBadge => {
-        text: "ADD REPORTER",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | RemoveReporterBadge => {
-        text: "REMOVE REPORTER",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | CreateValidatorBadge => {
-        text: "CREATE VALIDATOR",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | EditValidatorBadge => {
-        text: "EDIT VALIDATOR",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | CreateClientBadge => {text: "CREATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | UpdateClientBadge => {text: "UPDATE CLIENT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | SubmitClientMisbehaviourBadge => {
-        text: "SUBMIT CLIENT MISBEHAVIOUR",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenInitBadge => {
-        text: "CONNECTION OPEN INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenTryBadge => {
-        text: "CONNECTION OPEN TRY",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenAckBadge => {
-        text: "CONNECTION OPEN ACK",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ConnectionOpenConfirmBadge => {
-        text: "CONNECTION OPEN CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenInitBadge => {
-        text: "CHANNEL OPEN INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenTryBadge => {
-        text: "CHANNEL OPEN TRY",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenAckBadge => {
-        text: "CHANNEL OPEN ACK",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelOpenConfirmBadge => {
-        text: "CHANNEL OPEN CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelCloseInitBadge => {
-        text: "CHANNEL CLOSE INIT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | ChannelCloseConfirmBadge => {
-        text: "CHANNEL CLOSE CONFIRM",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | PacketBadge => {text: "PACKET", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | AcknowledgementBadge => {
-        text: "ACKNOWLEDGEMENT",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | TimeoutBadge => {text: "TIMEOUT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | DelegateBadge => {text: "DELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | UndelegateBadge => {text: "UNDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | RedelegateBadge => {text: "REDELEGATE", textColor: Colors.purple6, bgColor: Colors.purple1}
-    | VoteBadge => {text: "VOTE", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | WithdrawRewardBadge => {
-        text: "WITHDRAW REWARD",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | UnjailBadge => {text: "UNJAIL", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | SetWithdrawAddressBadge => {
-        text: "SET WITHDRAW ADDRESS",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | SubmitProposalBadge => {
-        text: "SUBMIT PROPOSAL",
-        textColor: Colors.blue7,
-        bgColor: Colors.blue1,
-      }
-    | DepositBadge => {text: "DEPOSIT", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | WithdrawCommissionBadge => {
-        text: "WITHDRAW COMMISSION",
-        textColor: Colors.purple6,
-        bgColor: Colors.purple1,
-      }
-    | MultiSendBadge => {text: "MULTI SEND", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | ActivateBadge => {text: "ACTIVATE", textColor: Colors.blue7, bgColor: Colors.blue1}
-    | UnknownBadge => {text: "UNKNOWN", textColor: Colors.gray7, bgColor: Colors.gray4}
+    | SendBadge => {name: "Send", category: TokenMsg}
+    | ReceiveBadge => {name: "Receive", category: TokenMsg}
+    | CreateDataSourceBadge => {name: "Create Data Source", category: DataMsg}
+    | EditDataSourceBadge => {name: "Edit Data Source", category: DataMsg}
+    | CreateOracleScriptBadge => {name: "Create Oracle Script", category: DataMsg}
+    | EditOracleScriptBadge => {name: "Edit Oracle Script", category: DataMsg}
+    | RequestBadge => {name: "Request", category: DataMsg}
+    | ReportBadge => {name: "Report", category: DataMsg}
+    | AddReporterBadge => {name: "Add Reporter", category: ValidatorMsg}
+    | RemoveReporterBadge => {name: "Remove Reporter", category: ValidatorMsg}
+    | CreateValidatorBadge => {name: "Create Validator", category: ValidatorMsg}
+    | EditValidatorBadge => {name: "Edit Validator", category: ValidatorMsg}
+    | DelegateBadge => {name: "Delegate", category: TokenMsg}
+    | UndelegateBadge => {name: "Undelegate", category: TokenMsg}
+    | RedelegateBadge => {name: "Redelegate", category: TokenMsg}
+    | VoteBadge => {name: "Vote", category: ProposalMsg}
+    | WithdrawRewardBadge => {name: "Withdraw Reward", category: TokenMsg}
+    | UnjailBadge => {name: "Unjail", category: ValidatorMsg}
+    | SetWithdrawAddressBadge => {name: "Set Withdraw Address", category: ValidatorMsg}
+    | SubmitProposalBadge => {name: "Submit Proposal", category: ProposalMsg}
+    | DepositBadge => {name: "Deposit", category: ProposalMsg}
+    | WithdrawCommissionBadge => {name: "Withdraw Commission", category: TokenMsg}
+    | MultiSendBadge => {name: "Multi Send", category: TokenMsg}
+    | ActivateBadge => {name: "Activate", category: ValidatorMsg}
+    | UnknownBadge => {name: "Unknown", category: TokenMsg}
+    //TODO: Revisit IBC msg
+    | CreateClientBadge => {name: "Create Client", category: TokenMsg}
+    | UpdateClientBadge => {name: "Update Client", category: TokenMsg}
+    | SubmitClientMisbehaviourBadge => {name: "Submit Client Misbehaviour", category: TokenMsg}
+    | ConnectionOpenInitBadge => {name: "Connection Open Init", category: TokenMsg}
+    | ConnectionOpenTryBadge => {name: "Connection Open Try", category: TokenMsg}
+    | ConnectionOpenAckBadge => {name: "Connection Open Ack", category: TokenMsg}
+    | ConnectionOpenConfirmBadge => {name: "Connection Open Confirm", category: TokenMsg}
+    | ChannelOpenInitBadge => {name: "Channel Open Init", category: TokenMsg}
+    | ChannelOpenTryBadge => {name: "Channel Open Try", category: TokenMsg}
+    | ChannelOpenAckBadge => {name: "Channel Open Ack", category: TokenMsg}
+    | ChannelOpenConfirmBadge => {name: "Channel Open Confirm", category: TokenMsg}
+    | ChannelCloseInitBadge => {name: "Channel Close Init", category: TokenMsg}
+    | ChannelCloseConfirmBadge => {name: "Channel Close Confirm", category: TokenMsg}
+    | PacketBadge => {name: "Packet", category: TokenMsg}
+    | AcknowledgementBadge => {name: "Acknowledgement", category: TokenMsg}
+    | TimeoutBadge => {name: "Timeout", category: TokenMsg}
     };
   };
 
   let getBadgeTheme = msg => {
     switch (msg) {
-    | SendMsg(_) => getBadge(SendBadge)
+    | SendMsgSuccess(_)
+    | SendMsgFail(_) => getBadge(SendBadge)
     | ReceiveMsg(_) => getBadge(ReceiveBadge)
-    | CreateDataSourceMsg(_) => getBadge(CreateDataSourceBadge)
-    | EditDataSourceMsg(_) => getBadge(EditDataSourceBadge)
-    | CreateOracleScriptMsg(_) => getBadge(CreateOracleScriptBadge)
-    | EditOracleScriptMsg(_) => getBadge(EditOracleScriptBadge)
-    | RequestMsg(_) => getBadge(RequestBadge)
-    | ReportMsg(_) => getBadge(ReportBadge)
-    | AddReporterMsg(_) => getBadge(AddReporterBadge)
-    | RemoveReporterMsg(_) => getBadge(RemoveReporterBadge)
-    | CreateValidatorMsg(_) => getBadge(CreateValidatorBadge)
-    | EditValidatorMsg(_) => getBadge(EditValidatorBadge)
+    | CreateDataSourceMsgSuccess(_)
+    | CreateDataSourceMsgFail(_) => getBadge(CreateDataSourceBadge)
+    | EditDataSourceMsgSuccess(_)
+    | EditDataSourceMsgFail(_) => getBadge(EditDataSourceBadge)
+    | CreateOracleScriptMsgSuccess(_)
+    | CreateOracleScriptMsgFail(_) => getBadge(CreateOracleScriptBadge)
+    | EditOracleScriptMsgSuccess(_)
+    | EditOracleScriptMsgFail(_) => getBadge(EditOracleScriptBadge)
+    | RequestMsgSuccess(_)
+    | RequestMsgFail(_) => getBadge(RequestBadge)
+    | ReportMsgSuccess(_)
+    | ReportMsgFail(_) => getBadge(ReportBadge)
+    | AddReporterMsgSuccess(_)
+    | AddReporterMsgFail(_) => getBadge(AddReporterBadge)
+    | RemoveReporterMsgSuccess(_)
+    | RemoveReporterMsgFail(_) => getBadge(RemoveReporterBadge)
+    | CreateValidatorMsgSuccess(_)
+    | CreateValidatorMsgFail(_) => getBadge(CreateValidatorBadge)
+    | EditValidatorMsgSuccess(_)
+    | EditValidatorMsgFail(_) => getBadge(EditValidatorBadge)
+    | DelegateMsgSuccess(_)
+    | DelegateMsgFail(_) => getBadge(DelegateBadge)
+    | UndelegateMsgSuccess(_)
+    | UndelegateMsgFail(_) => getBadge(UndelegateBadge)
+    | RedelegateMsgSuccess(_)
+    | RedelegateMsgFail(_) => getBadge(RedelegateBadge)
+    | VoteMsgSuccess(_)
+    | VoteMsgFail(_) => getBadge(VoteBadge)
+    | WithdrawRewardMsgSuccess(_)
+    | WithdrawRewardMsgFail(_) => getBadge(WithdrawRewardBadge)
+    | UnjailMsgSuccess(_)
+    | UnjailMsgFail(_) => getBadge(UnjailBadge)
+    | SetWithdrawAddressMsgSuccess(_)
+    | SetWithdrawAddressMsgFail(_) => getBadge(SetWithdrawAddressBadge)
+    | SubmitProposalMsgSuccess(_)
+    | SubmitProposalMsgFail(_) => getBadge(SubmitProposalBadge)
+    | DepositMsgSuccess(_)
+    | DepositMsgFail(_) => getBadge(DepositBadge)
+    | WithdrawCommissionMsgSuccess(_)
+    | WithdrawCommissionMsgFail(_) => getBadge(WithdrawCommissionBadge)
+    | MultiSendMsgSuccess(_) => getBadge(MultiSendBadge)
+    | MultiSendMsgFail(_) => getBadge(MultiSendBadge)
+    | ActivateMsgSuccess(_) => getBadge(ActivateBadge)
+    | ActivateMsgFail(_) => getBadge(ActivateBadge)
+    | UnknownMsg => getBadge(UnknownBadge)
+    //TODO: Revisit IBC msg
     | CreateClientMsg(_) => getBadge(CreateClientBadge)
     | UpdateClientMsg(_) => getBadge(UpdateClientBadge)
     | SubmitClientMisbehaviourMsg(_) => getBadge(SubmitClientMisbehaviourBadge)
@@ -1106,38 +1319,41 @@ module Msg = {
     | PacketMsg(_) => getBadge(PacketBadge)
     | AcknowledgementMsg(_) => getBadge(AcknowledgementBadge)
     | TimeoutMsg(_) => getBadge(TimeoutBadge)
-    | DelegateMsg(_) => getBadge(DelegateBadge)
-    | UndelegateMsg(_) => getBadge(UndelegateBadge)
-    | RedelegateMsg(_) => getBadge(RedelegateBadge)
-    | VoteMsg(_) => getBadge(VoteBadge)
-    | WithdrawRewardMsg(_) => getBadge(WithdrawRewardBadge)
-    | UnjailMsg(_) => getBadge(UnjailBadge)
-    | SetWithdrawAddressMsg(_) => getBadge(SetWithdrawAddressBadge)
-    | SubmitProposalMsg(_) => getBadge(SubmitProposalBadge)
-    | DepositMsg(_) => getBadge(DepositBadge)
-    | WithdrawCommissionMsg(_) => getBadge(WithdrawCommissionBadge)
-    | MultiSendMsg(_) => getBadge(MultiSendBadge)
-    | ActivateMsg(_) => getBadge(ActivateBadge)
-    | FailMsg(msg) => getBadge(msg.message)
-    | UnknownMsg => getBadge(UnknownBadge)
     };
   };
 
   let decodeAction = json => {
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
-      | SendBadge => SendMsg(json |> Send.decode)
+      | SendBadge => SendMsgSuccess(json |> Send.decode)
       | ReceiveBadge => raise(Not_found)
-      | CreateDataSourceBadge => CreateDataSourceMsg(json |> CreateDataSource.decode)
-      | EditDataSourceBadge => EditDataSourceMsg(json |> EditDataSource.decode)
-      | CreateOracleScriptBadge => CreateOracleScriptMsg(json |> CreateOracleScript.decode)
-      | EditOracleScriptBadge => EditOracleScriptMsg(json |> EditOracleScript.decode)
-      | RequestBadge => RequestMsg(json |> Request.decode)
-      | ReportBadge => ReportMsg(json |> Report.decode)
-      | AddReporterBadge => AddReporterMsg(json |> AddReporter.decode)
-      | RemoveReporterBadge => RemoveReporterMsg(json |> RemoveReporter.decode)
-      | CreateValidatorBadge => CreateValidatorMsg(json |> CreateValidator.decode)
-      | EditValidatorBadge => EditValidatorMsg(json |> EditValidator.decode)
+      | CreateDataSourceBadge =>
+        CreateDataSourceMsgSuccess(json |> CreateDataSource.decodeSuccess)
+      | EditDataSourceBadge => EditDataSourceMsgSuccess(json |> EditDataSource.decode)
+      | CreateOracleScriptBadge =>
+        CreateOracleScriptMsgSuccess(json |> CreateOracleScript.decodeSuccess)
+      | EditOracleScriptBadge => EditOracleScriptMsgSuccess(json |> EditOracleScript.decode)
+      | RequestBadge => RequestMsgSuccess(json |> Request.decodeSuccess)
+      | ReportBadge => ReportMsgSuccess(json |> Report.decode)
+      | AddReporterBadge => AddReporterMsgSuccess(json |> AddReporter.decodeSuccess)
+      | RemoveReporterBadge => RemoveReporterMsgSuccess(json |> RemoveReporter.decodeSuccess)
+      | CreateValidatorBadge => CreateValidatorMsgSuccess(json |> CreateValidator.decode)
+      | EditValidatorBadge => EditValidatorMsgSuccess(json |> EditValidator.decode)
+      | DelegateBadge => DelegateMsgSuccess(json |> Delegate.decodeSuccess)
+      | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decodeSuccess)
+      | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decodeSuccess)
+      | WithdrawRewardBadge => WithdrawRewardMsgSuccess(json |> WithdrawReward.decodeSuccess)
+      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decodeSuccess)
+      | SetWithdrawAddressBadge => SetWithdrawAddressMsgSuccess(json |> SetWithdrawAddress.decode)
+      | SubmitProposalBadge => SubmitProposalMsgSuccess(json |> SubmitProposal.decodeSuccess)
+      | DepositBadge => DepositMsgSuccess(json |> Deposit.decodeSuccess)
+      | VoteBadge => VoteMsgSuccess(json |> Vote.decodeSuccess)
+      | WithdrawCommissionBadge =>
+        WithdrawCommissionMsgSuccess(json |> WithdrawCommission.decodeSuccess)
+      | MultiSendBadge => MultiSendMsgSuccess(json |> MultiSend.decode)
+      | ActivateBadge => ActivateMsgSuccess(json |> Activate.decode)
+      | UnknownBadge => UnknownMsg
+      //TODO: Revisit IBC msg
       | CreateClientBadge => CreateClientMsg(json |> CreateClient.decode)
       | UpdateClientBadge => UpdateClientMsg(json |> UpdateClient.decode)
       | SubmitClientMisbehaviourBadge =>
@@ -1157,24 +1373,44 @@ module Msg = {
       | TimeoutBadge => TimeoutMsg(json |> Timeout.decode)
       // TODO: handle case correctly
       | AcknowledgementBadge => AcknowledgementMsg(json |> Acknowledgement.decode)
-      | DelegateBadge => DelegateMsg(json |> Delegate.decode)
-      | UndelegateBadge => UndelegateMsg(json |> Undelegate.decode)
-      | RedelegateBadge => RedelegateMsg(json |> Redelegate.decode)
-      | WithdrawRewardBadge => WithdrawRewardMsg(json |> WithdrawReward.decode)
-      | UnjailBadge => UnjailMsg(json |> Unjail.decode)
-      | SetWithdrawAddressBadge => SetWithdrawAddressMsg(json |> SetWithdrawAddress.decode)
-      | SubmitProposalBadge => SubmitProposalMsg(json |> SubmitProposal.decode)
-      | DepositBadge => DepositMsg(json |> Deposit.decode)
-      | VoteBadge => VoteMsg(json |> Vote.decode)
-      | WithdrawCommissionBadge => WithdrawCommissionMsg(json |> WithdrawCommission.decode)
-      | MultiSendBadge => MultiSendMsg(json |> MultiSend.decode)
-      | ActivateBadge => ActivateMsg(json |> Activate.decode)
-      | UnknownBadge => UnknownMsg
       }
     );
   };
 
-  let decodeFailAction = (json, sender): t => FailMsg(json |> FailMessage.decode(_, sender));
+  let decodeFailAction = json => {
+    JsonUtils.Decode.(
+      switch (json |> field("type", string) |> getBadgeVariantFromString) {
+      | SendBadge => SendMsgFail(json |> Send.decode)
+      | ReceiveBadge => raise(Not_found)
+      | CreateDataSourceBadge => CreateDataSourceMsgFail(json |> CreateDataSource.decodeFail)
+      | EditDataSourceBadge => EditDataSourceMsgFail(json |> EditDataSource.decode)
+      | CreateOracleScriptBadge =>
+        CreateOracleScriptMsgFail(json |> CreateOracleScript.decodeFail)
+      | EditOracleScriptBadge => EditOracleScriptMsgFail(json |> EditOracleScript.decode)
+      | RequestBadge => RequestMsgFail(json |> Request.decodeFail)
+      | ReportBadge => ReportMsgFail(json |> Report.decode)
+      | AddReporterBadge => AddReporterMsgFail(json |> AddReporter.decodeFail)
+      | RemoveReporterBadge => RemoveReporterMsgFail(json |> RemoveReporter.decodeFail)
+      | CreateValidatorBadge => CreateValidatorMsgFail(json |> CreateValidator.decode)
+      | EditValidatorBadge => EditValidatorMsgFail(json |> EditValidator.decode)
+      | DelegateBadge => DelegateMsgFail(json |> Delegate.decodeFail)
+      | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decodeFail)
+      | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decodeFail)
+      | WithdrawRewardBadge => WithdrawRewardMsgFail(json |> WithdrawReward.decodeFail)
+      | UnjailBadge => UnjailMsgFail(json |> Unjail.decodeFail)
+      | SetWithdrawAddressBadge => SetWithdrawAddressMsgFail(json |> SetWithdrawAddress.decode)
+      | SubmitProposalBadge => SubmitProposalMsgFail(json |> SubmitProposal.decodeFail)
+      | DepositBadge => DepositMsgFail(json |> Deposit.decodeFail)
+      | VoteBadge => VoteMsgFail(json |> Vote.decodeFail)
+      | WithdrawCommissionBadge =>
+        WithdrawCommissionMsgFail(json |> WithdrawCommission.decodeFail)
+      | MultiSendBadge => MultiSendMsgFail(json |> MultiSend.decode)
+      | ActivateBadge => ActivateMsgFail(json |> Activate.decode)
+      | UnknownBadge => UnknownMsg
+      | _ => UnknownMsg
+      }
+    );
+  };
 };
 
 type block_t = {timestamp: MomentRe.Moment.t};
@@ -1250,9 +1486,7 @@ let toExternal =
   timestamp: block.timestamp,
   messages: {
     let msg = messages |> Js.Json.decodeArray |> Belt.Option.getExn |> Belt.List.fromArray;
-    success
-      ? msg->Belt.List.map(Msg.decodeAction)
-      : msg->Belt.List.map(each => Msg.decodeFailAction(each, sender));
+    msg->Belt.List.map(success ? Msg.decodeAction : Msg.decodeFailAction);
   },
   errMsg: errMsg->Belt.Option.getWithDefault(""),
 };
