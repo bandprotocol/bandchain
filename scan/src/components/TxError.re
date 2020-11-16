@@ -9,6 +9,7 @@ module Styles = {
       border(`px(1), `solid, Colors.red5),
       borderRadius(`px(4)),
       marginBottom(`px(24)),
+      selector("> i", [marginRight(`px(8))]),
     ]);
 };
 
@@ -45,14 +46,9 @@ let parseErr = msg => {
 module Full = {
   [@react.component]
   let make = (~msg) => {
-    <div className=Styles.errorContainer>
-      <Text
-        value={msg |> parseErr}
-        size=Text.Lg
-        code=true
-        spacing={Text.Em(0.02)}
-        breakAll=true
-      />
+    <div className={Css.merge([Styles.errorContainer, CssHelper.flexBox(~wrap=`nowrap, ())])}>
+      <Icon name="fal fa-exclamation-circle" size=14 color=Colors.red5 />
+      <Text value={msg |> parseErr} size=Text.Lg spacing={Text.Em(0.02)} breakAll=true />
     </div>;
   };
 };
