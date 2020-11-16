@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"bytes"
 	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -193,7 +192,7 @@ func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, err
 			// skip if the validator is not a member
 			isValidator := false
 			for _, v := range req.RequestedValidators {
-				if result := bytes.Compare(*valAddress, v); result == 0 {
+				if valAddress.Equals(v) {
 					isValidator = true
 					break
 				}
@@ -203,10 +202,10 @@ func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, err
 				continue
 			}
 
-			// skil if the validator already reported
+			// skip if the validator already reported
 			reported := false
 			for _, r := range reports {
-				if result := bytes.Compare(*valAddress, r.Validator); result == 0 {
+				if valAddress.Equals(r.Validator) {
 					reported = true
 					break
 				}

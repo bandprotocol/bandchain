@@ -22,14 +22,14 @@ func TestQueryPendingRequests(t *testing.T) {
 	k.SetRequest(ctx, 43, defaultRequest())
 	k.SetRequestCount(ctx, 43)
 
-	// Fulfill some request
+	// Fulfill some requests
 	k.SetReport(ctx, 41, types.NewReport(testapp.Validator1.ValAddress, true, nil))
 	k.SetReport(ctx, 42, types.NewReport(testapp.Validator2.ValAddress, true, nil))
 
 	q := keeper.NewQuerier(k)
 
 	test := func(args []string, expected []types.RequestID) {
-		raw, err := q(ctx, append([]string{"pending_requests"}, args...), abci.RequestQuery{})
+		raw, err := q(ctx, append([]string{types.QueryPendingRequests}, args...), abci.RequestQuery{})
 		require.NoError(t, err)
 
 		var queryRequest types.QueryResult
