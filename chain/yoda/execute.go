@@ -121,6 +121,8 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 			switch txRes.Code {
 			case 0:
 				l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
+				c.pendingGauge = c.pendingGauge - int64(len(reports))
+				c.submittedCount++
 				return
 			case sdkerrors.ErrOutOfGas.ABCICode():
 				// Increase gas limit and try to broadcast again

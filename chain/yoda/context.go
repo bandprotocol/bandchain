@@ -47,6 +47,10 @@ type Context struct {
 
 	dataSourceCache *sync.Map
 	pendingRequests map[types.RequestID]bool
+
+	handlingGauge  int64
+	pendingGauge   int64
+	submittedCount int64
 }
 
 func (c *Context) nextKeyIndex() int64 {

@@ -218,6 +218,7 @@ func handleRawRequests(c *Context, l *Logger, id types.RequestID, reqs []rawRequ
 }
 
 func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {
+	c.handlingGauge++
 
 	exec, err := GetExecutable(c, l, req.dataSourceHash)
 	if err != nil {
@@ -266,4 +267,5 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			version:   result.Version,
 		}
 	}
+	c.handlingGauge--
 }
