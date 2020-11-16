@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2870](https://github.com/bandprotocol/bandchain/pull/2870) fast-sync: emit all gov module from start state
 - (feat) [\#2829](https://github.com/bandprotocol/bandchain/pull/2829) Added `price_symbols` endpoint
 - (bugs) [\#2828](https://github.com/bandprotocol/bandchain/pull/2828) Add missing height on `multi_request_search` and `request_prices` endpoints
 - (impv) [\#2746](https://github.com/bandprotocol/bandchain/pull/2746) Implemented emitter, price, and latest request hooks
@@ -32,6 +33,7 @@
 
 ### Scan
 
+- (bugs) [\#2879](https://github.com/bandprotocol/bandchain/pull/2879) Fixed the address width on small desktop screen
 - (bugs) [\#2868](https://github.com/bandprotocol/bandchain/pull/2868) Fixed click outside icon bug
 - (impv) [\#2851](https://github.com/bandprotocol/bandchain/pull/2851) Add ESC key event listener
 - (impv) [\#2850](https://github.com/bandprotocol/bandchain/pull/2850) Disable withdraw rewards if reward is zero
@@ -91,6 +93,7 @@
 
 ### Helpers
 
+- (feat) [\#2872](https://github.com/bandprotocol/bandchain/pull/2872) Bandchain.js: Added new Address class and added more fn on PublicKey class
 - (feat) [\#2865](https://github.com/bandprotocol/bandchain/pull/2865) bandchain.js: Add Private Key and verify on Public Key on Wallet
 - (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
 - (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
