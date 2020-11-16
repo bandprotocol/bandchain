@@ -51,7 +51,7 @@
   },
   "devDependencies": {
     "@baransu/graphql_ppx_re": "^0.7.1",
-    "@glennsl/bs-jest": "^0.5.1",
+    "@glennsl/bs-jest": "^0.6.0",
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "css-loader": "^5.0.1",
