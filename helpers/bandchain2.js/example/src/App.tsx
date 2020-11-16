@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Message, Data, Wallet } from 'bandchain2.js'
+import { Message, Data, Wallet, Client } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
@@ -25,6 +25,20 @@ function App() {
   console.log(pubkey.verify(msg, signature))
 
   console.log(pubkey.toAddress().toAccBech32())
+
+  const client = new Client('http://d3n-debug.bandprotocol.com/rest')
+
+  console.log('---------------------------------------')
+
+  client
+    .getChainID()
+    .then((e) => console.log('chain ID: ', e))
+    .catch((err) => console.log(err.response.data.error))
+
+  client
+    .getDataSource(3)
+    .then((e) => console.log('data source: ', e))
+    .catch((err) => console.log(err))
 
   return (
     <div className="App">

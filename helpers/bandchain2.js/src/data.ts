@@ -11,3 +11,10 @@ export class Coin {
     return { amount: this.amount.toString(), denom: this.denom }
   }
 }
+
+export type DataSource = {
+  owner: string
+  name: string
+  description: string
+  fileName: string
+}
