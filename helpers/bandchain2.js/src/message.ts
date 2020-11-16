@@ -1,5 +1,5 @@
 import { Coin } from 'data'
-import { Buffer } from 'buffer'
+import { Buffer, constants } from 'buffer'
 import { Address } from 'wallet'
 
 export abstract class Msg {
@@ -24,6 +24,7 @@ export class MsgRequest extends Msg {
     sender: Address,
   ) {
     super()
+
     this.oracleScriptID = oracleScriptID
     this.calldata = Buffer.from(calldata, 'hex')
     this.askCount = askCount
@@ -41,7 +42,7 @@ export class MsgRequest extends Msg {
         ask_count: this.askCount.toString(),
         min_count: this.minCount.toString(),
         client_id: this.clientID,
-        sender: this.sender,
+        sender: this.sender.toAccBech32(),
       },
     }
   }
@@ -51,7 +52,23 @@ export class MsgRequest extends Msg {
   }
 
   validate() {
-    // TODO: validate
+    if (this.oracleScriptID <= 0)
+      throw Error('oracleScriptID cannot less than zero')
+    if (!Number.isInteger(this.oracleScriptID))
+      throw Error('oracleScriptID is not an integer')
+    if (this.calldata.length > constants.MAX_LENGTH)
+      throw Error('too large calldata')
+    if (!Number.isInteger(this.askCount))
+      throw Error('askCount is not an integer')
+    if (!Number.isInteger(this.minCount))
+      throw Error('minCount is not an integer')
+    if (this.minCount <= 0)
+      throw Error(`invalid minCount got: minCount: ${this.minCount}`)
+    if (this.askCount < this.minCount)
+      throw Error(
+        `invalida askCount got: minCount: ${this.minCount}, askCount: ${this.askCount}`,
+      )
+
     return true
   }
 }

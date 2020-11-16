@@ -17,7 +17,7 @@ export default class Transaction {
 
   withAccountNum(accountNum: number): Transaction {
     if (!Number.isInteger(accountNum)) {
-      throw Error('Account number is not an integer')
+      throw Error('accountNum is not an integer')
     }
     this.accountNum = accountNum
     return this
@@ -25,7 +25,7 @@ export default class Transaction {
 
   withSequence(sequence: number): Transaction {
     if (!Number.isInteger(sequence)) {
-      throw Error('Sequence is not an integer')
+      throw Error('sequence is not an integer')
     }
     this.sequence = sequence
     return this
@@ -38,7 +38,7 @@ export default class Transaction {
 
   withFee(fee: number): Transaction {
     if (!Number.isInteger(fee)) {
-      throw Error('Fee is not an integer')
+      throw Error('fee is not an integer')
     }
     this.fee = fee
     return this
@@ -46,7 +46,7 @@ export default class Transaction {
 
   withGas(gas: number): Transaction {
     if (!Number.isInteger(gas)) {
-      throw Error('Gas is not an integer')
+      throw Error('gas is not an integer')
     }
     this.gas = gas
     return this
