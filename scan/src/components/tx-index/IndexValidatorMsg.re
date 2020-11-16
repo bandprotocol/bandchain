@@ -178,7 +178,7 @@ module AddReporterMsg = {
           accountType=`validator
         />
       </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      <Col.Grid col=Col.Six>
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
