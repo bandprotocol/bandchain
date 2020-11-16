@@ -146,8 +146,9 @@ class Client(object):
             if len(request_event) == 1:
                 attrs = request_event[0]["attributes"]
                 attr_id = [attr for attr in attrs if attr["key"] == "id"]
-                request_id = attr_id[0]["value"]
-                request_ids.append(int(request_id))
+                if len(attr_id) == 1:
+                    request_id = attr_id[0]["value"]
+                    request_ids.append(int(request_id))
         if len(request_ids) == 0:
             raise ValueError("There is no request message in this tx")
         return request_ids
