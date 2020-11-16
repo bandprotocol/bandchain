@@ -5,9 +5,16 @@ import { Message, Data, Wallet } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
-  const { PrivateKey, PublicKey } = Wallet
+  const { PrivateKey, PublicKey, Address } = Wallet
   const { Coin } = Data
-  const msgSend = new MsgSend('aaa', 'aaa', [new Coin(100000, 'uband')])
+
+  const from_addr = Address.fromAccBech32(
+    'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
+  )
+  const to_addr = Address.fromAccBech32(
+    'band1p843hkdj2svjzm7zaceak07m9mtyf6hatcpvnl',
+  )
+  const msgSend = new MsgSend(from_addr, to_addr, [new Coin(100000, 'uband')])
   console.log(msgSend)
   const privkey = PrivateKey.fromMnemonic('s')
   const pubkey = privkey.toPubkey()

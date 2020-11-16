@@ -1,15 +1,18 @@
 import { Coin } from 'data'
+import { Address } from 'wallet'
 
-abstract class Msg {
+export abstract class Msg {
   abstract asJson(): { type: string; value: any }
+  abstract getSender(): Address
+  abstract validate(): boolean
 }
 
 export class MsgSend extends Msg {
-  fromAddress: string
-  toAddress: string
+  fromAddress: Address
+  toAddress: Address
   amount: Coin[]
 
-  constructor(from: string, to: string, amount: Coin[]) {
+  constructor(from: Address, to: Address, amount: Coin[]) {
     super()
     this.fromAddress = from
     this.toAddress = to
@@ -20,10 +23,23 @@ export class MsgSend extends Msg {
     return {
       type: 'cosmos-sdk/MsgSend',
       value: {
-        to_address: this.toAddress,
-        from_address: this.fromAddress,
         amount: this.amount.map((each) => each.asJson()),
+        from_address: this.fromAddress.toAccBech32(),
+        to_address: this.toAddress.toAccBech32(),
       },
     }
+  }
+
+  getSender() {
+    return this.fromAddress
+  }
+
+  validate() {
+    if (this.amount.length == 0) {
+      throw Error('Expect at least 1 coin')
+    }
+    // TODO: Uncomment this when coin.validate() is ready
+    // this.amount.forEach(coin => coin.validate())
+    return true
   }
 }

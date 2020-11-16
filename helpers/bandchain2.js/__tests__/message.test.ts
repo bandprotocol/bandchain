@@ -1,4 +1,5 @@
 import { Message, Data } from '../src/index'
+import { Address } from '../src/wallet'
 
 const { MsgSend } = Message
 const { Coin } = Data
@@ -8,8 +9,8 @@ describe('MsgSend', () => {
 
   it('create successfully', () => {
     const msgSend = new MsgSend(
-      'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
-      'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+      Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
+      Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
       [coin],
     )
     expect(msgSend.asJson()).toEqual({

@@ -93,6 +93,7 @@
 
 ### Helpers
 
+- (impv) [\#2862](https://github.com/bandprotocol/bandchain/pull/2862) bandchain.js: Implement `getSignData`, `getTxData` and all `with_*` methods on Transaction module
 - (feat) [\#2872](https://github.com/bandprotocol/bandchain/pull/2872) Bandchain.js: Added new Address class and added more fn on PublicKey class
 - (feat) [\#2865](https://github.com/bandprotocol/bandchain/pull/2865) bandchain.js: Add Private Key and verify on Public Key on Wallet
 - (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
