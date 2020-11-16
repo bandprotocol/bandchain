@@ -1,19 +1,28 @@
 import { Coin } from 'data'
 import { Buffer } from 'buffer'
+import { Address } from 'wallet'
 
-abstract class Msg {
-  abstract asJson(): {type: string, value: any}
+export abstract class Msg {
+  abstract asJson(): { type: string; value: any }
+  abstract getSender(): Address
+  abstract validate(): boolean
 }
-
 export class MsgRequest extends Msg {
   oracleScriptID: number
   calldata: Buffer
   askCount: number
   minCount: number
   clientID: string
-  sender: string
+  sender: Address
 
-  constructor(oracleScriptID: number, calldata: string, askCount: number, minCount: number, clientID: string, sender: string) {
+  constructor(
+    oracleScriptID: number,
+    calldata: string,
+    askCount: number,
+    minCount: number,
+    clientID: string,
+    sender: Address,
+  ) {
     super()
     this.oracleScriptID = oracleScriptID
     this.calldata = Buffer.from(calldata, 'hex')
@@ -24,7 +33,7 @@ export class MsgRequest extends Msg {
   }
 
   asJson() {
-    return{
+    return {
       type: 'oracle/Request',
       value: {
         oracle_script_id: String(this.oracleScriptID),
@@ -32,18 +41,27 @@ export class MsgRequest extends Msg {
         ask_count: this.askCount.toString(),
         min_count: this.minCount.toString(),
         client_id: this.clientID,
-        sender: this.sender
-      }
+        sender: this.sender,
+      },
     }
+  }
+
+  getSender() {
+    return this.sender
+  }
+
+  validate() {
+    // TODO: validate
+    return true
   }
 }
 
 export class MsgSend extends Msg {
-  fromAddress: string
-  toAddress: string
+  fromAddress: Address
+  toAddress: Address
   amount: Coin[]
 
-  constructor(from: string, to: string, amount: Coin[]) {
+  constructor(from: Address, to: Address, amount: Coin[]) {
     super()
     this.fromAddress = from
     this.toAddress = to
@@ -54,10 +72,23 @@ export class MsgSend extends Msg {
     return {
       type: 'cosmos-sdk/MsgSend',
       value: {
-        to_address: this.toAddress,
-        from_address: this.fromAddress,
         amount: this.amount.map((each) => each.asJson()),
+        from_address: this.fromAddress.toAccBech32(),
+        to_address: this.toAddress.toAccBech32(),
       },
     }
+  }
+
+  getSender() {
+    return this.fromAddress
+  }
+
+  validate() {
+    if (this.amount.length == 0) {
+      throw Error('Expect at least 1 coin')
+    }
+    // TODO: Uncomment this when coin.validate() is ready
+    // this.amount.forEach(coin => coin.validate())
+    return true
   }
 }

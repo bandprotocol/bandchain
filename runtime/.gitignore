@@ -1,5 +1,9 @@
 /docker/requirements.txt
 
+/google-cloud-functions/venv
+/google-cloud-functions/requirements.txt
+/google-cloud-functions/google-cloud-function.zip
+
 /lambda/requirements.txt
 /lambda/venv
 /lambda/lambda-yoda.zip

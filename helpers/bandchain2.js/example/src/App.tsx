@@ -1,16 +1,31 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Message, Data } from 'bandchain2.js'
+import { Message, Data, Wallet } from 'bandchain2.js'
 
 function App() {
   const { MsgSend, MsgRequest } = Message
+  const { PrivateKey, PublicKey, Address } = Wallet
   const { Coin } = Data
-  const msgSend = new MsgSend('aaa', 'aaa', [new Coin(100000, 'uband')])
-  const msgRequest = new MsgRequest(1, "000000034254430000000000000001", 4, 2, "from_bandchain2.js", "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c")
+
+  const from_addr = Address.fromAccBech32(
+    'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
+  )
+  const to_addr = Address.fromAccBech32(
+    'band1p843hkdj2svjzm7zaceak07m9mtyf6hatcpvnl',
+  )
+  const msgSend = new MsgSend(from_addr, to_addr, [new Coin(100000, 'uband')])
   console.log(msgSend)
-  console.log(msgRequest)
-  console.log(msgRequest.asJson())
+  const privkey = PrivateKey.fromMnemonic('s')
+  const pubkey = privkey.toPubkey()
+  const msg = Buffer.from('test msg', 'utf-8')
+  const signature = privkey.sign(msg)
+  console.log(signature.toString('base64'))
+
+  console.log(pubkey.verify(msg, signature))
+
+  console.log(pubkey.toAddress().toAccBech32())
+
   return (
     <div className="App">
       <header className="App-header">
