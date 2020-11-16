@@ -58,20 +58,14 @@ class PrivateKey:
         seed = Mnemonic("english").to_seed(words)
         self = cls(_error_do_not_use_init_directly=True)
         self.signing_key = SigningKey.from_string(
-            BIP32.from_seed(seed).get_privkey_from_path(path),
-            curve=SECP256k1,
-            hashfunc=hashlib.sha256,
+            BIP32.from_seed(seed).get_privkey_from_path(path), curve=SECP256k1, hashfunc=hashlib.sha256
         )
         return self
 
     @classmethod
     def from_hex(cls, priv: str) -> "PrivateKey":
         self = cls(_error_do_not_use_init_directly=True)
-        self.signing_key = SigningKey.from_string(
-            bytes.fromhex(priv),
-            curve=SECP256k1,
-            hashfunc=hashlib.sha256,
-        )
+        self.signing_key = SigningKey.from_string(bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256)
         return self
 
     def to_hex(self) -> str:
@@ -98,11 +92,7 @@ class PrivateKey:
 
         :return: a signature of this private key over the given message
         """
-        return self.signing_key.sign_deterministic(
-            msg,
-            hashfunc=hashlib.sha256,
-            sigencode=sigencode_string_canonize,
-        )
+        return self.signing_key.sign_deterministic(msg, hashfunc=hashlib.sha256, sigencode=sigencode_string_canonize)
 
 
 class PublicKey:

@@ -1070,3 +1070,47 @@ def test_get_request_id_by_tx_hash_no_request_msg(requests_mock):
         client.get_request_id_by_tx_hash(
             HexBytes(bytes.fromhex("9F83E4994C048F784D0E30F45696C0A1E5BA7407B2E1833B439FA172B3B75F00"))
         )
+
+    def test_get_reference_data(requests_mock):
+
+        requests_mock.register_uri(
+            "POST",
+            "{}/oracle/request_prices".format(TEST_RPC),
+            json={
+                "height": "2953006",
+                "result": [
+                    {
+                        "symbol": "BTC",
+                        "multiplier": "1000000000",
+                        "px": "16242693800000",
+                        "request_id": "1171969",
+                        "resolve_time": "1605512243",
+                    },
+                    {
+                        "symbol": "ETH",
+                        "multiplier": "1000000000",
+                        "px": "454523400000",
+                        "request_id": "1171969",
+                        "resolve_time": "1605512943",
+                    },
+                    {
+                        "symbol": "TRX",
+                        "multiplier": "1000000000",
+                        "px": "25428330",
+                        "request_id": "1171969",
+                        "resolve_time": "1605512443",
+                    },
+                ],
+            },
+            status_code=200,
+        )
+
+        [result1, result2] = client.get_reference_data(["BTC/USD", "TRX/ETH"], 3, 4)
+
+        assert result1.pair == "BTC/USD"
+        assert result1.rate == 16242.6938
+        assert result1.updated_at.base == 1605512243
+        assert result2.pair == "TRX/ETH"
+        assert result2.rate == 0.000055945040453362794
+        assert result2.updated_at.base == 1605512443
+        assert result2.updated_at.quote == 1605512943

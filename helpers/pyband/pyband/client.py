@@ -1,8 +1,9 @@
 import requests
+import time
 
 from dacite import from_dict
-from .wallet import Address
 from typing import List
+from .wallet import Address
 from .data import (
     Account,
     Block,
@@ -14,6 +15,8 @@ from .data import (
     TransactionSyncMode,
     TransactionAsyncMode,
     TransactionBlockMode,
+    ReferencePrice,
+    ReferencePriceUpdated,
 )
 
 
@@ -152,3 +155,46 @@ class Client(object):
         if len(request_ids) == 0:
             raise ValueError("There is no request message in this tx")
         return request_ids
+
+    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int):
+        symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
+        data = self._post(
+            "/oracle/request_prices",
+            json={
+                "symbols": list(symbols),
+                "min_count": min_count,
+                "ask_count": ask_count,
+            },
+        )
+
+        try:
+            price_data = data["result"]
+            symbol_dict = {
+                "USD": {
+                    "multiplier": 1000000000,
+                    "px": 1000000000,
+                    "resolve_time": int(time.time()),
+                }
+            }
+            for price in price_data:
+                symbol_dict[price["symbol"]] = price
+
+            results = []
+            for pair in pairs:
+                [base_symbol, quote_symbol] = pair.split("/")
+                results.append(
+                    ReferencePrice(
+                        pair,
+                        rate=(int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"]))
+                        / (int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])),
+                        updated_at=ReferencePriceUpdated(
+                            int(symbol_dict[base_symbol]["resolve_time"]),
+                            int(symbol_dict[quote_symbol]["resolve_time"]),
+                        ),
+                    )
+                )
+
+            return results
+
+        except:
+            raise ValueError("Error quering prices")
