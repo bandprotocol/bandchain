@@ -157,7 +157,7 @@ func queryActiveValidators(ctx sdk.Context, k Keeper) ([]byte, error) {
 
 func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
 	if len(path) > 1 {
-		return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "request not specified")
+		return types.QueryBadRequest("too many arguments")
 	}
 
 	var valAddress *sdk.ValAddress
@@ -174,22 +174,21 @@ func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, err
 	lastExpired := k.GetRequestLastExpired(ctx)
 	requestCount := k.GetRequestCount(ctx)
 
-	var pendingIds []types.RequestID
+	var pendingIDs []types.RequestID
 	for id := lastExpired + 1; int64(id) <= requestCount; id++ {
-		req, err := k.GetRequest(ctx, id)
-		if err != nil {
-			return types.QueryNotFound(err.Error())
-		}
 
-		// fulfilled request
+		req := k.MustGetRequest(ctx, id)
+
+		// If all validators reported on this request, then skip it.
 		reports := k.GetReports(ctx, id)
 		if len(reports) == len(req.RequestedValidators) {
 			continue
 		}
 
+		// Skip if validator hasn't been assigned.
 		if valAddress != nil {
 
-			// skip if the validator is not a member
+			// If the validator isn't in requested validators set, then skip it.
 			isValidator := false
 			for _, v := range req.RequestedValidators {
 				if valAddress.Equals(v) {
@@ -202,7 +201,7 @@ func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, err
 				continue
 			}
 
-			// skip if the validator already reported
+			// If the validator has reported, then skip it.
 			reported := false
 			for _, r := range reports {
 				if valAddress.Equals(r.Validator) {
@@ -216,8 +215,8 @@ func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, err
 			}
 		}
 
-		pendingIds = append(pendingIds, id)
+		pendingIDs = append(pendingIDs, id)
 	}
 
-	return types.QueryOK(pendingIds)
+	return types.QueryOK(pendingIDs)
 }

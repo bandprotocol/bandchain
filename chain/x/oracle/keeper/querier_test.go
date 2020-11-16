@@ -5,11 +5,12 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+	abci "github.com/tendermint/tendermint/abci/types"
+
 	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/stretchr/testify/require"
-	abci "github.com/tendermint/tendermint/abci/types"
 )
 
 func TestQueryPendingRequests(t *testing.T) {
@@ -28,29 +29,53 @@ func TestQueryPendingRequests(t *testing.T) {
 
 	q := keeper.NewQuerier(k)
 
-	test := func(args []string, expected []types.RequestID) {
-		raw, err := q(ctx, append([]string{types.QueryPendingRequests}, args...), abci.RequestQuery{})
-		require.NoError(t, err)
-
-		var queryRequest types.QueryResult
-		require.NoError(t, json.Unmarshal(raw, &queryRequest))
-
-		var rawRequestIDs []string
-		types.ModuleCdc.MustUnmarshalJSON(queryRequest.Result, &rawRequestIDs)
-
-		var requestIDs []types.RequestID
-		for _, r := range rawRequestIDs {
-			id, err := strconv.ParseInt(r, 10, 64)
-			require.NoError(t, err)
-
-			requestIDs = append(requestIDs, types.RequestID(id))
-		}
-
-		require.Equal(t, expected, requestIDs)
+	tests := []struct {
+		name     string
+		args     []string
+		expected []types.RequestID
+	}{
+		{
+			name:     "Get all pending requests",
+			args:     []string{},
+			expected: []types.RequestID{41, 42, 43},
+		},
+		{
+			name:     "Get pending requests for validator1",
+			args:     []string{testapp.Validator1.ValAddress.String()},
+			expected: []types.RequestID{42, 43},
+		},
+		{
+			name:     "Get pending requests for validator2",
+			args:     []string{testapp.Validator2.ValAddress.String()},
+			expected: []types.RequestID{41, 43},
+		},
+		{
+			name:     "Get pending requests for validator3",
+			args:     []string{testapp.Validator3.ValAddress.String()},
+			expected: nil,
+		},
 	}
 
-	test([]string{}, []types.RequestID{41, 42, 43})
-	test([]string{testapp.Validator1.ValAddress.String()}, []types.RequestID{42, 43})
-	test([]string{testapp.Validator2.ValAddress.String()}, []types.RequestID{41, 43})
-	test([]string{testapp.Validator3.ValAddress.String()}, nil)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			raw, err := q(ctx, append([]string{types.QueryPendingRequests}, tt.args...), abci.RequestQuery{})
+			require.NoError(t, err)
+
+			var queryRequest types.QueryResult
+			require.NoError(t, json.Unmarshal(raw, &queryRequest))
+
+			var rawRequestIDs []string
+			types.ModuleCdc.MustUnmarshalJSON(queryRequest.Result, &rawRequestIDs)
+
+			var requestIDs []types.RequestID
+			for _, r := range rawRequestIDs {
+				id, err := strconv.ParseInt(r, 10, 64)
+				require.NoError(t, err)
+
+				requestIDs = append(requestIDs, types.RequestID(id))
+			}
+
+			require.Equal(t, tt.expected, requestIDs)
+		})
+	}
 }
