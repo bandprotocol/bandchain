@@ -16,11 +16,17 @@ export default class Transaction {
   }
 
   withAccountNum(accountNum: number): Transaction {
+    if (!Number.isInteger(accountNum)) {
+      throw Error('Account number is not an integer')
+    }
     this.accountNum = accountNum
     return this
   }
 
   withSequence(sequence: number): Transaction {
+    if (!Number.isInteger(sequence)) {
+      throw Error('Sequence is not an integer')
+    }
     this.sequence = sequence
     return this
   }
@@ -31,11 +37,17 @@ export default class Transaction {
   }
 
   withFee(fee: number): Transaction {
+    if (!Number.isInteger(fee)) {
+      throw Error('Fee is not an integer')
+    }
     this.fee = fee
     return this
   }
 
   withGas(gas: number): Transaction {
+    if (!Number.isInteger(gas)) {
+      throw Error('Gas is not an integer')
+    }
     this.gas = gas
     return this
   }
@@ -62,7 +74,6 @@ export default class Transaction {
       throw Error('chainID should be defined')
     }
 
-    // TODO: Validate Msgs
     this.msgs.forEach((msg) => msg.validate())
 
     let messageJson: { [key: string]: any } = {

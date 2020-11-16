@@ -43,6 +43,26 @@ describe('Transaction', () => {
     expect(tsc.memo).toEqual('bandchain2.js test')
   })
 
+  it('get error from checking integer', () => {
+    const tsc = new Transaction().withMessages(msgSend)
+
+    expect(() => {
+      tsc.withAccountNum(100.5)
+    }).toThrowError('Account number is not an integer')
+
+    expect(() => {
+      tsc.withSequence(100.5)
+    }).toThrowError('Sequence is not an integer')
+
+    expect(() => {
+      tsc.withFee(100.5)
+    }).toThrowError('Fee is not an integer')
+
+    expect(() => {
+      tsc.withGas(100.5)
+    }).toThrowError('Gas is not an integer')
+  })
+
   it('getSignData successfully', () => {
     const tsc = new Transaction()
       .withMessages(msgSend)
