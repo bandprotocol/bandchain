@@ -27,6 +27,7 @@
 
 ### Yoda
 
+- (impv) [\#2896](https://github.com/bandprotocol/bandchain/pull/2896) Improved yoda to handle pending requests
 - (impv) [\#2857](https://github.com/bandprotocol/bandchain/pull/2857) Improved yoda gas estimation function
 
 ### Emitter & Flusher
