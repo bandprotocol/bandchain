@@ -1,3 +1,5 @@
+import { Address } from './wallet'
+
 export class Coin {
   amount: number
   denom: string
@@ -13,7 +15,7 @@ export class Coin {
 }
 
 export interface DataSource {
-  owner: string
+  owner: Address
   name: string
   description: string
   fileName: string

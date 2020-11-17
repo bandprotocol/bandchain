@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { DataSource } from 'data'
+import { Address } from './wallet'
+import { DataSource } from './data'
 
 export default class Client {
   rpcUrl: string
@@ -31,7 +32,7 @@ export default class Client {
   async getDataSource(id: number): Promise<DataSource> {
     const response = await this.getResult(`/oracle/data_sources/${id}`, {})
     return {
-      owner: response.owner,
+      owner: Address.fromAccBech32(response.owner),
       name: response.name,
       description: response.description,
       fileName: response.filename,

@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Client } from '../src/index'
+import { Address } from '../src/wallet'
 
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
@@ -34,7 +35,9 @@ describe('Client get data', () => {
     mockedAxios.get.mockResolvedValue(resp)
 
     const expected = {
-      owner: 'band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs',
+      owner: Address.fromAccBech32(
+        'band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs',
+      ),
       name: 'CoinGecko Cryptocurrency Price',
       description:
         'Retrieves current price of a cryptocurrency from https://www.coingecko.com',
