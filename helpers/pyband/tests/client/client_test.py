@@ -178,7 +178,7 @@ def test_get_account(requests_mock):
     )
 
     assert client.get_account(Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")) == Account(
-        address="band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte",
+        address=Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"),
         coins=[{"denom": "uband", "amount": "104082359107"}],
         public_key={
             "type": "tendermint/PubKeySecp256k1",
@@ -207,7 +207,7 @@ def test_get_data_source(requests_mock):
     )
 
     assert client.get_data_source(1) == DataSource(
-        owner="band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
+        owner=Address.from_acc_bech32("band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs"),
         name="CoinGecko Cryptocurrency Price",
         description="Retrieves current price of a cryptocurrency from https://www.coingecko.com",
         filename="c56de9061a78ac96748c83e8a22330accf6ee8ebb499c8525613149a70ec49d0",
@@ -234,7 +234,7 @@ def test_get_oracle_script(requests_mock):
     )
 
     assert client.get_oracle_script(1) == OracleScript(
-        owner="band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
+        owner=Address.from_acc_bech32("band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs"),
         name="Cryptocurrency Price in USD",
         description="Oracle script that queries the average cryptocurrency price using current price data from CoinGecko, CryptoCompare, and Binance",
         filename="a1f941e828bd8d5ea9c98e2cd3ff9ba8e52a8f63dca45bddbb2fdbfffebc7556",
