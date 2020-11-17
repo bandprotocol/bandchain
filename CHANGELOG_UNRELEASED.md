@@ -27,6 +27,8 @@
 
 ### Yoda
 
+- (impv) [\#2857](https://github.com/bandprotocol/bandchain/pull/2857) Improved yoda gas estimation function
+
 ### Emitter & Flusher
 
 - (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter

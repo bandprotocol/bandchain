@@ -13,10 +13,20 @@ import (
 	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
 
+type FeeEstimationData struct {
+	askCount    int64
+	minCount    int64
+	callData    []byte
+	validators  int
+	rawRequests []rawRequest
+	clientID    string
+}
+
 type ReportMsgWithKey struct {
-	msg         types.MsgReportData
-	execVersion []string
-	keyIndex    int64
+	msg               types.MsgReportData
+	execVersion       []string
+	keyIndex          int64
+	feeEstimationData FeeEstimationData
 }
 
 type Context struct {
