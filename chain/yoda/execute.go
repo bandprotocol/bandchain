@@ -1,10 +1,8 @@
 package yoda
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
@@ -164,51 +162,36 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	return resValue, nil
 }
 
-// map data source id to hash
-var dataSourceCache sync.Map
-
 // GetDataSourceHash fetches data source hash by id
 func GetDataSourceHash(c *Context, l *Logger, id types.DataSourceID) (string, error) {
-	if hash, ok := dataSourceCache.Load(id); ok {
+	if hash, ok := c.dataSourceCache.Load(id); ok {
 		return hash.(string), nil
 	}
 
-	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%d", types.StoreKey, types.QueryDataSources, id), nil, rpcclient.ABCIQueryOptions{})
+	res, err := c.client.ABCIQuery(fmt.Sprintf("/store/%s/key", types.StoreKey), types.DataSourceStoreKey(id))
 	if err != nil {
 		l.Debug(":skull: Failed to get data source with error: %s", err.Error())
 		return "", err
 	}
 
-	var queryResult types.QueryResult
-	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
-		l.Debug(":skull: Failed to parse data source query result with error: %s", err.Error())
-		return "", err
-	}
+	var d types.DataSource
+	cdc.MustUnmarshalBinaryBare(res.Response.Value, &d)
 
-	var dataSource types.DataSource
-	cdc.MustUnmarshalJSON(queryResult.Result, &dataSource)
-
-	hash, _ := dataSourceCache.LoadOrStore(id, dataSource.Filename)
+	hash, _ := c.dataSourceCache.LoadOrStore(id, d.Filename)
 
 	return hash.(string), nil
 }
 
 // GetRequest fetches request by id
-func GetRequest(c *Context, l *Logger, id types.RequestID) (*types.QueryRequestResult, error) {
-	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%d", types.StoreKey, types.QueryRequests, id), nil, rpcclient.ABCIQueryOptions{})
+func GetRequest(c *Context, l *Logger, id types.RequestID) (types.Request, error) {
+	res, err := c.client.ABCIQuery(fmt.Sprintf("/store/%s/key", types.StoreKey), types.RequestStoreKey(id))
 	if err != nil {
-		l.Debug(":skull: Failed to get the request with error: %s", err.Error())
-		return nil, err
+		l.Debug(":skull: Failed to get request with error: %s", err.Error())
+		return types.Request{}, err
 	}
 
-	var queryResult types.QueryResult
-	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
-		l.Debug(":skull: Failed to parse the request query result with error: %s", err.Error())
-		return nil, err
-	}
+	var r types.Request
+	cdc.MustUnmarshalBinaryBare(res.Response.Value, &r)
 
-	var r types.QueryRequestResult
-	cdc.MustUnmarshalJSON(queryResult.Result, &r)
-
-	return &r, nil
+	return r, nil
 }

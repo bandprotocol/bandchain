@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
-	"strconv"
+	"sync"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -64,16 +64,11 @@ func runImpl(c *Context, l *Logger) error {
 		return err
 	}
 
-	var pendingRequests []string
+	var pendingRequests []types.RequestID
 	cdc.MustUnmarshalJSON(result.Result, &pendingRequests)
 
-	for _, pendingReq := range pendingRequests {
-		id, err := strconv.ParseInt(pendingReq, 10, 64)
-		if err != nil {
-			panic(err.Error())
-		}
-
-		go handlePendingRequest(c, l, types.RequestID(id))
+	for _, id := range pendingRequests {
+		go handlePendingRequest(c, l.With("rid", id), id)
 	}
 
 	for {
@@ -161,6 +156,7 @@ func runCmd(c *Context) *cobra.Command {
 			c.pendingMsgs = make(chan ReportMsgWithKey)
 			c.freeKeys = make(chan int64, len(keys))
 			c.keyRoundRobinIndex = -1
+			c.dataSourceCache = new(sync.Map)
 			return runImpl(c, l)
 		},
 	}

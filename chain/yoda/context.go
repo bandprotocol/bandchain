@@ -1,6 +1,7 @@
 package yoda
 
 import (
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -43,6 +44,8 @@ type Context struct {
 	pendingMsgs        chan ReportMsgWithKey
 	freeKeys           chan int64
 	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
+
+	dataSourceCache *sync.Map
 }
 
 func (c *Context) nextKeyIndex() int64 {

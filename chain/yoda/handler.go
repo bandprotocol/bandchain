@@ -155,7 +155,7 @@ func handlePendingRequest(c *Context, l *Logger, id types.RequestID) {
 	var rawRequests []rawRequest
 
 	// prepare raw requests
-	for _, raw := range req.Request.RawRequests {
+	for _, raw := range req.RawRequests {
 
 		hash, err := GetDataSourceHash(c, l, raw.DataSourceID)
 		if err != nil {
@@ -179,11 +179,11 @@ func handlePendingRequest(c *Context, l *Logger, id types.RequestID) {
 		execVersion: execVersions,
 		keyIndex:    keyIndex,
 		feeEstimationData: FeeEstimationData{
-			askCount:    int64(len(req.Request.RequestedValidators)),
-			minCount:    int64(req.Request.MinCount),
-			callData:    req.Request.Calldata,
+			askCount:    int64(len(req.RequestedValidators)),
+			minCount:    int64(req.MinCount),
+			callData:    req.Calldata,
 			rawRequests: rawRequests,
-			clientID:    req.Request.GetClientID(),
+			clientID:    req.ClientID,
 		},
 	}
 }
