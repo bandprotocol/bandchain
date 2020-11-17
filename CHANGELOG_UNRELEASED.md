@@ -12,6 +12,7 @@
 
 ### Chain (Non-consensus)
 
+- (feat) [\#2886](https://github.com/bandprotocol/bandchain/pull/2886) Added `pending_requests` querier
 - (feat) [\#2870](https://github.com/bandprotocol/bandchain/pull/2870) fast-sync: emit all gov module from start state
 - (feat) [\#2829](https://github.com/bandprotocol/bandchain/pull/2829) Added `price_symbols` endpoint
 - (bugs) [\#2828](https://github.com/bandprotocol/bandchain/pull/2828) Add missing height on `multi_request_search` and `request_prices` endpoints

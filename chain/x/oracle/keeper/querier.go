@@ -33,6 +33,8 @@ func NewQuerier(keeper Keeper) sdk.Querier {
 			return queryReporters(ctx, path[1:], keeper)
 		case types.QueryActiveValidators:
 			return queryActiveValidators(ctx, keeper)
+		case types.QueryPendingRequests:
+			return queryPendingRequests(ctx, path[1:], keeper)
 		default:
 			return nil, sdkerrors.Wrapf(sdkerrors.ErrUnknownRequest, "unknown oracle query endpoint")
 		}
@@ -151,4 +153,70 @@ func queryActiveValidators(ctx sdk.Context, k Keeper) ([]byte, error) {
 			return false
 		})
 	return types.QueryOK(vals)
+}
+
+func queryPendingRequests(ctx sdk.Context, path []string, k Keeper) ([]byte, error) {
+	if len(path) > 1 {
+		return types.QueryBadRequest("too many arguments")
+	}
+
+	var valAddress *sdk.ValAddress
+	if len(path) == 1 {
+		valAddress = new(sdk.ValAddress)
+		address, err := sdk.ValAddressFromBech32(path[0])
+		if err != nil {
+			return types.QueryBadRequest(err.Error())
+		}
+
+		*valAddress = address
+	}
+
+	lastExpired := k.GetRequestLastExpired(ctx)
+	requestCount := k.GetRequestCount(ctx)
+
+	var pendingIDs []types.RequestID
+	for id := lastExpired + 1; int64(id) <= requestCount; id++ {
+
+		req := k.MustGetRequest(ctx, id)
+
+		// If all validators reported on this request, then skip it.
+		reports := k.GetReports(ctx, id)
+		if len(reports) == len(req.RequestedValidators) {
+			continue
+		}
+
+		// Skip if validator hasn't been assigned.
+		if valAddress != nil {
+
+			// If the validator isn't in requested validators set, then skip it.
+			isValidator := false
+			for _, v := range req.RequestedValidators {
+				if valAddress.Equals(v) {
+					isValidator = true
+					break
+				}
+			}
+
+			if !isValidator {
+				continue
+			}
+
+			// If the validator has reported, then skip it.
+			reported := false
+			for _, r := range reports {
+				if valAddress.Equals(r.Validator) {
+					reported = true
+					break
+				}
+			}
+
+			if reported {
+				continue
+			}
+		}
+
+		pendingIDs = append(pendingIDs, id)
+	}
+
+	return types.QueryOK(pendingIDs)
 }
