@@ -18,11 +18,9 @@ jobs:
           override: true
 
       - name: Install Go
-        uses: actions/setup-go@v2-beta
+        uses: actions/setup-go@v2
         with:
           go-version: "^1.14.4"
-        env:
-          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
 
       - name: Install Wabt (wat2wasm)
         run: |
