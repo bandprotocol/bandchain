@@ -23,20 +23,19 @@ export default class Client {
   }
 
   /**
-   * Creates a new Promise with the same internal state of this Promise.
+   * Get the data source by ID
+   * @param id Data source ID
    * @returns A Promise of DataSoruce.
    */
 
   async getDataSource(id: number): Promise<DataSource> {
     const response = await this.getResult(`/oracle/data_sources/${id}`, {})
-    return new Promise<DataSource>((resolve) => {
-      resolve({
-        owner: response.owner,
-        name: response.name,
-        description: response.description,
-        fileName: response.filename,
-      })
-    })
+    return {
+      owner: response.owner,
+      name: response.name,
+      description: response.description,
+      fileName: response.filename,
+    }
   }
 
   async getLatestRequest(

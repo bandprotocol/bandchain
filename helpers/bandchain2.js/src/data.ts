@@ -12,7 +12,7 @@ export class Coin {
   }
 }
 
-export type DataSource = {
+export interface DataSource {
   owner: string
   name: string
   description: string
