@@ -30,7 +30,7 @@ export default class Client {
    */
 
   async getDataSource(id: number): Promise<DataSource> {
-    const response = await this.getResult(`/oracle/data_sources/${id}`, {})
+    const response = await this.getResult(`/oracle/data_sources/${id}`)
     return {
       owner: Address.fromAccBech32(response.owner),
       name: response.name,
