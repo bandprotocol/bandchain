@@ -53,6 +53,7 @@ func runImpl(c *Context, l *Logger) error {
 		waitingMsgs[i] = []ReportMsgWithKey{}
 	}
 
+	// Get pending requests and handle them
 	rawPendingRequests, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QueryPendingRequests, c.validator.String()), nil, rpcclient.ABCIQueryOptions{})
 	if err != nil {
 		return err

@@ -163,13 +163,12 @@ func handlePendingRequest(c *Context, l *Logger, id types.RequestID) {
 			return
 		}
 
-		r := rawRequest{
+		rawRequests = append(rawRequests, rawRequest{
 			dataSourceID:   raw.DataSourceID,
 			dataSourceHash: hash,
 			externalID:     raw.ExternalID,
 			calldata:       string(raw.Calldata),
-		}
-		rawRequests = append(rawRequests, r)
+		})
 	}
 
 	// process raw requests

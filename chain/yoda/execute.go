@@ -167,7 +167,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 // map data source id to hash
 var dataSourceCache sync.Map
 
-// GetDataSourceHash fetches data source hash By ID
+// GetDataSourceHash fetches data source hash by id
 func GetDataSourceHash(c *Context, l *Logger, id types.DataSourceID) (string, error) {
 	if hash, ok := dataSourceCache.Load(id); ok {
 		return hash.(string), nil
@@ -181,7 +181,7 @@ func GetDataSourceHash(c *Context, l *Logger, id types.DataSourceID) (string, er
 
 	var queryResult types.QueryResult
 	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
-		l.Debug(":skull: Failed to parse request with error: %s", err.Error())
+		l.Debug(":skull: Failed to parse data source query result with error: %s", err.Error())
 		return "", err
 	}
 
@@ -203,7 +203,7 @@ func GetRequest(c *Context, l *Logger, id types.RequestID) (*types.QueryRequestR
 
 	var queryResult types.QueryResult
 	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
-		l.Debug(":skull: Failed to parse the request with error: %s", err.Error())
+		l.Debug(":skull: Failed to parse the request query result with error: %s", err.Error())
 		return nil, err
 	}
 
