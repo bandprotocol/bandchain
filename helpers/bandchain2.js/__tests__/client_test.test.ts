@@ -4,7 +4,7 @@ import { Client } from '../src/index'
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
 
-const TEST_RPC = 'https://api-mock.bandprotocol.com/rest/'
+const TEST_RPC = 'https://api-mock.bandprotocol.com/rest'
 
 const client = new Client(TEST_RPC)
 

@@ -7,13 +7,13 @@ export default class Client {
     this.rpcUrl = rpcUrl
   }
 
-  private async get(path: string, ...params: object[]) {
-    const response = await axios.get(`${this.rpcUrl}${path}`, ...params)
+  private async get(path: string, param?: object) {
+    const response = await axios.get(`${this.rpcUrl}${path}`, param)
     return response.data
   }
 
-  private async getResult(path: string, ...params: object[]) {
-    const response = await this.get(`${path}`, ...params)
+  private async getResult(path: string, param?: object) {
+    const response = await this.get(`${path}`, param)
     return response.result
   }
 
@@ -45,10 +45,12 @@ export default class Client {
     askCount: number,
   ) {
     const response = await this.getResult(`/oracle/request_search`, {
-      oid: oid,
-      calldata: calldata,
-      min_count: minCount,
-      ask_count: askCount,
+      params: {
+        oid: oid,
+        calldata: calldata,
+        min_count: minCount,
+        ask_count: askCount,
+      },
     })
     return response
   }
