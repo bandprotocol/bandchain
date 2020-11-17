@@ -1,8 +1,10 @@
 package yoda
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
+	"sync"
 	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
@@ -160,4 +162,53 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 
 	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resValue[:32])
 	return resValue, nil
+}
+
+// map data source id to hash
+var dataSourceCache sync.Map
+
+// GetDataSourceHash fetches data source hash By ID
+func GetDataSourceHash(c *Context, l *Logger, id types.DataSourceID) (string, error) {
+	if hash, ok := dataSourceCache.Load(id); ok {
+		return hash.(string), nil
+	}
+
+	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%d", types.StoreKey, types.QueryDataSources, id), nil, rpcclient.ABCIQueryOptions{})
+	if err != nil {
+		l.Debug(":skull: Failed to get data source with error: %s", err.Error())
+		return "", err
+	}
+
+	var queryResult types.QueryResult
+	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
+		l.Debug(":skull: Failed to parse request with error: %s", err.Error())
+		return "", err
+	}
+
+	var dataSource types.DataSource
+	cdc.MustUnmarshalJSON(queryResult.Result, &dataSource)
+
+	hash, _ := dataSourceCache.LoadOrStore(id, dataSource.Filename)
+
+	return hash.(string), nil
+}
+
+// GetRequest fetches request by id
+func GetRequest(c *Context, l *Logger, id types.RequestID) (*types.QueryRequestResult, error) {
+	res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%d", types.StoreKey, types.QueryRequests, id), nil, rpcclient.ABCIQueryOptions{})
+	if err != nil {
+		l.Debug(":skull: Failed to get the request with error: %s", err.Error())
+		return nil, err
+	}
+
+	var queryResult types.QueryResult
+	if err := json.Unmarshal(res.Response.GetValue(), &queryResult); err != nil {
+		l.Debug(":skull: Failed to parse the request with error: %s", err.Error())
+		return nil, err
+	}
+
+	var r types.QueryRequestResult
+	cdc.MustUnmarshalJSON(queryResult.Result, &r)
+
+	return &r, nil
 }

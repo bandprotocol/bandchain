@@ -3,9 +3,9 @@ package yoda
 import (
 	"encoding/hex"
 	"strconv"
-	"sync"
 
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
@@ -13,6 +13,12 @@ import (
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
+
+type processingResult struct {
+	rawReport types.RawReport
+	version   string
+	err       error
+}
 
 func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 	l.Debug(":eyes: Inspecting incoming transaction: %X", tmhash.Sum(tx.Tx))
@@ -90,58 +96,26 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	keyIndex := c.nextKeyIndex()
 	key := c.keys[keyIndex]
 
-	reportsChan := make(chan types.RawReport, len(reqs))
-	var version sync.Map
+	resultsChan := make(chan processingResult, len(reqs))
 	for _, req := range reqs {
-		go func(l *Logger, req rawRequest) {
-			exec, err := GetExecutable(c, l, req.dataSourceHash)
-			if err != nil {
-				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- types.NewRawReport(
-					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
-				)
-				return
-			}
-
-			vmsg := NewVerificationMessage(cfg.ChainID, c.validator, types.RequestID(id), req.externalID)
-			sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
-			if err != nil {
-				l.Error(":skull: Failed to sign verify message: %s", err.Error())
-				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
-			}
-
-			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
-				"BAND_CHAIN_ID":    vmsg.ChainID,
-				"BAND_VALIDATOR":   vmsg.Validator.String(),
-				"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
-				"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
-				"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
-				"BAND_SIGNATURE":   sig,
-			})
-
-			if err != nil {
-				l.Error(":skull: Failed to execute data source script: %s", err.Error())
-				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
-			} else {
-				l.Debug(
-					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
-					req.calldata, result.Output, result.Code,
-				)
-				version.Store(result.Version, true)
-				reportsChan <- types.NewRawReport(req.externalID, result.Code, result.Output)
-			}
-		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
+		go handleRawRequest(c, l.With("did", req.dataSourceID, "eid", req.externalID), req, key, types.RequestID(id), resultsChan)
 	}
 
 	reports := make([]types.RawReport, 0)
-	execVersions := make([]string, 0)
+	versions := map[string]bool{}
 	for range reqs {
-		reports = append(reports, <-reportsChan)
+		result := <-resultsChan
+		reports = append(reports, result.rawReport)
+
+		if result.err == nil {
+			versions[result.version] = true
+		}
 	}
-	version.Range(func(key, value interface{}) bool {
-		execVersions = append(execVersions, key.(string))
-		return true
-	})
+
+	execVersions := make([]string, 0, len(versions))
+	for version := range versions {
+		execVersions = append(execVersions, version)
+	}
 
 	rawAskCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyAskCount)
 	if len(rawAskCount) != 1 {
@@ -182,5 +156,120 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			rawRequests: reqs,
 			clientID:    clientID,
 		},
+	}
+}
+
+func handleRequest(c *Context, l *Logger, id types.RequestID) {
+
+	req, err := GetRequest(c, l, id)
+	if err != nil {
+		l.Error(":skull: Failed to get request with error: %s", err.Error())
+		return
+	}
+
+	keyIndex := c.nextKeyIndex()
+	key := c.keys[keyIndex]
+
+	resultsChan := make(chan processingResult, len(req.Request.RawRequests))
+	var rawRequests []rawRequest
+
+	for _, raw := range req.Request.RawRequests {
+
+		hash, err := GetDataSourceHash(c, l, raw.DataSourceID)
+		if err != nil {
+			l.Error(":skull: Failed to get data source hash with error: %s", err.Error())
+			return
+		}
+
+		r := rawRequest{
+			dataSourceID:   raw.DataSourceID,
+			dataSourceHash: hash,
+			externalID:     raw.ExternalID,
+			calldata:       string(raw.Calldata),
+		}
+		rawRequests = append(rawRequests, r)
+
+		go handleRawRequest(c, l.With("did", raw.DataSourceID, "eid", raw.ExternalID), r, key, id, resultsChan)
+	}
+
+	reports := make([]types.RawReport, 0)
+	versions := map[string]bool{}
+	for range req.Request.RawRequests {
+		result := <-resultsChan
+		reports = append(reports, result.rawReport)
+
+		if result.err == nil {
+			versions[result.version] = true
+		}
+	}
+
+	execVersions := make([]string, 0, len(versions))
+	for version := range versions {
+		execVersions = append(execVersions, version)
+	}
+
+	c.pendingMsgs <- ReportMsgWithKey{
+		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
+		execVersion: execVersions,
+		keyIndex:    keyIndex,
+		feeEstimationData: FeeEstimationData{
+			askCount:    int64(len(req.Request.RequestedValidators)),
+			minCount:    int64(req.Request.MinCount),
+			callData:    req.Request.Calldata,
+			validators:  len(req.Request.RequestedValidators),
+			rawRequests: rawRequests,
+			clientID:    req.Request.GetClientID(),
+		},
+	}
+}
+
+func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {
+
+	exec, err := GetExecutable(c, l, req.dataSourceHash)
+	if err != nil {
+		l.Error(":skull: Failed to load data source with error: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(
+				req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
+			),
+			err: err,
+		}
+		return
+	}
+
+	vmsg := NewVerificationMessage(cfg.ChainID, c.validator, id, req.externalID)
+	sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
+	if err != nil {
+		l.Error(":skull: Failed to sign verify message: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, 255, nil),
+			err:       err,
+		}
+	}
+
+	result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
+		"BAND_CHAIN_ID":    vmsg.ChainID,
+		"BAND_VALIDATOR":   vmsg.Validator.String(),
+		"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
+		"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
+		"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
+		"BAND_SIGNATURE":   sig,
+	})
+
+	if err != nil {
+		l.Error(":skull: Failed to execute data source script: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, 255, nil),
+			err:       err,
+		}
+	} else {
+		l.Debug(
+			":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
+			req.calldata, result.Output, result.Code,
+		)
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, result.Code, result.Output),
+			version:   result.Version,
+		}
 	}
 }

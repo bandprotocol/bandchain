@@ -2,8 +2,11 @@ package yoda
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"fmt"
 	"path/filepath"
+	"strconv"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -11,10 +14,12 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/log"
+	rpcclient "github.com/tendermint/tendermint/rpc/client"
 	httpclient "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
 
@@ -46,6 +51,28 @@ func runImpl(c *Context, l *Logger) error {
 	for i := range availiableKeys {
 		availiableKeys[i] = true
 		waitingMsgs[i] = []ReportMsgWithKey{}
+	}
+
+	rawPendingRequests, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QueryPendingRequests, c.validator.String()), nil, rpcclient.ABCIQueryOptions{})
+	if err != nil {
+		return err
+	}
+
+	var result types.QueryResult
+	if err := json.Unmarshal(rawPendingRequests.Response.GetValue(), &result); err != nil {
+		return err
+	}
+
+	var pendingRequests []string
+	cdc.MustUnmarshalJSON(result.Result, &pendingRequests)
+
+	for _, pendingReq := range pendingRequests {
+		id, err := strconv.ParseInt(pendingReq, 10, 64)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		go handleRequest(c, l, types.RequestID(id))
 	}
 
 	for {
