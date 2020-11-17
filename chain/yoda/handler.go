@@ -71,6 +71,12 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 
 	l = l.With("rid", id)
 
+	// If id is in pending requests list, then skip it.
+	if c.pendingRequests[types.RequestID(id)] {
+		l.Debug(":eyes: Request is in pending list, then skip")
+		return
+	}
+
 	// Skip if not related to this validator
 	validators := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyValidator)
 	hasMe := false

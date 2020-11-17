@@ -68,6 +68,7 @@ func runImpl(c *Context, l *Logger) error {
 	cdc.MustUnmarshalJSON(result.Result, &pendingRequests)
 
 	for _, id := range pendingRequests {
+		c.pendingRequests[id] = true
 		go handlePendingRequest(c, l.With("rid", id), id)
 	}
 
@@ -157,6 +158,7 @@ func runCmd(c *Context) *cobra.Command {
 			c.freeKeys = make(chan int64, len(keys))
 			c.keyRoundRobinIndex = -1
 			c.dataSourceCache = new(sync.Map)
+			c.pendingRequests = make(map[types.RequestID]bool)
 			return runImpl(c, l)
 		},
 	}

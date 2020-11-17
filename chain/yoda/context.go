@@ -46,6 +46,7 @@ type Context struct {
 	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
 
 	dataSourceCache *sync.Map
+	pendingRequests map[types.RequestID]bool
 }
 
 func (c *Context) nextKeyIndex() int64 {

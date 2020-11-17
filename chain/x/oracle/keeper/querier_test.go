@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 
@@ -65,7 +64,7 @@ func TestQueryPendingRequests(t *testing.T) {
 			require.NoError(t, json.Unmarshal(raw, &queryRequest))
 
 			var requestIDs []types.RequestID
-			codec.Cdc.MustUnmarshalJSON(queryRequest.Result, &requestIDs)
+			types.ModuleCdc.MustUnmarshalJSON(queryRequest.Result, &requestIDs)
 
 			require.Equal(t, tt.expected, requestIDs)
 		})
