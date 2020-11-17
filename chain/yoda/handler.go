@@ -96,26 +96,7 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	keyIndex := c.nextKeyIndex()
 	key := c.keys[keyIndex]
 
-	resultsChan := make(chan processingResult, len(reqs))
-	for _, req := range reqs {
-		go handleRawRequest(c, l.With("did", req.dataSourceID, "eid", req.externalID), req, key, types.RequestID(id), resultsChan)
-	}
-
-	reports := make([]types.RawReport, 0)
-	versions := map[string]bool{}
-	for range reqs {
-		result := <-resultsChan
-		reports = append(reports, result.rawReport)
-
-		if result.err == nil {
-			versions[result.version] = true
-		}
-	}
-
-	execVersions := make([]string, 0, len(versions))
-	for version := range versions {
-		execVersions = append(execVersions, version)
-	}
+	reports, execVersions := handleRawRequests(c, l, types.RequestID(id), reqs, key)
 
 	rawAskCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyAskCount)
 	if len(rawAskCount) != 1 {
@@ -152,14 +133,13 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 			askCount:    askCount,
 			minCount:    minCount,
 			callData:    callData,
-			validators:  len(validators),
 			rawRequests: reqs,
 			clientID:    clientID,
 		},
 	}
 }
 
-func handleRequest(c *Context, l *Logger, id types.RequestID) {
+func handlePendingRequest(c *Context, l *Logger, id types.RequestID) {
 
 	req, err := GetRequest(c, l, id)
 	if err != nil {
@@ -167,12 +147,14 @@ func handleRequest(c *Context, l *Logger, id types.RequestID) {
 		return
 	}
 
+	l.Info(":delivery_truck: Processing pending request")
+
 	keyIndex := c.nextKeyIndex()
 	key := c.keys[keyIndex]
 
-	resultsChan := make(chan processingResult, len(req.Request.RawRequests))
 	var rawRequests []rawRequest
 
+	// prepare raw requests
 	for _, raw := range req.Request.RawRequests {
 
 		hash, err := GetDataSourceHash(c, l, raw.DataSourceID)
@@ -188,25 +170,10 @@ func handleRequest(c *Context, l *Logger, id types.RequestID) {
 			calldata:       string(raw.Calldata),
 		}
 		rawRequests = append(rawRequests, r)
-
-		go handleRawRequest(c, l.With("did", raw.DataSourceID, "eid", raw.ExternalID), r, key, id, resultsChan)
 	}
 
-	reports := make([]types.RawReport, 0)
-	versions := map[string]bool{}
-	for range req.Request.RawRequests {
-		result := <-resultsChan
-		reports = append(reports, result.rawReport)
-
-		if result.err == nil {
-			versions[result.version] = true
-		}
-	}
-
-	execVersions := make([]string, 0, len(versions))
-	for version := range versions {
-		execVersions = append(execVersions, version)
-	}
+	// process raw requests
+	reports, execVersions := handleRawRequests(c, l, id, rawRequests, key)
 
 	c.pendingMsgs <- ReportMsgWithKey{
 		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
@@ -216,11 +183,33 @@ func handleRequest(c *Context, l *Logger, id types.RequestID) {
 			askCount:    int64(len(req.Request.RequestedValidators)),
 			minCount:    int64(req.Request.MinCount),
 			callData:    req.Request.Calldata,
-			validators:  len(req.Request.RequestedValidators),
 			rawRequests: rawRequests,
 			clientID:    req.Request.GetClientID(),
 		},
 	}
+}
+
+func handleRawRequests(c *Context, l *Logger, id types.RequestID, reqs []rawRequest, key keys.Info) (reports []types.RawReport, execVersions []string) {
+	resultsChan := make(chan processingResult, len(reqs))
+	for _, req := range reqs {
+		go handleRawRequest(c, l.With("did", req.dataSourceID, "eid", req.externalID), req, key, types.RequestID(id), resultsChan)
+	}
+
+	versions := map[string]bool{}
+	for range reqs {
+		result := <-resultsChan
+		reports = append(reports, result.rawReport)
+
+		if result.err == nil {
+			versions[result.version] = true
+		}
+	}
+
+	for version := range versions {
+		execVersions = append(execVersions, version)
+	}
+
+	return
 }
 
 func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {

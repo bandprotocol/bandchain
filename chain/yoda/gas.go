@@ -60,7 +60,7 @@ func estimateReadingRequestCost(f FeeEstimationData) uint64 {
 
 	size := baseRequestSize
 	size += uint64(len(f.callData))
-	size += uint64(f.validators) * addressSize
+	size += uint64(f.askCount) * addressSize
 	size += uint64(len(f.clientID))
 
 	for _, r := range f.rawRequests {

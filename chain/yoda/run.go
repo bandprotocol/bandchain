@@ -72,7 +72,7 @@ func runImpl(c *Context, l *Logger) error {
 			panic(err.Error())
 		}
 
-		go handleRequest(c, l, types.RequestID(id))
+		go handlePendingRequest(c, l, types.RequestID(id))
 	}
 
 	for {
