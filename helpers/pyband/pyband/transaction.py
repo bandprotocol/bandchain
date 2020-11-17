@@ -1,6 +1,6 @@
 import base64
 import json
-
+from .client import Client
 from typing import List, Optional
 from .wallet import PublicKey
 from .constant import MAX_MEMO_CHARACTERS
@@ -19,6 +19,16 @@ class Transaction:
 
     def with_messages(self, *msgs: Msg) -> "Transaction":
         self.msgs.extend(msgs)
+        return self
+
+    def with_auto(self, client: Client) -> "Transaction":
+        if len(self.msgs) == 0:
+            raise ValueError("messsage is empty, please use with_messages at least 1 message")
+
+        addr = self.msgs[0].get_sender()
+        account = client.get_account(addr)
+        self.account_num = account.account_number
+        self.sequence = account.sequence
         return self
 
     def with_account_num(self, account_num: int) -> "Transaction":
@@ -50,7 +60,7 @@ class Transaction:
 
     def get_sign_data(self) -> bytes:
         if len(self.msgs) == 0:
-            raise ValueError("messages is empty")
+            raise ValueError("message is empty")
 
         if self.account_num is None:
             raise ValueError("account_num should be defined")
@@ -92,9 +102,7 @@ class Transaction:
                     "signature": base64.b64encode(signature).decode("utf-8"),
                     "pub_key": {
                         "type": "tendermint/PubKeySecp256k1",
-                        "value": base64.b64encode(
-                            bytes.fromhex(pubkey.to_hex())
-                        ).decode("utf-8"),
+                        "value": base64.b64encode(bytes.fromhex(pubkey.to_hex())).decode("utf-8"),
                     },
                     "account_number": str(self.account_num),
                     "sequence": str(self.sequence),
