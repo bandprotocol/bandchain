@@ -1,5 +1,5 @@
 import { Coin } from 'data'
-import { Buffer, constants } from 'buffer'
+import { constants } from 'buffer'
 import { Address } from 'wallet'
 
 export abstract class Msg {
@@ -17,7 +17,7 @@ export class MsgRequest extends Msg {
 
   constructor(
     oracleScriptID: number,
-    calldata: string,
+    calldata: Buffer,
     askCount: number,
     minCount: number,
     clientID: string,
@@ -26,7 +26,7 @@ export class MsgRequest extends Msg {
     super()
 
     this.oracleScriptID = oracleScriptID
-    this.calldata = Buffer.from(calldata, 'hex')
+    this.calldata = calldata
     this.askCount = askCount
     this.minCount = minCount
     this.clientID = clientID
@@ -106,6 +106,42 @@ export class MsgSend extends Msg {
     }
     // TODO: Uncomment this when coin.validate() is ready
     // this.amount.forEach(coin => coin.validate())
+    return true
+  }
+}
+
+export class MsgDelegate extends Msg {
+  delegatorAddress: Address
+  validatorAddress: Address
+  amount: Coin
+
+  constructor(delegator: Address, validator: Address, amount: Coin) {
+    super()
+
+    this.delegatorAddress = delegator
+    this.validatorAddress = validator
+    this.amount = amount
+  }
+
+  asJson() {
+    return {
+      type: 'cosmos-sdk/MsgDelegate',
+      value: {
+        amount: this.amount.asJson(),
+        delegator_address: this.delegatorAddress.toAccBech32(),
+        validator_address: this.validatorAddress.toValBech32(),
+      },
+    }
+  }
+
+  getSender() {
+    return this.delegatorAddress
+  }
+
+  validate() {
+    // TODO: Uncomment this when coin.validate() is ready
+    // this.amount.validate()
+
     return true
   }
 }

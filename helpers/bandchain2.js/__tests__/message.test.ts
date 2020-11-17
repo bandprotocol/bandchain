@@ -1,15 +1,18 @@
 import { Message, Data } from '../src/index'
+import { MsgDelegate } from '../src/message'
 import { Address } from '../src/wallet'
 
 const { MsgSend, MsgRequest } = Message
 const { Coin } = Data
+
+const coin = new Coin(100000, 'uband')
 
 describe('MsgRequest', () => {
   const sender_addr = Address.fromAccBech32(
     'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
   )
 
-  const calldata = '000000034254430000000000000001'
+  const calldata = Buffer.from('000000034254430000000000000001', 'hex')
   const memo = 'from_bandchain.js'
 
   it('create successfully', () => {
@@ -25,6 +28,24 @@ describe('MsgRequest', () => {
         sender: 'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
       },
     })
+
+    expect(msgRequest.asJson()).toEqual({
+      type: 'oracle/Request',
+      value: {
+        oracle_script_id: '1',
+        calldata: 'AAAAA0JUQwAAAAAAAAAB',
+        ask_count: '2',
+        min_count: '2',
+        client_id: 'from_bandchain.js',
+        sender: 'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+      },
+    })
+
+    expect(msgRequest.getSender().toAccBech32()).toEqual(
+      'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+    )
+
+    expect(msgRequest.validate()).toBeTruthy()
   })
 
   it('create with error from validate()', () => {
@@ -50,8 +71,6 @@ describe('MsgRequest', () => {
 })
 
 describe('MsgSend', () => {
-  const coin = new Coin(100000, 'uband')
-
   it('create successfully', () => {
     const msgSend = new MsgSend(
       Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
@@ -66,5 +85,39 @@ describe('MsgSend', () => {
         amount: [{ amount: '100000', denom: 'uband' }],
       },
     })
+    expect(msgSend.getSender().toAccBech32()).toEqual(
+      'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+    )
+    expect(msgSend.validate()).toBeTruthy()
+  })
+})
+
+describe('MsgDelegate', () => {
+  it('create successfully', () => {
+    const msgDelegate = new MsgDelegate(
+      Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
+      Address.fromValBech32(
+        'bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst',
+      ),
+      coin,
+    )
+
+    expect(msgDelegate.asJson()).toEqual({
+      type: 'cosmos-sdk/MsgDelegate',
+      value: {
+        amount: {
+          amount: '100000',
+          denom: 'uband',
+        },
+        delegator_address: 'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+        validator_address: 'bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst',
+      },
+    })
+
+    expect(msgDelegate.getSender().toAccBech32()).toEqual(
+      'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
+    )
+
+    expect(msgDelegate.validate()).toBeTruthy()
   })
 })
