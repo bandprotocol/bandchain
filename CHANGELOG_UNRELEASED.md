@@ -83,6 +83,7 @@
 
 ### Bridges
 
+- (feat) [\#2529](https://github.com/bandprotocol/bandchain/pull/2529) Add harmony to bridge evm
 - (docs) [\#2691](https://github.com/bandprotocol/bandchain/pull/2691) Add simple price db example for doc
 - (feat) [\#2632](https://github.com/bandprotocol/bandchain/pull/2632) Add aggregator contract for ICON bridge
 - (impv) [\#2626](https://github.com/bandprotocol/bandchain/pull/2626) Icon bridge fixed from auditing process
