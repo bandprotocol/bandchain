@@ -16,6 +16,14 @@ export class Coin {
   }
 }
 
+export interface Account {
+  address: Address
+  coins: Coin[]
+  publicKey?: object
+  accountNumber: Number
+  sequence: Number
+}
+
 export interface DataSource {
   owner: Address
   name: string

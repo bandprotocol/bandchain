@@ -4,7 +4,9 @@ import {
   TransactionSyncMode,
   TransactionAsyncMode,
   TransactionBlockMode,
-} from 'data'
+  Coin,
+  Account,
+} from './data'
 import { Address } from './wallet'
 
 export default class Client {
@@ -46,6 +48,21 @@ export default class Client {
       name: response.name,
       description: response.description,
       fileName: response.filename,
+    }
+  }
+
+  async getAccount(address: Address): Promise<Account> {
+    const response = await this.getResult(
+      `/auth/accounts/${address.toAccBech32()}`,
+    )
+    console.log(response)
+    const value = response.value
+    return {
+      address: Address.fromAccBech32(value.address),
+      coins: value.coins.map((c: any) => new Coin(c.amount, c.denom)),
+      publicKey: value.public_key,
+      accountNumber: parseInt(value.account_number),
+      sequence: parseInt(value.sequence),
     }
   }
 
