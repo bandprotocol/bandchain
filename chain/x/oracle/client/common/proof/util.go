@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"reflect"
 	"strconv"
+	"time"
 
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/tendermint/tendermint/crypto/tmhash"
@@ -65,6 +66,12 @@ func encodeVarint(value int64) []byte {
 	return buf[:n]
 }
 
+func encodeUvarint(value uint64) []byte {
+	buf := make([]byte, binary.MaxVarintLen64)
+	n := binary.PutUvarint(buf, value)
+	return buf[:n]
+}
+
 func mustParseInt64(b []byte) int64 {
 	i64, err := strconv.ParseInt(string(b), 10, 64)
 	if err != nil {
@@ -87,4 +94,36 @@ func mustDecodeString(hexstr string) []byte {
 		panic(err)
 	}
 	return b
+}
+
+func parseTime(str string) time.Time {
+	layout := "2006-01-02T15:04:05.000000000Z"
+	t, err := time.Parse(layout, str)
+	if err != nil {
+		panic(err)
+	}
+	return t
+}
+
+func encodeTime(t time.Time) []byte {
+	bz := []byte{}
+	s := t.Unix()
+	// TODO: We are hand-encoding a struct until MarshalAmino/UnmarshalAmino is supported.
+	// skip if default/zero value:
+	if s != 0 {
+		bz = append(bz, encodeFieldNumberAndTyp3(1, 0)...)
+		bz = append(bz, encodeUvarint(uint64(s))...)
+	}
+	ns := int32(t.Nanosecond()) // this int64 -> int32 cast is safe (nanos are in [0, 999999999])
+	// skip if default/zero value:
+	if ns != 0 {
+		bz = append(bz, encodeFieldNumberAndTyp3(2, 0)...)
+		bz = append(bz, encodeUvarint(uint64(ns))...)
+	}
+	return bz
+}
+
+// Write field key.
+func encodeFieldNumberAndTyp3(num uint32, typ uint8) []byte {
+	return encodeUvarint((uint64(num) << 3) | uint64(typ))
 }

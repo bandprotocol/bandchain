@@ -3,11 +3,6 @@ package proof
 var relayFormat = []byte(`
 [
   {
-    "internalType": "uint256",
-    "name": "_blockHeight",
-    "type": "uint256"
-  },
-  {
     "components": [
       {
         "internalType": "bytes32",
@@ -47,9 +42,19 @@ var relayFormat = []byte(`
         "type": "bytes32"
       },
       {
-        "internalType": "bytes32",
-        "name": "timeHash",
-        "type": "bytes32"
+        "internalType": "uint64",
+        "name": "height",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint64",
+        "name": "timeSecond",
+        "type": "uint64"
+      },
+      {
+        "internalType": "uint32",
+        "name": "timeNanoSecond",
+        "type": "uint32"
       },
       {
         "internalType": "bytes32",
