@@ -52,7 +52,7 @@ func (h *Hook) emitOracleModule(ctx sdk.Context) {
 			h.emitReportAndRawReport(nil, rid, rep.Validator, nil, rep.RawReports)
 		}
 		if rid%100 == 0 {
-			fmt.Print("flush request = %d", rid)
+			fmt.Printf("flush request = %d\n", rid)
 			common.EmitCommit(h, -1)
 			h.FlushMessages()
 			h.msgs = []common.Message{}
