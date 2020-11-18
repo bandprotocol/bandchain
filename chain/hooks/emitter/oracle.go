@@ -1,6 +1,8 @@
 package emitter
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
@@ -48,6 +50,12 @@ func (h *Hook) emitOracleModule(ctx sdk.Context) {
 		reps := h.oracleKeeper.GetReports(ctx, rid)
 		for _, rep := range reps {
 			h.emitReportAndRawReport(nil, rid, rep.Validator, nil, rep.RawReports)
+		}
+		if rid%100 == 0 {
+			fmt.Print("flush request = %d", rid)
+			common.EmitCommit(h, -1)
+			h.FlushMessages()
+			h.msgs = []common.Message{}
 		}
 	}
 }

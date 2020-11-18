@@ -3,6 +3,7 @@ package emitter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
@@ -229,9 +230,13 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 }
 
 func (h *Hook) emitNonHistoricalState(ctx sdk.Context) {
+	fmt.Println("Start emit auth module")
 	h.emitAuthModule(ctx)
+	fmt.Println("Start emit staking module")
 	h.emitStakingModule(ctx)
+	fmt.Println("Start emit gov module")
 	h.emitGovModule(ctx)
+	fmt.Println("Start emit oracle module")
 	h.emitOracleModule(ctx)
 	common.EmitCommit(h, -1)
 	h.FlushMessages()
