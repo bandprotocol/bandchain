@@ -161,6 +161,12 @@ export default class Client {
     }
   }
 
+  /**
+   * Get the latest request
+   * @param id Request ID
+   * @returns  A Promise of RequestInfo.
+   */
+
   async getRequestByID(id: number): Promise<RequestInfo> {
     const response = await this.getResult(`/oracle/requests/${id}`)
     return {
