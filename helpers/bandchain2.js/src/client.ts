@@ -20,10 +20,7 @@ export default class Client {
   }
 
   private async post(path: string, param: object) {
-    const response = await axios.post(`${this.rpcUrl}`, param)
-    console.log(path)
-    console.log('_post', response)
-    console.log('_post', response.data)
+    const response = await axios.post(`${this.rpcUrl}${path}`, param)
     return response.data
   }
 
@@ -83,14 +80,13 @@ export default class Client {
     let code = 0
     let errorLog
 
-    console.log(response.data)
     if (response.code) {
       code = parseInt(response.code)
       errorLog = response.raw_log
     }
 
     return {
-      txHash: Buffer.from(response['txhash'], 'hex'),
+      txHash: Buffer.from(response.txhash, 'hex'),
       code,
       errorLog,
     }
@@ -107,7 +103,7 @@ export default class Client {
     })
 
     return {
-      txHash: Buffer.from(respose['txhash'], 'hex'),
+      txHash: Buffer.from(respose.txhash, 'hex'),
     }
   }
 
@@ -125,18 +121,18 @@ export default class Client {
     let errorLog
     let log = []
 
-    if (response['code']) {
-      code = parseInt(response['code'])
-      errorLog = response['raw_log']
+    if (response.code) {
+      code = parseInt(response.code)
+      errorLog = response.raw_log
     } else {
-      log = response['logs']
+      log = response.logs
     }
 
     return {
-      height: parseInt(response['height']),
-      txHash: Buffer.from(response['txhash'], 'hex'),
-      gasWanted: parseInt(response['gas_wanted']),
-      gasUsed: parseInt(response['gas_wanted']),
+      height: parseInt(response.height),
+      txHash: Buffer.from(response.txhash, 'hex'),
+      gasWanted: parseInt(response.gas_wanted),
+      gasUsed: parseInt(response.gas_wanted),
       code,
       log,
       errorLog,
