@@ -1,6 +1,6 @@
 import axios from 'axios'
-import { Client } from '../src/index'
-import { Address } from '../src/wallet'
+import { Client } from '../../src'
+import { Address } from '../../src/wallet'
 
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
