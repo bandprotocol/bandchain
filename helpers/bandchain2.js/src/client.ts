@@ -2,7 +2,6 @@ import axios from 'axios'
 import {
   DataSource,
   TransactionSyncMode,
-  // HexBytes,
   TransactionAsyncMode,
   TransactionBlockMode,
 } from 'data'
