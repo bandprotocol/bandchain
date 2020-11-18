@@ -23,7 +23,7 @@ from pyband.data import (
 )
 from pyband.utils import parse_datetime
 
-TEST_RPC = "https://api-mock.bandprotocol.com/rest/"
+TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 
 client = Client(TEST_RPC)
 
@@ -637,4 +637,28 @@ def test_get_reporters(requests_mock):
         "band10ec0p96j60duce5qagju5axuja0rj8luqrzl0k",
         "band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s",
         "band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy",
+    ]
+
+
+def test_get_price_symbols(requests_mock):
+    requests_mock.register_uri(
+        "GET",
+        "{}/oracle/price_symbols?min_count=3&ask_count=4".format(TEST_RPC),
+        json={
+            "height": "2951872",
+            "result": [
+                "2KEY",
+                "ABYSS",
+                "ADA",
+                "AKRO",
+            ],
+        },
+        status_code=200,
+    )
+
+    assert client.get_price_symbols(3, 4) == [
+        "2KEY",
+        "ABYSS",
+        "ADA",
+        "AKRO",
     ]

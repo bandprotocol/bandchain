@@ -2,6 +2,7 @@ import requests
 
 from dacite import from_dict
 from .wallet import Address
+from typing import List
 from .data import (
     Account,
     Block,
@@ -126,5 +127,14 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_reporters(self, validator: str) -> list:
+    def get_reporters(self, validator: str) -> List[str]:
         return self._get_result("/oracle/reporters/{}".format(validator))
+
+    def get_price_symbols(self, min_count: int, ask_count: int) -> List[str]:
+        return self._get_result(
+            "/oracle/price_symbols",
+            params={
+                "min_count": min_count,
+                "ask_count": ask_count,
+            },
+        )
