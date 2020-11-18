@@ -28,4 +28,6 @@
 
 ### Helpers
 
+- (feat) [\#2883](https://github.com/bandprotocol/bandchain/pull/2883) pyband: Implemented get_price_symbols to client module
+
 ### MISC
