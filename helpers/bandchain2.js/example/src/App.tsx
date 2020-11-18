@@ -48,6 +48,24 @@ function App() {
       ),
     )
     .then((e) => console.log('request id: ', e))
+  client
+    .getOracleScript(3)
+    .then((e) => console.log('oracle script: ', e))
+    .catch((err) => console.log(err))
+
+  client
+    .getLatestRequest(
+      20,
+      '0000000b000000044141504c00000005474f4f474c0000000454534c41000000044e464c5800000003515151000000045457545200000004424142410000000349415500000003534c560000000355534f0000000456495859000000003b9aca00',
+      3,
+      4,
+    )
+    .then((e) => console.log('latest request: ', e))
+    .catch((err) => console.log(err))
+
+  client
+    .getRequestByID(2)
+    .then((e) => console.log('request by id: ', e))
     .catch((err) => console.log(err))
 
   return (

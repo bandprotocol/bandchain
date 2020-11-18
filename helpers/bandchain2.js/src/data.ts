@@ -30,3 +30,68 @@ export interface DataSource {
   description: string
   fileName: string
 }
+
+export interface OracleScript {
+  owner: Address
+  name: string
+  description: string
+  fileName: string
+  schema: string
+  sourceCodeUrl: string
+}
+
+interface RawRequest {
+  dataSourceID: number
+  externalID: number
+  calldata: Buffer
+}
+
+interface Request {
+  oracleScriptID: number
+  requestedValidators: string[]
+  minCount: number
+  requestHeight: number
+  rawRequests: RawRequest[]
+  clientID: string
+  calldata: Buffer
+}
+
+interface RawReport {
+  externalID: number
+  data: Buffer
+}
+
+interface Report {
+  validator: string
+  rawReports: RawReport[]
+  inBeforeResolve: boolean
+}
+
+interface RequestPacketData {
+  oracleScriptID: number
+  askCount: number
+  minCount: number
+  clientID: string
+  calldata: Buffer
+}
+
+interface ResponsePacketData {
+  requestID: number
+  requestTime: number
+  resolveTime: number
+  resolveStatus: number
+  ansCount: number
+  clientID: string
+  result: Buffer
+}
+
+interface Result {
+  requestPacketData: RequestPacketData
+  responsePacketData: ResponsePacketData
+}
+
+export interface RequestInfo {
+  request: Request
+  reports?: Report[]
+  result?: Result
+}
