@@ -19,6 +19,7 @@ const (
 	QueryValidatorStatus  = "validator_status"
 	QueryReporters        = "reporters"
 	QueryActiveValidators = "active_validators"
+	QueryPendingRequests  = "pending_requests"
 )
 
 // QueryResult wraps querier result with HTTP status to return to application.

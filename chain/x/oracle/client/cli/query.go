@@ -35,6 +35,7 @@ func GetQueryCmd(storeKey string, cdc *codec.Codec) *cobra.Command {
 		GetQueryCmdValidatorStatus(storeKey, cdc),
 		GetQueryCmdReporters(storeKey, cdc),
 		GetQueryActiveValidators(storeKey, cdc),
+		GetQueryPendingRequests(storeKey, cdc),
 	)...)
 	return oracleCmd
 }
@@ -191,6 +192,29 @@ func GetQueryActiveValidators(route string, cdc *codec.Codec) *cobra.Command {
 				return err
 			}
 			return printOutput(cliCtx, cdc, bz, &[]types.QueryActiveValidatorResult{})
+		},
+	}
+}
+
+// GetQueryPendingRequests implements the query pending requests command.
+func GetQueryPendingRequests(route string, cdc *codec.Codec) *cobra.Command {
+	return &cobra.Command{
+		Use:  "pending-requests [validator]",
+		Args: cobra.MaximumNArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			cliCtx := context.NewCLIContext().WithCodec(cdc)
+
+			path := fmt.Sprintf("custom/%s/%s", route, types.QueryPendingRequests)
+			if len(args) == 1 {
+				path += "/" + args[0]
+			}
+
+			bz, _, err := cliCtx.Query(path)
+			if err != nil {
+				return err
+			}
+
+			return printOutput(cliCtx, cdc, bz, &[]types.RequestID{})
 		},
 	}
 }

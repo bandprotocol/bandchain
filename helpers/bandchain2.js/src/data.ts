@@ -1,3 +1,5 @@
+import { Address } from './wallet'
+
 export class Coin {
   amount: number
   denom: string
@@ -10,4 +12,11 @@ export class Coin {
   asJson() {
     return { amount: this.amount.toString(), denom: this.denom }
   }
+}
+
+export interface DataSource {
+  owner: Address
+  name: string
+  description: string
+  fileName: string
 }
