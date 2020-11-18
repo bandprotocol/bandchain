@@ -4,6 +4,7 @@ import {
   TransactionSyncMode,
   TransactionAsyncMode,
   TransactionBlockMode,
+  Block,
 } from 'data'
 import { Address } from './wallet'
 
@@ -31,6 +32,31 @@ export default class Client {
   async getChainID(): Promise<string> {
     const response = await this.get('/bandchain/chain_id')
     return response.chain_id
+  }
+
+  async getLatestBlock(): Promise<Block> {
+    const response = await this.get('/blocks/latest')
+    const header = response.block.header
+
+    return {
+      block: {
+        header: {
+          chainID: header.chain_id,
+          height: parseInt(header.height),
+          time: new Date(header.time),
+          lastCommitHash: Buffer.from(header.last_commit_hash, 'hex'),
+          dataHash: Buffer.from(header.data_hash, 'hex'),
+          validatorsHash: Buffer.from(header.validators_hash, 'hex'),
+          nextValidatorsHash: Buffer.from(header.next_validators_hash, 'hex'),
+          consensusHash: Buffer.from(header.consensus_hash, 'hex'),
+          appHash: Buffer.from(header.app_hash, 'hex'),
+          lastResultsHash: Buffer.from(header.last_results_hash, 'hex'),
+          evidenceHash: Buffer.from(header.evidence_hash, 'hex'),
+          proposerAddress: Buffer.from(header.proposer_address, 'hex'),
+        },
+      },
+      blockID: { hash: Buffer.from(response.block_id.hash, 'hex') },
+    }
   }
 
   /**

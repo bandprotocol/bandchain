@@ -42,3 +42,29 @@ export interface TransactionBlockMode {
   log: object[]
   errorLog?: string
 }
+
+export interface BlockHeaderInfo {
+  chainID: string
+  height: number
+  time: Date
+  lastCommitHash: HexBytes
+  dataHash: HexBytes
+  validatorsHash: HexBytes
+  nextValidatorsHash: HexBytes
+  consensusHash: HexBytes
+  appHash: HexBytes
+  lastResultsHash: HexBytes
+  evidenceHash: HexBytes
+  proposerAddress: HexBytes
+}
+export interface BlockHeader {
+  header: BlockHeaderInfo
+}
+
+export interface BlockID {
+  hash: HexBytes
+}
+export interface Block {
+  block: BlockHeader
+  blockID: BlockID
+}
