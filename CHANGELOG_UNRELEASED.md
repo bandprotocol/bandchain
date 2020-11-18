@@ -27,6 +27,8 @@
 
 ### Yoda
 
+- (impv) [\#2857](https://github.com/bandprotocol/bandchain/pull/2857) Improved yoda gas estimation function
+
 ### Emitter & Flusher
 
 - (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
@@ -94,10 +96,11 @@
 
 ### Helpers
 
-- (impv) [\#2862](https://github.com/bandprotocol/bandchain/pull/2862) bandchain.js: Implement `getSignData`, `getTxData` and all `with_*` methods on Transaction module
+- (feat) [\#2889](https://github.com/bandprotocol/bandchain/pull/2889) Bandchain.js: Started to create the client module with mock request test
 - (feat) [\#2872](https://github.com/bandprotocol/bandchain/pull/2872) Bandchain.js: Added new Address class and added more fn on PublicKey class
 - (feat) [\#2865](https://github.com/bandprotocol/bandchain/pull/2865) bandchain.js: Add Private Key and verify on Public Key on Wallet
 - (impv) [\#2863](https://github.com/bandprotocol/bandchain/pull/2863) bandchain.js: Add Github action
+- (impv) [\#2862](https://github.com/bandprotocol/bandchain/pull/2862) bandchain.js: Implement `getSignData`, `getTxData` and all `with_*` methods on Transaction module
 - (feat) [\#2855](https://github.com/bandprotocol/bandchain/pull/2855) pyband: Implemented with_auto fn on tx module
 - (impv) [\#2835](https://github.com/bandprotocol/bandchain/pull/2835) pyband: Add msg delegate
 - (impv) [\#2830](https://github.com/bandprotocol/bandchain/pull/2830) pyband: Add msg send
