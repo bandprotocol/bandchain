@@ -183,8 +183,8 @@ describe('get latest block', () => {
             '6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF',
             'hex',
           ),
-          lastResultsHash: Buffer.from('', 'hex'),
-          evidenceHash: Buffer.from('', 'hex'),
+          lastResultsHash: Buffer.from(''),
+          evidenceHash: Buffer.from(''),
           proposerAddress: Buffer.from(
             'BDB6A0728C8DFE2124536F16F2BA428FE767A8F9',
             'hex',
