@@ -3,7 +3,6 @@ import {
   Obi,
   ObiBytes,
   ObiInteger,
-  // ObiSpec,
   ObiString,
   ObiStruct,
   ObiVector,
