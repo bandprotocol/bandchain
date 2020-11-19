@@ -76,7 +76,7 @@ func main() {
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
-	rootCmd.PersistentFlags().Bool(flagReplayMode, false, "[Experimental] Use emitter replay mode")
+	rootCmd.PersistentFlags().String(flagReplayMode, "", "[Experimental] Use emitter replay mode")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -138,7 +138,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		bandApp.AddHook(replay.NewHook(
 			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
 			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
-			bandApp.OracleKeeper, viper.GetString(flagWithEmitter)))
+			bandApp.OracleKeeper, viper.GetString(flagReplayMode)))
 	}
 	return bandApp
 }
