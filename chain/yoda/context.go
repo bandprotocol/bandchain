@@ -1,6 +1,7 @@
 package yoda
 
 import (
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -13,10 +14,19 @@ import (
 	"github.com/bandprotocol/bandchain/chain/yoda/executor"
 )
 
+type FeeEstimationData struct {
+	askCount    int64
+	minCount    int64
+	callData    []byte
+	rawRequests []rawRequest
+	clientID    string
+}
+
 type ReportMsgWithKey struct {
-	msg         types.MsgReportData
-	execVersion []string
-	keyIndex    int64
+	msg               types.MsgReportData
+	execVersion       []string
+	keyIndex          int64
+	feeEstimationData FeeEstimationData
 }
 
 type Context struct {
@@ -34,6 +44,9 @@ type Context struct {
 	pendingMsgs        chan ReportMsgWithKey
 	freeKeys           chan int64
 	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
+
+	dataSourceCache *sync.Map
+	pendingRequests map[types.RequestID]bool
 }
 
 func (c *Context) nextKeyIndex() int64 {
