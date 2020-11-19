@@ -1,4 +1,3 @@
-import { assert } from 'console'
 import {
   Obi,
   ObiBytes,
@@ -32,7 +31,7 @@ describe('ObiVector', () => {
     const data = [1, 2, 3]
     const encode = new ObiVector('[u8]').encode(data)
     const decode = new ObiVector('[u8]').decode(encode)[0]
-    expect(decode.map((each) => Number(each))).toEqual(data)
+    expect(decode.map((each: any) => Number(each))).toEqual(data)
   })
 })
 
