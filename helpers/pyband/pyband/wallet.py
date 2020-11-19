@@ -68,7 +68,9 @@ class PrivateKey:
     def from_hex(cls, priv: str) -> "PrivateKey":
         self = cls(_error_do_not_use_init_directly=True)
         self.signing_key = SigningKey.from_string(
-            bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256,
+            bytes.fromhex(priv),
+            curve=SECP256k1,
+            hashfunc=hashlib.sha256,
         )
         return self
 
@@ -97,7 +99,9 @@ class PrivateKey:
         :return: a signature of this private key over the given message
         """
         return self.signing_key.sign_deterministic(
-            msg, hashfunc=hashlib.sha256, sigencode=sigencode_string_canonize,
+            msg,
+            hashfunc=hashlib.sha256,
+            sigencode=sigencode_string_canonize,
         )
 
 
@@ -124,9 +128,7 @@ class PublicKey:
             raise ValueError("Cannot decode bech32")
         bz = convertbits(bz, 5, 8, False)
         self = cls(_error_do_not_use_init_directly=True)
-        self.verify_key = VerifyingKey.from_string(
-            bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256
-        )
+        self.verify_key = VerifyingKey.from_string(bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256)
         return self
 
     @classmethod
@@ -193,6 +195,9 @@ class PublicKey:
 class Address:
     def __init__(self, addr: bytes) -> None:
         self.addr = addr
+
+    def __eq__(self, o: "Address") -> bool:
+        return self.addr == o.addr
 
     @classmethod
     def _from_bech32(cls, bech: str, prefix: str) -> "Address":

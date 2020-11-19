@@ -1,16 +1,24 @@
 package yoda
 
 import (
+	"encoding/hex"
 	"strconv"
-	"sync"
 
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
+	"github.com/cosmos/cosmos-sdk/crypto/keys"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 	tmtypes "github.com/tendermint/tendermint/types"
 
+	"github.com/bandprotocol/bandchain/chain/hooks/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
+
+type processingResult struct {
+	rawReport types.RawReport
+	version   string
+	err       error
+}
 
 func handleTransaction(c *Context, l *Logger, tx tmtypes.TxResult) {
 	l.Debug(":eyes: Inspecting incoming transaction: %X", tmhash.Sum(tx.Tx))
@@ -63,6 +71,12 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 
 	l = l.With("rid", id)
 
+	// If id is in pending requests list, then skip it.
+	if c.pendingRequests[types.RequestID(id)] {
+		l.Debug(":eyes: Request is in pending list, then skip")
+		return
+	}
+
 	// Skip if not related to this validator
 	validators := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyValidator)
 	hasMe := false
@@ -88,62 +102,168 @@ func handleRequestLog(c *Context, l *Logger, log sdk.ABCIMessageLog) {
 	keyIndex := c.nextKeyIndex()
 	key := c.keys[keyIndex]
 
-	reportsChan := make(chan types.RawReport, len(reqs))
-	var version sync.Map
-	for _, req := range reqs {
-		go func(l *Logger, req rawRequest) {
-			exec, err := GetExecutable(c, l, req.dataSourceHash)
-			if err != nil {
-				l.Error(":skull: Failed to load data source with error: %s", err.Error())
-				reportsChan <- types.NewRawReport(
-					req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
-				)
-				return
-			}
+	reports, execVersions := handleRawRequests(c, l, types.RequestID(id), reqs, key)
 
-			vmsg := NewVerificationMessage(cfg.ChainID, c.validator, types.RequestID(id), req.externalID)
-			sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
-			if err != nil {
-				l.Error(":skull: Failed to sign verify message: %s", err.Error())
-				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
-			}
+	rawAskCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyAskCount)
+	if len(rawAskCount) != 1 {
+		panic("Fail to get ask count")
+	}
+	askCount := common.Atoi(rawAskCount[0])
 
-			result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
-				"BAND_CHAIN_ID":    vmsg.ChainID,
-				"BAND_VALIDATOR":   vmsg.Validator.String(),
-				"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
-				"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
-				"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
-				"BAND_SIGNATURE":   sig,
-			})
+	rawMinCount := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyMinCount)
+	if len(rawMinCount) != 1 {
+		panic("Fail to get min count")
+	}
+	minCount := common.Atoi(rawMinCount[0])
 
-			if err != nil {
-				l.Error(":skull: Failed to execute data source script: %s", err.Error())
-				reportsChan <- types.NewRawReport(req.externalID, 255, nil)
-			} else {
-				l.Debug(
-					":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
-					req.calldata, result.Output, result.Code,
-				)
-				version.Store(result.Version, true)
-				reportsChan <- types.NewRawReport(req.externalID, result.Code, result.Output)
-			}
-		}(l.With("did", req.dataSourceID, "eid", req.externalID), req)
+	rawCallData := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyCalldata)
+	if len(rawCallData) != 1 {
+		panic("Fail to get call data")
+	}
+	callData, err := hex.DecodeString(rawCallData[0])
+	if err != nil {
+		l.Error(":skull: Fail to parse call data: %s", err.Error())
 	}
 
-	reports := make([]types.RawReport, 0)
-	execVersions := make([]string, 0)
-	for range reqs {
-		reports = append(reports, <-reportsChan)
+	var clientID string
+	rawClientID := GetEventValues(log, types.EventTypeRequest, types.AttributeKeyClientID)
+	if len(rawClientID) > 0 {
+		clientID = rawClientID[0]
 	}
-	version.Range(func(key, value interface{}) bool {
-		execVersions = append(execVersions, key.(string))
-		return true
-	})
 
 	c.pendingMsgs <- ReportMsgWithKey{
 		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
 		execVersion: execVersions,
 		keyIndex:    keyIndex,
+		feeEstimationData: FeeEstimationData{
+			askCount:    askCount,
+			minCount:    minCount,
+			callData:    callData,
+			rawRequests: reqs,
+			clientID:    clientID,
+		},
+	}
+}
+
+func handlePendingRequest(c *Context, l *Logger, id types.RequestID) {
+
+	req, err := GetRequest(c, l, id)
+	if err != nil {
+		l.Error(":skull: Failed to get request with error: %s", err.Error())
+		return
+	}
+
+	l.Info(":delivery_truck: Processing pending request")
+
+	keyIndex := c.nextKeyIndex()
+	key := c.keys[keyIndex]
+
+	var rawRequests []rawRequest
+
+	// prepare raw requests
+	for _, raw := range req.RawRequests {
+
+		hash, err := GetDataSourceHash(c, l, raw.DataSourceID)
+		if err != nil {
+			l.Error(":skull: Failed to get data source hash with error: %s", err.Error())
+			return
+		}
+
+		rawRequests = append(rawRequests, rawRequest{
+			dataSourceID:   raw.DataSourceID,
+			dataSourceHash: hash,
+			externalID:     raw.ExternalID,
+			calldata:       string(raw.Calldata),
+		})
+	}
+
+	// process raw requests
+	reports, execVersions := handleRawRequests(c, l, id, rawRequests, key)
+
+	c.pendingMsgs <- ReportMsgWithKey{
+		msg:         types.NewMsgReportData(types.RequestID(id), reports, c.validator, key.GetAddress()),
+		execVersion: execVersions,
+		keyIndex:    keyIndex,
+		feeEstimationData: FeeEstimationData{
+			askCount:    int64(len(req.RequestedValidators)),
+			minCount:    int64(req.MinCount),
+			callData:    req.Calldata,
+			rawRequests: rawRequests,
+			clientID:    req.ClientID,
+		},
+	}
+}
+
+func handleRawRequests(c *Context, l *Logger, id types.RequestID, reqs []rawRequest, key keys.Info) (reports []types.RawReport, execVersions []string) {
+	resultsChan := make(chan processingResult, len(reqs))
+	for _, req := range reqs {
+		go handleRawRequest(c, l.With("did", req.dataSourceID, "eid", req.externalID), req, key, types.RequestID(id), resultsChan)
+	}
+
+	versions := map[string]bool{}
+	for range reqs {
+		result := <-resultsChan
+		reports = append(reports, result.rawReport)
+
+		if result.err == nil {
+			versions[result.version] = true
+		}
+	}
+
+	for version := range versions {
+		execVersions = append(execVersions, version)
+	}
+
+	return
+}
+
+func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {
+
+	exec, err := GetExecutable(c, l, req.dataSourceHash)
+	if err != nil {
+		l.Error(":skull: Failed to load data source with error: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(
+				req.externalID, 255, []byte("FAIL_TO_LOAD_DATA_SOURCE"),
+			),
+			err: err,
+		}
+		return
+	}
+
+	vmsg := NewVerificationMessage(cfg.ChainID, c.validator, id, req.externalID)
+	sig, pubkey, err := keybase.Sign(key.GetName(), ckeys.DefaultKeyPass, vmsg.GetSignBytes())
+	if err != nil {
+		l.Error(":skull: Failed to sign verify message: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, 255, nil),
+			err:       err,
+		}
+	}
+
+	result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
+		"BAND_CHAIN_ID":    vmsg.ChainID,
+		"BAND_VALIDATOR":   vmsg.Validator.String(),
+		"BAND_REQUEST_ID":  strconv.Itoa(int(vmsg.RequestID)),
+		"BAND_EXTERNAL_ID": strconv.Itoa(int(vmsg.ExternalID)),
+		"BAND_REPORTER":    sdk.MustBech32ifyPubKey(sdk.Bech32PubKeyTypeAccPub, pubkey),
+		"BAND_SIGNATURE":   sig,
+	})
+
+	if err != nil {
+		l.Error(":skull: Failed to execute data source script: %s", err.Error())
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, 255, nil),
+			err:       err,
+		}
+	} else {
+		l.Debug(
+			":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
+			req.calldata, result.Output, result.Code,
+		)
+		processingResultCh <- processingResult{
+			rawReport: types.NewRawReport(req.externalID, result.Code, result.Output),
+			version:   result.Version,
+		}
 	}
 }
