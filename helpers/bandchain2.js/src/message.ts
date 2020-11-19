@@ -104,8 +104,7 @@ export class MsgSend extends Msg {
     if (this.amount.length == 0) {
       throw Error('Expect at least 1 coin')
     }
-    // TODO: Uncomment this when coin.validate() is ready
-    // this.amount.forEach(coin => coin.validate())
+    this.amount.forEach((coin) => coin.validate())
     return true
   }
 }
@@ -139,8 +138,7 @@ export class MsgDelegate extends Msg {
   }
 
   validate() {
-    // TODO: Uncomment this when coin.validate() is ready
-    // this.amount.validate()
+    this.amount.validate()
 
     return true
   }

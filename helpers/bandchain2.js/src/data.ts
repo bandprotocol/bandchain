@@ -9,8 +9,15 @@ export class Coin {
     this.denom = denom
   }
 
-  asJson() {
+  asJson(): object {
     return { amount: this.amount.toString(), denom: this.denom }
+  }
+
+  validate(): boolean {
+    if (this.amount < 0) throw Error('Expect amount more than 0')
+    if (this.denom.length == 0) throw Error('Expect denom')
+
+    return true
   }
 }
 
