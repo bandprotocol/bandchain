@@ -57,6 +57,16 @@ class Handler(object):
             select([request_count_per_days.c.count]).where(request_count_per_days.c.date == date)
         ).scalar()
 
+    def get_data_source_id(self, id):
+        return self.conn.execute(
+            select([data_sources.c.id]).where(data_sources.c.id == id)
+        ).scalar()
+
+    def get_oracle_script_id(self, id):
+        return self.conn.execute(
+            select([oracle_scripts.c.id]).where(oracle_scripts.c.id == id)
+        ).scalar()
+
     def handle_new_block(self, msg):
         self.conn.execute(blocks.insert(), msg)
 
@@ -92,11 +102,13 @@ class Handler(object):
         else:
             msg["transaction_id"] = None
         del msg["tx_hash"]
-        self.conn.execute(
-            insert(data_sources)
-            .values(**msg)
-            .on_conflict_do_update(constraint="data_sources_pkey", set_=msg)
-        )
+        if self.get_data_source_id(msg["id"]) is None:
+            self.conn.execute(data_sources.insert(), msg)
+        else:
+            condition = True
+            for col in data_sources.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(data_sources.update().where(condition).values(**msg))
 
     def handle_set_oracle_script(self, msg):
         if msg["tx_hash"] is not None:
@@ -104,11 +116,13 @@ class Handler(object):
         else:
             msg["transaction_id"] = None
         del msg["tx_hash"]
-        self.conn.execute(
-            insert(oracle_scripts)
-            .values(**msg)
-            .on_conflict_do_update(constraint="oracle_scripts_pkey", set_=msg)
-        )
+        if self.get_oracle_script_id(msg["id"]) is None:
+            self.conn.execute(oracle_scripts.insert(), msg)
+        else:
+            condition = True
+            for col in oracle_scripts.primary_key.columns.values():
+                condition = (col == msg[col.name]) & condition
+            self.conn.execute(oracle_scripts.update().where(condition).values(**msg))
 
     def handle_new_request(self, msg):
         msg["transaction_id"] = self.get_transaction_id(msg["tx_hash"])
