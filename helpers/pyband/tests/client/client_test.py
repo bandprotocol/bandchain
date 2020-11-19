@@ -199,7 +199,7 @@ def test_get_data_source(requests_mock):
             "result": {
                 "owner": "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
                 "name": "CoinGecko Cryptocurrency Price",
-            "description": "Retrieves current price of a cryptocurrency from https://www.coingecko.com",
+                "description": "Retrieves current price of a cryptocurrency from https://www.coingecko.com",
                 "filename": "c56de9061a78ac96748c83e8a22330accf6ee8ebb499c8525613149a70ec49d0",
             },
         },
@@ -652,7 +652,9 @@ def test_get_price_symbols(requests_mock):
                 "ADA",
                 "AKRO",
             ],
-        })
+        },
+        status_code=200,
+    )
 
     assert client.get_price_symbols(3, 4) == [
         "2KEY",
