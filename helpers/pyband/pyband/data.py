@@ -183,3 +183,16 @@ class BlockID(object):
 class Block(object):
     block: BlockHeader
     block_id: BlockID
+
+
+@dataclass
+class ReferencePriceUpdated(object):
+    base: int
+    quote: int
+
+
+@dataclass
+class ReferencePrice(object):
+    pair: str
+    rate: float
+    updated_at: ReferencePriceUpdated
