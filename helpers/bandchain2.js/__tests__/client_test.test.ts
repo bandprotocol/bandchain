@@ -155,13 +155,14 @@ describe('Client get data', () => {
         minCount: 3,
         requestHeight: 552201,
         clientID: '',
-        calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA=='),
+        calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==', 'base64'),
         rawRequests: [
           {
             externalID: 1,
             dataSourceID: 12,
             calldata: Buffer.from(
               'UkVOQlRDIFdCVEMgRElBIEJUTSBJT1RYIEZFVCBKU1QgTUNPIEtNRCBCVFMgUUtDIFlBTVYyIFhaQyBVT1MgQUtSTyBITlQgSE9UIEtBSSBPR04gV1JYIEtEQSBPUk4gRk9SIEFTVCBTVE9SSg==',
+              'base64',
             ),
           },
         ],
@@ -175,6 +176,7 @@ describe('Client get data', () => {
               externalID: 2,
               data: Buffer.from(
                 'MTc4NjEuMTk5MiwxODA1Ni45Nzk2LDEuMjYzMjY3LDAuMDYwMzczMTIsMC4wMDc3MzY3OSwwL',
+                'base64',
               ),
             },
           ],
@@ -186,7 +188,7 @@ describe('Client get data', () => {
           askCount: 4,
           minCount: 3,
           oracleScriptID: 1,
-          calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA=='),
+          calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==', 'base64'),
         },
         responsePacketData: {
           requestID: 44893,
@@ -195,13 +197,13 @@ describe('Client get data', () => {
           resolveStatus: 1,
           ansCount: 3,
           clientID: '',
-          result: Buffer.from('AAAAAAAC+mQ='),
+          result: Buffer.from('AAAAAAAC+mQ=', 'base64'),
         },
       },
     }
     const response = client.getLatestRequest(
       8,
-      'AAAAA0xSQwAAAANVU0QAAAAAAA9CQA',
+      Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA', 'base64'),
       3,
       4,
     )
@@ -279,13 +281,14 @@ describe('Client get data', () => {
         minCount: 3,
         requestHeight: 552201,
         clientID: '',
-        calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA=='),
+        calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==', 'base64'),
         rawRequests: [
           {
             externalID: 1,
             dataSourceID: 12,
             calldata: Buffer.from(
               'UkVOQlRDIFdCVEMgRElBIEJUTSBJT1RYIEZFVCBKU1QgTUNPIEtNRCBCVFMgUUtDIFlBTVYyIFhaQyBVT1MgQUtSTyBITlQgSE9UIEtBSSBPR04gV1JYIEtEQSBPUk4gRk9SIEFTVCBTVE9SSg==',
+              'base64',
             ),
           },
         ],
@@ -299,6 +302,7 @@ describe('Client get data', () => {
               externalID: 2,
               data: Buffer.from(
                 'MTc4NjEuMTk5MiwxODA1Ni45Nzk2LDEuMjYzMjY3LDAuMDYwMzczMTIsMC4wMDc3MzY3OSwwL',
+                'base64',
               ),
             },
           ],
@@ -310,7 +314,7 @@ describe('Client get data', () => {
           askCount: 4,
           minCount: 3,
           oracleScriptID: 1,
-          calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA=='),
+          calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==', 'base64'),
         },
         responsePacketData: {
           requestID: 44893,
@@ -319,7 +323,7 @@ describe('Client get data', () => {
           resolveStatus: 1,
           ansCount: 3,
           clientID: '',
-          result: Buffer.from('AAAAAAAC+mQ='),
+          result: Buffer.from('AAAAAAAC+mQ=', 'base64'),
         },
       },
     }

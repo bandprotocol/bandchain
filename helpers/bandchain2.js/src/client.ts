@@ -68,14 +68,14 @@ export default class Client {
 
   async getLatestRequest(
     oid: number,
-    calldata: string,
+    calldata: Buffer,
     minCount: number,
     askCount: number,
   ): Promise<RequestInfo> {
     const response = await this.getResult(`/oracle/request_search`, {
       params: {
         oid: oid,
-        calldata: calldata,
+        calldata: calldata.toString('base64'),
         min_count: minCount,
         ask_count: askCount,
       },
@@ -88,7 +88,7 @@ export default class Client {
         requestHeight: parseInt(response.request.request_height),
         clientID: response.request.client_id ? response.request.client_id : '',
         calldata: response.request.calldata
-          ? Buffer.from(response.request.calldata)
+          ? Buffer.from(response.request.calldata, 'base64')
           : Buffer.from(''),
         rawRequests: response.request.raw_requests.map(
           (request: { [key: string]: any }) => {
@@ -98,7 +98,7 @@ export default class Client {
                 : 0,
               dataSourceID: parseInt(request.data_source_id),
               calldata: request.calldata
-                ? Buffer.from(request.calldata)
+                ? Buffer.from(request.calldata, 'base64')
                 : Buffer.from(''),
             }
           },
@@ -117,7 +117,7 @@ export default class Client {
                   ? parseInt(rawReport.external_id)
                   : 0,
                 data: rawReport.data
-                  ? Buffer.from(rawReport.data)
+                  ? Buffer.from(rawReport.data, 'base64')
                   : Buffer.from(''),
               }
             },
@@ -135,7 +135,10 @@ export default class Client {
             response.result?.request_packet_data.oracle_script_id,
           ),
           calldata: response.result?.request_packet_data.calldata
-            ? Buffer.from(response.result?.request_packet_data.calldata)
+            ? Buffer.from(
+                response.result?.request_packet_data.calldata,
+                'base64',
+              )
             : Buffer.from(''),
         },
         responsePacketData: {
@@ -154,7 +157,10 @@ export default class Client {
             ? response.result?.response_packet_data.client_id
             : '',
           result: response.result?.response_packet_data.result
-            ? Buffer.from(response.result?.response_packet_data.result)
+            ? Buffer.from(
+                response.result?.response_packet_data.result,
+                'base64',
+              )
             : Buffer.from(''),
         },
       },
@@ -177,7 +183,7 @@ export default class Client {
         requestHeight: parseInt(response.request.request_height),
         clientID: response.request.client_id ? response.request.client_id : '',
         calldata: response.request.calldata
-          ? Buffer.from(response.request.calldata)
+          ? Buffer.from(response.request.calldata, 'base64')
           : Buffer.from(''),
         rawRequests: response.request.raw_requests.map(
           (request: { [key: string]: any }) => {
@@ -187,7 +193,7 @@ export default class Client {
                 : 0,
               dataSourceID: parseInt(request.data_source_id),
               calldata: request.calldata
-                ? Buffer.from(request.calldata)
+                ? Buffer.from(request.calldata, 'base64')
                 : Buffer.from(''),
             }
           },
@@ -206,7 +212,7 @@ export default class Client {
                   ? parseInt(rawReport.external_id)
                   : 0,
                 data: rawReport.data
-                  ? Buffer.from(rawReport.data)
+                  ? Buffer.from(rawReport.data, 'base64')
                   : Buffer.from(''),
               }
             },
@@ -224,7 +230,10 @@ export default class Client {
             response.result?.request_packet_data.oracle_script_id,
           ),
           calldata: response.result?.request_packet_data.calldata
-            ? Buffer.from(response.result?.request_packet_data.calldata)
+            ? Buffer.from(
+                response.result?.request_packet_data.calldata,
+                'base64',
+              )
             : Buffer.from(''),
         },
         responsePacketData: {
@@ -243,7 +252,10 @@ export default class Client {
             ? response.result?.response_packet_data.client_id
             : '',
           result: response.result?.response_packet_data.result
-            ? Buffer.from(response.result?.response_packet_data.result)
+            ? Buffer.from(
+                response.result?.response_packet_data.result,
+                'base64',
+              )
             : Buffer.from(''),
         },
       },
