@@ -143,6 +143,7 @@ export default class Client {
     }
   }
 
+
   async getReferenceData(pairs: string[]): Promise<any[]> {
     let symbolSet: Set<string> = new Set()
     pairs.forEach((pair) => {
@@ -186,5 +187,12 @@ export default class Client {
       })
     })
     return data
+  }
+  
+  async getReporters(validator: Address): Promise<Address[]> {
+    let response = await this.getResult(
+      `/oracle/reporters/${validator.toValBech32()}`,
+    )
+    return response.map((a: string) => Address.fromAccBech32(a))
   }
 }
