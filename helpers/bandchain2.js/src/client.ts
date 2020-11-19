@@ -58,7 +58,9 @@ export default class Client {
     const value = response.value
     return {
       address: Address.fromAccBech32(value.address),
-      coins: value.coins.map((c: any) => new Coin(c.amount, c.denom)),
+      coins: value.coins.map(
+        (c: { amount: number; denom: string }) => new Coin(c.amount, c.denom),
+      ),
       publicKey: value.public_key,
       accountNumber: parseInt(value.account_number),
       sequence: parseInt(value.sequence),

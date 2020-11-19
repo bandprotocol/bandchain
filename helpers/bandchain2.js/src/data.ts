@@ -21,7 +21,7 @@ export interface Account {
   coins: Coin[]
   publicKey?: object
   accountNumber: Number
-  sequence: Number
+  sequence: number
 }
 
 export interface DataSource {
