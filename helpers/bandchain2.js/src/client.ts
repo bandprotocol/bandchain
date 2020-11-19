@@ -155,4 +155,11 @@ export default class Client {
       errorLog,
     }
   }
+
+  async getReporters(validator: Address): Promise<Address[]> {
+    let response = await this.getResult(
+      `/oracle/reporters/${validator.toValBech32()}`,
+    )
+    return response.map((a: string) => Address.fromAccBech32(a))
+  }
 }
