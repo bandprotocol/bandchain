@@ -55,7 +55,6 @@ export default class Client {
     const response = await this.getResult(
       `/auth/accounts/${address.toAccBech32()}`,
     )
-    console.log(response)
     const value = response.value
     return {
       address: Address.fromAccBech32(value.address),
