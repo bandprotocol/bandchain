@@ -141,6 +141,7 @@ class Client(object):
                 "ask_count": ask_count,
             },
         )
+
     def get_request_id_by_tx_hash(self, tx_hash: HexBytes) -> List[int]:
         msgs = self._get("/txs/{}".format(tx_hash.hex()))["logs"]
         request_ids = []
