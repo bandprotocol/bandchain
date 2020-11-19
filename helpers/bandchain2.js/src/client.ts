@@ -28,6 +28,11 @@ export default class Client {
     return response.result
   }
 
+  private async postResult(path: string, param: object) {
+    const response = await this.post(`${path}`, param)
+    return response.result
+  }
+
   async getChainID(): Promise<string> {
     const response = await this.get('/bandchain/chain_id')
     return response.chain_id
@@ -136,5 +141,50 @@ export default class Client {
       log,
       errorLog,
     }
+  }
+
+  async getReferenceData(pairs: string[]): Promise<any[]> {
+    let symbolSet: Set<string> = new Set()
+    pairs.forEach((pair) => {
+      let symbols = pair.split('/')
+      symbols.forEach((symbol: string) => {
+        if (symbol == 'USD') return
+        symbolSet.add(symbol)
+      })
+    })
+    let symbolList: string[] = Array.from(symbolSet)
+    let pricerBody = {
+      symbols: symbolList,
+      min_count: 3,
+      ask_count: 4,
+    }
+    let priceData = await this.postResult('/oracle/request/prices', pricerBody)
+
+    let symbolMap: any = {}
+    symbolMap['USD'] = {
+      symbol: 'USD',
+      multiplier: '1000000000',
+      px: '1000000000',
+      resolve_time: Math.round(Date.now() / 1000).toString(),
+    }
+    priceData.map((price: any) => {
+      symbolMap[price.symbol] = price
+    })
+    let data: any[] = []
+    pairs.forEach((pair) => {
+      let [baseSymbol, quoteSymbol] = pair.split('/')
+
+      data.push({
+        pair,
+        rate:
+          (symbolMap[baseSymbol].px * symbolMap[quoteSymbol].multiplier) /
+          (symbolMap[quoteSymbol].px * symbolMap[baseSymbol].multiplier),
+        updated: {
+          base: Number(symbolMap[baseSymbol].resolve_time),
+          quote: Number(symbolMap[quoteSymbol].resolve_time),
+        },
+      })
+    })
+    return data
   }
 }
