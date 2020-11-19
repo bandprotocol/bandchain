@@ -116,7 +116,7 @@ export class ObiString {
 
   encode(value: string) {
     return Buffer.concat([
-      new ObiInteger('u32').encode(value.length),
+      new ObiInteger('u32').encode(BigInt(value.length)),
       Buffer.from(value),
     ])
   }
