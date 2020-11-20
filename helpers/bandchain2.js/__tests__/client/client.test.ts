@@ -196,3 +196,38 @@ describe('get latest block', () => {
     response.then((e) => expect(e).toEqual(expected))
   })
 })
+                                         
+describe('Client get reporters', () => {
+  it('success', () => {
+    const resp = {
+      data: {
+        height: '2245131',
+        result: [
+          'band1yyv5jkqaukq0ajqn7vhkyhpff7h6e99ja7gvwg',
+          'band19nf0sqnjycnvpexlxs6hjz9qrhhlhsu9pdty0r',
+          'band1fndxcmg0h5vhr8cph7gryryqfn9yqp90lysjtm',
+          'band10ec0p96j60duce5qagju5axuja0rj8luqrzl0k',
+          'band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s',
+          'band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy',
+        ],
+      },
+    }
+    mockedAxios.get.mockResolvedValue(resp)
+
+    const expected = [
+      Address.fromAccBech32('band1yyv5jkqaukq0ajqn7vhkyhpff7h6e99ja7gvwg'),
+      Address.fromAccBech32('band19nf0sqnjycnvpexlxs6hjz9qrhhlhsu9pdty0r'),
+      Address.fromAccBech32('band1fndxcmg0h5vhr8cph7gryryqfn9yqp90lysjtm'),
+      Address.fromAccBech32('band10ec0p96j60duce5qagju5axuja0rj8luqrzl0k'),
+      Address.fromAccBech32('band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s'),
+      Address.fromAccBech32('band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy'),
+    ]
+
+    const response = client.getReporters(
+      Address.fromValBech32(
+        'bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre',
+      ),
+    )
+    response.then((e) => expect(e).toEqual(expected))
+  })
+})
