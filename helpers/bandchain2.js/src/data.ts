@@ -31,6 +31,17 @@ export interface DataSource {
   fileName: string
 }
 
+export interface ReferenceDataUpdated {
+  base: number
+  quote: number
+}
+
+export interface ReferenceData {
+  pair: string
+  rate: number
+  updated: ReferenceDataUpdated
+}
+
 export interface TransactionSyncMode {
   txHash: HexBytes
   code: number

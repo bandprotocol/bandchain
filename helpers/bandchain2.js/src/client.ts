@@ -6,6 +6,7 @@ import {
   TransactionBlockMode,
   Coin,
   Account,
+  ReferenceData,
 } from './data'
 import { Address } from './wallet'
 
@@ -161,10 +162,9 @@ export default class Client {
     }
   }
 
-
-  async getReferenceData(pairs: string[]): Promise<any[]> {
+  async getReferenceData(pairs: string[]): Promise<ReferenceData[]> {
     let symbolSet: Set<string> = new Set()
-    pairs.forEach((pair) => {
+    pairs.forEach((pair: string) => {
       let symbols = pair.split('/')
       symbols.forEach((symbol: string) => {
         if (symbol == 'USD') return
@@ -189,7 +189,7 @@ export default class Client {
     priceData.map((price: any) => {
       symbolMap[price.symbol] = price
     })
-    let data: any[] = []
+    let data: ReferenceData[] = []
     pairs.forEach((pair) => {
       let [baseSymbol, quoteSymbol] = pair.split('/')
 
@@ -206,7 +206,7 @@ export default class Client {
     })
     return data
   }
-  
+
   async getReporters(validator: Address): Promise<Address[]> {
     let response = await this.getResult(
       `/oracle/reporters/${validator.toValBech32()}`,
