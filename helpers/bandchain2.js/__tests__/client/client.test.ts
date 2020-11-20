@@ -50,6 +50,55 @@ describe('Client get data', () => {
   })
 })
 
+describe('Get reference data', () => {
+  it('success', () => {
+    const resp = {
+      data: {
+        height: '2953006',
+        result: [
+          {
+            symbol: 'BTC',
+            multiplier: '1000000000',
+            px: '16242693800000',
+            request_id: '1171969',
+            resolve_time: '1605512243',
+          },
+          {
+            symbol: 'ETH',
+            multiplier: '1000000000',
+            px: '454523400000',
+            request_id: '1171969',
+            resolve_time: '1605512943',
+          },
+          {
+            symbol: 'TRX',
+            multiplier: '1000000000',
+            px: '25428330',
+            request_id: '1171969',
+            resolve_time: '1605512443',
+          },
+        ],
+      },
+    }
+    mockedAxios.post.mockResolvedValue(resp)
+
+    const response = client.getReferenceData(['BTC/USD', 'TRX/ETH'])
+    const expected = [
+      {
+        pair: 'BTC/USD',
+        rate: 16242.693800000001,
+        updated: { base: 1605512243, quote: Math.floor(Date.now() / 1000) },
+      },
+      {
+        pair: 'TRX/ETH',
+        rate: 0.0000559450404533628,
+        updated: { base: 1605512443, quote: 1605512943 },
+      },
+    ]
+    response.then((e) => expect(e).toEqual(expected))
+  })
+})
+
 describe('get latest block', () => {
   it('success', () => {
     const resp = {
@@ -193,6 +242,7 @@ describe('get latest block', () => {
       },
     }
     const response = client.getLatestBlock()
+
     response.then((e) => expect(e).toEqual(expected))
   })
 })

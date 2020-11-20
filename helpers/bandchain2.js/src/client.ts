@@ -7,6 +7,7 @@ import {
   Block,
   Coin,
   Account,
+  ReferenceData,
 } from './data'
 import { Address } from './wallet'
 
@@ -28,6 +29,11 @@ export default class Client {
 
   private async getResult(path: string, param?: object) {
     const response = await this.get(`${path}`, param)
+    return response.result
+  }
+
+  private async postResult(path: string, param: object) {
+    const response = await this.post(`${path}`, param)
     return response.result
   }
 
@@ -180,6 +186,53 @@ export default class Client {
       log,
       errorLog,
     }
+  }
+
+  async getReferenceData(pairs: string[]): Promise<ReferenceData[]> {
+    let symbolSet: Set<string> = new Set()
+    pairs.forEach((pair: string) => {
+      let symbols = pair.split('/')
+      symbols.forEach((symbol: string) => {
+        if (symbol === 'USD') return
+        symbolSet.add(symbol)
+      })
+    })
+    let symbolList: string[] = Array.from(symbolSet)
+    let pricerBody = {
+      symbols: symbolList,
+      min_count: 3,
+      ask_count: 4,
+    }
+    let priceData = await this.postResult('/oracle/request/prices', pricerBody)
+
+    let symbolMap: any = {}
+    symbolMap['USD'] = {
+      symbol: 'USD',
+      multiplier: '1000000000',
+      px: '1000000000',
+      resolve_time: Math.floor(Date.now() / 1000).toString(),
+    }
+    priceData.map((price: any) => {
+      symbolMap[price.symbol] = price
+    })
+    let data: ReferenceData[] = []
+    pairs.forEach((pair) => {
+      let [baseSymbol, quoteSymbol] = pair.split('/')
+
+      data.push({
+        pair,
+        rate:
+          (Number(symbolMap[baseSymbol].px) *
+            Number(symbolMap[quoteSymbol].multiplier)) /
+          (Number(symbolMap[quoteSymbol].px) *
+            Number(symbolMap[baseSymbol].multiplier)),
+        updated: {
+          base: Number(symbolMap[baseSymbol].resolve_time),
+          quote: Number(symbolMap[quoteSymbol].resolve_time),
+        },
+      })
+    })
+    return data
   }
 
   async getReporters(validator: Address): Promise<Address[]> {
