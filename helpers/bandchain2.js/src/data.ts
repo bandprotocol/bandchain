@@ -9,7 +9,7 @@ export class Coin {
     this.denom = denom
   }
 
-  asJson(): object {
+  asJson(): { amount: string; denom: string } {
     return { amount: this.amount.toString(), denom: this.denom }
   }
 
