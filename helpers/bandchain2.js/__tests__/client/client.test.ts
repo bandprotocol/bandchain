@@ -127,3 +127,20 @@ describe('Client get reporters', () => {
     response.then((e) => expect(e).toEqual(expected))
   })
 })
+
+describe('get price symbols', () => {
+  const resp = {
+    data: {
+      height: '2951872',
+      result: ['2KEY', 'ABYSS', 'ADA', 'AKRO'],
+    },
+  }
+
+  it('success', () => {
+    mockedAxios.get.mockResolvedValue(resp)
+
+    const expected = ['2KEY', 'ABYSS', 'ADA', 'AKRO']
+    const response = client.getPriceSymbols(3, 4)
+    response.then((e) => expect(e).toEqual(expected))
+  })
+})

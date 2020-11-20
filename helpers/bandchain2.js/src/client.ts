@@ -162,4 +162,14 @@ export default class Client {
     )
     return response.map((a: string) => Address.fromAccBech32(a))
   }
+
+  async getPriceSymbols(minCount: number, askCount: number): Promise<string[]> {
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
+    let response = await this.getResult('/oracle/price_symbols', {
+      min_count: minCount,
+      ask_count: askCount,
+    })
+    return response
+  }
 }
