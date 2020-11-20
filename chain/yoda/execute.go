@@ -161,3 +161,37 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 	l.Debug(":balloon: Received data source hash: %s content: %q", hash, resValue[:32])
 	return resValue, nil
 }
+
+// GetDataSourceHash fetches data source hash by id
+func GetDataSourceHash(c *Context, l *Logger, id types.DataSourceID) (string, error) {
+	if hash, ok := c.dataSourceCache.Load(id); ok {
+		return hash.(string), nil
+	}
+
+	res, err := c.client.ABCIQuery(fmt.Sprintf("/store/%s/key", types.StoreKey), types.DataSourceStoreKey(id))
+	if err != nil {
+		l.Debug(":skull: Failed to get data source with error: %s", err.Error())
+		return "", err
+	}
+
+	var d types.DataSource
+	cdc.MustUnmarshalBinaryBare(res.Response.Value, &d)
+
+	hash, _ := c.dataSourceCache.LoadOrStore(id, d.Filename)
+
+	return hash.(string), nil
+}
+
+// GetRequest fetches request by id
+func GetRequest(c *Context, l *Logger, id types.RequestID) (types.Request, error) {
+	res, err := c.client.ABCIQuery(fmt.Sprintf("/store/%s/key", types.StoreKey), types.RequestStoreKey(id))
+	if err != nil {
+		l.Debug(":skull: Failed to get request with error: %s", err.Error())
+		return types.Request{}, err
+	}
+
+	var r types.Request
+	cdc.MustUnmarshalBinaryBare(res.Response.Value, &r)
+
+	return r, nil
+}

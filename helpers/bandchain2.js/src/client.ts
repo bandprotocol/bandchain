@@ -4,6 +4,7 @@ import {
   TransactionSyncMode,
   TransactionAsyncMode,
   TransactionBlockMode,
+  Block,
   Coin,
   Account,
   ReferenceData,
@@ -39,6 +40,31 @@ export default class Client {
   async getChainID(): Promise<string> {
     const response = await this.get('/bandchain/chain_id')
     return response.chain_id
+  }
+
+  async getLatestBlock(): Promise<Block> {
+    const response = await this.get('/blocks/latest')
+    const header = response.block.header
+
+    return {
+      block: {
+        header: {
+          chainID: header.chain_id,
+          height: parseInt(header.height),
+          time: Math.floor(new Date(header.time).getTime() / 1000),
+          lastCommitHash: Buffer.from(header.last_commit_hash, 'hex'),
+          dataHash: Buffer.from(header.data_hash, 'hex'),
+          validatorsHash: Buffer.from(header.validators_hash, 'hex'),
+          nextValidatorsHash: Buffer.from(header.next_validators_hash, 'hex'),
+          consensusHash: Buffer.from(header.consensus_hash, 'hex'),
+          appHash: Buffer.from(header.app_hash, 'hex'),
+          lastResultsHash: Buffer.from(header.last_results_hash, 'hex'),
+          evidenceHash: Buffer.from(header.evidence_hash, 'hex'),
+          proposerAddress: Buffer.from(header.proposer_address, 'hex'),
+        },
+      },
+      blockID: { hash: Buffer.from(response.block_id.hash, 'hex') },
+    }
   }
 
   /**
@@ -214,5 +240,15 @@ export default class Client {
       `/oracle/reporters/${validator.toValBech32()}`,
     )
     return response.map((a: string) => Address.fromAccBech32(a))
+  }
+
+  async getPriceSymbols(minCount: number, askCount: number): Promise<string[]> {
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
+    let response = await this.getResult('/oracle/price_symbols', {
+      min_count: minCount,
+      ask_count: askCount,
+    })
+    return response
   }
 }
