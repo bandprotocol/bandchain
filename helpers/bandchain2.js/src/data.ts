@@ -20,7 +20,7 @@ export interface Account {
   address: Address
   coins: Coin[]
   publicKey?: object
-  accountNumber: Number
+  accountNumber: number
   sequence: number
 }
 
