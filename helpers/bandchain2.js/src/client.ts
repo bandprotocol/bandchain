@@ -43,7 +43,7 @@ export default class Client {
         header: {
           chainID: header.chain_id,
           height: parseInt(header.height),
-          time: new Date(header.time),
+          time: Math.floor(new Date(header.time).getTime() / 1000),
           lastCommitHash: Buffer.from(header.last_commit_hash, 'hex'),
           dataHash: Buffer.from(header.data_hash, 'hex'),
           validatorsHash: Buffer.from(header.validators_hash, 'hex'),

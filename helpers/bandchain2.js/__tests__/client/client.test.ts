@@ -158,7 +158,7 @@ describe('get latest block', () => {
         header: {
           chainID: 'bandchain',
           height: 1032007,
-          time: new Date('2020-11-05T09:15:18.445494105Z'),
+          time: 1604567718,
           lastCommitHash: Buffer.from(
             '17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92',
             'hex',

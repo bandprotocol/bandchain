@@ -1,6 +1,7 @@
 import { Address } from 'wallet'
 
 export type HexBytes = Buffer
+export type Timestamp = number
 
 export class Coin {
   amount: number
@@ -46,7 +47,7 @@ export interface TransactionBlockMode {
 export interface BlockHeaderInfo {
   chainID: string
   height: number
-  time: Date
+  time: Timestamp
   lastCommitHash: HexBytes
   dataHash: HexBytes
   validatorsHash: HexBytes
