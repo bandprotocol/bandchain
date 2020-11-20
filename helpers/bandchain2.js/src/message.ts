@@ -1,5 +1,5 @@
-import { Coin } from 'data'
-import { Address } from 'wallet'
+import { Coin } from './data'
+import { Address } from './wallet'
 import { MAX_DATA_SIZE } from './constant'
 
 export abstract class Msg {

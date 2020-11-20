@@ -16,7 +16,7 @@ export class Coin {
   validate(): boolean {
     if (!Number.isInteger(this.amount)) throw Error('amount is not an integer')
     if (this.amount < 0) throw Error('Expect amount more than 0')
-    if (this.denom.length == 0) throw Error('Expect denom')
+    if (this.denom.length === 0) throw Error('Expect denom')
 
     return true
   }
