@@ -2,7 +2,6 @@ package keeper_test
 
 import (
 	"encoding/json"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -64,16 +63,8 @@ func TestQueryPendingRequests(t *testing.T) {
 			var queryRequest types.QueryResult
 			require.NoError(t, json.Unmarshal(raw, &queryRequest))
 
-			var rawRequestIDs []string
-			types.ModuleCdc.MustUnmarshalJSON(queryRequest.Result, &rawRequestIDs)
-
 			var requestIDs []types.RequestID
-			for _, r := range rawRequestIDs {
-				id, err := strconv.ParseInt(r, 10, 64)
-				require.NoError(t, err)
-
-				requestIDs = append(requestIDs, types.RequestID(id))
-			}
+			types.ModuleCdc.MustUnmarshalJSON(queryRequest.Result, &requestIDs)
 
 			require.Equal(t, tt.expected, requestIDs)
 		})

@@ -1,6 +1,7 @@
 package yoda
 
 import (
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -17,7 +18,6 @@ type FeeEstimationData struct {
 	askCount    int64
 	minCount    int64
 	callData    []byte
-	validators  int
 	rawRequests []rawRequest
 	clientID    string
 }
@@ -44,6 +44,9 @@ type Context struct {
 	pendingMsgs        chan ReportMsgWithKey
 	freeKeys           chan int64
 	keyRoundRobinIndex int64 // Must use in conjunction with sync/atomic
+
+	dataSourceCache *sync.Map
+	pendingRequests map[types.RequestID]bool
 }
 
 func (c *Context) nextKeyIndex() int64 {

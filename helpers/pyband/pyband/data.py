@@ -4,9 +4,11 @@ from dataclasses import dataclass
 from typing import List, Optional, NewType
 from dacite import Config
 from pyband.utils import parse_datetime
+from pyband.wallet import Address
 
 HexBytes = NewType("HexBytes", bytes)
 Timestamp = NewType("Timestamp", int)
+
 
 DACITE_CONFIG = Config(
     type_hooks={
@@ -14,13 +16,14 @@ DACITE_CONFIG = Config(
         bytes: base64.b64decode,
         HexBytes: bytes.fromhex,
         Timestamp: parse_datetime,
+        Address: Address.from_acc_bech32,
     }
 )
 
 
 @dataclass
 class DataSource(object):
-    owner: str
+    owner: Address
     name: str = ""
     description: str = ""
     filename: str = ""
@@ -28,7 +31,7 @@ class DataSource(object):
 
 @dataclass
 class OracleScript(object):
-    owner: str
+    owner: Address
     name: str = ""
     description: str = ""
     filename: str = ""
@@ -120,11 +123,12 @@ class Coin(object):
 
 @dataclass
 class Account(object):
-    address: str
+    address: Address
     coins: List[dict]
     public_key: Optional[dict]
     account_number: int
     sequence: int
+
 
 @dataclass
 class TransactionSyncMode(object):
@@ -179,3 +183,16 @@ class BlockID(object):
 class Block(object):
     block: BlockHeader
     block_id: BlockID
+
+
+@dataclass
+class ReferencePriceUpdated(object):
+    base: int
+    quote: int
+
+
+@dataclass
+class ReferencePrice(object):
+    pair: str
+    rate: float
+    updated_at: ReferencePriceUpdated
