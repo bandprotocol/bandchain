@@ -108,7 +108,6 @@ func parseTime(str string) time.Time {
 func encodeTime(t time.Time) []byte {
 	bz := []byte{}
 	s := t.Unix()
-	// TODO: We are hand-encoding a struct until MarshalAmino/UnmarshalAmino is supported.
 	// skip if default/zero value:
 	if s != 0 {
 		bz = append(bz, encodeFieldNumberAndTyp3(1, 0)...)
