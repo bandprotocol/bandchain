@@ -7,7 +7,7 @@ const { Coin } = Data
 const coin = new Coin(100000, 'uband')
 
 describe('MsgRequest', () => {
-  const sender_addr = Address.fromAccBech32(
+  const senderAddr = Address.fromAccBech32(
     'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
   )
 
@@ -15,7 +15,7 @@ describe('MsgRequest', () => {
   const memo = 'from_bandchain.js'
 
   it('create successfully', () => {
-    const msgRequest = new MsgRequest(1, calldata, 2, 2, memo, sender_addr)
+    const msgRequest = new MsgRequest(1, calldata, 2, 2, memo, senderAddr)
     expect(msgRequest.asJson()).toEqual({
       type: 'oracle/Request',
       value: {
@@ -50,11 +50,11 @@ describe('MsgRequest', () => {
   it('create with error from validate()', () => {
     const msgs = []
     const errorText: string[] = []
-    msgs.push(new MsgRequest(-1, calldata, 2, 2, memo, sender_addr))
-    msgs.push(new MsgRequest(1.1, calldata, 2, 2, memo, sender_addr))
-    msgs.push(new MsgRequest(1, calldata, 2.1, 2, memo, sender_addr))
-    msgs.push(new MsgRequest(1, calldata, 2, 2.1, memo, sender_addr))
-    msgs.push(new MsgRequest(1, calldata, 2, 0, memo, sender_addr))
+    msgs.push(new MsgRequest(-1, calldata, 2, 2, memo, senderAddr))
+    msgs.push(new MsgRequest(1.1, calldata, 2, 2, memo, senderAddr))
+    msgs.push(new MsgRequest(1, calldata, 2.1, 2, memo, senderAddr))
+    msgs.push(new MsgRequest(1, calldata, 2, 2.1, memo, senderAddr))
+    msgs.push(new MsgRequest(1, calldata, 2, 0, memo, senderAddr))
     errorText.push('oracleScriptID cannot less than zero')
     errorText.push('oracleScriptID is not an integer')
     errorText.push('askCount is not an integer')
