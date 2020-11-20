@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -46,8 +47,8 @@ func runImpl(c *Context, l *Logger) error {
 		return err
 	}
 
-	l.Info(":eyes: Starting Prometheus listener")
-	if cfg.Metrics {
+	if cfg.MetricsListenAddr != "" {
+		l.Info(":eyes: Starting Prometheus listener")
 		go metricsListen(cfg.MetricsListenAddr, c)
 	}
 
@@ -94,7 +95,7 @@ func runImpl(c *Context, l *Logger) error {
 				availiableKeys[keyIndex] = true
 			}
 		case pm := <-c.pendingMsgs:
-			c.pendingGauge++
+			atomic.AddInt64(&c.pendingGauge, 1)
 			if availiableKeys[pm.keyIndex] {
 				availiableKeys[pm.keyIndex] = false
 				go SubmitReport(c, l, pm.keyIndex, []ReportMsgWithKey{pm})
@@ -165,11 +166,6 @@ func runCmd(c *Context) *cobra.Command {
 			c.keyRoundRobinIndex = -1
 			c.dataSourceCache = new(sync.Map)
 			c.pendingRequests = make(map[types.RequestID]bool)
-
-			c.handlingGauge = 0
-			c.pendingGauge = 0
-			c.submittedCount = 0
-
 			return runImpl(c, l)
 		},
 	}

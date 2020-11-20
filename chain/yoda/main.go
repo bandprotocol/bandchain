@@ -37,7 +37,6 @@ type Config struct {
 	RPCPollInterval   string `mapstructure:"rpc-poll-interval"`   // The duration of rpc poll interval
 	MaxTry            uint64 `mapstructure:"max-try"`             // The maximum number of tries to submit a report transaction
 	MaxReport         uint64 `mapstructure:"max-report"`          // The maximum number of reports in one transaction
-	Metrics           bool   `mapstructure:"metrics"`             // Switch for prometheus exporter
 	MetricsListenAddr string `mapstructure:"metrics-listen-addr"` // Address to listen on for prometheus metrics
 }
 

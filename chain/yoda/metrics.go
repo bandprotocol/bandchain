@@ -2,6 +2,7 @@ package yoda
 
 import (
 	"net/http"
+	"sync/atomic"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -40,17 +41,14 @@ func (collector yodaCollector) Describe(ch chan<- *prometheus.Desc) {
 
 func (collector yodaCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(collector.reportsHandlingGaugeDesc, prometheus.GaugeValue,
-		float64(collector.context.handlingGauge), "handling")
+		float64(atomic.LoadInt64(&collector.context.handlingGauge)), "handling")
 	ch <- prometheus.MustNewConstMetric(collector.reportsPendingGaugeDesc, prometheus.GaugeValue,
-		float64(collector.context.pendingGauge), "pending")
+		float64(atomic.LoadInt64(&collector.context.pendingGauge)), "pending")
 	ch <- prometheus.MustNewConstMetric(collector.reportsSubmittedCountDesc, prometheus.CounterValue,
-		float64(collector.context.submittedCount), "submitted")
+		float64(atomic.LoadInt64(&collector.context.submittedCount)), "submitted")
 }
 
 func metricsListen(listenAddr string, c *Context) {
-	if listenAddr == "" {
-		listenAddr = "127.0.0.1:26661"
-	}
 	collector := NewYodaCollector(c)
 	prometheus.MustRegister(collector)
 	http.Handle("/metrics", promhttp.Handler())
