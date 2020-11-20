@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Message, Data, Wallet, Client } from 'bandchain2.js'
+import { Message, Data, Wallet, Client, Transaction } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
@@ -26,7 +26,7 @@ function App() {
 
   console.log(pubkey.toAddress().toAccBech32())
 
-  const client = new Client('http://d3n-debug.bandprotocol.com/rest')
+  const client = new Client('http://poa-api.bandchain.org')
 
   console.log('---------------------------------------')
 
@@ -34,6 +34,37 @@ function App() {
     .getChainID()
     .then((e) => console.log('chain ID: ', e))
     .catch((err) => console.log(err.response.data.error))
+
+  client
+    .getLatestBlock()
+    .then((e) => console.log('getLatestBlock: ', e))
+    .catch((err) => console.log(err.response.data.error))
+
+  let addr = Address.fromAccBech32(
+    'band1trzsxmg8nf4zqmzxfckrzxzwznpsg4khrsvzmd',
+  )
+  client
+    .getAccount(addr)
+    .then((e) => console.log('getAccount: ', e))
+    .catch((err) => console.log(err.response.data.error))
+
+  let reporterAddr = Address.fromValBech32(
+    'bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre',
+  )
+  client
+    .getReporters(reporterAddr)
+    .then((e) => console.log('getReporters: ', e))
+    .catch((err) => console.log(err.response.data.error))
+
+  client
+    .getReferenceData(['BTC/USD', 'TRX/ETH'])
+    .then((e) => console.log('getReferenceData: ', e))
+    .catch((err) => console.log(err.response.data.error))
+
+  client
+    .getPriceSymbols(3, 4)
+    .then((e) => console.log('getPriceSymbols: ', e))
+    .catch((err) => console.log(err))
 
   client
     .getDataSource(3)

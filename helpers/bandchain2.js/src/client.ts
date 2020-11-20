@@ -17,8 +17,8 @@ export default class Client {
     this.rpcUrl = rpcUrl
   }
 
-  private async get(path: string, param?: object) {
-    const response = await axios.get(`${this.rpcUrl}${path}`, param)
+  private async get(path: string, options?: object) {
+    const response = await axios.get(`${this.rpcUrl}${path}`, options)
     return response.data
   }
 
@@ -27,8 +27,8 @@ export default class Client {
     return response.data
   }
 
-  private async getResult(path: string, param?: object) {
-    const response = await this.get(`${path}`, param)
+  private async getResult(path: string, options?: object) {
+    const response = await this.get(`${path}`, options)
     return response.result
   }
 
@@ -203,7 +203,7 @@ export default class Client {
       min_count: 3,
       ask_count: 4,
     }
-    let priceData = await this.postResult('/oracle/request/prices', pricerBody)
+    let priceData = await this.postResult('/oracle/request_prices', pricerBody)
 
     let symbolMap: any = {}
     symbolMap['USD'] = {
@@ -246,8 +246,10 @@ export default class Client {
     if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
     if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
     let response = await this.getResult('/oracle/price_symbols', {
-      min_count: minCount,
-      ask_count: askCount,
+      params: {
+        min_count: minCount,
+        ask_count: askCount,
+      },
     })
     return response
   }
