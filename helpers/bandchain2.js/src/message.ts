@@ -1,6 +1,6 @@
 import { Coin } from 'data'
-import { constants } from 'buffer'
 import { Address } from 'wallet'
+import { MAX_DATA_SIZE } from './constant'
 
 export abstract class Msg {
   abstract asJson(): { type: string; value: any }
@@ -56,17 +56,16 @@ export class MsgRequest extends Msg {
       throw Error('oracleScriptID cannot less than zero')
     if (!Number.isInteger(this.oracleScriptID))
       throw Error('oracleScriptID is not an integer')
-    if (this.calldata.length > constants.MAX_LENGTH)
-      throw Error('too large calldata')
+    if (this.calldata.length > MAX_DATA_SIZE) throw Error('too large calldata')
     if (!Number.isInteger(this.askCount))
       throw Error('askCount is not an integer')
     if (!Number.isInteger(this.minCount))
       throw Error('minCount is not an integer')
     if (this.minCount <= 0)
-      throw Error(`invalid minCount got: minCount: ${this.minCount}`)
+      throw Error(`invalid minCount, got: minCount: ${this.minCount}`)
     if (this.askCount < this.minCount)
       throw Error(
-        `invalida askCount got: minCount: ${this.minCount}, askCount: ${this.askCount}`,
+        `invalid askCount got: minCount: ${this.minCount}, askCount: ${this.askCount}`,
       )
 
     return true

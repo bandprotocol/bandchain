@@ -59,7 +59,7 @@ describe('MsgRequest', () => {
     errorText.push('oracleScriptID is not an integer')
     errorText.push('askCount is not an integer')
     errorText.push('minCount is not an integer')
-    errorText.push('invalid minCount got: minCount: 0')
+    errorText.push('invalid minCount, got: minCount: 0')
 
     msgs.forEach((msg, index) => {
       expect(() => {
@@ -88,6 +88,18 @@ describe('MsgSend', () => {
       'band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c',
     )
     expect(msgSend.validate()).toBeTruthy()
+  })
+
+  it('error no coin', () => {
+    const msgSend = new MsgSend(
+      Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
+      Address.fromAccBech32('band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c'),
+      [],
+    )
+
+    expect(() => {
+      msgSend.validate()
+    }).toThrowError('Expect at least 1 coin')
   })
 })
 
