@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { Client } from '../../src'
+import { Coin } from '../../src/data'
 import { Address } from '../../src/wallet'
 
 jest.mock('axios')
@@ -49,6 +50,49 @@ describe('Client get data', () => {
   })
 })
 
+describe('Client get account', () => {
+  it('success', () => {
+    const resp = {
+      data: {
+        height: '650788',
+        result: {
+          type: 'cosmos-sdk/Account',
+          value: {
+            address: 'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
+            coins: [{ denom: 'uband', amount: 104082359107 }],
+            public_key: {
+              type: 'tendermint/PubKeySecp256k1',
+              value: 'A/5wi9pmUk/SxrzpBoLjhVWoUeA9Ku5PYpsF3pD1Htm8',
+            },
+            account_number: '36',
+            sequence: '927',
+          },
+        },
+      },
+    }
+
+    mockedAxios.get.mockResolvedValue(resp)
+
+    const expected = {
+      address: Address.fromAccBech32(
+        'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
+      ),
+      coins: [new Coin(104082359107, 'uband')],
+      publicKey: {
+        type: 'tendermint/PubKeySecp256k1',
+        value: 'A/5wi9pmUk/SxrzpBoLjhVWoUeA9Ku5PYpsF3pD1Htm8',
+      },
+      accountNumber: 36,
+      sequence: 927,
+    }
+
+    const response = client.getAccount(
+      Address.fromAccBech32('band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte'),
+    )
+    response.then((e) => expect(e).toEqual(expected))
+  })
+})
+                                         
 describe('Client get reporters', () => {
   it('success', () => {
     const resp = {
