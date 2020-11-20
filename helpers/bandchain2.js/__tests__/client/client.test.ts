@@ -87,7 +87,7 @@ describe('Get reference data', () => {
       {
         pair: 'BTC/USD',
         rate: 16242.693800000001,
-        updated: { base: 1605512243, quote: Math.round(Date.now() / 1000) },
+        updated: { base: 1605512243, quote: Math.floor(Date.now() / 1000) },
       },
       {
         pair: 'TRX/ETH',

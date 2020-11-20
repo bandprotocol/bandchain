@@ -167,7 +167,7 @@ export default class Client {
     pairs.forEach((pair: string) => {
       let symbols = pair.split('/')
       symbols.forEach((symbol: string) => {
-        if (symbol == 'USD') return
+        if (symbol === 'USD') return
         symbolSet.add(symbol)
       })
     })
@@ -184,7 +184,7 @@ export default class Client {
       symbol: 'USD',
       multiplier: '1000000000',
       px: '1000000000',
-      resolve_time: Math.round(Date.now() / 1000).toString(),
+      resolve_time: Math.floor(Date.now() / 1000).toString(),
     }
     priceData.map((price: any) => {
       symbolMap[price.symbol] = price
@@ -196,8 +196,10 @@ export default class Client {
       data.push({
         pair,
         rate:
-          (symbolMap[baseSymbol].px * symbolMap[quoteSymbol].multiplier) /
-          (symbolMap[quoteSymbol].px * symbolMap[baseSymbol].multiplier),
+          (Number(symbolMap[baseSymbol].px) *
+            Number(symbolMap[quoteSymbol].multiplier)) /
+          (Number(symbolMap[quoteSymbol].px) *
+            Number(symbolMap[baseSymbol].multiplier)),
         updated: {
           base: Number(symbolMap[baseSymbol].resolve_time),
           quote: Number(symbolMap[quoteSymbol].resolve_time),
