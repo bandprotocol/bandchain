@@ -107,9 +107,7 @@ export default class Client {
       reports: response.reports?.map((report: { [key: string]: any }) => {
         return {
           validator: report.validator,
-          inBeforeResolve: report.in_before_resolve
-            ? report.in_before_resolve
-            : false,
+          inBeforeResolve: !!report.in_before_resolve,
           rawReports: report.raw_reports.map(
             (rawReport: { [key: string]: any }) => {
               return {
@@ -202,9 +200,7 @@ export default class Client {
       reports: response.reports?.map((report: { [key: string]: any }) => {
         return {
           validator: report.validator,
-          inBeforeResolve: report.in_before_resolve
-            ? report.in_before_resolve
-            : false,
+          inBeforeResolve: !!report.in_before_resolve,
           rawReports: report.raw_reports.map(
             (rawReport: { [key: string]: any }) => {
               return {
