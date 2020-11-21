@@ -4,7 +4,7 @@ import './App.css'
 import { Message, Data, Wallet, Client } from 'bandchain2.js'
 
 function App() {
-  const { MsgSend } = Message
+  const { MsgSend, MsgRequest } = Message
   const { PrivateKey, PublicKey, Address } = Wallet
   const { Coin } = Data
 
