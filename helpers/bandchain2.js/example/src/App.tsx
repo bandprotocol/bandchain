@@ -40,6 +40,16 @@ function App() {
     .then((e) => console.log('data source: ', e))
     .catch((err) => console.log(err))
 
+  client
+    .getRequestIDByTxHash(
+      Buffer.from(
+        '02E93650CF192034F9D314A22C2C34439D5F09A1F82E2F18198135F754330F73',
+        'hex',
+      ),
+    )
+    .then((e) => console.log('request id: ', e))
+    .catch((err) => console.log(err))
+
   return (
     <div className="App">
       <header className="App-header">

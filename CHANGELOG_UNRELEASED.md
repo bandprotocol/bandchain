@@ -28,6 +28,7 @@
 
 ### Helpers
 
+- (feat) [\#2915](https://github.com/bandprotocol/bandchain/pull/2915) bandchainjs: Implemented getRequestIDByTxHash fn on client module
 - (impv) [\#2897](https://github.com/bandprotocol/bandchain/pull/2897) pyband: Added the address to account dataclass
 - (feat) [\#2885](https://github.com/bandprotocol/bandchain/pull/2885) Bandchain.js: Implement `Msg`
 - (feat) [\#2887](https://github.com/bandprotocol/bandchain/pull/2887) pyband: Implemented `get_reference_data` on Client

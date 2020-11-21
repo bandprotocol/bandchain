@@ -1,5 +1,7 @@
 import { Address } from './wallet'
 
+export type HexBytes = Buffer
+
 export class Coin {
   amount: number
   denom: string
