@@ -331,6 +331,95 @@ describe('Client get data', () => {
     const response = client.getRequestByID(3)
     response.then((e) => expect(e).toEqual(expected))
   })
+
+  it('get request by ID without request', () => {
+    const resp = {
+      data: {
+        height: '3006088',
+        result: {
+          request: {
+            oracle_script_id: '1',
+            calldata: 'AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==',
+            requested_validators: [
+              'bandvaloper1ywd2m858gu4eya3nzx6f9vme3sn82dr4thjnme',
+              'bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre',
+              'bandvaloper1yplk6n4wmeaarxp966gukpxupg3jqfcqkh32mw',
+              'bandvaloper1alzj765pzuhtjkmslme4fdpeakc0036xnyjltn',
+            ],
+            min_count: '3',
+            request_height: '552201',
+            request_time: '2020-08-23T19:35:39.841842928Z',
+            raw_requests: [
+              {
+                external_id: '1',
+                data_source_id: '12',
+                calldata:
+                  'UkVOQlRDIFdCVEMgRElBIEJUTSBJT1RYIEZFVCBKU1QgTUNPIEtNRCBCVFMgUUtDIFlBTVYyIFhaQyBVT1MgQUtSTyBITlQgSE9UIEtBSSBPR04gV1JYIEtEQSBPUk4gRk9SIEFTVCBTVE9SSg==',
+              },
+            ],
+          },
+          reports: [
+            {
+              validator: 'bandvaloper1yplk6n4wmeaarxp966gukpxupg3jqfcqkh32mw',
+              raw_reports: [
+                {
+                  external_id: '2',
+                  data:
+                    'MTc4NjEuMTk5MiwxODA1Ni45Nzk2LDEuMjYzMjY3LDAuMDYwMzczMTIsMC4wMDc3MzY3OSwwL',
+                },
+              ],
+            },
+          ],
+        },
+      },
+    }
+    mockedAxios.get.mockResolvedValue(resp)
+
+    const expected = {
+      request: {
+        oracleScriptID: 1,
+        requestedValidators: [
+          'bandvaloper1ywd2m858gu4eya3nzx6f9vme3sn82dr4thjnme',
+          'bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre',
+          'bandvaloper1yplk6n4wmeaarxp966gukpxupg3jqfcqkh32mw',
+          'bandvaloper1alzj765pzuhtjkmslme4fdpeakc0036xnyjltn',
+        ],
+        minCount: 3,
+        requestHeight: 552201,
+        clientID: '',
+        calldata: Buffer.from('AAAAA0xSQwAAAANVU0QAAAAAAA9CQA==', 'base64'),
+        rawRequests: [
+          {
+            externalID: 1,
+            dataSourceID: 12,
+            calldata: Buffer.from(
+              'UkVOQlRDIFdCVEMgRElBIEJUTSBJT1RYIEZFVCBKU1QgTUNPIEtNRCBCVFMgUUtDIFlBTVYyIFhaQyBVT1MgQUtSTyBITlQgSE9UIEtBSSBPR04gV1JYIEtEQSBPUk4gRk9SIEFTVCBTVE9SSg==',
+              'base64',
+            ),
+          },
+        ],
+      },
+      reports: [
+        {
+          validator: 'bandvaloper1yplk6n4wmeaarxp966gukpxupg3jqfcqkh32mw',
+          inBeforeResolve: false,
+          rawReports: [
+            {
+              externalID: 2,
+              data: Buffer.from(
+                'MTc4NjEuMTk5MiwxODA1Ni45Nzk2LDEuMjYzMjY3LDAuMDYwMzczMTIsMC4wMDc3MzY3OSwwL',
+                'base64',
+              ),
+            },
+          ],
+        },
+      ],
+      result: undefined,
+    }
+
+    const response = client.getRequestByID(3)
+    response.then((e) => expect(e).toEqual(expected))
+  })
 })
 
 describe('Client get request ID by transaction hash', () => {

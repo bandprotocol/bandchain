@@ -122,43 +122,40 @@ export default class Client {
           ),
         }
       }),
-      result: {
+      result: response.result && {
         requestPacketData: {
-          clientID: response.result?.request_packet_data.client_id
-            ? response.result?.request_packet_data.client_id
+          clientID: response.result.request_packet_data.client_id
+            ? response.result.request_packet_data.client_id
             : '',
-          askCount: parseInt(response.result?.request_packet_data.ask_count),
-          minCount: parseInt(response.result?.request_packet_data.min_count),
+          askCount: parseInt(response.result.request_packet_data.ask_count),
+          minCount: parseInt(response.result.request_packet_data.min_count),
           oracleScriptID: parseInt(
-            response.result?.request_packet_data.oracle_script_id,
+            response.result.request_packet_data.oracle_script_id,
           ),
-          calldata: response.result?.request_packet_data.calldata
+          calldata: response.result.request_packet_data.calldata
             ? Buffer.from(
-                response.result?.request_packet_data.calldata,
+                response.result.request_packet_data.calldata,
                 'base64',
               )
             : Buffer.from(''),
         },
         responsePacketData: {
-          requestID: parseInt(response.result?.response_packet_data.request_id),
+          requestID: parseInt(response.result.response_packet_data.request_id),
           requestTime: parseInt(
-            response.result?.response_packet_data.request_time,
+            response.result.response_packet_data.request_time,
           ),
           resolveTime: parseInt(
-            response.result?.response_packet_data.resolve_time,
+            response.result.response_packet_data.resolve_time,
           ),
-          resolveStatus: response.result?.response_packet_data.resolve_status,
-          ansCount: response.result?.response_packet_data.ans_count
-            ? parseInt(response.result?.response_packet_data.ans_count)
+          resolveStatus: response.result.response_packet_data.resolve_status,
+          ansCount: response.result.response_packet_data.ans_count
+            ? parseInt(response.result.response_packet_data.ans_count)
             : 0,
-          clientID: response.result?.response_packet_data.client_id
-            ? response.result?.response_packet_data.client_id
+          clientID: response.result.response_packet_data.client_id
+            ? response.result.response_packet_data.client_id
             : '',
-          result: response.result?.response_packet_data.result
-            ? Buffer.from(
-                response.result?.response_packet_data.result,
-                'base64',
-              )
+          result: response.result.response_packet_data.result
+            ? Buffer.from(response.result.response_packet_data.result, 'base64')
             : Buffer.from(''),
         },
       },
@@ -215,43 +212,40 @@ export default class Client {
           ),
         }
       }),
-      result: {
+      result: response.result && {
         requestPacketData: {
-          clientID: response.result?.request_packet_data.client_id
-            ? response.result?.request_packet_data.client_id
+          clientID: response.result.request_packet_data.client_id
+            ? response.result.request_packet_data.client_id
             : '',
-          askCount: parseInt(response.result?.request_packet_data.ask_count),
-          minCount: parseInt(response.result?.request_packet_data.min_count),
+          askCount: parseInt(response.result.request_packet_data.ask_count),
+          minCount: parseInt(response.result.request_packet_data.min_count),
           oracleScriptID: parseInt(
-            response.result?.request_packet_data.oracle_script_id,
+            response.result.request_packet_data.oracle_script_id,
           ),
-          calldata: response.result?.request_packet_data.calldata
+          calldata: response.result.request_packet_data.calldata
             ? Buffer.from(
-                response.result?.request_packet_data.calldata,
+                response.result.request_packet_data.calldata,
                 'base64',
               )
             : Buffer.from(''),
         },
         responsePacketData: {
-          requestID: parseInt(response.result?.response_packet_data.request_id),
+          requestID: parseInt(response.result.response_packet_data.request_id),
           requestTime: parseInt(
-            response.result?.response_packet_data.request_time,
+            response.result.response_packet_data.request_time,
           ),
           resolveTime: parseInt(
-            response.result?.response_packet_data.resolve_time,
+            response.result.response_packet_data.resolve_time,
           ),
-          resolveStatus: response.result?.response_packet_data.resolve_status,
-          ansCount: response.result?.response_packet_data.ans_count
-            ? parseInt(response.result?.response_packet_data.ans_count)
+          resolveStatus: response.result.response_packet_data.resolve_status,
+          ansCount: response.result.response_packet_data.ans_count
+            ? parseInt(response.result.response_packet_data.ans_count)
             : 0,
-          clientID: response.result?.response_packet_data.client_id
-            ? response.result?.response_packet_data.client_id
+          clientID: response.result.response_packet_data.client_id
+            ? response.result.response_packet_data.client_id
             : '',
-          result: response.result?.response_packet_data.result
-            ? Buffer.from(
-                response.result?.response_packet_data.result,
-                'base64',
-              )
+          result: response.result.response_packet_data.result
+            ? Buffer.from(response.result.response_packet_data.result, 'base64')
             : Buffer.from(''),
         },
       },
