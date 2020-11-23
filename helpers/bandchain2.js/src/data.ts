@@ -40,7 +40,7 @@ export interface ReferenceDataUpdated {
 export interface ReferenceData {
   pair: string
   rate: number
-  updated: ReferenceDataUpdated
+  updatedAt: ReferenceDataUpdated
 }
 
 export interface TransactionSyncMode {

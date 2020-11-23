@@ -9,10 +9,10 @@ function App() {
   const { Coin } = Data
 
   const from_addr = Address.fromAccBech32(
-    'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
+    'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
   )
   const to_addr = Address.fromAccBech32(
-    'band1p843hkdj2svjzm7zaceak07m9mtyf6hatcpvnl',
+    'band1ksnd0f3xjclvg0d4z9w0v9ydyzhzfhuy47yx79',
   )
   const msgSend = new MsgSend(from_addr, to_addr, [new Coin(100000, 'uband')])
   console.log(msgSend)
@@ -27,6 +27,7 @@ function App() {
   console.log(pubkey.toAddress().toAccBech32())
 
   const client = new Client('http://poa-api.bandchain.org')
+  const clientMaster = new Client('https://d3n.bandprotocol.com/rest')
 
   console.log('---------------------------------------')
 
@@ -70,6 +71,66 @@ function App() {
     .getDataSource(3)
     .then((e) => console.log('data source: ', e))
     .catch((err) => console.log(err))
+
+  console.log('---------------------------------------')
+
+  const tscSyncExample = async () => {
+    const tsc_send = await new Transaction()
+      .withMessages(msgSend)
+      // .withAccountNum(100)
+      // .withSequence(30)
+      .withChainID('bandchain')
+      .withGas(500000)
+      .withFee(10)
+      .withMemo('bandchain2.js example')
+      .withAuto(clientMaster)
+
+    const signatureTx = privkey.sign(tsc_send.getSignData())
+    const rawTx = tsc_send.getTxData(signatureTx, pubkey)
+    clientMaster
+      .sendTxSyncMode(rawTx)
+      .then((e) => console.log('sendTxSyncMode: ', e))
+  }
+
+  const tscAsyncExample = async () => {
+    const tsc_send = await new Transaction()
+      .withMessages(msgSend)
+      // .withAccountNum(100)
+      // .withSequence(30)
+      .withChainID('bandchain')
+      .withGas(500000)
+      .withFee(10)
+      .withMemo('bandchain2.js example')
+      .withAuto(clientMaster)
+
+    const signatureTx = privkey.sign(tsc_send.getSignData())
+    const rawTx = tsc_send.getTxData(signatureTx, pubkey)
+    clientMaster
+      .sendTxAsyncMode(rawTx)
+      .then((e) => console.log('sendTxAsyncMode: ', e))
+  }
+
+  const tscBlockExample = async () => {
+    const tsc_send = await new Transaction()
+      .withMessages(msgSend)
+      // .withAccountNum(100)
+      // .withSequence(30)
+      .withChainID('bandchain')
+      .withGas(500000)
+      .withFee(10)
+      .withMemo('bandchain2.js example')
+      .withAuto(clientMaster)
+
+    const signatureTx = privkey.sign(tsc_send.getSignData())
+    const rawTx = tsc_send.getTxData(signatureTx, pubkey)
+    clientMaster
+      .sendTxBlockMode(rawTx)
+      .then((e) => console.log('sendTxBlockMode: ', e))
+  }
+
+  // tscSyncExample()
+  // tscAsyncExample()
+  tscBlockExample()
 
   return (
     <div className="App">

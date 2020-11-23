@@ -227,7 +227,7 @@ export default class Client {
             Number(symbolMap[quoteSymbol].multiplier)) /
           (Number(symbolMap[quoteSymbol].px) *
             Number(symbolMap[baseSymbol].multiplier)),
-        updated: {
+        updatedAt: {
           base: Number(symbolMap[baseSymbol].resolve_time),
           quote: Number(symbolMap[quoteSymbol].resolve_time),
         },
