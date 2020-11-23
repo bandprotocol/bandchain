@@ -17,23 +17,26 @@ export default class Client {
     this.rpcUrl = rpcUrl
   }
 
-  private async get(path: string, options?: object) {
+  private async get(path: string, params?: object) {
+    let options
+    if (params) options = { params }
+
     const response = await axios.get(`${this.rpcUrl}${path}`, options)
     return response.data
   }
 
-  private async post(path: string, param: object) {
-    const response = await axios.post(`${this.rpcUrl}${path}`, param)
+  private async post(path: string, params: object) {
+    const response = await axios.post(`${this.rpcUrl}${path}`, params)
     return response.data
   }
 
-  private async getResult(path: string, options?: object) {
-    const response = await this.get(`${path}`, options)
+  private async getResult(path: string, params?: object) {
+    const response = await this.get(`${path}`, params)
     return response.result
   }
 
-  private async postResult(path: string, param: object) {
-    const response = await this.post(`${path}`, param)
+  private async postResult(path: string, params: object) {
+    const response = await this.post(`${path}`, params)
     return response.result
   }
 
@@ -106,12 +109,10 @@ export default class Client {
     askCount: number,
   ) {
     const response = await this.getResult(`/oracle/request_search`, {
-      params: {
-        oid: oid,
-        calldata: calldata,
-        min_count: minCount,
-        ask_count: askCount,
-      },
+      oid: oid,
+      calldata: calldata,
+      min_count: minCount,
+      ask_count: askCount,
     })
     return response
   }
@@ -246,10 +247,8 @@ export default class Client {
     if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
     if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
     let response = await this.getResult('/oracle/price_symbols', {
-      params: {
-        min_count: minCount,
-        ask_count: askCount,
-      },
+      min_count: minCount,
+      ask_count: askCount,
     })
     return response
   }
