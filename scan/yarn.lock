@@ -6983,15 +6983,15 @@ html-minifier-terser@^5.0.1:
     relateurl "^0.2.7"
     terser "^4.6.3"
 
-html-react-parser@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.1.tgz#d7f253c0385238961651a839fc2b69566b2434c2"
-  integrity sha512-vS+u86vaOFY9g/h3e5gY9CqQZqmanJN3h+bNNCtKkdbTfjMxEiTOZ/Bnjjb/3TUBREA/FZu0XBVNE9urg/NwlQ==
+html-react-parser@^0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.2.tgz#d8cd84e8dc041680f28274e0e41d637bc784d111"
+  integrity sha512-ZyjUlNZ0cAUhknoXSTfE2yZteY+pnbGXE3Flp5l3Qk40UvKDRp+F/nBvRbIHrWa7tGLZInigJoBuFylxyhGU9w==
   dependencies:
     "@types/htmlparser2" "3.10.1"
     html-dom-parser "0.3.0"
     react-property "1.0.1"
-    style-to-object "0.3.0"
+    style-to-js "1.1.0"
 
 html-tags@^1.0.0:
   version "1.2.0"
@@ -12264,6 +12264,13 @@ style-loader@^2.0.0:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
+
+style-to-js@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/style-to-js/-/style-to-js-1.1.0.tgz#631cbb20fce204019b3aa1fcb5b69d951ceac4ac"
+  integrity sha512-1OqefPDxGrlMwcbfpsTVRyzwdhr4W0uxYQzeA2F1CBc8WG04udg2+ybRnvh3XYL4TdHQrCahLtax2jc8xaE6rA==
+  dependencies:
+    style-to-object "0.3.0"
 
 style-to-object@0.3.0:
   version "0.3.0"
