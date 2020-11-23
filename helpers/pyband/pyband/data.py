@@ -3,11 +3,12 @@ import base64
 from dataclasses import dataclass
 from typing import List, Optional, NewType
 from dacite import Config
-from pyband.utils import parse_datetime
+from pyband.utils import parse_epoch_time
 from pyband.wallet import Address
+from pyband.coin import Coin
 
 HexBytes = NewType("HexBytes", bytes)
-Timestamp = NewType("Timestamp", int)
+EpochTime = NewType("EpochTime", int)
 
 
 DACITE_CONFIG = Config(
@@ -15,8 +16,9 @@ DACITE_CONFIG = Config(
         int: int,
         bytes: base64.b64decode,
         HexBytes: bytes.fromhex,
-        Timestamp: parse_datetime,
+        EpochTime: parse_epoch_time,
         Address: Address.from_acc_bech32,
+        Coin: Coin.from_json,
     }
 )
 
@@ -104,27 +106,9 @@ class RequestInfo(object):
 
 
 @dataclass
-class Coin(object):
-    amount: int
-    denom: str
-
-    def as_json(self) -> dict:
-        return {"amount": str(self.amount), "denom": self.denom}
-
-    def validate(self) -> bool:
-        if self.amount < 0:
-            raise ValueError("Expect amount more than 0")
-
-        if len(self.denom) == 0:
-            raise ValueError("Expect denom")
-
-        return True
-
-
-@dataclass
 class Account(object):
     address: Address
-    coins: List[dict]
+    coins: List[Coin]
     public_key: Optional[dict]
     account_number: int
     sequence: int
@@ -157,7 +141,7 @@ class TransactionBlockMode(object):
 class BlockHeaderInfo(object):
     chain_id: str
     height: int
-    time: Timestamp
+    time: EpochTime
     last_commit_hash: HexBytes
     data_hash: HexBytes
     validators_hash: HexBytes

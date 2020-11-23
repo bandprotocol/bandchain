@@ -19,9 +19,10 @@ from pyband.data import (
     RequestPacketData,
     ResponsePacketData,
     HexBytes,
-    Timestamp,
+    EpochTime,
 )
-from pyband.utils import parse_datetime
+from pyband.utils import parse_epoch_time
+from pyband.coin import Coin
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 
@@ -128,7 +129,7 @@ def test_get_latest_block(requests_mock):
             header=BlockHeaderInfo(
                 chain_id="bandchain",
                 height=1032007,
-                time=Timestamp(parse_datetime("2020-11-05T09:15:18.445494105Z")),
+                time=EpochTime(parse_epoch_time("2020-11-05T09:15:18.445494105Z")),
                 last_commit_hash=HexBytes(
                     bytes.fromhex("17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92")
                 ),
@@ -179,7 +180,7 @@ def test_get_account(requests_mock):
 
     assert client.get_account(Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")) == Account(
         address=Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"),
-        coins=[{"denom": "uband", "amount": "104082359107"}],
+        coins=[Coin(amount=104082359107, denom="uband")],
         public_key={
             "type": "tendermint/PubKeySecp256k1",
             "value": "A/5wi9pmUk/SxrzpBoLjhVWoUeA9Ku5PYpsF3pD1Htm8",
@@ -630,13 +631,13 @@ def test_get_reporters(requests_mock):
         status_code=200,
     )
 
-    assert client.get_reporters("bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre") == [
-        "band1yyv5jkqaukq0ajqn7vhkyhpff7h6e99ja7gvwg",
-        "band19nf0sqnjycnvpexlxs6hjz9qrhhlhsu9pdty0r",
-        "band1fndxcmg0h5vhr8cph7gryryqfn9yqp90lysjtm",
-        "band10ec0p96j60duce5qagju5axuja0rj8luqrzl0k",
-        "band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s",
-        "band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy",
+    assert client.get_reporters(Address.from_val_bech32("bandvaloper1trx2cm6vm9v63grg9uhmk7sy233zve4q25rgre")) == [
+        Address.from_acc_bech32("band1yyv5jkqaukq0ajqn7vhkyhpff7h6e99ja7gvwg"),
+        Address.from_acc_bech32("band19nf0sqnjycnvpexlxs6hjz9qrhhlhsu9pdty0r"),
+        Address.from_acc_bech32("band1fndxcmg0h5vhr8cph7gryryqfn9yqp90lysjtm"),
+        Address.from_acc_bech32("band10ec0p96j60duce5qagju5axuja0rj8luqrzl0k"),
+        Address.from_acc_bech32("band15pm9scujgkpwpy2xa2j53tvs9ylunjn0g73a9s"),
+        Address.from_acc_bech32("band1cehe3sxk7f4rmvwdf6lxh3zexen7fn02zyltwy"),
     ]
 
 
