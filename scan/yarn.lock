@@ -3841,18 +3841,18 @@ bs-axios@^0.0.43:
   dependencies:
     axios "^0.19.2"
 
-bs-css-emotion@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-2.1.0.tgz#d1e82aca79b4da333b774b5c0b6546b22743de3f"
-  integrity sha512-nEnO/BbU4MFNh/zvqLfz+AktVCAJ++9WK/etYmOL4/fCKyKwbc7T/YHMu7Xe9CZ5rwH9s/qST/pEehKq+qVL2g==
+bs-css-emotion@^2.2.0:
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css-emotion/-/bs-css-emotion-2.2.0.tgz#74455c629472bf29e8ccaa175764fa26f1436491"
+  integrity sha512-gt+GLSeclCHJUK1yp11ahDukrMqHjXUMo+dqWWS96eWCxQKgyw1LrqEADB9LtNjbeVr2KeXbKe6k9w/oaipT/w==
   dependencies:
-    bs-css "13.1.0"
+    bs-css "13.2.0"
     emotion "^10.0.7"
 
-bs-css@13.1.0:
-  version "13.1.0"
-  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-13.1.0.tgz#2697aba575625d55ad7f07eaef93a74748ec8d42"
-  integrity sha512-G39iqPZdSZyjibeDOljCh2/VDfeQQBEGN2mKK+zQBSjinjfpeTwd4GIK69s5hNXJ2n4k6urHfs9pvwCe2LoExQ==
+bs-css@13.2.0:
+  version "13.2.0"
+  resolved "https://registry.yarnpkg.com/bs-css/-/bs-css-13.2.0.tgz#c28c460b548514f455e7c6ef292bf939aadaeb93"
+  integrity sha512-jbWPoWmNXZO/OrTKWjL4EMTrjal37vHI4QU7gjAsi0+/nMdyub+TLw70v6PWjXLpBWavt3WnGJzINYevXOu5rA==
 
 bs-fetch@^0.6.2:
   version "0.6.2"
@@ -5192,10 +5192,10 @@ debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4.2.0, debug@^4.1.0, debug@^4.1.1:
-  version "4.2.0"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.2.0.tgz#7f150f93920e94c58f5574c2fd01a3110effe7f1"
-  integrity sha512-IX2ncY78vDTjZMFUdmsvIRFY2Cf4FnD0wRs+nQwJU8Lu99/tPFdb0VybiiMTPe3I6rQmwsqQqRBvxU+bZ/I8sg==
+debug@4.3.1, debug@^4.1.0, debug@^4.1.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
+  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
   dependencies:
     ms "2.1.2"
 
@@ -6983,15 +6983,15 @@ html-minifier-terser@^5.0.1:
     relateurl "^0.2.7"
     terser "^4.6.3"
 
-html-react-parser@^0.14.1:
-  version "0.14.1"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.1.tgz#d7f253c0385238961651a839fc2b69566b2434c2"
-  integrity sha512-vS+u86vaOFY9g/h3e5gY9CqQZqmanJN3h+bNNCtKkdbTfjMxEiTOZ/Bnjjb/3TUBREA/FZu0XBVNE9urg/NwlQ==
+html-react-parser@^0.14.2:
+  version "0.14.2"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.2.tgz#d8cd84e8dc041680f28274e0e41d637bc784d111"
+  integrity sha512-ZyjUlNZ0cAUhknoXSTfE2yZteY+pnbGXE3Flp5l3Qk40UvKDRp+F/nBvRbIHrWa7tGLZInigJoBuFylxyhGU9w==
   dependencies:
     "@types/htmlparser2" "3.10.1"
     html-dom-parser "0.3.0"
     react-property "1.0.1"
-    style-to-object "0.3.0"
+    style-to-js "1.1.0"
 
 html-tags@^1.0.0:
   version "1.2.0"
@@ -12009,14 +12009,14 @@ stack-utils@^2.0.2:
   dependencies:
     escape-string-regexp "^2.0.0"
 
-start-server-and-test@^1.11.5:
-  version "1.11.5"
-  resolved "https://registry.yarnpkg.com/start-server-and-test/-/start-server-and-test-1.11.5.tgz#692cb4c9cf8ba9a992ef8b0010f839041183f687"
-  integrity sha512-XUGifPzbJcgD6tqWMFvbxnra1KByRuiw6Oc9FHR3tPm7UxB70a4iFDIuXfOAFtMJLvOJuwB3gnMUZxko8gtLow==
+start-server-and-test@^1.11.6:
+  version "1.11.6"
+  resolved "https://registry.yarnpkg.com/start-server-and-test/-/start-server-and-test-1.11.6.tgz#d1ddc41bc49a61302829eecc7b799ca98562ee9f"
+  integrity sha512-+0T83W/R7CVgIE2HJcrpJDleLt7Skc2Xj8jWWsItRGdpZwenAv0YtIpBEKoL64pwUtPAPoHuYUtvWUOfCRoVjg==
   dependencies:
     bluebird "3.7.2"
     check-more-types "2.24.0"
-    debug "4.2.0"
+    debug "4.3.1"
     execa "3.4.0"
     lazy-ass "1.6.0"
     ps-tree "1.2.0"
@@ -12264,6 +12264,13 @@ style-loader@^2.0.0:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
+
+style-to-js@1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/style-to-js/-/style-to-js-1.1.0.tgz#631cbb20fce204019b3aa1fcb5b69d951ceac4ac"
+  integrity sha512-1OqefPDxGrlMwcbfpsTVRyzwdhr4W0uxYQzeA2F1CBc8WG04udg2+ybRnvh3XYL4TdHQrCahLtax2jc8xaE6rA==
+  dependencies:
+    style-to-object "0.3.0"
 
 style-to-object@0.3.0:
   version "0.3.0"
