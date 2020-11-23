@@ -4,7 +4,7 @@ import './App.css'
 import { Message, Data, Wallet, Client } from 'bandchain2.js'
 
 function App() {
-  const { MsgSend } = Message
+  const { MsgSend, MsgRequest } = Message
   const { PrivateKey, PublicKey, Address } = Wallet
   const { Coin } = Data
 
@@ -38,6 +38,16 @@ function App() {
   client
     .getDataSource(3)
     .then((e) => console.log('data source: ', e))
+    .catch((err) => console.log(err))
+
+  client
+    .getRequestIDByTxHash(
+      Buffer.from(
+        '02E93650CF192034F9D314A22C2C34439D5F09A1F82E2F18198135F754330F73',
+        'hex',
+      ),
+    )
+    .then((e) => console.log('request id: ', e))
     .catch((err) => console.log(err))
 
   return (

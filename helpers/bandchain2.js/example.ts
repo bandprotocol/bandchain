@@ -16,7 +16,7 @@ const msgSend = new MsgSend(from_addr, to_addr, amount)
 let result = msgSend.asJson()
 console.log(JSON.stringify(result))
 
-const client = new Client('https://poa-api.bandchain.org')
+const client = new Client('http://d3n-debug.bandprotocol.com/rest')
 
 console.log(PrivateKey.generate())
 const x = PrivateKey.fromMnemonic('s')
@@ -42,4 +42,14 @@ client
     4,
   )
   .then((e) => console.log('latest request: ', e))
+  .catch((err) => console.log(err))
+
+client
+  .getRequestIDByTxHash(
+    Buffer.from(
+      '1C6EC3AC3D81B8C546CB4356ED9B92498898800309D8E3F9526DCF36A8005286',
+      'hex',
+    ),
+  )
+  .then((e) => console.log('request id: ', e))
   .catch((err) => console.log(err))

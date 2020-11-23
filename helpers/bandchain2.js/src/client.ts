@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { Address } from './wallet'
-import { DataSource } from './data'
+import { DataSource, HexBytes } from './data'
 
 export default class Client {
   rpcUrl: string
@@ -54,5 +54,28 @@ export default class Client {
       },
     })
     return response
+  }
+
+  async getRequestIDByTxHash(txHash: HexBytes): Promise<number[]> {
+    const response = await this.get(`/txs/${txHash.toString('hex')}`)
+    const msgs = response.logs
+    const requestIDs: number[] = []
+    msgs.forEach((msg: any) => {
+      const requestEvent = msg.events.filter(
+        (event: any) => event.type == 'request',
+      )
+      if (requestEvent.length == 1) {
+        const attrID = requestEvent[0].attributes.find(
+          ({ key }: any) => key === 'id',
+        ).value
+        requestIDs.push(parseInt(attrID))
+      }
+    })
+
+    if (requestIDs.length == 0) {
+      throw new Error('There is no request message in this tx')
+    }
+
+    return requestIDs
   }
 }
