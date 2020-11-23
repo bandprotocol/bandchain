@@ -14,7 +14,7 @@ export class ObiInteger extends ObiBase {
     this.sizeInBytes = parseInt(schema.slice(1)) / 8
   }
 
-  encode(value: BigInt) {
+  encode(value: BigInt): Buffer {
     let newValue = BigInt(value)
     return Buffer.from(
       [...Array(this.sizeInBytes)]
@@ -46,14 +46,14 @@ export class ObiVector {
     this.internalObi = ObiSpec.fromSpec(schema.slice(1, -1))
   }
 
-  encode(value: any) {
+  encode(value: any): Buffer {
     return Buffer.concat([
       new ObiInteger('u32').encode(value.length),
       ...value.map((item: any) => this.internalObi.encode(item)),
     ])
   }
 
-  decode(buff: Buffer) {
+  decode(buff: Buffer): any[] {
     let [length, remaining] = new ObiInteger('u32').decode(buff)
     let value = []
     for (let i = 0; i < Number(length); i++) {
@@ -93,13 +93,13 @@ export class ObiStruct {
     }
   }
 
-  encode(value: any) {
+  encode(value: any): Buffer {
     return Buffer.concat(
       this.internalObiKvs.map(([k, obi]: any) => obi.encode(value[k])),
     )
   }
 
-  decode(buff: Buffer) {
+  decode(buff: Buffer): any {
     let value: any = {}
     let remaining = buff
     for (let [k, obi] of this.internalObiKvs) {
@@ -114,14 +114,14 @@ export class ObiStruct {
 export class ObiString {
   static REGEX = /^string$/
 
-  encode(value: string) {
+  encode(value: string): Buffer {
     return Buffer.concat([
       new ObiInteger('u32').encode(BigInt(value.length)),
       Buffer.from(value),
     ])
   }
 
-  decode(buff: Buffer) {
+  decode(buff: Buffer): any[] {
     let [length, remaining] = new ObiInteger('u32').decode(buff)
     return [
       remaining.slice(0, parseInt(length)).toString(),
@@ -133,14 +133,14 @@ export class ObiString {
 export class ObiBytes {
   static REGEX = /^bytes$/
 
-  encode(value: any) {
+  encode(value: any): Buffer {
     return Buffer.concat([
       new ObiInteger('u32').encode(value.length),
       Buffer.from(value),
     ])
   }
 
-  decode(buff: Buffer) {
+  decode(buff: Buffer): any[] {
     let [length, remaining] = new ObiInteger('u32').decode(buff)
     return [
       remaining.slice(0, parseInt(length)),
@@ -160,22 +160,22 @@ export class Obi {
     this.outputObi = ObiSpec.fromSpec(tokens[1])
   }
 
-  encodeInput(value: any) {
+  encodeInput(value: any): Buffer {
     return this.inputObi.encode(value)
   }
 
-  decodeInput(buff: Buffer) {
+  decodeInput(buff: Buffer): any {
     const [value, remaining] = this.inputObi.decode(buff)
     if (remaining.length != 0)
       throw new Error('Not all data is consumed after decoding output')
     return value
   }
 
-  encodeOutput(value: any) {
+  encodeOutput(value: any): Buffer {
     return this.outputObi.encode(value)
   }
 
-  decodeOutput(buff: Buffer) {
+  decodeOutput(buff: Buffer): any {
     const [value, remaining] = this.outputObi.decode(buff)
     if (remaining.length != 0)
       throw new Error('Not all data is consumed after decoding output')
@@ -186,7 +186,7 @@ export class Obi {
 export class ObiSpec {
   static impls = [ObiInteger, ObiVector, ObiStruct, ObiString, ObiBytes]
 
-  static fromSpec(schema: string) {
+  static fromSpec(schema: string): ObiBase {
     for (let impl of ObiSpec.impls) {
       if (schema.match(impl.REGEX)) {
         return new impl(schema)
