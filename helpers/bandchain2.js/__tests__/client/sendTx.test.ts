@@ -1,4 +1,3 @@
-// import { jsxText } from '@babel/types'
 import axios from 'axios'
 jest.mock('axios')
 const mockedAxios = axios as jest.Mocked<typeof axios>
@@ -69,7 +68,6 @@ const mockTxHash =
   'E204AAD58ACA8F00942B1BB66D9F745F5E2C21E04C5DF6A0CB73DF02B6B51121'
 
 let client = new Client(TEST_RPC)
-// let client = new Client(MASTER)
 
 describe('sendTxSyncMode', () => {
   it('success', async () => {

@@ -25,8 +25,8 @@ export default class Client {
     return response.data
   }
 
-  private async post(path: string, params: object) {
-    const response = await axios.post(`${this.rpcUrl}${path}`, params)
+  private async post(path: string, data: object) {
+    const response = await axios.post(`${this.rpcUrl}${path}`, data)
     return response.data
   }
 
@@ -35,8 +35,8 @@ export default class Client {
     return response.result
   }
 
-  private async postResult(path: string, params: object) {
-    const response = await this.post(`${path}`, params)
+  private async postResult(path: string, data: object) {
+    const response = await this.post(`${path}`, data)
     return response.result
   }
 
