@@ -95,8 +95,6 @@ function App() {
   const tscAsyncExample = async () => {
     const tsc_send = await new Transaction()
       .withMessages(msgSend)
-      // .withAccountNum(100)
-      // .withSequence(30)
       .withChainID('bandchain')
       .withGas(500000)
       .withFee(10)
@@ -113,8 +111,6 @@ function App() {
   const tscBlockExample = async () => {
     const tsc_send = await new Transaction()
       .withMessages(msgSend)
-      // .withAccountNum(100)
-      // .withSequence(30)
       .withChainID('bandchain')
       .withGas(500000)
       .withFee(10)
