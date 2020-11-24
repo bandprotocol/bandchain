@@ -23,7 +23,7 @@ type TMSignature struct {
 	R                tmbytes.HexBytes `json:"r"`
 	S                tmbytes.HexBytes `json:"s"`
 	V                uint8            `json:"v"`
-	SignedDataPrefix tmbytes.HexBytes `json:"signedPrefixSuffix"`
+	SignedDataPrefix tmbytes.HexBytes `json:"signedDataPrefix"`
 	SignedDataSuffix tmbytes.HexBytes `json:"signedDataSuffix"`
 }
 
@@ -77,7 +77,6 @@ func GetSignaturesAndPrefix(info *types.SignedHeader) ([]TMSignature, error) {
 		if len(lr) != 2 {
 			return nil, fmt.Errorf("Split block hash failed")
 		}
-
 		addr, v, err := recoverETHAddress(msg, vote.Signature, vote.ValidatorAddress)
 		if err != nil {
 			return nil, err

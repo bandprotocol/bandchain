@@ -1,8 +1,8 @@
-import { Message, Data, Client } from './src/index'
-import { Address, PrivateKey } from './src/wallet'
+import { Message, Data, Client, Wallet, Obi } from './src/index'
 
 const { MsgSend } = Message
 const { Coin } = Data
+const { Address, PrivateKey } = Wallet
 
 const amount = [new Coin(10000, 'uband')]
 const from_addr = Address.fromAccBech32(
@@ -65,3 +65,24 @@ client
   .getRequestByID(44893)
   .then((e) => console.log('request: ', JSON.stringify(e)))
   .catch((err) => console.log(err))
+
+console.log('---------------------------------------')
+
+const obi = new Obi(`
+{
+  symbol: string,
+  multiplier: u64
+} / {
+  price: u64,
+  sources: [{ name: string, time: u64 }]
+}
+`)
+
+const encodedData = obi.encodeInput({
+  symbol: 'BTC',
+  multiplier: BigInt('1000000000'),
+})
+
+console.log(encodedData)
+
+console.log(obi.decodeInput(encodedData))

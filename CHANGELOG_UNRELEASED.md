@@ -12,6 +12,8 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2912](https://github.com/bandprotocol/bandchain/pull/2912) proof contain the real block time instead of time hash
+
 ### Yoda
 
 ### Emitter & Flusher
