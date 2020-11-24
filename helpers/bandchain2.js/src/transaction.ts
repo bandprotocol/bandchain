@@ -1,3 +1,4 @@
+import { Client } from 'index'
 import { Msg } from './message'
 import { PublicKey } from './wallet'
 
@@ -12,6 +13,19 @@ export default class Transaction {
 
   withMessages(...msg: Msg[]): Transaction {
     this.msgs.push(...msg)
+    return this
+  }
+
+  async withAuto(client: Client): Promise<Transaction> {
+    if (this.msgs.length == 0)
+      throw Error(
+        'Message is empty, please use withMessages at least 1 message.',
+      )
+
+    let addr = this.msgs[0].getSender()
+    let account = await client.getAccount(addr)
+    this.accountNum = account.accountNumber
+    this.sequence = account.sequence
     return this
   }
 
