@@ -32,6 +32,7 @@
 
 ### Helpers
 
+- (impv) [\#2924](https://github.com/bandprotocol/bandchain/pull/2924) pyband: added new type and refactor the dataclass 
 - (feat) [\#2915](https://github.com/bandprotocol/bandchain/pull/2915) bandchainjs: Implemented getRequestIDByTxHash fn on client module
 - (feat) [\#2907](https://github.com/bandprotocol/bandchain/pull/2907) Bandchain.js: Implement get oracle script and get a request function
 - (impv) [\#2897](https://github.com/bandprotocol/bandchain/pull/2897) pyband: Added the address to account dataclass

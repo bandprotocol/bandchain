@@ -130,8 +130,9 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_reporters(self, validator: str) -> List[str]:
-        return self._get_result("/oracle/reporters/{}".format(validator))
+    def get_reporters(self, validator: Address) -> List[Address]:
+        data = self._get_result("/oracle/reporters/{}".format(validator.to_val_bech32()))
+        return [Address.from_acc_bech32(bech) for bech in data]
 
     def get_price_symbols(self, min_count: int, ask_count: int) -> List[str]:
         return self._get_result(
@@ -157,7 +158,7 @@ class Client(object):
             raise ValueError("There is no request message in this tx")
         return request_ids
 
-    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int):
+    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
         symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
         data = self._post(
             "/oracle/request_prices",

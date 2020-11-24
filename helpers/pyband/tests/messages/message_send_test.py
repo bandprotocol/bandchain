@@ -7,12 +7,8 @@ from pyband.wallet import Address
 
 def test_msg_send_creation_success():
     msg_send = MsgSend(
-        to_address=Address.from_acc_bech32(
-            "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"
-        ),
-        from_address=Address.from_acc_bech32(
-            "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
-        ),
+        to_address=Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"),
+        from_address=Address.from_acc_bech32("band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"),
         amount=[Coin(amount=1000000, denom="uband")],
     )
 
@@ -27,20 +23,13 @@ def test_msg_send_creation_success():
         },
     }
 
-    assert (
-        msg_send.get_sender().to_acc_bech32()
-        == "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
-    )
+    assert msg_send.get_sender().to_acc_bech32() == "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
 
 
 def test_msg_send_nocoin_fail():
     msg_send = MsgSend(
-        to_address=Address.from_acc_bech32(
-            "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"
-        ),
-        from_address=Address.from_acc_bech32(
-            "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
-        ),
+        to_address=Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"),
+        from_address=Address.from_acc_bech32("band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"),
         amount=[],
     )
 
@@ -50,12 +39,8 @@ def test_msg_send_nocoin_fail():
 
 def test_msg_send_validate_coin_fail():
     msg_send = MsgSend(
-        to_address=Address.from_acc_bech32(
-            "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"
-        ),
-        from_address=Address.from_acc_bech32(
-            "band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"
-        ),
+        to_address=Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"),
+        from_address=Address.from_acc_bech32("band1acavyhqpxmz6jt390xze705620q23e4tx4r5he"),
         amount=[Coin(amount=-1000, denom="uband")],
     )
 
