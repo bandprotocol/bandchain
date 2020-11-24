@@ -19,17 +19,17 @@ func NewYodaCollector(c *Context) prometheus.Collector {
 	return &yodaCollector{
 		context: c,
 		reportsHandlingGaugeDesc: prometheus.NewDesc(
-			"yoda_reports_handling",
+			"yoda_reports_handling_count",
 			"Number of reports currently being handled",
-			[]string{"state"}, nil),
+			nil, nil),
 		reportsPendingGaugeDesc: prometheus.NewDesc(
-			"yoda_reports_pending",
+			"yoda_reports_pending_count",
 			"Number of reports currently pending for submission",
-			[]string{"state"}, nil),
+			nil, nil),
 		reportsSubmittedCountDesc: prometheus.NewDesc(
-			"yoda_reports_submitted_count",
+			"yoda_reports_submitted_total",
 			"Number of reports submitted since last yoda restart",
-			[]string{"state"}, nil),
+			nil, nil),
 	}
 }
 
@@ -41,11 +41,11 @@ func (collector yodaCollector) Describe(ch chan<- *prometheus.Desc) {
 
 func (collector yodaCollector) Collect(ch chan<- prometheus.Metric) {
 	ch <- prometheus.MustNewConstMetric(collector.reportsHandlingGaugeDesc, prometheus.GaugeValue,
-		float64(atomic.LoadInt64(&collector.context.handlingGauge)), "handling")
+		float64(atomic.LoadInt64(&collector.context.handlingGauge)))
 	ch <- prometheus.MustNewConstMetric(collector.reportsPendingGaugeDesc, prometheus.GaugeValue,
-		float64(atomic.LoadInt64(&collector.context.pendingGauge)), "pending")
+		float64(atomic.LoadInt64(&collector.context.pendingGauge)))
 	ch <- prometheus.MustNewConstMetric(collector.reportsSubmittedCountDesc, prometheus.CounterValue,
-		float64(atomic.LoadInt64(&collector.context.submittedCount)), "submitted")
+		float64(atomic.LoadInt64(&collector.context.submittedCount)))
 }
 
 func metricsListen(listenAddr string, c *Context) {
