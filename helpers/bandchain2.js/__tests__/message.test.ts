@@ -2,7 +2,6 @@ import { Message, Coin } from '../src/index'
 import { Address } from '../src/wallet'
 
 const { MsgSend, MsgRequest, MsgDelegate } = Message
-// const { Coin } = Data
 
 const coin = new Coin(100000, 'uband')
 

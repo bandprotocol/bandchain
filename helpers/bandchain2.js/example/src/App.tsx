@@ -1,12 +1,11 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Message, Data, Wallet, Client, Transaction } from 'bandchain2.js'
+import { Message, Data, Wallet, Client, Transaction, Coin } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
   const { PrivateKey, PublicKey, Address } = Wallet
-  const { Coin } = Data
 
   const from_addr = Address.fromAccBech32(
     'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',

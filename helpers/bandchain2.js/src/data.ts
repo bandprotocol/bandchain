@@ -1,5 +1,5 @@
 import { Address } from './wallet'
-import { Coin } from './coin'
+import Coin from './coin'
 
 export type HexBytes = Buffer
 export type EpochTime = number

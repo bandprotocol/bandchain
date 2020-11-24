@@ -1,8 +1,7 @@
-import { Message, Data, Client } from './src/index'
+import { Message, Data, Client, Coin } from './src/index'
 import { Address, PrivateKey } from './src/wallet'
 
 const { MsgSend } = Message
-const { Coin } = Data
 
 const amount = [new Coin(10000, 'uband')]
 const from_addr = Address.fromAccBech32(
