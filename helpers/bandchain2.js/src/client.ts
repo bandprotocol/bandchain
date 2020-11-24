@@ -80,6 +80,8 @@ export default class Client {
    */
 
   async getDataSource(id: number): Promise<DataSource> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/data_sources/${id}`)
     return {
       owner: Address.fromAccBech32(response.owner),
@@ -112,6 +114,8 @@ export default class Client {
    */
 
   async getOracleScript(id: number): Promise<OracleScript> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/oracle_scripts/${id}`)
     return {
       owner: Address.fromAccBech32(response.owner),
@@ -273,6 +277,10 @@ export default class Client {
     minCount: number,
     askCount: number,
   ): Promise<RequestInfo> {
+    if (!Number.isInteger(oid)) throw Error('oid is not an integer')
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
+
     const response = await this.getResult(`/oracle/request_search`, {
       params: {
         oid: oid,
@@ -370,6 +378,8 @@ export default class Client {
    */
 
   async getRequestByID(id: number): Promise<RequestInfo> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/requests/${id}`)
     return {
       request: {
