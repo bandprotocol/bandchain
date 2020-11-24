@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
+
 ### Bridges
 
 ### Runtime
