@@ -124,30 +124,6 @@ export default class Client {
   }
 
   /**
-   * Get the latest request
-   * @param oid Oracle script ID
-   * @param calldata The input parameters associated with the request
-   * @param minCount The minimum number of validators necessary for the request to proceed to the execution phase
-   * @param askCount The number of validators that are requested to respond to this request
-   * @returns  A Promise of RequestInfo.
-   */
-
-  // async getLatestRequest(
-  //   oid: number,
-  //   calldata: Buffer,
-  //   minCount: number,
-  //   askCount: number,
-  // ): Promise<RequestInfo> {
-  //   const response = await this.getResult(`/oracle/request_search`, {
-  //     oid: oid,
-  //     calldata: calldata,
-  //     min_count: minCount,
-  //     ask_count: askCount,
-  //   })
-  //   return response
-  // }
-
-  /**
    * sendTxSyncMode
    * @param data
    */
@@ -283,6 +259,14 @@ export default class Client {
     return response
   }
 
+  /**
+   * Get the latest request
+   * @param oid Oracle script ID
+   * @param calldata The input parameters associated with the request
+   * @param minCount The minimum number of validators necessary for the request to proceed to the execution phase
+   * @param askCount The number of validators that are requested to respond to this request
+   * @returns  A Promise of RequestInfo.
+   */
   async getLatestRequest(
     oid: number,
     calldata: Buffer,
