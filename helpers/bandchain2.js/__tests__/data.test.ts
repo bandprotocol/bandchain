@@ -1,4 +1,4 @@
-import { Coin } from '../src/data'
+import { Coin } from '../src/index'
 
 describe('Coin', () => {
   it('success', () => {

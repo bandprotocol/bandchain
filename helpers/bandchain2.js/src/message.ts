@@ -1,4 +1,4 @@
-import { Coin } from './data'
+import Coin from './coin'
 import { Address } from './wallet'
 import { MAX_DATA_SIZE } from './constant'
 

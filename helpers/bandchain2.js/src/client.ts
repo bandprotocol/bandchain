@@ -5,7 +5,6 @@ import {
   TransactionAsyncMode,
   TransactionBlockMode,
   Block,
-  Coin,
   Account,
   ReferenceData,
   OracleScript,
@@ -13,6 +12,7 @@ import {
   HexBytes,
 } from './data'
 import { Address } from './wallet'
+import Coin from './coin'
 
 export default class Client {
   rpcUrl: string
@@ -96,8 +96,8 @@ export default class Client {
     const value = response.value
     return {
       address: Address.fromAccBech32(value.address),
-      coins: value.coins.map(
-        (c: { amount: number; denom: string }) => new Coin(c.amount, c.denom),
+      coins: value.coins.map((c: { amount: number; denom: string }) =>
+        Coin.fromJson(c),
       ),
       publicKey: value.public_key,
       accountNumber: parseInt(value.account_number),

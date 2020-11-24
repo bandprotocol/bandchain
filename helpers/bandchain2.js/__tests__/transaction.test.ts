@@ -1,8 +1,7 @@
-import { Message, Data, Transaction, Wallet } from '../src/index'
+import { Message, Transaction, Coin, Wallet } from '../src/index'
 import { Address } from '../src/wallet'
 
 const { MsgSend } = Message
-const { Coin } = Data
 const { PrivateKey } = Wallet
 
 describe('Transaction', () => {

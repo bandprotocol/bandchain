@@ -1,6 +1,5 @@
 import axios from 'axios'
-import { Client } from '../../src'
-import { Coin } from '../../src/data'
+import { Client, Coin } from '../../src'
 import { Address } from '../../src/wallet'
 
 jest.mock('axios')
