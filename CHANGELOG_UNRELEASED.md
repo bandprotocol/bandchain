@@ -12,11 +12,15 @@
 
 ### Chain (Non-consensus)
 
+- (impv) [\#2912](https://github.com/bandprotocol/bandchain/pull/2912) proof contain the real block time instead of time hash
+
 ### Yoda
 
 ### Emitter & Flusher
 
 ### Scan
+
+- (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
 
 ### Bridges
 
