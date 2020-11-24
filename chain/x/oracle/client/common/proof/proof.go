@@ -47,13 +47,12 @@ type BlockRelayProof struct {
 	Signatures             []TMSignature          `json:"signatures"`
 }
 
-func (blockRelay *BlockRelayProof) encodeToEthData(blockHeight uint64) ([]byte, error) {
+func (blockRelay *BlockRelayProof) encodeToEthData() ([]byte, error) {
 	parseSignatures := make([]TMSignatureEthereum, len(blockRelay.Signatures))
 	for i, sig := range blockRelay.Signatures {
 		parseSignatures[i] = sig.encodeToEthFormat()
 	}
 	return relayArguments.Pack(
-		big.NewInt(int64(blockHeight)),
 		blockRelay.MultiStoreProof.encodeToEthFormat(),
 		blockRelay.BlockHeaderMerkleParts.encodeToEthFormat(),
 		parseSignatures,
@@ -235,7 +234,7 @@ func GetProofHandlerFn(cliCtx context.CLIContext, route string) http.HandlerFunc
 			panic(err)
 		}
 
-		blockRelayBytes, err := blockRelay.encodeToEthData(uint64(commit.Height))
+		blockRelayBytes, err := blockRelay.encodeToEthData()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
@@ -418,7 +417,7 @@ func GetMutiProofHandlerFn(cliCtx context.CLIContext, route string) http.Handler
 			}
 		}
 
-		blockRelayBytes, err := blockRelay.encodeToEthData(uint64(commit.Height))
+		blockRelayBytes, err := blockRelay.encodeToEthData()
 		if err != nil {
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
