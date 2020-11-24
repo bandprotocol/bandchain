@@ -1,6 +1,6 @@
 import base64
 import pytest
-from pyband.coin import Coin
+from pyband.data import Coin
 from pyband.message import MsgSend
 from pyband.wallet import Address
 

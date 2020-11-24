@@ -1,5 +1,5 @@
 import pytest
-from pyband.coin import Coin
+from pyband.data import Coin
 from pyband.message import MsgDelegate
 from pyband.wallet import Address
 

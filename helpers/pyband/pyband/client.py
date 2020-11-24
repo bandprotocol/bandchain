@@ -132,7 +132,7 @@ class Client(object):
 
     def get_reporters(self, validator: Address) -> List[Address]:
         data = self._get_result("/oracle/reporters/{}".format(validator.to_val_bech32()))
-        return list(map(Address.from_acc_bech32, data))
+        return [Address.from_acc_bech32(bech) for bech in data]
 
     def get_price_symbols(self, min_count: int, ask_count: int) -> List[str]:
         return self._get_result(

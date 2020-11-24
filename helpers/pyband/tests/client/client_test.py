@@ -22,7 +22,7 @@ from pyband.data import (
     EpochTime,
 )
 from pyband.utils import parse_epoch_time
-from pyband.coin import Coin
+from pyband.data import Coin
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 
