@@ -3,7 +3,7 @@ import base64
 from dataclasses import dataclass
 from typing import List
 from .wallet import Address
-from .data import Coin
+from .coin import Coin
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
 
 
