@@ -48,19 +48,19 @@ describe('Transaction', () => {
 
     expect(() => {
       tsc.withAccountNum(100.5)
-    }).toThrowError('Account number is not an integer')
+    }).toThrowError('accountNum is not an integer')
 
     expect(() => {
       tsc.withSequence(100.5)
-    }).toThrowError('Sequence is not an integer')
+    }).toThrowError('sequence is not an integer')
 
     expect(() => {
       tsc.withFee(100.5)
-    }).toThrowError('Fee is not an integer')
+    }).toThrowError('fee is not an integer')
 
     expect(() => {
       tsc.withGas(100.5)
-    }).toThrowError('Gas is not an integer')
+    }).toThrowError('gas is not an integer')
   })
 
   it('getSignData successfully', () => {
