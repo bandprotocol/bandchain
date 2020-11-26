@@ -93,7 +93,7 @@ class Client(object):
             return None
         return from_dict(
             data_class=Account,
-            data=self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"],
+            data=data,
             config=DACITE_CONFIG,
         )
 
