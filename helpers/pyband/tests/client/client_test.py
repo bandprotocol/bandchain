@@ -190,6 +190,29 @@ def test_get_account(requests_mock):
     )
 
 
+def test_get_account_not_found(requests_mock):
+    requests_mock.register_uri(
+        "GET",
+        "{}/auth/accounts/band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte".format(TEST_RPC),
+        json={
+            "height": "650788",
+            "result": {
+                "type": "cosmos-sdk/Account",
+                "value": {
+                    "address": "",
+                    "coins": [],
+                    "public_key": None,
+                    "account_number": "0",
+                    "sequence": "0",
+                },
+            },
+        },
+        status_code=200,
+    )
+
+    assert client.get_account(Address.from_acc_bech32("band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte")) == None
+
+
 def test_get_data_source(requests_mock):
 
     requests_mock.register_uri(
