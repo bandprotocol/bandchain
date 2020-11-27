@@ -2,7 +2,7 @@ import requests
 import time
 
 from dacite import from_dict
-from typing import List
+from typing import List, Optional
 from .wallet import Address
 from .data import (
     Account,
@@ -87,10 +87,13 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_account(self, address: Address) -> Account:
+    def get_account(self, address: Address) -> Optional[Account]:
+        data = self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"]
+        if data["address"] == "":
+            return None
         return from_dict(
             data_class=Account,
-            data=self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"],
+            data=data,
             config=DACITE_CONFIG,
         )
 
