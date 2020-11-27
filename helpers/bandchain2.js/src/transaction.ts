@@ -24,6 +24,7 @@ export default class Transaction {
 
     let addr = this.msgs[0].getSender()
     let account = await client.getAccount(addr)
+    if (!account) throw Error('Account is existed yet.')
     this.accountNum = account.accountNumber
     this.sequence = account.sequence
     return this

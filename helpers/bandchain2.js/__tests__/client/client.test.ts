@@ -1162,6 +1162,32 @@ describe('Client get account', () => {
     )
     response.then((e) => expect(e).toEqual(expected))
   })
+
+  it('account none', () => {
+    const resp = {
+      data: {
+        height: '650788',
+        result: {
+          type: 'cosmos-sdk/Account',
+          value: {
+            address: '',
+            coins: [],
+            public_key: null,
+            account_number: '0',
+            sequence: '0',
+          },
+        },
+      },
+    }
+
+    mockedAxios.get.mockResolvedValue(resp)
+
+    const response = client.getAccount(
+      Address.fromAccBech32('band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte'),
+    )
+
+    response.then((e) => expect(e).toEqual(undefined))
+  })
 })
 
 describe('Client get reporters', () => {
