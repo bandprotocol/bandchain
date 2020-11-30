@@ -3,5 +3,8 @@
 *.swp
 *.pyc
 *.log
+lib/
+node_modules/
+
 
 cloud-function/venv/
