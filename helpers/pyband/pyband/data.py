@@ -3,8 +3,8 @@ import base64
 from dataclasses import dataclass
 from typing import List, Optional, NewType
 from dacite import Config
-from pyband.utils import parse_epoch_time
-from pyband.wallet import Address
+from .utils import parse_epoch_time
+from .wallet import Address
 
 HexBytes = NewType("HexBytes", bytes)
 EpochTime = NewType("EpochTime", int)
