@@ -32,11 +32,13 @@ import (
 //  [C] - evidence_hash         [D] - proposer_address
 //
 // Notice that NOT all leaves of the Merkle tree are needed in order to compute the Merkle
-// root hash, since we only want to validate the correctness of [A] and [2]. In fact, only
-// [1A], [3], [2B], [1E], [B], and [2D] are needed in order to compute [BlockHeader].
+// root hash, since we only want to validate the correctness of [2], [3], and [A]. In fact, only
+// [1A], [2B], [1E], [B], and [2D] are needed in order to compute [BlockHeader].
 type BlockHeaderMerkleParts struct {
 	VersionAndChainIdHash             tmbytes.HexBytes `json:"versionAndChainIdHash"`
-	TimeHash                          tmbytes.HexBytes `json:"timeHash"`
+	Height                            uint64           `json:"height"`
+	TimeSecond                        uint64           `json:"timeSecond"`
+	TimeNanoSecond                    uint32           `json:"timeNanoSecond"`
 	LastBlockIDAndOther               tmbytes.HexBytes `json:"lastBlockIDAndOther"`
 	NextValidatorHashAndConsensusHash tmbytes.HexBytes `json:"nextValidatorHashAndConsensusHash"`
 	LastResultsHash                   tmbytes.HexBytes `json:"lastResultsHash"`
@@ -46,7 +48,9 @@ type BlockHeaderMerkleParts struct {
 // BlockHeaderMerklePartsEthereum is an Ethereum version of BlockHeaderMerkleParts for solidity ABI-encoding.
 type BlockHeaderMerklePartsEthereum struct {
 	VersionAndChainIdHash             common.Hash
-	TimeHash                          common.Hash
+	Height                            uint64
+	TimeSecond                        uint64
+	TimeNanoSecond                    uint32
 	LastBlockIDAndOther               common.Hash
 	NextValidatorHashAndConsensusHash common.Hash
 	LastResultsHash                   common.Hash
@@ -56,7 +60,9 @@ type BlockHeaderMerklePartsEthereum struct {
 func (bp *BlockHeaderMerkleParts) encodeToEthFormat() BlockHeaderMerklePartsEthereum {
 	return BlockHeaderMerklePartsEthereum{
 		VersionAndChainIdHash:             common.BytesToHash(bp.VersionAndChainIdHash),
-		TimeHash:                          common.BytesToHash(bp.TimeHash),
+		Height:                            bp.Height,
+		TimeSecond:                        bp.TimeSecond,
+		TimeNanoSecond:                    bp.TimeNanoSecond,
 		LastBlockIDAndOther:               common.BytesToHash(bp.LastBlockIDAndOther),
 		NextValidatorHashAndConsensusHash: common.BytesToHash(bp.NextValidatorHashAndConsensusHash),
 		LastResultsHash:                   common.BytesToHash(bp.LastResultsHash),
@@ -71,9 +77,9 @@ func GetBlockHeaderMerkleParts(codec *codec.Codec, block *types.Header) BlockHea
 			cdcEncode(codec, block.Version),
 			cdcEncode(codec, block.ChainID),
 		}),
-		TimeHash: merkle.SimpleHashFromByteSlices([][]byte{
-			cdcEncode(codec, block.Time),
-		}),
+		Height:         uint64(block.Height),
+		TimeSecond:     uint64(block.Time.Unix()),
+		TimeNanoSecond: uint32(block.Time.Nanosecond()),
 		LastBlockIDAndOther: merkle.SimpleHashFromByteSlices([][]byte{
 			cdcEncode(codec, block.LastBlockID),
 			cdcEncode(codec, block.LastCommitHash),

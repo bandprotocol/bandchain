@@ -4,14 +4,14 @@ import copy
 
 from pyband.client import Client
 from pyband.auth import Auth
-from pyband.utils import parse_datetime
+from pyband.utils import parse_epoch_time
 from pyband.data import (
     Block,
     BlockHeader,
     BlockHeaderInfo,
     BlockID,
     HexBytes,
-    Timestamp,
+    EpochTime,
     Request,
     RequestInfo,
     Report,
@@ -28,7 +28,7 @@ BlOCK_TEST = Block(
         header=BlockHeaderInfo(
             chain_id="bandchain",
             height=136639,
-            time=Timestamp(parse_datetime("2020-11-05T09:15:18.445494105Z")),
+            time=EpochTime(parse_epoch_time("2020-11-05T09:15:18.445494105Z")),
             last_commit_hash=HexBytes(
                 bytes.fromhex(
                     "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
@@ -80,7 +80,7 @@ BlOCK_WRONG_TEST = Block(
         header=BlockHeaderInfo(
             chain_id="bandchain",
             height=136730,
-            time=Timestamp(parse_datetime("2020-11-05T09:15:18.445494105Z")),
+            time=EpochTime(parse_epoch_time("2020-11-05T09:15:18.445494105Z")),
             last_commit_hash=HexBytes(
                 bytes.fromhex(
                     "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
