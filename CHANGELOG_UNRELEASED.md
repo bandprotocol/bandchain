@@ -21,6 +21,7 @@
 ### Scan
 
 - (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
+- (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 
 ### Bridges
 
