@@ -37,11 +37,11 @@ export class MsgRequest extends Msg {
     return {
       type: 'oracle/Request',
       value: {
-        oracle_script_id: String(this.oracleScriptID),
-        calldata: this.calldata.toString('base64'),
         ask_count: this.askCount.toString(),
-        min_count: this.minCount.toString(),
+        calldata: this.calldata.toString('base64'),
         client_id: this.clientID,
+        min_count: this.minCount.toString(),
+        oracle_script_id: String(this.oracleScriptID),
         sender: this.sender.toAccBech32(),
       },
     }
