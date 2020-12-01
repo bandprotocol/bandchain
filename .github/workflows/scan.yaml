@@ -11,6 +11,11 @@ jobs:
       - name: Code Checkout
         uses: actions/checkout@v2
 
+      - name: Setup node 12
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12"
+
       - name: Cache node_modules
         id: scan-node-modules-cache
         uses: actions/cache@v1

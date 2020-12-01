@@ -6,84 +6,17 @@ type field_t =
   | TxHash(Hash.t)
   | Validator(ValidatorSub.Mini.t);
 
-type theme_t =
-  | MessageMiniTable
-  | RequestMiniTable;
-
-type with_setting_t('a) = {
-  mainElem: 'a,
-  size: float,
-  isRight: bool,
-};
-
 module Styles = {
   open Css;
-
-  let vFlex = style([display(`flex), flexDirection(`column)]);
-  let hFlex = style([display(`flex), alignItems(`center)]);
-
-  let thead = theme =>
+  let tabletContainer =
     style([
-      boxShadow(
-        Shadow.box(
-          ~x=`zero,
-          ~y=`px(2),
-          ~blur=`px(2),
-          switch (theme) {
-          | MessageMiniTable => Css.rgba(0, 0, 0, `num(0.05))
-          | RequestMiniTable => Css.rgba(11, 29, 142, `num(0.05))
-          },
-        ),
-      ),
-      backgroundColor(
-        switch (theme) {
-        | MessageMiniTable => Colors.gray3
-        | RequestMiniTable => Colors.blue1
-        },
-      ),
-      marginBottom(`px(1)),
-      display(`flex),
-      alignItems(`center),
-      height(
-        switch (theme) {
-        | MessageMiniTable => `px(20)
-        | RequestMiniTable => `px(25)
-        },
-      ),
-      paddingLeft(`px(7)),
-      paddingRight(`px(7)),
+      padding2(~v=`px(8), ~h=`px(24)),
+      backgroundColor(Colors.profileBG),
+      Media.mobile([padding2(~v=`px(8), ~h=`px(12))]),
     ]);
 
-  let tbody = theme =>
-    style([
-      boxShadow(
-        Shadow.box(
-          ~x=`zero,
-          ~y=`px(2),
-          ~blur=`px(4),
-          switch (theme) {
-          | MessageMiniTable => Css.rgba(0, 0, 0, `num(0.08))
-          | RequestMiniTable => Css.rgba(11, 29, 142, `num(0.08))
-          },
-        ),
-      ),
-      backgroundColor(
-        switch (theme) {
-        | MessageMiniTable => Colors.gray1
-        | RequestMiniTable => Colors.blueGray1
-        },
-      ),
-      marginBottom(`px(1)),
-      display(`flex),
-      padding2(
-        ~v=
-          switch (theme) {
-          | MessageMiniTable => `px(1)
-          | RequestMiniTable => `px(5)
-          },
-        ~h=`px(7),
-      ),
-    ]);
+  let tableSpacing =
+    style([padding2(~v=`px(8), ~h=`zero), Media.mobile([padding2(~v=`px(4), ~h=`zero)])]);
 
   let valueContainer = mw =>
     style([
@@ -93,41 +26,20 @@ module Styles = {
       flexDirection(`row),
       alignItems(`center),
     ]);
-  let fillRight = style([marginRight(`auto)]);
 };
 
-let renderField = (field, maxWidth, isRight) => {
+let renderField = (field, maxWidth) => {
   switch (field) {
   | Value(v) =>
     <div className={Styles.valueContainer(maxWidth)}>
-      <Text
-        value=v
-        size=Text.Sm
-        weight=Text.Medium
-        height={Text.Px(18)}
-        nowrap=true
-        ellipsis=true
-        block=true
-        code=true
-      />
+      <Text value=v nowrap=true ellipsis=true block=true />
     </div>
   | Values(vals) =>
-    <div className=Styles.vFlex>
+    <div className={CssHelper.flexBox(~direction=`column, ())}>
       {vals
        ->Belt_List.mapWithIndex((i, v) =>
            <div key={i->string_of_int ++ v} className={Styles.valueContainer(maxWidth)}>
-             {isRight ? <div className=Styles.fillRight /> : React.null}
-             <Text
-               value=v
-               size=Text.Sm
-               weight=Text.Medium
-               height={Text.Px(18)}
-               nowrap=true
-               ellipsis=true
-               block=true
-               code=true
-               align=Text.Right
-             />
+             <Text value=v nowrap=true ellipsis=true block=true align=Text.Right />
            </div>
          )
        ->Belt_List.toArray
@@ -166,90 +78,41 @@ let renderField = (field, maxWidth, isRight) => {
   };
 };
 
-let withSetting = (arr, sizes, isRights) =>
-  arr->Belt_List.mapWithIndex((i, elem) =>
-    {
-      mainElem: elem,
-      size: sizes->Belt_List.get(i)->Belt_Option.getWithDefault(1.),
-      isRight: isRights->Belt_List.get(i)->Belt_Option.getWithDefault(false),
-    }
-  );
-
 [@react.component]
-let make =
-    (
-      ~tableWidth,
-      ~headers=["KEY", "VALUE"],
-      ~rows,
-      ~sizes=[],
-      ~isRights=[],
-      ~theme=MessageMiniTable,
-    ) => {
-  let headersWithSetting = headers->withSetting(sizes, isRights);
-  let rowsWithSetting = rows->Belt_List.map(fields => fields->withSetting(sizes, isRights));
-  <>
-    <div className={Styles.thead(theme)}>
-      <Row>
-        {headersWithSetting
-         ->Belt_List.mapWithIndex((i, {mainElem, size, isRight}) => {
-             <Col key={i |> string_of_int} size>
-               <div className=Styles.hFlex>
-                 {isRight ? <div className=Styles.fillRight /> : React.null}
-                 <Text
-                   value=mainElem
-                   size={
-                     switch (theme) {
-                     | MessageMiniTable => Text.Xs
-                     | RequestMiniTable => Text.Sm
-                     }
-                   }
-                   weight=Text.Semibold
-                   spacing={Text.Em(0.05)}
-                   height={Text.Px(18)}
-                   color={
-                     switch (theme) {
-                     | MessageMiniTable => Colors.gray6
-                     | RequestMiniTable => Colors.bandBlue
-                     }
-                   }
-                 />
-               </div>
-             </Col>
+let make = (~headers=["Key", "Value"], ~rows) => {
+  let columnSize = headers |> Belt_List.length > 2 ? Col.Four : Col.Six;
+  let valueWidth = Media.isMobile() ? 70 : 480;
+  <div className=Styles.tabletContainer>
+    <div className=Styles.tableSpacing>
+      <Row.Grid>
+        {headers
+         ->Belt_List.mapWithIndex((i, header) => {
+             <Col.Grid key={header ++ (i |> string_of_int)} col=columnSize colSm=columnSize>
+               <Text value=header weight=Text.Semibold height={Text.Px(18)} color=Colors.gray7 />
+             </Col.Grid>
            })
          ->Belt_List.toArray
          ->React.array}
-      </Row>
+      </Row.Grid>
     </div>
-    {let sumSizes =
-       switch (sizes |> Belt_List.length) {
-       | 0 => headers |> Belt_List.length |> float_of_int
-       | _ => sizes->Belt_List.reduce(0., (+.))
-       };
-     rowsWithSetting
-     ->Belt.List.mapWithIndex((i, rowWithSetting) => {
-         <div key={i |> string_of_int} className={Styles.tbody(theme)}>
-           {rowWithSetting
-            ->Belt_List.mapWithIndex((j, {mainElem, size, isRight}) => {
-                <Col key={j |> string_of_int} size>
-                  <div className=Styles.hFlex>
-                    {isRight ? <div className=Styles.fillRight /> : React.null}
-                    {renderField(
-                       mainElem,
-                       sumSizes <= 0.
-                         ? tableWidth
-                         : Media.isMobile()
-                             ? 70
-                             : (tableWidth |> float_of_int) *. size /. sumSizes |> int_of_float,
-                       isRight,
-                     )}
-                  </div>
-                </Col>
-              })
-            ->Belt_List.toArray
-            ->React.array}
+    {rows
+     ->Belt.List.mapWithIndex((i, row) => {
+         <div
+           key={"outerRow" ++ (i |> string_of_int)} className={Css.merge([Styles.tableSpacing])}>
+           <Row.Grid>
+             {row
+              ->Belt_List.mapWithIndex((j, value) => {
+                  <Col.Grid
+                    key={"innerRow" ++ (j |> string_of_int)} col=columnSize colSm=columnSize>
+                    {renderField(value, valueWidth)}
+                  </Col.Grid>
+                })
+              ->Belt_List.toArray
+              ->React.array}
+           </Row.Grid>
          </div>
        })
      ->Belt.List.toArray
      ->React.array}
-  </>;
+  </div>;
 };

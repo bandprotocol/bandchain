@@ -166,6 +166,11 @@ let make = (~txHash) => {
             </div>
           </Col.Grid>
         </Row.Grid>
+        {switch (txSub) {
+         | Data({success, errMsg}) when !success =>
+           <Row.Grid> <Col.Grid> <TxError.Full msg=errMsg /> </Col.Grid> </Row.Grid>
+         | _ => React.null
+         }}
         <Row.Grid marginBottom=24>
           <Col.Grid>
             <div className=Styles.infoContainer>
@@ -278,24 +283,21 @@ let make = (~txHash) => {
         <Row.Grid marginBottom=24>
           <Col.Grid>
             {switch (txSub) {
-             | Data({success, errMsg, messages}) =>
+             | Data({messages}) =>
                let msgCount = messages |> Belt.List.length;
-               <>
-                 {success ? React.null : <TxError.Full msg=errMsg />}
-                 <div className={CssHelper.flexBox()}>
-                   <Text value={msgCount |> string_of_int} size=Text.Lg />
-                   <HSpacing size=Spacing.md />
-                   <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
-                 </div>
-               </>;
+               <div className={CssHelper.flexBox()}>
+                 <Text value={msgCount |> string_of_int} size=Text.Lg />
+                 <HSpacing size=Spacing.md />
+                 <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
+               </div>;
+
              | _ => <LoadingCensorBar width=100 height=20 />
              }}
           </Col.Grid>
         </Row.Grid>
         {switch (txSub) {
-         | Data({messages}) =>
-           isMobile ? <TxMobileIndexPageTable messages /> : <TxIndexPageTable messages />
-         | _ => isMobile ? <TxMobileIndexPageTable.Loading /> : <TxIndexPageTable.Loading />
+         | Data({messages}) => <TxIndexPageTable messages />
+         | _ => <TxIndexPageTable.Loading />
          }}
       </div>
     </Section>

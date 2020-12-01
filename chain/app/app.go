@@ -109,6 +109,8 @@ type BandApp struct {
 	DeliverContext sdk.Context
 	// Module manager.
 	mm *module.Manager
+	// List of hooks
+	hooks []Hook
 }
 
 // MakeCodec returns BandChain codec.
@@ -259,16 +261,27 @@ func (app *BandApp) Name() string { return app.BaseApp.Name() }
 // BeginBlocker application updates every begin block.
 func (app *BandApp) BeginBlocker(ctx sdk.Context, req abci.RequestBeginBlock) abci.ResponseBeginBlock {
 	app.DeliverContext = ctx
-	return app.mm.BeginBlock(ctx, req)
+	res := app.mm.BeginBlock(ctx, req)
+	for _, hook := range app.hooks {
+		hook.AfterBeginBlock(ctx, req, res)
+	}
+	return res
 }
 
 // EndBlocker application updates every end block.
 func (app *BandApp) EndBlocker(ctx sdk.Context, req abci.RequestEndBlock) abci.ResponseEndBlock {
-	return app.mm.EndBlock(ctx, req)
+	res := app.mm.EndBlock(ctx, req)
+	for _, hook := range app.hooks {
+		hook.AfterEndBlock(ctx, req, res)
+	}
+	return res
 }
 
 // Commit overrides the default BaseApp's ABCI commit by adding DeliverContext clearing.
 func (app *BandApp) Commit() (res abci.ResponseCommit) {
+	for _, hook := range app.hooks {
+		hook.BeforeCommit()
+	}
 	app.DeliverContext = sdk.Context{}
 	return app.BaseApp.Commit()
 }
@@ -278,7 +291,37 @@ func (app *BandApp) InitChainer(ctx sdk.Context, req abci.RequestInitChain) abci
 	var genesisState GenesisState
 	app.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	app.DeliverContext = ctx // NOTE: This will be reset at the beginning of the first block.
-	return app.mm.InitGenesis(ctx, genesisState)
+	res := app.mm.InitGenesis(ctx, genesisState)
+	for _, hook := range app.hooks {
+		hook.AfterInitChain(ctx, req, res)
+	}
+	return res
+}
+
+// DeliverTx overwrite DeliverTx to apply afterDeliverTx hook
+func (app *BandApp) DeliverTx(req abci.RequestDeliverTx) abci.ResponseDeliverTx {
+	res := app.BaseApp.DeliverTx(req)
+	for _, hook := range app.hooks {
+		hook.AfterDeliverTx(app.DeliverContext, req, res)
+	}
+	return res
+}
+
+func (app *BandApp) Query(req abci.RequestQuery) abci.ResponseQuery {
+	hookReq := req
+
+	// when a client did not provide a query height, manually inject the latest
+	if hookReq.Height == 0 {
+		hookReq.Height = app.LastBlockHeight()
+	}
+
+	for _, hook := range app.hooks {
+		res, stop := hook.ApplyQuery(hookReq)
+		if stop {
+			return res
+		}
+	}
+	return app.BaseApp.Query(req)
 }
 
 // LoadHeight loads a particular height
@@ -316,4 +359,9 @@ func GetMaccPerms() map[string][]string {
 		modAccPerms[k] = v
 	}
 	return modAccPerms
+}
+
+// AddHook appends hook that will be call after process abci request
+func (app *BandApp) AddHook(hook Hook) {
+	app.hooks = append(app.hooks, hook)
 }

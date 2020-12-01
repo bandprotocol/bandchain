@@ -105,6 +105,7 @@ let make = (~address, ~validator, ~setMsgsOpt) => {
          code=true
          autoFocus=true
          id="delegateAmountInput"
+         maxWarningMsg=true
        />;
      | _ => <EnhanceTxInput.Loading msg="Amount" code=true useMax=true placeholder="0.000000" />
      }}

@@ -66,8 +66,6 @@ let make = (~txResponse: TxCreator.tx_response_t, ~schema: string) =>
                  {switch (outputKVsOpt) {
                   | Some(outputKVs) =>
                     <KVTable
-                      tableWidth=500
-                      theme=KVTable.RequestMiniTable
                       rows={
                         outputKVs
                         ->Belt_Array.map(({fieldName, fieldValue}) =>

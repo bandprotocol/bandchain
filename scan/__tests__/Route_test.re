@@ -29,10 +29,10 @@ describe("Expect Search Functionality to work correctly", () => {
     expect("b123" |> search) |> toEqual(BlockIndexPage(123))
   );
   test("test data soure route prefix is D", () =>
-    expect("D123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceExecute))
+    expect("D123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceRequests))
   );
   test("test data soure route prefix is d", () =>
-    expect("d123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceExecute))
+    expect("d123" |> search) |> toEqual(DataSourceIndexPage(123, DataSourceRequests))
   );
   test("test request route prefix is R", () =>
     expect("R123" |> search) |> toEqual(RequestIndexPage(123))
@@ -41,17 +41,17 @@ describe("Expect Search Functionality to work correctly", () => {
     expect("r123" |> search) |> toEqual(RequestIndexPage(123))
   );
   test("test oracle script route prefix is O", () =>
-    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptExecute))
+    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptRequests))
   );
   test("test oracle script route prefix is o", () =>
-    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptExecute))
+    expect("O123" |> search) |> toEqual(OracleScriptIndexPage(123, OracleScriptRequests))
   );
   test("test validator route", () =>
     expect("bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> search)
     |> toEqual(
          ValidatorIndexPage(
            "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec" |> Address.fromBech32,
-           ProposedBlocks,
+           Reports,
          ),
        )
   );
