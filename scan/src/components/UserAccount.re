@@ -150,36 +150,45 @@ let make = () => {
   let (_, dispatchModal) = React.useContext(ModalContext.context);
   let (show, setShow) = React.useState(_ => false);
 
+  let clickOutside = ClickOutside.useClickOutside(_ => setShow(_ => false));
+
   let connect = chainID => dispatchModal(OpenModal(Connect(chainID)));
   let disconnect = () => {
     dispatchAccount(Disconnect);
     setShow(_ => false);
   };
-  let send = () => dispatchModal(OpenModal(SubmitTx(SubmitMsg.Send(None))));
+  let send = () => {
+    None->SubmitMsg.Send->SubmitTx->OpenModal->dispatchModal;
+    setShow(_ => false);
+  };
 
   switch (accountOpt) {
   | Some({address}) =>
     <div className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.container])}>
-      <div
-        id="userInfoButton"
-        className={Css.merge([CssHelper.flexBox(), CssHelper.clickable])}
-        onClick={_ => setShow(prev => !prev)}>
-        <div className=Styles.oval> <Icon name="fal fa-user" color=Colors.white /> </div>
-        <HSpacing size=Spacing.sm />
-        <Icon name="fas fa-caret-down" color=Colors.bandBlue />
-      </div>
-      <div className={Styles.profileCard(show)} id="addressWrapper">
-        <AddressRender address position=AddressRender.Text />
-        <VSpacing size={`px(16)} />
-        <div className=Styles.innerProfileCard>
-          <Balance address />
-          <VSpacing size={`px(16)} />
-          <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
-            <FaucetBtn address />
-            <SendBtn send />
-          </div>
+      <div ref={ReactDOMRe.Ref.domRef(clickOutside)}>
+        <div
+          id="userInfoButton"
+          className={Css.merge([CssHelper.flexBox(), CssHelper.clickable])}
+          onClick={_ => setShow(prev => !prev)}>
+          <div className=Styles.oval> <Icon name="fal fa-user" color=Colors.white /> </div>
+          <HSpacing size=Spacing.sm />
+          <Icon name="fas fa-caret-down" color=Colors.bandBlue />
         </div>
-        <DisconnectBtn disconnect />
+        <div className={Styles.profileCard(show)} id="addressWrapper">
+          <div onClick={_ => setShow(_ => false)}>
+            <AddressRender address position=AddressRender.Text />
+          </div>
+          <VSpacing size={`px(16)} />
+          <div className=Styles.innerProfileCard>
+            <Balance address />
+            <VSpacing size={`px(16)} />
+            <div className={CssHelper.flexBox(~direction=`row, ~justify=`spaceBetween, ())}>
+              <FaucetBtn address />
+              <SendBtn send />
+            </div>
+          </div>
+          <DisconnectBtn disconnect />
+        </div>
       </div>
     </div>
   | None =>

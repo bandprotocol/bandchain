@@ -29,12 +29,11 @@ module ButtonSection = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
 
-    let delegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Delegate(validatorAddress))));
+    let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Undelegate(validatorAddress))));
+      validatorAddress->SubmitMsg.Undelegate->SubmitTx->OpenModal->dispatchModal;
     let redelegate = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.Redelegate(validatorAddress))));
+      validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
     switch (validatorInfoSub) {
     | Data(validatorInfo) =>
@@ -140,9 +139,12 @@ module StakingInfo = {
 
     let allSub = Sub.all3(infoSub, balanceAtStakeSub, unbondingSub);
 
-    let withdrawReward = () =>
-      dispatchModal(OpenModal(SubmitTx(SubmitMsg.WithdrawReward(validatorAddress))));
+    let withdrawReward = () => {
+      validatorAddress->SubmitMsg.WithdrawReward->SubmitTx->OpenModal->dispatchModal;
+    };
 
+    let reinvest = reward =>
+      (validatorAddress, reward)->SubmitMsg.Reinvest->SubmitTx->OpenModal->dispatchModal;
     <>
       <Row.Grid marginBottom=24>
         <Col.Grid>
@@ -187,9 +189,7 @@ module StakingInfo = {
       </Row.Grid>
       <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
         <Col.Grid>
-          <div
-            className={CssHelper.flexBox(~justify=`spaceBetween, ())}
-            id="withdrawRewardContainer">
+          <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div>
               <Heading value="Reward" size=Heading.H5 />
               <VSpacing size={`px(8)} />
@@ -199,9 +199,26 @@ module StakingInfo = {
                | _ => <DisplayBalance.Loading />
                }}
             </div>
-            <Button px=20 py=5 onClick={_ => withdrawReward()}>
-              <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
-            </Button>
+            <div className={CssHelper.flexBox()} id="withdrawRewardContainer">
+              {let (disable, reward) =
+                 switch (allSub) {
+                 | Data((_, balanceAtStake, _)) => (
+                     balanceAtStake.reward.amount <= 0.,
+                     balanceAtStake.reward.amount,
+                   )
+                 | _ => (true, 0.)
+                 };
+
+               <>
+                 <Button px=20 py=5 onClick={_ => withdrawReward()} disabled=disable>
+                   <Text value="Withdraw Reward" weight=Text.Medium nowrap=true block=true />
+                 </Button>
+                 <HSpacing size=Spacing.sm />
+                 <Button px=20 py=5 onClick={_ => reinvest(reward)} disabled=disable>
+                   <Text value="Reinvest" weight=Text.Medium nowrap=true block=true />
+                 </Button>
+               </>}
+            </div>
           </div>
         </Col.Grid>
       </Row.Grid>

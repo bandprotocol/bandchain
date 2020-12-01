@@ -3,24 +3,38 @@ import base64
 from dataclasses import dataclass
 from typing import List, Optional, NewType
 from dacite import Config
-from pyband.utils import parse_datetime
+from .utils import parse_epoch_time
+from .wallet import Address
 
 HexBytes = NewType("HexBytes", bytes)
-Timestamp = NewType("Timestamp", int)
+EpochTime = NewType("EpochTime", int)
 
-DACITE_CONFIG = Config(
-    type_hooks={
-        int: int,
-        bytes: base64.b64decode,
-        HexBytes: bytes.fromhex,
-        Timestamp: parse_datetime,
-    }
-)
+
+@dataclass
+class Coin(object):
+    amount: int
+    denom: str
+
+    @classmethod
+    def from_json(cls, coin) -> "Coin":
+        return cls(int(coin["amount"]), coin["denom"])
+
+    def as_json(self) -> dict:
+        return {"amount": str(self.amount), "denom": self.denom}
+
+    def validate(self) -> bool:
+        if self.amount < 0:
+            raise ValueError("Expect amount more than 0")
+
+        if len(self.denom) == 0:
+            raise ValueError("Expect denom")
+
+        return True
 
 
 @dataclass
 class DataSource(object):
-    owner: str
+    owner: Address
     name: str = ""
     description: str = ""
     filename: str = ""
@@ -28,7 +42,7 @@ class DataSource(object):
 
 @dataclass
 class OracleScript(object):
-    owner: str
+    owner: Address
     name: str = ""
     description: str = ""
     filename: str = ""
@@ -101,30 +115,13 @@ class RequestInfo(object):
 
 
 @dataclass
-class Coin(object):
-    amount: int
-    denom: str
-
-    def as_json(self) -> dict:
-        return {"amount": str(self.amount), "denom": self.denom}
-
-    def validate(self) -> bool:
-        if self.amount < 0:
-            raise ValueError("Expect amount more than 0")
-
-        if len(self.denom) == 0:
-            raise ValueError("Expect denom")
-
-        return True
-
-
-@dataclass
 class Account(object):
-    address: str
-    coins: List[dict]
+    address: Address
+    coins: List[Coin]
     public_key: Optional[dict]
     account_number: int
     sequence: int
+
 
 @dataclass
 class TransactionSyncMode(object):
@@ -153,7 +150,7 @@ class TransactionBlockMode(object):
 class BlockHeaderInfo(object):
     chain_id: str
     height: int
-    time: Timestamp
+    time: EpochTime
     last_commit_hash: HexBytes
     data_hash: HexBytes
     validators_hash: HexBytes
@@ -179,3 +176,28 @@ class BlockID(object):
 class Block(object):
     block: BlockHeader
     block_id: BlockID
+
+
+@dataclass
+class ReferencePriceUpdated(object):
+    base: int
+    quote: int
+
+
+@dataclass
+class ReferencePrice(object):
+    pair: str
+    rate: float
+    updated_at: ReferencePriceUpdated
+
+
+DACITE_CONFIG = Config(
+    type_hooks={
+        int: int,
+        bytes: base64.b64decode,
+        HexBytes: bytes.fromhex,
+        EpochTime: parse_epoch_time,
+        Address: Address.from_acc_bech32,
+        Coin: Coin.from_json,
+    }
+)

@@ -103,7 +103,6 @@ let make = (~info) => {
   | Float(value, digits) => <Text value={value |> Format.fPretty(~digits?)} />
   | KVTableReport(heading, rawReports) =>
     <KVTable
-      tableWidth=480
       headers=heading
       rows={
         rawReports
@@ -120,7 +119,6 @@ let make = (~info) => {
     switch (calldataKVsOpt) {
     | Some(calldataKVs) =>
       <KVTable
-        tableWidth=480
         rows={
           calldataKVs
           ->Belt_Array.map(({fieldName, fieldValue}) =>
@@ -160,10 +158,7 @@ let make = (~info) => {
   | TxHash(txHash, width) => <TxLink txHash width size=Text.Lg />
   | Messages(txHash, messages, success, errMsg) =>
     <TxMessages txHash messages success errMsg width=360 />
-  | Badge({text, textColor, bgColor}) =>
-    <div className={Styles.badge(bgColor)}>
-      <Text value=text size=Text.Xs spacing={Text.Em(0.07)} color=textColor />
-    </div>
+  | Badge({name, category}) => <MsgBadge name msgType=category />
   | VotingPower(tokens, votingPercent) =>
     <div className=Styles.vFlex>
       <Text

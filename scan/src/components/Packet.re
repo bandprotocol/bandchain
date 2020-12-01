@@ -71,7 +71,6 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
          <>
            <VSpacing size=Spacing.md />
            <KVTable
-             tableWidth=470
              rows={
                outputKVs
                ->Belt_Array.map(({fieldName, fieldValue}) =>
@@ -165,7 +164,6 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
             | Some(outputKVs) =>
               <>
                 <KVTable
-                  tableWidth=470
                   rows={
                     outputKVs
                     ->Belt_Array.map(({fieldName, fieldValue}) =>

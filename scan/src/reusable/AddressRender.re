@@ -6,7 +6,7 @@ type position =
 module Styles = {
   open Css;
 
-  let container = style([display(`flex), cursor(`pointer)]);
+  let container = style([display(`flex), cursor(`pointer), overflow(`hidden)]);
 
   let clickable = isActive =>
     isActive
@@ -55,7 +55,7 @@ module Styles = {
     | Title => style([Media.mobile([width(`percent(90.))])])
     | _ => "";
 
-  let mobileWidth = style([Media.mobile([width(`calc((`sub, `percent(100.), `px(20))))])]);
+  let mobileWidth = style([ width(`calc((`sub, `percent(100.), `px(45)))) ,Media.mobile([width(`calc((`sub, `percent(100.), `px(20))))])]);
 };
 
 [@react.component]
