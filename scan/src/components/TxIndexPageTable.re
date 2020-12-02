@@ -290,13 +290,12 @@ let renderConnectionVariant = (_: TxSub.Msg.t, _: TxSub.Msg.ConnectionCommon.t) 
 };
 
 let renderUnknownMessage = () => {
-  // <Col size=Styles.thirdCol alignSelf=Col.Start>
-  //   <div className=Styles.topicContainer>
-  //     <Text value="UNKNOWN MESSAGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-  //     <img src=Images.fail className=Styles.failIcon />
-  //   </div>
-  // </Col>;
-  React.null;
+  <Col col=Col.Six>
+    <div className=Styles.topicContainer>
+      <Text value="Unknown Message" size=Text.Sm transform=Text.Uppercase />
+      <img src=Images.fail className=Styles.failIcon />
+    </div>
+  </Col>;
 };
 
 let renderBody = (msg: TxSub.Msg.t) =>
