@@ -75,7 +75,9 @@ module TxNotFound = {
       <div className=CssHelper.container>
         <VSpacing size=Spacing.lg />
         <div className=Styles.notfoundContainer>
-          <Col> <img src=Images.notFoundBg className=Styles.notfoundLogo /> </Col>
+          <div className={CssHelper.flexBox()}>
+            <img src=Images.notFoundBg className=Styles.notfoundLogo />
+          </div>
           <VSpacing size=Spacing.md />
           <Text
             value="Sorry, we are unable to retrieve information on this transaction hash."
