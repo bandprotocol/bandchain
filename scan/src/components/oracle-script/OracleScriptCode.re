@@ -47,7 +47,7 @@ let make = (~url: string) =>
     let%Opt code = CodeHook.getCode(url);
     Some(
       <div className=Styles.tableWrapper>
-        <Row.Grid marginBottom=24>
+        <Row marginBottom=24>
           <Col.Grid col=Col.Six colSm=Col.Six>
             <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
               <Heading size=Heading.H5 value="Platform" />
@@ -82,8 +82,8 @@ let make = (~url: string) =>
               color=Colors.gray7
             />
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24 marginBottomSm=12>
+        </Row>
+        <Row marginBottom=24 marginBottomSm=12>
           <Col.Grid>
             <div className={CssHelper.flexBox()}>
               <Icon name="fal fa-file" size=16 />
@@ -97,7 +97,7 @@ let make = (~url: string) =>
               />
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         <div className=Styles.tableLowerContainer>
           <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>
           {code |> renderCode}

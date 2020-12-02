@@ -132,7 +132,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
@@ -214,7 +214,7 @@ let renderBody =
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -288,26 +288,26 @@ let make = () => {
            oracleScripts->Belt.Array.length > 0
              ? <>
                  <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-                 <Row.Grid>
+                 <Row>
                    {oracleScripts
                     ->Belt_Array.mapWithIndex((i, e) =>
                         renderMostRequestedCard(i, Sub.resolve(e))
                       )
                     ->React.array}
-                 </Row.Grid>
+                 </Row>
                </>
              : React.null
          | _ =>
            <>
              <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-             <Row.Grid>
+             <Row>
                {Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
                 ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
                 ->React.array}
-             </Row.Grid>
+             </Row>
            </>
          }}
-        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid>
             {switch (allSub) {
              | Data((_, oracleScriptsCount)) =>
@@ -318,8 +318,8 @@ let make = () => {
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid alignItems=Row.Center marginBottom=16>
+        </Row>
+        <Row alignItems=Row.Center marginBottom=16>
           <Col.Grid col=Col.Six colSm=Col.Eight>
             <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
           </Col.Grid>
@@ -335,11 +335,11 @@ let make = () => {
               />
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {isMobile
            ? React.null
            : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
+               <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Five>
                    <div className=TElement.Styles.hashContainer>
                      <Text
@@ -378,7 +378,7 @@ let make = () => {
                      align=Text.Right
                    />
                  </Col.Grid>
-               </Row.Grid>
+               </Row>
              </THead.Grid>}
         {switch (allSub) {
          | Data((oracleScripts, oracleScriptsCount)) =>

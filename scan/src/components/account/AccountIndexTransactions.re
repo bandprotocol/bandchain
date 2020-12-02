@@ -25,7 +25,7 @@ let make = (~accountAddress: Address.t) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
+       ? <Row marginBottom=16>
            <Col.Grid>
              {switch (txsCountSub) {
               | Data(txsCount) =>
@@ -42,9 +42,9 @@ let make = (~accountAddress: Address.t) => {
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
            </Col.Grid>
-         </Row.Grid>
+         </Row>
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                {switch (txsCountSub) {
                 | Data(txsCount) =>
@@ -91,7 +91,7 @@ let make = (~accountAddress: Address.t) => {
              <Col.Grid col=Col.Six>
                <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {

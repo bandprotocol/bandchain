@@ -21,7 +21,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Six>
         {switch (unbondingListSub) {
          | Data({validator: {operatorAddress, moniker, identity}}) =>
@@ -59,7 +59,7 @@ let renderBody =
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -111,7 +111,7 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
+       ? <Row marginBottom=16>
            <Col.Grid>
              {switch (unbondingCountSub) {
               | Data(unbondingCount) =>
@@ -133,9 +133,9 @@ let make = (~address) => {
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
            </Col.Grid>
-         </Row.Grid>
+         </Row>
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Six>
                {switch (unbondingCountSub) {
                 | Data(unbondingCount) =>
@@ -175,7 +175,7 @@ let make = (~address) => {
                  align=Text.Right
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (unbondingListSub) {
      | Data(unbondingList) =>

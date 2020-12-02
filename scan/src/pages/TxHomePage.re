@@ -11,7 +11,7 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="transactionsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve>
           <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (latestTxsSub) {
@@ -29,11 +29,11 @@ let make = () => {
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       {isMobile
          ? React.null
          : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
+             <Row alignItems=Row.Center>
                <Col.Grid col=Col.Two>
                  <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
                </Col.Grid>
@@ -62,7 +62,7 @@ let make = () => {
                <Col.Grid col=Col.Six>
                  <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
                </Col.Grid>
-             </Row.Grid>
+             </Row>
            </THead.Grid>}
       <TxsTable txsSub />
       {switch (txsCountSub) {

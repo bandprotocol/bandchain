@@ -36,7 +36,7 @@ module ProposalCard = {
     let isMobile = Media.isMobile();
     <Col.Grid key={reserveIndex |> string_of_int} mb=24 mbSm=16>
       <div className=Styles.infoContainer>
-        <Row.Grid marginBottom=18>
+        <Row marginBottom=18>
           <Col.Grid col=Col.Eight>
             <div
               className={Css.merge([
@@ -72,16 +72,16 @@ module ProposalCard = {
                }}
             </div>
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
+        </Row>
+        <Row marginBottom=24>
           <Col.Grid>
             {switch (proposalSub) {
              | Data({description}) => <Markdown value=description />
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid>
+        </Row>
+        <Row>
           <Col.Grid col=Col.Four mbSm=16>
             <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
             {switch (proposalSub) {
@@ -149,7 +149,7 @@ module ProposalCard = {
                <LoadingCensorBar width=50 height=15 />
              </Col.Grid>
            }}
-        </Row.Grid>
+        </Row>
       </div>
     </Col.Grid>;
   };
@@ -166,10 +166,10 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="proposalsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
-      </Row.Grid>
-      <Row.Grid>
+      </Row>
+      <Row>
         {switch (allSub) {
          | Data((proposals, bondedTokenCount, voteStatSub)) =>
            proposals->Belt.Array.size > 0
@@ -212,7 +212,7 @@ let make = () => {
              )
            ->React.array
          }}
-      </Row.Grid>
+      </Row>
     </div>
   </Section>;
 };

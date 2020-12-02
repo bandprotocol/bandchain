@@ -83,14 +83,14 @@ module KVTableContainer = {
     [@react.component]
     let make = () => {
       <THead.Grid>
-        <Row.Grid alignItems=Row.Center>
+        <Row alignItems=Row.Center>
           <Col.Grid col=Col.Three>
             <Heading value="Key" size=Heading.H5 weight=Heading.Medium />
           </Col.Grid>
           <Col.Grid col=Col.Nine>
             <Heading value="Value" size=Heading.H5 weight=Heading.Medium />
           </Col.Grid>
-        </Row.Grid>
+        </Row>
       </THead.Grid>;
     };
   };
@@ -109,16 +109,16 @@ module KVTableContainer = {
         : <>
             <TableHeader />
             <TBody.Grid paddingH={`px(24)}>
-              <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+              <Row alignItems=Row.Center minHeight={`px(30)}>
                 <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                 <Col.Grid col=Col.Nine> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
-              </Row.Grid>
+              </Row>
             </TBody.Grid>
             <TBody.Grid paddingH={`px(24)}>
-              <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+              <Row alignItems=Row.Center minHeight={`px(30)}>
                 <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                 <Col.Grid col=Col.Nine> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
-              </Row.Grid>
+              </Row>
             </TBody.Grid>
           </>;
     };
@@ -145,14 +145,14 @@ module KVTableContainer = {
             {decodes
              ->Belt.Array.map(({Obi.fieldName, fieldValue}) => {
                  <TBody.Grid key={fieldName ++ fieldValue} paddingH={`px(24)}>
-                   <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+                   <Row alignItems=Row.Center minHeight={`px(30)}>
                      <Col.Grid col=Col.Three>
                        <Text value=fieldName color=Colors.gray7 weight=Text.Thin />
                      </Col.Grid>
                      <Col.Grid col=Col.Nine>
                        <Text value=fieldValue color=Colors.gray7 weight=Text.Thin breakAll=true />
                      </Col.Grid>
-                   </Row.Grid>
+                   </Row>
                  </TBody.Grid>
                })
              ->React.array}
@@ -179,7 +179,7 @@ let make = (~reqID) => {
 
   <Section>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=16>
+      <Row marginBottom=40 marginBottomSm=16>
         <Col.Grid>
           <Heading value="Data Request" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
           {switch (requestSub) {
@@ -187,8 +187,8 @@ let make = (~reqID) => {
            | _ => <LoadingCensorBar width=150 height=23 />
            }}
         </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
+      </Row>
+      <Row marginBottom=24>
         <Col.Grid>
           <div
             className={Css.merge([
@@ -201,7 +201,7 @@ let make = (~reqID) => {
               style=Styles.infoHeader
               marginBottom=24
             />
-            <Row.Grid marginBottom=24>
+            <Row marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
                 <Heading value="Oracle Scripts" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
@@ -226,8 +226,8 @@ let make = (~reqID) => {
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
+            </Row>
+            <Row>
               <Col.Grid col=Col.Six mbSm=24>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size=Spacing.sm />
@@ -254,9 +254,9 @@ let make = (~reqID) => {
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
+            </Row>
             <div className=Styles.seperatedLine />
-            <Row.Grid marginBottom=24>
+            <Row marginBottom=24>
               <Col.Grid col=Col.Six mbSm=24>
                 <Heading value="Report Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
@@ -277,11 +277,11 @@ let make = (~reqID) => {
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
+            </Row>
+            <Row>
               <Col.Grid>
                 <Heading value="Request to" size=Heading.H5 marginBottom=8 />
-                <Row.Grid wrap=true>
+                <Row wrap=true>
                   {switch (requestSub) {
                    | Data({requestedValidators, resolveStatus, reports}) =>
                      requestedValidators
@@ -301,14 +301,14 @@ let make = (~reqID) => {
                        <VSpacing size={`px(isMobile ? 5 : 11)} />
                      </Col.Grid>
                    }}
-                </Row.Grid>
+                </Row>
               </Col.Grid>
-            </Row.Grid>
+            </Row>
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       // Calldata
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
             <div
@@ -341,9 +341,9 @@ let make = (~reqID) => {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       // Result
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
             <div
@@ -405,9 +405,9 @@ let make = (~reqID) => {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       // Proof
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
             <div className={Css.merge([Styles.kvTableHeader, CssHelper.flexBox()])}>
@@ -446,9 +446,9 @@ let make = (~reqID) => {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       // External Data Table
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
             <div className=Styles.kvTableHeader>
@@ -464,7 +464,7 @@ let make = (~reqID) => {
             {isMobile
                ? React.null
                : <THead.Grid>
-                   <Row.Grid alignItems=Row.Center>
+                   <Row alignItems=Row.Center>
                      <Col.Grid col=Col.Three>
                        <Heading value="External ID" size=Heading.H5 weight=Heading.Medium />
                      </Col.Grid>
@@ -476,7 +476,7 @@ let make = (~reqID) => {
                          <Heading value="Param" size=Heading.H5 weight=Heading.Medium />
                        </div>
                      </Col.Grid>
-                   </Row.Grid>
+                   </Row>
                  </THead.Grid>}
             {switch (requestSub) {
              | Data({rawDataRequests}) =>
@@ -494,7 +494,7 @@ let make = (~reqID) => {
                          styles=Styles.kvTableMobile
                        />
                      : <TBody.Grid key=externalID paddingH={`px(24)}>
-                         <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+                         <Row alignItems=Row.Center minHeight={`px(30)}>
                            <Col.Grid col=Col.Three>
                              <Text value=externalID color=Colors.gray7 weight=Text.Thin />
                            </Col.Grid>
@@ -515,7 +515,7 @@ let make = (~reqID) => {
                                />
                              </div>
                            </Col.Grid>
-                         </Row.Grid>
+                         </Row>
                        </TBody.Grid>
                  })
                ->React.array
@@ -531,7 +531,7 @@ let make = (~reqID) => {
                      styles=Styles.kvTableMobile
                    />
                  : <TBody.Grid paddingH={`px(24)}>
-                     <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+                     <Row alignItems=Row.Center minHeight={`px(30)}>
                        <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                        <Col.Grid col=Col.Four> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
                        <Col.Grid col=Col.Five>
@@ -539,14 +539,14 @@ let make = (~reqID) => {
                            <LoadingCensorBar width=50 height=15 />
                          </div>
                        </Col.Grid>
-                     </Row.Grid>
+                     </Row>
                    </TBody.Grid>
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       // Data report
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.kvTableContainer>
             <div className=Styles.kvTableHeader>
@@ -558,7 +558,7 @@ let make = (~reqID) => {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
     </div>
   </Section>;
 };

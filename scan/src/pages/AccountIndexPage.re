@@ -53,7 +53,7 @@ module Styles = {
 };
 
 let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountup=false, ()) => {
-  <Row.Grid>
+  <Row>
     <Col.Grid col=Col.Six colSm=Col.Five>
       <div className={CssHelper.flexBox()}>
         <div className={Styles.squareIcon(color)} />
@@ -126,13 +126,13 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
         </div>
       </div>
     </Col.Grid>
-  </Row.Grid>;
+  </Row>;
 };
 
 module BalanceDetailLoading = {
   [@react.component]
   let make = () => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six colSm=Col.Five> <LoadingCensorBar width=130 height=18 /> </Col.Grid>
       <Col.Grid col=Col.Six colSm=Col.Seven>
         <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
@@ -141,7 +141,7 @@ module BalanceDetailLoading = {
           <LoadingCensorBar width=120 height=16 />
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
@@ -223,10 +223,10 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
 
   <Section pbSm=0>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=24>
+      <Row marginBottom=40 marginBottomSm=24>
         <Col.Grid> <Heading value="Account Detail" size=Heading.H4 /> </Col.Grid>
-      </Row.Grid>
-      <Row.Grid>
+      </Row>
+      <Row>
         <Col.Grid col=Col.Six>
           <div
             className={Css.merge([
@@ -410,7 +410,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
             </div>
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <VSpacing size=Spacing.xl />
       <Tab
         tabs=[|

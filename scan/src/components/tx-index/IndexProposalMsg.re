@@ -1,7 +1,7 @@
 module SubmitProposalMsg = {
   [@react.component]
   let make = (~proposal: TxSub.Msg.SubmitProposal.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={proposal.proposer} />
@@ -18,14 +18,14 @@ module SubmitProposalMsg = {
         <Heading value="Deposit Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={proposal.initialDeposit} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module SubmitProposalFailMsg = {
   [@react.component]
   let make = (~proposal: TxSub.Msg.SubmitProposal.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid mb=24>
         <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={proposal.proposer} />
@@ -38,14 +38,14 @@ module SubmitProposalFailMsg = {
         <Heading value="Deposit Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={proposal.initialDeposit} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module DepositMsg = {
   [@react.component]
   let make = (~deposit: TxSub.Msg.Deposit.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Depositor" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={deposit.depositor} />
@@ -62,14 +62,14 @@ module DepositMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={deposit.amount} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module DepositFailMsg = {
   [@react.component]
   let make = (~deposit: TxSub.Msg.Deposit.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Depositor" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={deposit.depositor} />
@@ -82,14 +82,14 @@ module DepositFailMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={deposit.amount} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module VoteMsg = {
   [@react.component]
   let make = (~vote: TxSub.Msg.Vote.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Voter" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={vote.voterAddress} />
@@ -106,14 +106,14 @@ module VoteMsg = {
         <Heading value="Option" size=Heading.H5 marginBottom=8 />
         <Text size=Text.Lg value={vote.option} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module VoteFailMsg = {
   [@react.component]
   let make = (~vote: TxSub.Msg.Vote.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Voter" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={vote.voterAddress} />
@@ -126,6 +126,6 @@ module VoteFailMsg = {
         <Heading value="Option" size=Heading.H5 marginBottom=8 />
         <Text size=Text.Lg value={vote.option} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };

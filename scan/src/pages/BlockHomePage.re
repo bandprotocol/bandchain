@@ -7,7 +7,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
@@ -64,7 +64,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -106,7 +106,7 @@ let make = () => {
   <Section>
     <div className=CssHelper.container id="blocksSection">
       <div className=CssHelper.mobileSpacing>
-        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid col=Col.Twelve>
             <Heading value="All Blocks" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (blocksSub) {
@@ -124,11 +124,11 @@ let make = () => {
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {isMobile
            ? React.null
            : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
+               <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Two>
                    <Text
                      block=true
@@ -176,7 +176,7 @@ let make = () => {
                      align=Text.Right
                    />
                  </Col.Grid>
-               </Row.Grid>
+               </Row>
              </THead.Grid>}
         {switch (blocksSub) {
          | Data(blocks) =>

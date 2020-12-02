@@ -28,7 +28,7 @@ let make = (~height) => {
 
   <Section>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=16>
+      <Row marginBottom=40 marginBottomSm=16>
         <Col.Grid>
           <Heading value="Block" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
           {switch (blockSub) {
@@ -36,12 +36,12 @@ let make = (~height) => {
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
+      </Row>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
             <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
-            <Row.Grid marginBottom=24>
+            <Row marginBottom=24>
               <Col.Grid>
                 <Heading value="Block Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
@@ -57,8 +57,8 @@ let make = (~height) => {
                  | _ => <LoadingCensorBar width={isMobile ? 200 : 350} height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
-            <Row.Grid marginBottom=24>
+            </Row>
+            <Row marginBottom=24>
               <Col.Grid col=Col.Six mbSm=16>
                 <Heading value="Transaction" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
@@ -95,8 +95,8 @@ let make = (~height) => {
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
+            </Row>
+            <Row>
               <Col.Grid>
                 <Heading value="Proposer" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
@@ -108,10 +108,10 @@ let make = (~height) => {
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
+            </Row>
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <BlockIndexTxsTable txsSub />
       {switch (blockSub) {
        | Data({txn}) =>

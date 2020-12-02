@@ -1,7 +1,7 @@
 module SendMsg = {
   [@react.component]
   let make = (~send: TxSub.Msg.Send.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="From" size=Heading.H5 marginBottom=8 />
         <AddressRender address={send.fromAddress} />
@@ -14,14 +14,14 @@ module SendMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={send.amount} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module DelegateMsg = {
   [@react.component]
   let make = (~delegation: TxSub.Msg.Delegate.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={delegation.delegatorAddress} />
@@ -38,14 +38,14 @@ module DelegateMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module DelegateFailMsg = {
   [@react.component]
   let make = (~delegation: TxSub.Msg.Delegate.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={delegation.delegatorAddress} />
@@ -58,14 +58,14 @@ module DelegateFailMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[delegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module UndelegateMsg = {
   [@react.component]
   let make = (~undelegation: TxSub.Msg.Undelegate.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={undelegation.delegatorAddress} />
@@ -82,14 +82,14 @@ module UndelegateMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[undelegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module UndelegateFailMsg = {
   [@react.component]
   let make = (~undelegation: TxSub.Msg.Undelegate.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={undelegation.delegatorAddress} />
@@ -102,14 +102,14 @@ module UndelegateFailMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[undelegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module RedelegateMsg = {
   [@react.component]
   let make = (~redelegation: TxSub.Msg.Redelegate.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={redelegation.delegatorAddress} />
@@ -134,14 +134,14 @@ module RedelegateMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[redelegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module RedelegateFailMsg = {
   [@react.component]
   let make = (~redelegation: TxSub.Msg.Redelegate.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={redelegation.delegatorAddress} />
@@ -158,14 +158,14 @@ module RedelegateFailMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[redelegation.amount] pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module WithdrawRewardMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawReward.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.delegatorAddress} />
@@ -182,14 +182,14 @@ module WithdrawRewardMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module WithdrawRewardFailMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawReward.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.delegatorAddress} />
@@ -198,14 +198,14 @@ module WithdrawRewardFailMsg = {
         <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module WithdrawComissionMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawCommission.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <ValidatorMonikerLink
@@ -218,19 +218,19 @@ module WithdrawComissionMsg = {
         <Heading value="Amount" size=Heading.H5 marginBottom=8 />
         <AmountRender coins={withdrawal.amount} pos=AmountRender.TxIndex />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module WithdrawComissionFailMsg = {
   [@react.component]
   let make = (~withdrawal: TxSub.Msg.WithdrawCommission.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six>
         <Heading value="Validator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender address={withdrawal.validatorAddress} accountType=`validator />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
@@ -250,7 +250,7 @@ module MultisendMsg = {
   let make = (~tx: TxSub.Msg.MultiSend.t) => {
     let isMobile = Media.isMobile();
     <>
-      <Row.Grid>
+      <Row>
         <Col.Grid col=Col.Six> <Heading value="From" size=Heading.H5 marginBottom=8 /> </Col.Grid>
         {isMobile
            ? React.null
@@ -270,10 +270,10 @@ module MultisendMsg = {
            )
          ->Belt_List.toArray
          ->React.array}
-      </Row.Grid>
+      </Row>
       <hr className=Styles.separatorLine />
       <Heading value="To" size=Heading.H5 marginBottom=8 />
-      <Row.Grid>
+      <Row>
         {tx.outputs
          ->Belt_List.mapWithIndex((idx, output) =>
              <React.Fragment key={(idx |> string_of_int) ++ (output.address |> Address.toBech32)}>
@@ -287,7 +287,7 @@ module MultisendMsg = {
            )
          ->Belt_List.toArray
          ->React.array}
-      </Row.Grid>
+      </Row>
     </>;
   };
 };

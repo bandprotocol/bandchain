@@ -22,7 +22,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Two>
         {switch (requestsSub) {
          | Data({id}) => <TypeID.Request id />
@@ -72,7 +72,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -126,7 +126,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
+       ? <Row marginBottom=16>
            <Col.Grid>
              {switch (allSub) {
               | Data((_, totalRequestCount)) =>
@@ -143,9 +143,9 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
            </Col.Grid>
-         </Row.Grid>
+         </Row>
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                {switch (allSub) {
                 | Data((_, totalRequestCount)) =>
@@ -183,7 +183,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
                  align=Text.Right
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (allSub) {
      | Data((requests, requestsCount)) =>

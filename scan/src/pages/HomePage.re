@@ -12,18 +12,18 @@ let make = () => {
     </Section>
     <Section pt=40 pb=40 ptSm=24 pbSm=24 bg=Colors.bg>
       <div className=CssHelper.container>
-        <Row.Grid>
+        <Row>
           <Col.Grid col=Col.Six mbSm=24> <TotalRequestsGraph /> </Col.Grid>
           <Col.Grid col=Col.Six> <LatestRequests /> </Col.Grid>
-        </Row.Grid>
+        </Row>
       </div>
     </Section>
     <Section pt=40 pb=80 pbSm=40 bg=Colors.white>
       <div className=CssHelper.container>
-        <Row.Grid>
+        <Row>
           <Col.Grid col=Col.Four> <LatestBlocks blocksSub=lastest11BlocksSub /> </Col.Grid>
           <Col.Grid col=Col.Eight> <LatestTxTable /> </Col.Grid>
-        </Row.Grid>
+        </Row>
       </div>
     </Section>
   </>;

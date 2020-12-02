@@ -177,7 +177,7 @@ module GenerateDecodeCode = {
       | _ => "Code is not available."
       };
     <>
-      <Row.Grid marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
+      <Row marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
         <Col.Grid>
           <div className={CssHelper.flexBox()}>
             <Icon name="fal fa-file" size=16 />
@@ -191,7 +191,7 @@ module GenerateDecodeCode = {
             />
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <div className=Styles.tableLowerContainer>
         <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>
         {code |> renderCode}
@@ -205,7 +205,7 @@ let make = (~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
-    <Row.Grid marginBottom=24>
+    <Row marginBottom=24>
       <Col.Grid col=Col.Three colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Heading size=Heading.H5 value="Target Platform" />
@@ -268,8 +268,8 @@ let make = (~schema) => {
           </div>
         </div>
       </Col.Grid>
-    </Row.Grid>
-    <Row.Grid marginBottom=24 marginBottomSm=12>
+    </Row>
+    <Row marginBottom=24 marginBottomSm=12>
       <Col.Grid>
         <div className={CssHelper.flexBox()}>
           <Icon name="fal fa-file" size=16 />
@@ -283,7 +283,7 @@ let make = (~schema) => {
           />
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
     <div className=Styles.tableLowerContainer>
       <div className=Styles.copyContainer> <CopyButton data=schema title="Copy Code" /> </div>
       {schema |> renderCode}

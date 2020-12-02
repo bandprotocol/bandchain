@@ -19,7 +19,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Start>
+    <Row alignItems=Row.Start>
       <Col.Grid col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=140 />
@@ -69,7 +69,7 @@ let renderBody =
          | _ => <> <LoadingCensorBar width=400 height=15 /> </>
          }}
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 

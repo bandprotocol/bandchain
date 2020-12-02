@@ -23,7 +23,7 @@ module Content = {
       ) => {
     <Section pbSm=0>
       <div className=CssHelper.container>
-        <Row.Grid marginBottom=40 marginBottomSm=16>
+        <Row marginBottom=40 marginBottomSm=16>
           <Col.Grid>
             <Heading value="Data Source" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
             {switch (dataSourceSub) {
@@ -36,8 +36,8 @@ module Content = {
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
+        </Row>
+        <Row marginBottom=24>
           <Col.Grid>
             <div className=Styles.infoContainer>
               <Heading
@@ -75,7 +75,7 @@ module Content = {
                }}
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         <Tab
           tabs=[|
             {

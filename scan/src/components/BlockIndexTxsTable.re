@@ -13,7 +13,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=140 />
@@ -43,7 +43,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
          | _ => <LoadingCensorBar width=530 height=15 />
          }}
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -80,7 +80,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
     {isMobile
        ? React.null
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <Text
                  block=true
@@ -110,7 +110,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                  color=Colors.gray7
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (txsSub) {
      | Data(txs) =>

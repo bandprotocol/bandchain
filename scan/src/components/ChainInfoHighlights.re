@@ -81,7 +81,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let validatorInfoSub = Sub.all2(activeValidatorCountSub, bondedTokenCountSub);
   let allSub = Sub.all3(latestBlockSub, infoSub, validatorInfoSub);
 
-  <Row.Grid justify=Row.Between>
+  <Row justify=Row.Between>
     <Col.Grid col=Col.Three colSm=Col.Six>
       <HighlightCard
         label="Band Price"
@@ -196,5 +196,5 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         }
       />
     </Col.Grid>
-  </Row.Grid>;
+  </Row>;
 };

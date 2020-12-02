@@ -50,7 +50,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (voteSub) {
          | Data({voter, validator}) =>
@@ -96,7 +96,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -182,7 +182,7 @@ let make = (~proposalID) => {
     <div className=Styles.childrenContainer>
       <div className=Styles.tableWrapper>
         {isMobile
-           ? <Row.Grid marginBottom=16>
+           ? <Row marginBottom=16>
                <Col.Grid>
                  {switch (voteCountSub) {
                   | Data(voteCount) =>
@@ -199,9 +199,9 @@ let make = (~proposalID) => {
                   | _ => <LoadingCensorBar width=100 height=15 />
                   }}
                </Col.Grid>
-             </Row.Grid>
+             </Row>
            : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
+               <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Five>
                    {switch (voteCountSub) {
                     | Data(voteCount) =>
@@ -230,7 +230,7 @@ let make = (~proposalID) => {
                      align=Text.Right
                    />
                  </Col.Grid>
-               </Row.Grid>
+               </Row>
              </THead.Grid>}
         {switch (votesSub) {
          | Data(votes) =>

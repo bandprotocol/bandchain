@@ -1,7 +1,7 @@
 module CreateValidatorMsg = {
   [@react.component]
   let make = (~validator: TxSub.Msg.CreateValidator.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Moniker" size=Heading.H5 marginBottom=8 />
         <ValidatorMonikerLink
@@ -70,14 +70,14 @@ module CreateValidatorMsg = {
         <Heading value="Website" size=Heading.H5 marginBottom=8 />
         <Text size=Text.Lg value={validator.website} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module EditValidatorMsg = {
   [@react.component]
   let make = (~validator: BandScan.TxSub.Msg.EditValidator.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Moniker" size=Heading.H5 marginBottom=8 />
         <Text
@@ -127,14 +127,14 @@ module EditValidatorMsg = {
           value={validator.details == Config.doNotModify ? "Unchanged" : validator.details}
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module UnjailMsg = {
   [@react.component]
   let make = (~unjail: TxSub.Msg.Unjail.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <ValidatorMonikerLink
@@ -146,14 +146,14 @@ module UnjailMsg = {
           size=Text.Lg
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module UnjailFailMsg = {
   [@react.component]
   let make = (~unjail: TxSub.Msg.Unjail.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -162,14 +162,14 @@ module UnjailFailMsg = {
           accountType=`validator
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module AddReporterMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.AddReporter.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -182,14 +182,14 @@ module AddReporterMsg = {
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module AddReporterFailMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.AddReporter.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -202,14 +202,14 @@ module AddReporterFailMsg = {
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module RemoveReporterMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.RemoveReporter.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -222,14 +222,14 @@ module RemoveReporterMsg = {
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module RemoveReporterFailMsg = {
   [@react.component]
   let make = (~address: TxSub.Msg.RemoveReporter.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -242,14 +242,14 @@ module RemoveReporterFailMsg = {
         <Heading value="Reporter Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={address.reporter} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module ActivateMsg = {
   [@react.component]
   let make = (~activate: TxSub.Msg.Activate.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -258,14 +258,14 @@ module ActivateMsg = {
           accountType=`validator
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module SetWithdrawAddressMsg = {
   [@react.component]
   let make = (~set: TxSub.Msg.SetWithdrawAddress.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Delegator Address" size=Heading.H5 marginBottom=8 />
         <AddressRender
@@ -278,6 +278,6 @@ module SetWithdrawAddressMsg = {
         <Heading value="Withdraw Address" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={set.withdrawAddress} />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };

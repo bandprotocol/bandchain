@@ -84,7 +84,7 @@ let make = (~headers=["Key", "Value"], ~rows) => {
   let valueWidth = Media.isMobile() ? 70 : 480;
   <div className=Styles.tabletContainer>
     <div className=Styles.tableSpacing>
-      <Row.Grid>
+      <Row>
         {headers
          ->Belt_List.mapWithIndex((i, header) => {
              <Col.Grid key={header ++ (i |> string_of_int)} col=columnSize colSm=columnSize>
@@ -93,13 +93,13 @@ let make = (~headers=["Key", "Value"], ~rows) => {
            })
          ->Belt_List.toArray
          ->React.array}
-      </Row.Grid>
+      </Row>
     </div>
     {rows
      ->Belt.List.mapWithIndex((i, row) => {
          <div
            key={"outerRow" ++ (i |> string_of_int)} className={Css.merge([Styles.tableSpacing])}>
-           <Row.Grid>
+           <Row>
              {row
               ->Belt_List.mapWithIndex((j, value) => {
                   <Col.Grid
@@ -109,7 +109,7 @@ let make = (~headers=["Key", "Value"], ~rows) => {
                 })
               ->Belt_List.toArray
               ->React.array}
-           </Row.Grid>
+           </Row>
          </div>
        })
      ->Belt.List.toArray

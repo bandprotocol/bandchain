@@ -28,7 +28,7 @@ module Content = {
     <Section pbSm=0>
       <div className=CssHelper.container>
         <Heading value="Oracle Script" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
-        <Row.Grid marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
+        <Row marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
           <Col.Grid col=Col.Eight>
             <div className={Css.merge([CssHelper.flexBox(), Styles.idCointainer])}>
               {switch (oracleScriptSub) {
@@ -44,7 +44,7 @@ module Content = {
           </Col.Grid>
           <Col.Grid col=Col.Four>
             <div className=Styles.infoContainer>
-              <Row.Grid>
+              <Row>
                 <Col.Grid col=Col.Six colSm=Col.Six>
                   <div className={CssHelper.flexBox(~direction=`column, ())}>
                     <Heading
@@ -97,11 +97,11 @@ module Content = {
                      }}
                   </div>
                 </Col.Grid>
-              </Row.Grid>
+              </Row>
             </div>
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
+        </Row>
+        <Row marginBottom=24>
           <Col.Grid>
             <div className=Styles.infoContainer>
               <Heading
@@ -110,7 +110,7 @@ module Content = {
                 style=Styles.infoHeader
                 marginBottom=24
               />
-              <Row.Grid marginBottom=24>
+              <Row marginBottom=24>
                 <Col.Grid col=Col.Six>
                   <div className={CssHelper.flexBox()}>
                     <Heading value="Owner" size=Heading.H5 />
@@ -165,7 +165,7 @@ module Content = {
                      }}
                   </div>
                 </Col.Grid>
-              </Row.Grid>
+              </Row>
               <Heading value="Description" size=Heading.H5 marginBottom=16 />
               {switch (oracleScriptSub) {
                | Data({description}) =>
@@ -174,7 +174,7 @@ module Content = {
                }}
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         <Tab
           tabs=[|
             {

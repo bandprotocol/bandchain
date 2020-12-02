@@ -46,13 +46,29 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~justify=Start, ~alignItems=?, ~minHeight=`auto, ~wrap=false, ~style="", ~children) => {
+let make =
+    (
+      ~justify=Start,
+      ~alignItems=Stretch,
+      ~minHeight=`auto,
+      ~wrap=true,
+      ~style="",
+      ~children,
+      ~marginBottom=0,
+      ~marginBottomSm=marginBottom,
+      ~marginTop=0,
+      ~marginTopSm=marginTop,
+    ) => {
   <div
     className={Css.merge([
-      Styles.row,
+      Styles.rowBase,
       Styles.justify(justify),
       Styles.minHeight(minHeight),
-      Css.style([Css.alignItems(alignItems->Belt.Option.getWithDefault(`center))]),
+      Styles.alignItems(alignItems),
+      Styles.mb(marginBottom),
+      Styles.mbSm(marginBottomSm),
+      Styles.mt(marginTop),
+      Styles.mtSm(marginTopSm),
       wrap ? Styles.wrap : "",
       style,
     ])}>

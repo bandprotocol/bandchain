@@ -400,7 +400,7 @@ module Loading = {
         <HSpacing size=Spacing.sm />
         <LoadingCensorBar width=75 height=15 />
       </div>
-      <Row.Grid>
+      <Row>
         <Col.Grid col=Col.Six mb=24>
           <LoadingCensorBar width=75 height=15 mb=8 />
           <LoadingCensorBar width=150 height=15 />
@@ -413,7 +413,7 @@ module Loading = {
           <LoadingCensorBar width=75 height=15 mb=8 />
           <LoadingCensorBar width=150 height=15 />
         </Col.Grid>
-      </Row.Grid>
+      </Row>
     </div>;
   };
 };

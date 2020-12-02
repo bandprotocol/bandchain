@@ -31,7 +31,7 @@ module Styles = {
 module DataSourceItem = {
   [@react.component]
   let make = (~dataSource: ReportSub.ValidatorReport.report_details_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Two>
         <Text block=true value={dataSource.externalID} color=Colors.gray7 />
       </Col.Grid>
@@ -75,7 +75,7 @@ module DataSourceItem = {
           ellipsis=true
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
@@ -92,7 +92,7 @@ module RenderBody = {
         }
       }
       paddingH={`px(24)}>
-      <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
+      <Row alignItems=Row.Center minHeight={`px(30)}>
         <Col.Grid col=Col.Three>
           {switch (reportsSub) {
            | Data({request: {id}}) => <TypeID.Request id />
@@ -139,9 +139,9 @@ module RenderBody = {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <div className={Styles.dataSourceTable(show)}>
-        <Row.Grid>
+        <Row>
           <Col.Grid col=Col.Two>
             <Text block=true value="External ID" weight=Text.Semibold color=Colors.gray7 />
           </Col.Grid>
@@ -163,7 +163,7 @@ module RenderBody = {
               color=Colors.gray7
             />
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {switch (reportsSub) {
          | Data({reportDetails}) =>
            reportDetails
@@ -249,7 +249,7 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
+       ? <Row marginBottom=16>
            <Col.Grid>
              {switch (allSub) {
               | Data((_, reportsCount)) =>
@@ -266,9 +266,9 @@ let make = (~address) => {
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
            </Col.Grid>
-         </Row.Grid>
+         </Row>
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Three>
                {switch (allSub) {
                 | Data((_, reportsCount)) =>
@@ -296,7 +296,7 @@ let make = (~address) => {
              <Col.Grid col=Col.Five>
                <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (allSub) {
      | Data((reports, reportsCount)) =>

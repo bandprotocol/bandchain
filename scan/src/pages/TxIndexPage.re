@@ -103,7 +103,7 @@ let make = (~txHash) => {
   | Data(_) =>
     <Section>
       <div className=CssHelper.container>
-        <Row.Grid marginBottom=40 marginBottomSm=16>
+        <Row marginBottom=40 marginBottomSm=16>
           <Col.Grid>
             <Heading value="Transaction" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
             <div
@@ -165,13 +165,13 @@ let make = (~txHash) => {
               </div>
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {switch (txSub) {
          | Data({success, errMsg}) when !success =>
-           <Row.Grid> <Col.Grid> <TxError.Full msg=errMsg /> </Col.Grid> </Row.Grid>
+           <Row> <Col.Grid> <TxError.Full msg=errMsg /> </Col.Grid> </Row>
          | _ => React.null
          }}
-        <Row.Grid marginBottom=24>
+        <Row marginBottom=24>
           <Col.Grid>
             <div className=Styles.infoContainer>
               <Heading
@@ -180,7 +180,7 @@ let make = (~txHash) => {
                 style=Styles.infoHeader
                 marginBottom=24
               />
-              <Row.Grid>
+              <Row>
                 <Col.Grid col=Col.Six mb=24 mbSm=24>
                   <Heading value="Block" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
@@ -232,9 +232,9 @@ let make = (~txHash) => {
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
                 </Col.Grid>
-              </Row.Grid>
+              </Row>
               <hr className=Styles.separatorLine />
-              <Row.Grid>
+              <Row>
                 <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
                   <Heading value="Gas Used" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
@@ -276,11 +276,11 @@ let make = (~txHash) => {
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
                 </Col.Grid>
-              </Row.Grid>
+              </Row>
             </div>
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
+        </Row>
+        <Row marginBottom=24>
           <Col.Grid>
             {switch (txSub) {
              | Data({messages}) =>
@@ -294,7 +294,7 @@ let make = (~txHash) => {
              | _ => <LoadingCensorBar width=100 height=20 />
              }}
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {switch (txSub) {
          | Data({messages}) => <TxIndexPageTable messages />
          | _ => <TxIndexPageTable.Loading />

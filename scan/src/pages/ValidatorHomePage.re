@@ -61,7 +61,7 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="validatorsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid>
           <Heading value="All Validators" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (topPartAllSub) {
@@ -70,11 +70,11 @@ let make = () => {
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
         </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=36 marginBottomSm=24>
+      </Row>
+      <Row marginBottom=36 marginBottomSm=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
-            <Row.Grid>
+            <Row>
               <Col.Grid col=Col.Three colSm=Col.Six mbSm=48>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
@@ -161,11 +161,11 @@ let make = () => {
                    }}
                 </div>
               </Col.Grid>
-            </Row.Grid>
+            </Row>
           </div>
         </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=16 marginBottomSm=24>
+      </Row>
+      <Row marginBottom=16 marginBottomSm=24>
         <Col.Grid col=Col.Six colSm=Col.Eight mbSm=16>
           <SearchInput placeholder="Search Validator" onChange=setSearchTerm />
         </Col.Grid>
@@ -194,7 +194,7 @@ let make = () => {
             <ToggleButton isActive setIsActive />
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <ValidatorsTable allSub searchTerm sortedBy setSortedBy />
     </div>
   </Section>;

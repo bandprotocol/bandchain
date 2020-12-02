@@ -13,7 +13,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Two>
         {switch (requestsSub) {
          | Data({id}) => <TypeID.Request id />
@@ -67,7 +67,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -133,7 +133,7 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="requestsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
         <Col.Grid col=Col.Twelve>
           <Heading value="All Requests" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (allSub) {
@@ -145,11 +145,11 @@ let make = () => {
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       {isMobile
          ? React.null
          : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
+             <Row alignItems=Row.Center>
                <Col.Grid col=Col.Two>
                  <Text
                    block=true
@@ -180,7 +180,7 @@ let make = () => {
                    align=Text.Right
                  />
                </Col.Grid>
-             </Row.Grid>
+             </Row>
            </THead.Grid>}
       {switch (allSub) {
        | Data((requests, requestsCount)) =>

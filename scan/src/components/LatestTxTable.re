@@ -13,7 +13,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Start>
+    <Row alignItems=Row.Start>
       <Col.Grid col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=110 />
@@ -42,7 +42,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
          | _ => <LoadingCensorBar width=320 height=15 />
          }}
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -124,7 +124,7 @@ let make = () => {
     {isMobile
        ? React.null
        : <THead.Grid height=30>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <div className={CssHelper.flexBox()}>
                  <Text value="TX Hash" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
@@ -145,7 +145,7 @@ let make = () => {
                  <Text value="Actions" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (txsSub) {
      | Data(txs) =>

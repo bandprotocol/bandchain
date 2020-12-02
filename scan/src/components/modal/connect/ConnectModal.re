@@ -119,7 +119,7 @@ let make = (~chainID) => {
         <VSpacing size=Spacing.xl />
       </div>
       <div className=Styles.rowContainer>
-        <Row.Grid style=Styles.row>
+        <Row style=Styles.row>
           <Col.Grid col=Col.Five style=Styles.loginSelectionBackground>
             <div className=Styles.loginSelectionContainer>
               <VSpacing size=Spacing.xl />
@@ -146,7 +146,7 @@ let make = (~chainID) => {
              | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
              }}
           </Col.Grid>
-        </Row.Grid>
+        </Row>
       </div>
     </div>
   </div>;

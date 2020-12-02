@@ -25,7 +25,7 @@ let make = (~id) =>
       {numRevisions > 0
          ? <>
              <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
+               <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Four>
                    <div className={CssHelper.flexBox()}>
                      <Text value={numRevisions |> string_of_int} weight=Text.Semibold />
@@ -45,7 +45,7 @@ let make = (~id) =>
                  <Col.Grid col=Col.Four>
                    <Text block=true value="TX HASH" size=Text.Md weight=Text.Semibold />
                  </Col.Grid>
-               </Row.Grid>
+               </Row>
              </THead.Grid>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
@@ -57,7 +57,7 @@ let make = (~id) =>
                       | None => "Genesis"
                       }
                     }>
-                    <Row.Grid>
+                    <Row>
                       <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
                       <Col.Grid col=Col.Four>
                         <div className=Styles.nameContainer>
@@ -100,7 +100,7 @@ let make = (~id) =>
                          }}
                       </Col.Grid>
                       <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
-                    </Row.Grid>
+                    </Row>
                   </TBody.Grid>
                 })
               ->React.array}

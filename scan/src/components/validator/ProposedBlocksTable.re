@@ -20,7 +20,7 @@ module LoadingWithHeader = {
   let make = () => {
     <div className=Styles.tableWrapper>
       <THead.Grid>
-        <Row.Grid alignItems=Row.Center>
+        <Row alignItems=Row.Center>
           <Col.Grid col=Col.Two>
             <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
           </Col.Grid>
@@ -39,7 +39,7 @@ module LoadingWithHeader = {
               align=Text.Right
             />
           </Col.Grid>
-        </Row.Grid>
+        </Row>
       </THead.Grid>
     </div>;
   };
@@ -54,7 +54,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
@@ -95,7 +95,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -138,7 +138,7 @@ let make = (~consensusAddress) => {
     {isMobile
        ? React.null
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
@@ -163,7 +163,7 @@ let make = (~consensusAddress) => {
                  align=Text.Right
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (blocksSub) {
      | Data(blocks) =>

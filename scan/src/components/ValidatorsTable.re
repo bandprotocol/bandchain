@@ -26,7 +26,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.One>
         {switch (validatorSub) {
          | Data(_) => <Text value={rank |> string_of_int} color=Colors.gray7 block=true />
@@ -116,7 +116,7 @@ let renderBody =
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -316,7 +316,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
     {isMobile
        ? React.null
        : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.One>
                <Text block=true value="Rank" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
@@ -371,7 +371,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  tooltipItem={"The validator's Oracle status" |> React.string}
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (allSub) {
      | ApolloHooks.Subscription.Data((

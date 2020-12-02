@@ -1,7 +1,7 @@
 module CreateDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
@@ -14,14 +14,14 @@ module CreateDataSourceMsg = {
           <Text value={dataSource.name} size=Text.Lg />
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module CreateDataSourceFailMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
@@ -30,14 +30,14 @@ module CreateDataSourceFailMsg = {
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <Text value={dataSource.name} size=Text.Lg />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module EditDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.EditDataSource.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
@@ -51,14 +51,14 @@ module EditDataSourceMsg = {
              : <> <HSpacing size=Spacing.sm /> <Text value={dataSource.name} size=Text.Lg /> </>}
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module CreateOracleScriptMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.CreateOracleScript.success_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
@@ -71,14 +71,14 @@ module CreateOracleScriptMsg = {
           <Text value={oracleScript.name} />
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module CreateOracleScriptFailMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.CreateOracleScript.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
@@ -87,14 +87,14 @@ module CreateOracleScriptFailMsg = {
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <Text value={oracleScript.name} size=Text.Lg />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module EditOracleScriptMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.EditOracleScript.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
@@ -108,7 +108,7 @@ module EditOracleScriptMsg = {
              : <> <HSpacing size=Spacing.sm /> <Text value={oracleScript.name} size=Text.Lg /> </>}
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
@@ -116,7 +116,7 @@ module RequestMsg = {
   [@react.component]
   let make = (~request: TxSub.Msg.Request.success_t) => {
     let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={request.sender} />
@@ -174,14 +174,14 @@ module RequestMsg = {
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.minCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module RequestFailMsg = {
   [@react.component]
   let make = (~request: TxSub.Msg.Request.fail_t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={request.sender} />
@@ -208,14 +208,14 @@ module RequestFailMsg = {
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.minCount |> string_of_int} size=Text.Lg />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
 module ReportMsg = {
   [@react.component]
   let make = (~report: TxSub.Msg.Report.t) => {
-    <Row.Grid>
+    <Row>
       <Col.Grid col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={report.reporter} />
@@ -240,6 +240,6 @@ module ReportMsg = {
           }
         />
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };

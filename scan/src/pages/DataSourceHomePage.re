@@ -49,7 +49,7 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({id, name}) =>
@@ -103,7 +103,7 @@ let renderBody =
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -167,7 +167,7 @@ let make = () => {
   <Section>
     <div className=CssHelper.container id="datasourcesSection">
       <div className=CssHelper.mobileSpacing>
-        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col.Grid col=Col.Twelve>
             <Heading value="All Data Sources" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (allSub) {
@@ -179,8 +179,8 @@ let make = () => {
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
           </Col.Grid>
-        </Row.Grid>
-        <Row.Grid alignItems=Row.Center marginBottom=16>
+        </Row>
+        <Row alignItems=Row.Center marginBottom=16>
           <Col.Grid col=Col.Six colSm=Col.Eight>
             <SearchInput placeholder="Search Data Source" onChange=setSearchTerm />
           </Col.Grid>
@@ -196,11 +196,11 @@ let make = () => {
               />
             </div>
           </Col.Grid>
-        </Row.Grid>
+        </Row>
         {isMobile
            ? React.null
            : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
+               <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Five>
                    <div className=TElement.Styles.hashContainer>
                      <Text
@@ -240,7 +240,7 @@ let make = () => {
                      align=Text.Right
                    />
                  </Col.Grid>
-               </Row.Grid>
+               </Row>
              </THead.Grid>}
         {switch (allSub) {
          | Data((dataSources, dataSourcesCount)) =>

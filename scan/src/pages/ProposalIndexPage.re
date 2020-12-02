@@ -103,7 +103,7 @@ let make = (~proposalID) => {
 
   <Section pbSm=0>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=16>
+      <Row marginBottom=40 marginBottomSm=16>
         <Col.Grid>
           <Heading value="Proposal" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
         </Col.Grid>
@@ -130,11 +130,11 @@ let make = (~proposalID) => {
              }}
           </div>
         </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
+      </Row>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
-            <Row.Grid>
+            <Row>
               <Col.Grid>
                 <Heading
                   value="Information"
@@ -170,8 +170,8 @@ let make = (~proposalID) => {
                  | _ => <LoadingCensorBar width=90 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
+            </Row>
+            <Row>
               <Col.Grid>
                 <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
@@ -179,10 +179,10 @@ let make = (~proposalID) => {
                  | _ => <LoadingCensorBar width=270 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
+            </Row>
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       {switch (allSub) {
        | Data((
            {status, name, votingStartTime, votingEndTime},
@@ -206,7 +206,7 @@ let make = (~proposalID) => {
          | Rejected
          | Failed =>
            <>
-             <Row.Grid>
+             <Row>
                <Col.Grid col=Col.Six mb=24 mbSm=16>
                  <div className=Styles.infoContainer>
                    <Heading
@@ -215,7 +215,7 @@ let make = (~proposalID) => {
                      style=Styles.infoHeader
                      marginBottom=24
                    />
-                   <Row.Grid marginTop=38 alignItems=Row.Center>
+                   <Row marginTop=38 alignItems=Row.Center>
                      <Col.Grid col=Col.Seven>
                        <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
                          {let turnoutPercent =
@@ -237,7 +237,7 @@ let make = (~proposalID) => {
                      {isMobile
                         ? <Col.Grid> <hr className=Styles.separatorLine /> </Col.Grid> : React.null}
                      <Col.Grid col=Col.Five>
-                       <Row.Grid>
+                       <Row>
                          {isMobile
                             ? React.null
                             : <Col.Grid mb=24>
@@ -257,9 +257,9 @@ let make = (~proposalID) => {
                            <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
                            <Timestamp.Grid size=Text.Lg time=votingEndTime />
                          </Col.Grid>
-                       </Row.Grid>
+                       </Row>
                      </Col.Grid>
-                   </Row.Grid>
+                   </Row>
                  </div>
                </Col.Grid>
                <Col.Grid col=Col.Six mb=24 mbSm=16>
@@ -304,18 +304,16 @@ let make = (~proposalID) => {
                    </div>
                  </div>
                </Col.Grid>
-             </Row.Grid>
-             <Row.Grid marginBottom=24>
-               <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
-             </Row.Grid>
+             </Row>
+             <Row marginBottom=24> <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid> </Row>
            </>
          }
        | _ => React.null
        }}
-      <Row.Grid marginBottom=24>
+      <Row marginBottom=24>
         <Col.Grid>
           <div className=Styles.infoContainer>
-            <Row.Grid>
+            <Row>
               <Col.Grid>
                 <Heading value="Deposit" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
               </Col.Grid>
@@ -343,17 +341,17 @@ let make = (~proposalID) => {
                  | _ => <LoadingCensorBar width=90 height=15 />
                  }}
               </Col.Grid>
-            </Row.Grid>
+            </Row>
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
       <div className=Styles.tableContainer>
-        <Row.Grid>
+        <Row>
           <Col.Grid>
             <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader />
           </Col.Grid>
           <Col.Grid> <DepositorTable proposalID /> </Col.Grid>
-        </Row.Grid>
+        </Row>
       </div>
     </div>
   </Section>;

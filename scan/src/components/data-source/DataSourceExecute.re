@@ -162,7 +162,7 @@ let make = (~executable: JsBuffer.t) => {
 
   let (result, setResult) = React.useState(_ => Nothing);
 
-  <Row.Grid>
+  <Row>
     <Col.Grid>
       <div className=Styles.container>
         <div className={Css.merge([CssHelper.flexBox(), Styles.upperTextCotainer])}>
@@ -245,5 +245,5 @@ let make = (~executable: JsBuffer.t) => {
         {resultRender(result)}
       </div>
     </Col.Grid>
-  </Row.Grid>;
+  </Row>;
 };

@@ -38,7 +38,7 @@ module DesktopRender = {
   let make = () => {
     <header className=Styles.header>
       <div className="container">
-        <Row.Grid alignItems=Row.Center marginBottom=12>
+        <Row alignItems=Row.Center marginBottom=12>
           <Col.Grid col=Col.Five>
             <div className=Styles.leftContainer>
               <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
@@ -100,11 +100,11 @@ module DesktopRender = {
             </div>
           </Col.Grid>
           <Col.Grid col=Col.Seven> <SearchBar /> </Col.Grid>
-        </Row.Grid>
-        <Row.Grid alignItems=Row.Center>
+        </Row>
+        <Row alignItems=Row.Center>
           <Col.Grid col=Col.Eight> <NavBar /> </Col.Grid>
           <Col.Grid col=Col.Four> <UserAccount /> </Col.Grid>
-        </Row.Grid>
+        </Row>
       </div>
     </header>;
   };
@@ -114,7 +114,7 @@ module MobileRender = {
   [@react.component]
   let make = () => {
     <header className=Styles.header>
-      <Row.Grid alignItems=Row.Center>
+      <Row alignItems=Row.Center>
         <Col.Grid colSm=Col.Six>
           <div className={CssHelper.flexBox(~align=`flexEnd, ())}>
             <LinkToHome>
@@ -152,7 +152,7 @@ module MobileRender = {
             <NavBar />
           </div>
         </Col.Grid>
-      </Row.Grid>
+      </Row>
     </header>;
   };
 };

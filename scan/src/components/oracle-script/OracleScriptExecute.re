@@ -129,7 +129,7 @@ let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
 module CountInputs = {
   [@react.component]
   let make = (~askCount, ~setAskCount, ~setMinCount, ~validatorCount) => {
-    <Row.Grid marginBottom=24>
+    <Row marginBottom=24>
       <Col.Grid col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Text
@@ -196,7 +196,7 @@ module CountInputs = {
           </select>
         </div>
       </Col.Grid>
-    </Row.Grid>;
+    </Row>;
   };
 };
 
@@ -332,7 +332,7 @@ module ExecutionPart = {
             />
           </div>
         </div>
-      : <Row.Grid>
+      : <Row>
           <Col.Grid>
             <div className=Styles.container>
               {isUnused
@@ -435,7 +435,7 @@ module ExecutionPart = {
                }}
             </div>
           </Col.Grid>
-        </Row.Grid>;
+        </Row>;
   };
 };
 

@@ -25,7 +25,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
+    <Row alignItems=Row.Center>
       <Col.Grid col=Col.Three>
         {switch (requestSub) {
          | Data({id}) => <TypeID.Request id />
@@ -59,7 +59,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
            }}
         </div>
       </Col.Grid>
-    </Row.Grid>
+    </Row>
   </TBody.Grid>;
 };
 
@@ -136,7 +136,7 @@ let make = () => {
     {isMobile
        ? React.null
        : <THead.Grid height=30>
-           <Row.Grid alignItems=Row.Center>
+           <Row alignItems=Row.Center>
              <Col.Grid col=Col.Three>
                <Text
                  block=true
@@ -165,7 +165,7 @@ let make = () => {
                  align=Text.Right
                />
              </Col.Grid>
-           </Row.Grid>
+           </Row>
          </THead.Grid>}
     {switch (requestsSub) {
      | Data(requests) =>
