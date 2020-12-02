@@ -1,10 +1,9 @@
 module Styles = {
   open Css;
 
-  let loading = (w, h, mb) =>
+  let loading = (w, mb) =>
     style([
       width(w),
-      height(h),
       display(`flex),
       justifyContent(`center),
       alignItems(`center),
@@ -13,9 +12,6 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~width=`px(65), ~height=`px(20), ~marginBottom=`unset) => {
-  <img
-    src=Images.loadingCircles
-    className={Css.merge([Styles.loading(width, height, marginBottom)])}
-  />;
+let make = (~width=`px(65), ~marginBottom=`unset) => {
+  <img src=Images.loadingCircles className={Css.merge([Styles.loading(width, marginBottom)])} />;
 };

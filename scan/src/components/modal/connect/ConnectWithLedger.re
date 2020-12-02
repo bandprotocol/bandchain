@@ -187,7 +187,7 @@ let make = (~chainID, ~ledgerApp) => {
              spacing={Text.Em(0.03)}
              weight=Text.Medium
            />
-           <Loading width={`px(100)} height=`unset />
+           <Loading width={`px(100)} />
          </>
        | Error(err) =>
          <Text

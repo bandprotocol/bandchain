@@ -107,7 +107,7 @@ type result_t =
   | Success(result_data_t);
 
 let loadingRender = (wDiv, wImg, h) => {
-  <div className={Styles.withWH(wDiv, h)}> <Loading width=wImg height=h /> </div>;
+  <div className={Styles.withWH(wDiv, h)}> <Loading width=wImg /> </div>;
 };
 
 let resultRender = result => {

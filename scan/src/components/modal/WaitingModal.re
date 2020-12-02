@@ -73,7 +73,7 @@ let make = _ => {
              color=Colors.gray8
            />
            <VSpacing size=Spacing.xxl />
-           <Loading width={`px(100)} height=`unset />
+           <Loading width={`px(100)} />
          </>
        | Success =>
          <>
