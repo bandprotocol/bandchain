@@ -148,7 +148,7 @@ let make = () => {
       </Row>
       {isMobile
          ? React.null
-         : <THead.Grid>
+         : <THead>
              <Row alignItems=Row.Center>
                <Col.Grid col=Col.Two>
                  <Text
@@ -181,7 +181,7 @@ let make = () => {
                  />
                </Col.Grid>
              </Row>
-           </THead.Grid>}
+           </THead>}
       {switch (allSub) {
        | Data((requests, requestsCount)) =>
          let pageCount = Page.getPageCount(requestsCount, pageSize);

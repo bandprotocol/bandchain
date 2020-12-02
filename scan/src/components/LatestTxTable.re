@@ -123,7 +123,7 @@ let make = () => {
     <VSpacing size={`px(16)} />
     {isMobile
        ? React.null
-       : <THead.Grid height=30>
+       : <THead height=30>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <div className={CssHelper.flexBox()}>
@@ -146,7 +146,7 @@ let make = () => {
                </div>
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (txsSub) {
      | Data(txs) =>
        txs

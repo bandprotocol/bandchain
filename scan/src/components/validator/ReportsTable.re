@@ -267,7 +267,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Three>
                {switch (allSub) {
@@ -297,7 +297,7 @@ let make = (~address) => {
                <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | Data((reports, reportsCount)) =>
        let pageCount = Page.getPageCount(reportsCount, pageSize);

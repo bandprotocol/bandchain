@@ -134,7 +134,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Six>
                {switch (unbondingCountSub) {
@@ -176,7 +176,7 @@ let make = (~address) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (unbondingListSub) {
      | Data(unbondingList) =>
        unbondingList->Belt.Array.size > 0

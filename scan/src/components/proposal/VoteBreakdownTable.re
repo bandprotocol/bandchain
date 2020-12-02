@@ -200,7 +200,7 @@ let make = (~proposalID) => {
                   }}
                </Col.Grid>
              </Row>
-           : <THead.Grid>
+           : <THead>
                <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Five>
                    {switch (voteCountSub) {
@@ -231,7 +231,7 @@ let make = (~proposalID) => {
                    />
                  </Col.Grid>
                </Row>
-             </THead.Grid>}
+             </THead>}
         {switch (votesSub) {
          | Data(votes) =>
            votes->Belt.Array.size > 0

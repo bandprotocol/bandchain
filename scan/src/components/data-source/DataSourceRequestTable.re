@@ -158,7 +158,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                {switch (allSub) {
@@ -198,7 +198,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | Data((requests, requestsCount)) =>
        let pageCount = Page.getPageCount(requestsCount, pageSize);

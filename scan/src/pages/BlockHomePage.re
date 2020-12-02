@@ -127,7 +127,7 @@ let make = () => {
         </Row>
         {isMobile
            ? React.null
-           : <THead.Grid>
+           : <THead>
                <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Two>
                    <Text
@@ -177,7 +177,7 @@ let make = () => {
                    />
                  </Col.Grid>
                </Row>
-             </THead.Grid>}
+             </THead>}
         {switch (blocksSub) {
          | Data(blocks) =>
            blocks

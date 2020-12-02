@@ -112,7 +112,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Six>
                {switch (allSub) {
@@ -143,7 +143,7 @@ let make = (~address) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | Data((delegators, delegatorCount)) =>
        let pageCount = Page.getPageCount(delegatorCount, pageSize);

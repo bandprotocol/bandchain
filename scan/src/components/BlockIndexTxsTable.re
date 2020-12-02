@@ -79,7 +79,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
   <>
     {isMobile
        ? React.null
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <Text
@@ -111,7 +111,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (txsSub) {
      | Data(txs) =>
        txs->Belt.Array.size > 0

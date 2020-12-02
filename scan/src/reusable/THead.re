@@ -25,8 +25,8 @@ module Styles = {
 };
 
 [@react.component]
-let make = (~children, ~height=30) => {
-  <div className={Styles.container(height)}> children </div>;
+let make = (~children, ~height=52) => {
+  <div className={Styles.containerBase(height)}> children </div>;
 };
 module Grid = {
   [@react.component]

@@ -129,7 +129,7 @@ let make = (~proposalID) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Five>
                {switch (allSub) {
@@ -160,7 +160,7 @@ let make = (~proposalID) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | Data((delegators, depositCount)) =>
        let pageCount = Page.getPageCount(depositCount, pageSize);

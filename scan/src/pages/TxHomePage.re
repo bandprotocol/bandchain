@@ -32,7 +32,7 @@ let make = () => {
       </Row>
       {isMobile
          ? React.null
-         : <THead.Grid>
+         : <THead>
              <Row alignItems=Row.Center>
                <Col.Grid col=Col.Two>
                  <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
@@ -63,7 +63,7 @@ let make = () => {
                  <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
                </Col.Grid>
              </Row>
-           </THead.Grid>}
+           </THead>}
       <TxsTable txsSub />
       {switch (txsCountSub) {
        | Data(txsCount) =>

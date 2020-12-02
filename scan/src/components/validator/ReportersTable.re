@@ -80,7 +80,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid>
                {switch (allSub) {
@@ -99,7 +99,7 @@ let make = (~address) => {
                 }}
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | Data((reporters, reporterCount)) =>
        let pageCount = Page.getPageCount(reporterCount, pageSize);

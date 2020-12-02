@@ -43,7 +43,7 @@ let make = (~accountAddress: Address.t) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                {switch (txsCountSub) {
@@ -92,7 +92,7 @@ let make = (~accountAddress: Address.t) => {
                <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {
      | Data(txsCount) =>

@@ -199,7 +199,7 @@ let make = () => {
         </Row>
         {isMobile
            ? React.null
-           : <THead.Grid>
+           : <THead>
                <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Five>
                    <div className=TElement.Styles.hashContainer>
@@ -241,7 +241,7 @@ let make = () => {
                    />
                  </Col.Grid>
                </Row>
-             </THead.Grid>}
+             </THead>}
         {switch (allSub) {
          | Data((dataSources, dataSourcesCount)) =>
            let pageCount = Page.getPageCount(dataSourcesCount, pageSize);

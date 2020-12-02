@@ -174,7 +174,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Three>
                {switch (redelegateCountSub) {
@@ -224,7 +224,7 @@ let make = (~address) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (redelegateListSub) {
      | Data(redelegateList) =>
        redelegateList->Belt.Array.size > 0

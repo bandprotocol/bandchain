@@ -121,7 +121,7 @@ let make = (~address) => {
               }}
            </Col.Grid>
          </Row>
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Six>
                {switch (delegationsCountSub) {
@@ -163,7 +163,7 @@ let make = (~address) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (delegationsSub) {
      | Data(delegations) =>
        delegations->Belt.Array.size > 0

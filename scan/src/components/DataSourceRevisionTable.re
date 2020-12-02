@@ -24,7 +24,7 @@ let make = (~id) =>
     <div>
       {numRevisions > 0
          ? <>
-             <THead.Grid>
+             <THead>
                <Row alignItems=Row.Center>
                  <Col.Grid col=Col.Four>
                    <div className={CssHelper.flexBox()}>
@@ -46,7 +46,7 @@ let make = (~id) =>
                    <Text block=true value="TX HASH" size=Text.Md weight=Text.Semibold />
                  </Col.Grid>
                </Row>
-             </THead.Grid>
+             </THead>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
                   <TBody

@@ -24,7 +24,7 @@ let make = (~id) =>
     <div>
       {numRevisions > 0
          ? <>
-             <THead.Grid>
+             <THead>
                <Row alignItems=Row.Center>
                  <Col.Grid> <HSpacing size=Spacing.md /> </Col.Grid>
                  <Col.Grid col=Col.Three>
@@ -48,7 +48,7 @@ let make = (~id) =>
                  </Col.Grid>
                  <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
                </Row>
-             </THead.Grid>
+             </THead>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
                   <TBody

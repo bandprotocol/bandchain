@@ -315,7 +315,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
   <>
     {isMobile
        ? React.null
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.One>
                <Text block=true value="Rank" weight=Text.Semibold color=Colors.gray7 />
@@ -372,7 +372,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (allSub) {
      | ApolloHooks.Subscription.Data((
          (_, _, bondedTokenCount: Coin.t, _, _),

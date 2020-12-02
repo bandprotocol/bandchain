@@ -82,7 +82,7 @@ module KVTableContainer = {
   module TableHeader = {
     [@react.component]
     let make = () => {
-      <THead.Grid>
+      <THead>
         <Row alignItems=Row.Center>
           <Col.Grid col=Col.Three>
             <Heading value="Key" size=Heading.H5 weight=Heading.Medium />
@@ -91,7 +91,7 @@ module KVTableContainer = {
             <Heading value="Value" size=Heading.H5 weight=Heading.Medium />
           </Col.Grid>
         </Row>
-      </THead.Grid>;
+      </THead>;
     };
   };
 
@@ -463,7 +463,7 @@ let make = (~reqID) => {
             </div>
             {isMobile
                ? React.null
-               : <THead.Grid>
+               : <THead>
                    <Row alignItems=Row.Center>
                      <Col.Grid col=Col.Three>
                        <Heading value="External ID" size=Heading.H5 weight=Heading.Medium />
@@ -477,7 +477,7 @@ let make = (~reqID) => {
                        </div>
                      </Col.Grid>
                    </Row>
-                 </THead.Grid>}
+                 </THead>}
             {switch (requestSub) {
              | Data({rawDataRequests}) =>
                rawDataRequests

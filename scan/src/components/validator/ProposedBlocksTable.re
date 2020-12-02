@@ -19,7 +19,7 @@ module LoadingWithHeader = {
   [@react.component]
   let make = () => {
     <div className=Styles.tableWrapper>
-      <THead.Grid>
+      <THead>
         <Row alignItems=Row.Center>
           <Col.Grid col=Col.Two>
             <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
@@ -40,7 +40,7 @@ module LoadingWithHeader = {
             />
           </Col.Grid>
         </Row>
-      </THead.Grid>
+      </THead>
     </div>;
   };
 };
@@ -137,7 +137,7 @@ let make = (~consensusAddress) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? React.null
-       : <THead.Grid>
+       : <THead>
            <Row alignItems=Row.Center>
              <Col.Grid col=Col.Two>
                <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
@@ -164,7 +164,7 @@ let make = (~consensusAddress) => {
                />
              </Col.Grid>
            </Row>
-         </THead.Grid>}
+         </THead>}
     {switch (blocksSub) {
      | Data(blocks) =>
        <>
