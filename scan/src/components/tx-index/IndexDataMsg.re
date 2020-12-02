@@ -2,18 +2,18 @@ module CreateDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.success_t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
           <HSpacing size=Spacing.sm />
           <Text value={dataSource.name} size=Text.Lg />
         </div>
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -22,14 +22,14 @@ module CreateDataSourceFailMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.fail_t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <Text value={dataSource.name} size=Text.Lg />
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -38,11 +38,11 @@ module EditDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.EditDataSource.t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
@@ -50,7 +50,7 @@ module EditDataSourceMsg = {
              ? React.null
              : <> <HSpacing size=Spacing.sm /> <Text value={dataSource.name} size=Text.Lg /> </>}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -59,18 +59,18 @@ module CreateOracleScriptMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.CreateOracleScript.success_t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.OracleScript position=TypeID.Subtitle id={oracleScript.id} />
           <HSpacing size=Spacing.sm />
           <Text value={oracleScript.name} />
         </div>
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -79,14 +79,14 @@ module CreateOracleScriptFailMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.CreateOracleScript.fail_t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <Text value={oracleScript.name} size=Text.Lg />
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -95,11 +95,11 @@ module EditOracleScriptMsg = {
   [@react.component]
   let make = (~oracleScript: TxSub.Msg.EditOracleScript.t) => {
     <Row>
-      <Col.Grid col=Col.Six mbSm=24>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={oracleScript.owner} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.OracleScript position=TypeID.Subtitle id={oracleScript.id} />
@@ -107,7 +107,7 @@ module EditOracleScriptMsg = {
              ? React.null
              : <> <HSpacing size=Spacing.sm /> <Text value={oracleScript.name} size=Text.Lg /> </>}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -117,23 +117,23 @@ module RequestMsg = {
   let make = (~request: TxSub.Msg.Request.success_t) => {
     let calldataKVsOpt = Obi.decode(request.schema, "input", request.calldata);
     <Row>
-      <Col.Grid col=Col.Six mb=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={request.sender} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      </Col>
+      <Col col=Col.Six mb=24>
         <Heading value="Request ID" size=Heading.H5 marginBottom=8 />
         <TypeID.Request position=TypeID.Subtitle id={request.id} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      </Col>
+      <Col col=Col.Six mb=24>
         <Heading value="Oracle Script" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.OracleScript position=TypeID.Subtitle id={request.oracleScriptID} />
           <HSpacing size=Spacing.sm />
           <Text value={request.oracleScriptName} size=Text.Lg />
         </div>
-      </Col.Grid>
-      <Col.Grid mb=24>
+      </Col>
+      <Col mb=24>
         <div
           className={Css.merge([CssHelper.flexBox(~justify=`spaceBetween, ()), CssHelper.mb()])}>
           <Heading value="Calldata" size=Heading.H5 />
@@ -165,15 +165,15 @@ module RequestMsg = {
              size=Text.Lg
            />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Six mbSm=24>
+      </Col>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Request Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.askCount |> string_of_int} size=Text.Lg />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.minCount |> string_of_int} size=Text.Lg />
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -182,32 +182,32 @@ module RequestFailMsg = {
   [@react.component]
   let make = (~request: TxSub.Msg.Request.fail_t) => {
     <Row>
-      <Col.Grid col=Col.Six mb=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={request.sender} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      </Col>
+      <Col col=Col.Six mb=24>
         <Heading value="Oracle Script" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.OracleScript position=TypeID.Subtitle id={request.oracleScriptID} />
         </div>
-      </Col.Grid>
-      <Col.Grid mb=24>
+      </Col>
+      <Col mb=24>
         <Heading value="Calldata" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <Text value={request.calldata |> JsBuffer.toHex} color=Colors.gray7 size=Text.Lg />
           <HSpacing size=Spacing.sm />
           <CopyRender width=14 message={request.calldata |> JsBuffer.toHex} />
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Six mbSm=24>
+      </Col>
+      <Col col=Col.Six mbSm=24>
         <Heading value="Request Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.askCount |> string_of_int} size=Text.Lg />
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         <Heading value="Sufficient Validator Count" size=Heading.H5 marginBottom=8 />
         <Text value={request.minCount |> string_of_int} size=Text.Lg />
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -216,15 +216,15 @@ module ReportMsg = {
   [@react.component]
   let make = (~report: TxSub.Msg.Report.t) => {
     <Row>
-      <Col.Grid col=Col.Six mb=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={report.reporter} />
-      </Col.Grid>
-      <Col.Grid col=Col.Six mb=24>
+      </Col>
+      <Col col=Col.Six mb=24>
         <Heading value="Request ID" size=Heading.H5 marginBottom=8 />
         <TypeID.Request position=TypeID.Subtitle id={report.requestID} />
-      </Col.Grid>
-      <Col.Grid>
+      </Col>
+      <Col>
         <Heading value="Raw Data Report" size=Heading.H5 marginBottom=8 />
         <KVTable
           headers=["External Id", "Exit Code", "Value"]
@@ -239,7 +239,7 @@ module ReportMsg = {
                )
           }
         />
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };

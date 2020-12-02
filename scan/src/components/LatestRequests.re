@@ -26,13 +26,13 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center>
-      <Col.Grid col=Col.Three>
+      <Col col=Col.Three>
         {switch (requestSub) {
          | Data({id}) => <TypeID.Request id />
          | _ => <LoadingCensorBar width=60 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         {switch (requestSub) {
          | Data({oracleScript: {oracleScriptID, name}}) =>
            <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
@@ -42,8 +42,8 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
            </div>
          | _ => <LoadingCensorBar width=150 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestSub) {
            | Data({resolveStatus, requestedValidators, reports}) =>
@@ -58,7 +58,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
            | _ => <LoadingCensorBar width=70 height=15 />
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -137,7 +137,7 @@ let make = () => {
        ? React.null
        : <THead height=30>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.Three>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Request ID"
@@ -145,8 +145,8 @@ let make = () => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Six>
+             </Col>
+             <Col col=Col.Six>
                <Text
                  block=true
                  value="Oracle Script"
@@ -154,8 +154,8 @@ let make = () => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Report Status"
@@ -164,7 +164,7 @@ let make = () => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (requestsSub) {

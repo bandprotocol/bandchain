@@ -24,20 +24,20 @@ let renderBody =
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Six>
+      <Col col=Col.Six>
         {switch (delegatorSub) {
          | Data({delegatorAddress}) => <AddressRender address=delegatorAddress />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (delegatorSub) {
          | Data({sharePercentage}) =>
            <Text block=true value={sharePercentage |> Format.fPretty} color=Colors.gray7 />
          | _ => <LoadingCensorBar width=100 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (delegatorSub) {
            | Data({amount}) =>
@@ -49,7 +49,7 @@ let renderBody =
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -95,7 +95,7 @@ let make = (~address) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? <Row marginBottom=16>
-           <Col.Grid>
+           <Col>
              {switch (allSub) {
               | Data((_, delegatorCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -110,11 +110,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
+           </Col>
          </Row>
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.Six>
+             <Col col=Col.Six>
                {switch (allSub) {
                 | Data((_, delegatorCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -129,11 +129,11 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text block=true value="Share(%)" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Amount"
@@ -141,7 +141,7 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (allSub) {

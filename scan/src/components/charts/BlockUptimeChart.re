@@ -76,7 +76,7 @@ let make = (~consensusAddress) => {
   let getUptimeSub = ValidatorSub.getBlockUptimeByValidator(consensusAddress);
   <>
     <Row marginBottom=24>
-      <Col.Grid>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.chartContainer])}>
           {switch (getUptimeSub) {
            | Data({validatorVotes}) =>
@@ -88,10 +88,10 @@ let make = (~consensusAddress) => {
            | _ => <LoadingCensorBar fullWidth=true height=90 />
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
     <Row>
-      <Col.Grid>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.labelBox])}>
           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div className={CssHelper.flexBox()}>
@@ -133,7 +133,7 @@ let make = (~consensusAddress) => {
              }}
           </div>
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </>;
 };

@@ -48,7 +48,7 @@ let make = (~url: string) =>
     Some(
       <div className=Styles.tableWrapper>
         <Row marginBottom=24>
-          <Col.Grid col=Col.Six colSm=Col.Six>
+          <Col col=Col.Six colSm=Col.Six>
             <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
               <Heading size=Heading.H5 value="Platform" />
               <HSpacing size=Spacing.xs />
@@ -65,8 +65,8 @@ let make = (~url: string) =>
               block=true
               color=Colors.gray7
             />
-          </Col.Grid>
-          <Col.Grid col=Col.Six colSm=Col.Six>
+          </Col>
+          <Col col=Col.Six colSm=Col.Six>
             <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
               <Heading size=Heading.H5 value="Language" />
               <HSpacing size=Spacing.xs />
@@ -81,10 +81,10 @@ let make = (~url: string) =>
               block=true
               color=Colors.gray7
             />
-          </Col.Grid>
+          </Col>
         </Row>
         <Row marginBottom=24 marginBottomSm=12>
-          <Col.Grid>
+          <Col>
             <div className={CssHelper.flexBox()}>
               <Icon name="fal fa-file" size=16 />
               <HSpacing size=Spacing.sm />
@@ -96,7 +96,7 @@ let make = (~url: string) =>
                 color=Colors.gray7
               />
             </div>
-          </Col.Grid>
+          </Col>
         </Row>
         <div className=Styles.tableLowerContainer>
           <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>

@@ -106,7 +106,7 @@ let make = (~txHash) => {
     <Section>
       <div className=CssHelper.container>
         <Row marginBottom=40 marginBottomSm=16>
-          <Col.Grid>
+          <Col>
             <Heading value="Transaction" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
             <div
               className={Css.merge([
@@ -166,15 +166,15 @@ let make = (~txHash) => {
                  }}
               </div>
             </div>
-          </Col.Grid>
+          </Col>
         </Row>
         {switch (txSub) {
          | Data({success, errMsg}) when !success =>
-           <Row> <Col.Grid> <TxError.Full msg=errMsg /> </Col.Grid> </Row>
+           <Row> <Col> <TxError.Full msg=errMsg /> </Col> </Row>
          | _ => React.null
          }}
         <Row marginBottom=24>
-          <Col.Grid>
+          <Col>
             <div className=Styles.infoContainer>
               <Heading
                 value="Information"
@@ -183,23 +183,23 @@ let make = (~txHash) => {
                 marginBottom=24
               />
               <Row>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Block" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({blockHeight}) =>
                      <TypeID.Block id=blockHeight position=TypeID.Subtitle />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                </Col>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Sender" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({sender}) =>
                      <AddressRender address=sender position=AddressRender.Subtitle />
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                </Col>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Timestamp" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({timestamp}) =>
@@ -217,8 +217,8 @@ let make = (~txHash) => {
                      </div>
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid>
+                </Col>
+                <Col>
                   <Heading value="Memo" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({memo}) =>
@@ -233,25 +233,25 @@ let make = (~txHash) => {
                      </p>
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
+                </Col>
               </Row>
               <hr className=Styles.separatorLine />
               <Row>
-                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+                <Col col=Col.Three colSm=Col.Six mbSm=24>
                   <Heading value="Gas Used" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasUsed}) => <Text value={gasUsed |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six mbSm=24>
                   <Heading value="Gas Limit" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasLimit}) => <Text value={gasLimit |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six>
                   <Heading value="Gas Price (UBAND)" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasFee, gasLimit}) =>
@@ -266,8 +266,8 @@ let make = (~txHash) => {
                      />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six>
                   <Heading value="Fee (BAND)" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasFee}) =>
@@ -277,13 +277,13 @@ let make = (~txHash) => {
                      />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
+                </Col>
               </Row>
             </div>
-          </Col.Grid>
+          </Col>
         </Row>
         <Row marginBottom=24>
-          <Col.Grid>
+          <Col>
             {switch (txSub) {
              | Data({messages}) =>
                let msgCount = messages |> Belt.List.length;
@@ -295,7 +295,7 @@ let make = (~txHash) => {
 
              | _ => <LoadingCensorBar width=100 height=20 />
              }}
-          </Col.Grid>
+          </Col>
         </Row>
         {switch (txSub) {
          | Data({messages}) => <TxIndexPageTable messages />

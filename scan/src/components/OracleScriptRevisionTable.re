@@ -26,8 +26,8 @@ let make = (~id) =>
          ? <>
              <THead>
                <Row alignItems=Row.Center>
-                 <Col.Grid> <HSpacing size=Spacing.md /> </Col.Grid>
-                 <Col.Grid col=Col.Three>
+                 <Col> <HSpacing size=Spacing.md /> </Col>
+                 <Col col=Col.Three>
                    <div className={CssHelper.flexBox()}>
                      <Text value={numRevisions |> string_of_int} weight=Text.Semibold />
                      <HSpacing size={`px(5)} />
@@ -36,17 +36,17 @@ let make = (~id) =>
                        weight=Text.Semibold
                      />
                    </div>
-                 </Col.Grid>
-                 <Col.Grid col=Col.Four>
+                 </Col>
+                 <Col col=Col.Four>
                    <Text block=true value="Timestamp" size=Text.Md weight=Text.Semibold />
-                 </Col.Grid>
-                 <Col.Grid col=Col.One>
+                 </Col>
+                 <Col col=Col.One>
                    <Text block=true value="Block" size=Text.Md weight=Text.Semibold />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Four>
+                 </Col>
+                 <Col col=Col.Four>
                    <Text block=true value="TX HASH" size=Text.Md weight=Text.Semibold />
-                 </Col.Grid>
-                 <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
+                 </Col>
+                 <Col> <HSpacing size=Spacing.lg /> </Col>
                </Row>
              </THead>
              {revisions
@@ -60,8 +60,8 @@ let make = (~id) =>
                       }
                     }>
                     <Row>
-                      <Col.Grid> <HSpacing size=Spacing.md /> </Col.Grid>
-                      <Col.Grid col=Col.Three>
+                      <Col> <HSpacing size=Spacing.md /> </Col>
+                      <Col col=Col.Three>
                         <div className=Styles.nameContainer>
                           <Text
                             block=true
@@ -72,8 +72,8 @@ let make = (~id) =>
                             ellipsis=true
                           />
                         </div>
-                      </Col.Grid>
-                      <Col.Grid col=Col.Four>
+                      </Col>
+                      <Col col=Col.Four>
                         {switch (transaction) {
                          | Some(tx) =>
                            <Timestamp
@@ -85,14 +85,14 @@ let make = (~id) =>
                            />
                          | None => <Text value="Genesis" weight=Text.Regular code=true />
                          }}
-                      </Col.Grid>
-                      <Col.Grid col=Col.One>
+                      </Col>
+                      <Col col=Col.One>
                         {switch (transaction) {
                          | Some(tx) => <TypeID.Block id={tx.blockHeight} />
                          | None => <Text value="Genesis" />
                          }}
-                      </Col.Grid>
-                      <Col.Grid col=Col.Four>
+                      </Col>
+                      <Col col=Col.Four>
                         {switch (transaction) {
                          | Some(tx) => <TxLink txHash={tx.hash} width=300 weight=Text.Medium />
                          | None =>
@@ -106,8 +106,8 @@ let make = (~id) =>
                              nowrap=true
                            />
                          }}
-                      </Col.Grid>
-                      <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
+                      </Col>
+                      <Col> <HSpacing size=Spacing.lg /> </Col>
                     </Row>
                   </TBody>
                 })

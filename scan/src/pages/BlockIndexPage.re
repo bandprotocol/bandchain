@@ -29,20 +29,20 @@ let make = (~height) => {
   <Section>
     <div className=CssHelper.container>
       <Row marginBottom=40 marginBottomSm=16>
-        <Col.Grid>
+        <Col>
           <Heading value="Block" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
           {switch (blockSub) {
            | Data({height}) => <TypeID.Block id=height position=TypeID.Title />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
-        </Col.Grid>
+        </Col>
       </Row>
       <Row marginBottom=24>
-        <Col.Grid>
+        <Col>
           <div className=Styles.infoContainer>
             <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
             <Row marginBottom=24>
-              <Col.Grid>
+              <Col>
                 <Heading value="Block Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 {switch (blockSub) {
@@ -56,18 +56,18 @@ let make = (~height) => {
                    />
                  | _ => <LoadingCensorBar width={isMobile ? 200 : 350} height=15 />
                  }}
-              </Col.Grid>
+              </Col>
             </Row>
             <Row marginBottom=24>
-              <Col.Grid col=Col.Six mbSm=16>
+              <Col col=Col.Six mbSm=16>
                 <Heading value="Transaction" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 {switch (blockSub) {
                  | Data({txn}) => <Text value={txn |> string_of_int} size=Text.Lg />
                  | _ => <LoadingCensorBar width=40 height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six>
+              </Col>
+              <Col col=Col.Six>
                 <Heading value="Timestamp" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 {switch (blockSub) {
@@ -94,10 +94,10 @@ let make = (~height) => {
                    </div>
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
-              </Col.Grid>
+              </Col>
             </Row>
             <Row>
-              <Col.Grid>
+              <Col>
                 <Heading value="Proposer" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 {switch (blockSub) {
@@ -107,10 +107,10 @@ let make = (~height) => {
                    </div>
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
-              </Col.Grid>
+              </Col>
             </Row>
           </div>
-        </Col.Grid>
+        </Col>
       </Row>
       <BlockIndexTxsTable txsSub />
       {switch (blockSub) {

@@ -82,7 +82,7 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
   let allSub = Sub.all3(latestBlockSub, infoSub, validatorInfoSub);
 
   <Row justify=Row.Between>
-    <Col.Grid col=Col.Three colSm=Col.Six>
+    <Col col=Col.Three colSm=Col.Six>
       <HighlightCard
         label="Band Price"
         bgUrl=Images.graphBG
@@ -125,8 +125,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
         // TODO: make it to link later
         <Text value="Band Oracle" size=Text.Sm color=Colors.bandBlue weight=Text.Medium />
       </div>
-    </Col.Grid>
-    <Col.Grid col=Col.Three colSm=Col.Six>
+    </Col>
+    <Col col=Col.Three colSm=Col.Six>
       <HighlightCard
         label="Market Cap"
         valueAndExtraComponentSub={
@@ -153,8 +153,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
           |> Sub.resolve;
         }
       />
-    </Col.Grid>
-    <Col.Grid col=Col.Three colSm=Col.Six>
+    </Col>
+    <Col col=Col.Three colSm=Col.Six>
       <HighlightCard
         label="Latest Block"
         valueAndExtraComponentSub={
@@ -172,8 +172,8 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
           |> Sub.resolve;
         }
       />
-    </Col.Grid>
-    <Col.Grid col=Col.Three colSm=Col.Six>
+    </Col>
+    <Col col=Col.Three colSm=Col.Six>
       <HighlightCard
         label="Active Validators"
         valueAndExtraComponentSub={
@@ -195,6 +195,6 @@ let make = (~latestBlockSub: Sub.t(BlockSub.t)) => {
           |> Sub.resolve;
         }
       />
-    </Col.Grid>
+    </Col>
   </Row>;
 };

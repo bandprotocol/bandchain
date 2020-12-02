@@ -23,12 +23,12 @@ let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Ad
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid>
+      <Col>
         {switch (reporterSub) {
          | Data(address) => <AddressRender address />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -63,7 +63,7 @@ let make = (~address) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? <Row marginBottom=16>
-           <Col.Grid>
+           <Col>
              {switch (allSub) {
               | Data((_, reporterCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -78,11 +78,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
+           </Col>
          </Row>
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid>
+             <Col>
                {switch (allSub) {
                 | Data((_, reporterCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -97,7 +97,7 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (allSub) {

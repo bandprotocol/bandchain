@@ -414,18 +414,18 @@ module Loading = {
         <LoadingCensorBar width=75 height=15 />
       </div>
       <Row>
-        <Col.Grid col=Col.Six mb=24>
+        <Col col=Col.Six mb=24>
           <LoadingCensorBar width=75 height=15 mb=8 />
           <LoadingCensorBar width=150 height=15 />
-        </Col.Grid>
-        <Col.Grid col=Col.Six mb=24>
+        </Col>
+        <Col col=Col.Six mb=24>
           <LoadingCensorBar width=75 height=15 mb=8 />
           <LoadingCensorBar width=150 height=15 />
-        </Col.Grid>
-        <Col.Grid col=Col.Six>
+        </Col>
+        <Col col=Col.Six>
           <LoadingCensorBar width=75 height=15 mb=8 />
           <LoadingCensorBar width=150 height=15 />
-        </Col.Grid>
+        </Col>
       </Row>
     </div>;
   };

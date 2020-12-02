@@ -27,13 +27,13 @@ let renderBody =
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center>
-      <Col.Grid col=Col.One>
+      <Col col=Col.One>
         {switch (validatorSub) {
          | Data(_) => <Text value={rank |> string_of_int} color=Colors.gray7 block=true />
          | _ => <LoadingCensorBar width=20 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         {switch (validatorSub) {
          | Data({operatorAddress, moniker, identity}) =>
            <ValidatorMonikerLink
@@ -44,8 +44,8 @@ let renderBody =
            />
          | _ => <LoadingCensorBar width=150 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         {switch (validatorSub) {
          | Data({tokens}) =>
            <div>
@@ -70,8 +70,8 @@ let renderBody =
              <LoadingCensorBar width=40 height=15 isRight=true />
            </>
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         {switch (validatorSub) {
          | Data({commission}) =>
            <Text
@@ -82,8 +82,8 @@ let renderBody =
            />
          | _ => <LoadingCensorBar width=70 height=15 isRight=true />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (validatorSub) {
          | Data({uptime}) =>
            switch (uptime) {
@@ -106,8 +106,8 @@ let renderBody =
              <LoadingCensorBar width=130 height=15 />
            </>
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className=Styles.oracleStatus>
           {switch (validatorSub) {
            | Data({oracleStatus}) =>
@@ -115,7 +115,7 @@ let renderBody =
            | _ => <LoadingCensorBar width=20 height=20 radius=50 />
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -317,10 +317,10 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
        ? React.null
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.One>
+             <Col col=Col.One>
                <Text block=true value="Rank" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <SortableTHead
                  title="Validator"
                  asc=NameAsc
@@ -329,8 +329,8 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  sortedBy
                  isRight=false
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <SortableTHead
                  title="Voting Power"
                  asc=VotingPowerAsc
@@ -339,8 +339,8 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  sortedBy
                  tooltipItem="Sum of self-bonded and delegated tokens"
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <SortableTHead
                  title="Commision"
                  asc=CommissionAsc
@@ -349,8 +349,8 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  sortedBy
                  tooltipItem="Validator service fees charged to delegators"
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <SortableTHead
                  title="Uptime (%)"
                  asc=UptimeAsc
@@ -360,8 +360,8 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  isRight=false
                  tooltipItem="Percentage of the blocks that the validator is active for out of the last 100"
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  color=Colors.gray7
@@ -370,7 +370,7 @@ let make = (~allSub, ~searchTerm, ~sortedBy, ~setSortedBy) => {
                  align=Text.Center
                  tooltipItem={"The validator's Oracle status" |> React.string}
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (allSub) {

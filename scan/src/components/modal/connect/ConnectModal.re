@@ -120,7 +120,7 @@ let make = (~chainID) => {
       </div>
       <div className=Styles.rowContainer>
         <Row style=Styles.row>
-          <Col.Grid col=Col.Five style=Styles.loginSelectionBackground>
+          <Col col=Col.Five style=Styles.loginSelectionBackground>
             <div className=Styles.loginSelectionContainer>
               <VSpacing size=Spacing.xl />
               <Text value="Select your connection method" size=Text.Lg color=Colors.gray7 />
@@ -138,14 +138,14 @@ let make = (~chainID) => {
                  )
                ->React.array}
             </div>
-          </Col.Grid>
-          <Col.Grid col=Col.Seven>
+          </Col>
+          <Col col=Col.Seven>
             {switch (loginMethod) {
              | Mnemonic => <ConnectWithMnemonic chainID />
              | LedgerWithCosmos => <ConnectWithLedger chainID ledgerApp=Ledger.Cosmos />
              | LedgerWithBandChain => <ConnectWithLedger chainID ledgerApp=Ledger.BandChain />
              }}
-          </Col.Grid>
+          </Col>
         </Row>
       </div>
     </div>

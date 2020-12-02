@@ -39,7 +39,7 @@ module DesktopRender = {
     <header className=Styles.header>
       <div className="container">
         <Row alignItems=Row.Center marginBottom=12>
-          <Col.Grid col=Col.Five>
+          <Col col=Col.Five>
             <div className=Styles.leftContainer>
               <LinkToHome> <img src=Images.bandLogo className=Styles.bandLogo /> </LinkToHome>
               <HSpacing size=Spacing.md />
@@ -98,12 +98,12 @@ module DesktopRender = {
                 </div>
               </div>
             </div>
-          </Col.Grid>
-          <Col.Grid col=Col.Seven> <SearchBar /> </Col.Grid>
+          </Col>
+          <Col col=Col.Seven> <SearchBar /> </Col>
         </Row>
         <Row alignItems=Row.Center>
-          <Col.Grid col=Col.Eight> <NavBar /> </Col.Grid>
-          <Col.Grid col=Col.Four> <UserAccount /> </Col.Grid>
+          <Col col=Col.Eight> <NavBar /> </Col>
+          <Col col=Col.Four> <UserAccount /> </Col>
         </Row>
       </div>
     </header>;
@@ -115,7 +115,7 @@ module MobileRender = {
   let make = () => {
     <header className=Styles.header>
       <Row alignItems=Row.Center>
-        <Col.Grid colSm=Col.Six>
+        <Col colSm=Col.Six>
           <div className={CssHelper.flexBox(~align=`flexEnd, ())}>
             <LinkToHome>
               <img
@@ -145,13 +145,13 @@ module MobileRender = {
               </div>
             </LinkToHome>
           </div>
-        </Col.Grid>
-        <Col.Grid colSm=Col.Six>
+        </Col>
+        <Col colSm=Col.Six>
           <div className={CssHelper.flexBox(~justify=`flexEnd, ~wrap=`nowrap, ())}>
             <ChainIDBadge />
             <NavBar />
           </div>
-        </Col.Grid>
+        </Col>
       </Row>
     </header>;
   };

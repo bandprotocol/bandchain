@@ -28,7 +28,7 @@ let renderBody =
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center>
-      <Col.Grid col=Col.Three>
+      <Col col=Col.Three>
         {switch (redelegateListSub) {
          | Data({
              srcValidator: {
@@ -45,8 +45,8 @@ let renderBody =
            />
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox()}>
           {switch (redelegateListSub) {
            | Data({
@@ -66,8 +66,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (redelegateListSub) {
            | Data({amount}) =>
@@ -75,8 +75,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=145 height=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (redelegateListSub) {
            | Data({completionTime}) =>
@@ -89,7 +89,7 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -152,7 +152,7 @@ let make = (~address) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? <Row marginBottom=16>
-           <Col.Grid>
+           <Col>
              {switch (redelegateCountSub) {
               | Data(redelegateCount) =>
                 <div className={CssHelper.flexBox()}>
@@ -172,11 +172,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
+           </Col>
          </Row>
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.Three>
+             <Col col=Col.Three>
                {switch (redelegateCountSub) {
                 | Data(redelegateCount) =>
                   <div className={CssHelper.flexBox()}>
@@ -196,16 +196,16 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Desination Validator"
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Amount (BAND)"
@@ -213,8 +213,8 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Redelegate Complete At"
@@ -222,7 +222,7 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (redelegateListSub) {

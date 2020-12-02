@@ -14,13 +14,13 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
     }
     paddingH={`px(24)}>
     <Row>
-      <Col.Grid col=Col.Two>
+      <Col col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=140 />
          | _ => <LoadingCensorBar width=170 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         {switch (txSub) {
          | Data({gasFee}) =>
            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
@@ -34,15 +34,15 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
            </div>
          | _ => <LoadingCensorBar width=30 height=15 isRight=true />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Eight>
+      </Col>
+      <Col col=Col.Eight>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
            <TxMessages txHash messages success errMsg width=530 />
 
          | _ => <LoadingCensorBar width=530 height=15 />
          }}
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -81,7 +81,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
        ? React.null
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="TX Hash"
@@ -89,8 +89,8 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
                  <Text
                    block=true
@@ -100,8 +100,8 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                    color=Colors.gray7
                  />
                </div>
-             </Col.Grid>
-             <Col.Grid col=Col.Eight>
+             </Col>
+             <Col col=Col.Eight>
                <Text
                  block=true
                  value="Actions"
@@ -109,7 +109,7 @@ let make = (~txsSub: ApolloHooks.Subscription.variant(array(TxSub.t))) => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (txsSub) {

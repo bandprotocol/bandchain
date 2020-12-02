@@ -34,10 +34,10 @@ module ProposalCard = {
         ~turnoutRate,
       ) => {
     let isMobile = Media.isMobile();
-    <Col.Grid key={reserveIndex |> string_of_int} mb=24 mbSm=16>
+    <Col key={reserveIndex |> string_of_int} mb=24 mbSm=16>
       <div className=Styles.infoContainer>
         <Row marginBottom=18>
-          <Col.Grid col=Col.Eight>
+          <Col col=Col.Eight>
             <div
               className={Css.merge([
                 CssHelper.flexBox(),
@@ -59,8 +59,8 @@ module ProposalCard = {
                    : <LoadingCensorBar width=270 height=15 />
                }}
             </div>
-          </Col.Grid>
-          <Col.Grid col=Col.Four>
+          </Col>
+          <Col col=Col.Four>
             <div
               className={Css.merge([
                 CssHelper.flexBox(~justify=`flexEnd, ()),
@@ -71,18 +71,18 @@ module ProposalCard = {
                | _ => <LoadingCensorBar width=100 height=15 radius=50 />
                }}
             </div>
-          </Col.Grid>
+          </Col>
         </Row>
         <Row marginBottom=24>
-          <Col.Grid>
+          <Col>
             {switch (proposalSub) {
              | Data({description}) => <Markdown value=description />
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
-          </Col.Grid>
+          </Col>
         </Row>
         <Row>
-          <Col.Grid col=Col.Four mbSm=16>
+          <Col col=Col.Four mbSm=16>
             <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
             {switch (proposalSub) {
              | Data({proposerAddressOpt}) =>
@@ -93,8 +93,8 @@ module ProposalCard = {
                }
              | _ => <LoadingCensorBar width=270 height=15 />
              }}
-          </Col.Grid>
-          <Col.Grid col=Col.Four colSm=Col.Seven>
+          </Col>
+          <Col col=Col.Four colSm=Col.Seven>
             <div className={CssHelper.mb(~size=8, ())}>
               {switch (proposalSub) {
                | Data({status}) =>
@@ -129,7 +129,7 @@ module ProposalCard = {
                />
              | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
              }}
-          </Col.Grid>
+          </Col>
           {switch (proposalSub) {
            | Data({status}) =>
              switch (status) {
@@ -138,20 +138,20 @@ module ProposalCard = {
              | Passed
              | Rejected
              | Failed =>
-               <Col.Grid col=Col.Four colSm=Col.Five>
+               <Col col=Col.Four colSm=Col.Five>
                  <Heading value="Turnout" size=Heading.H5 marginBottom=8 />
                  <Text value={turnoutRate |> Format.fPercent(~digits=2)} size=Text.Lg />
-               </Col.Grid>
+               </Col>
              }
            | _ =>
-             <Col.Grid col=Col.Four colSm=Col.Five>
+             <Col col=Col.Four colSm=Col.Five>
                <LoadingCensorBar width=100 height=15 mb=8 />
                <LoadingCensorBar width=50 height=15 />
-             </Col.Grid>
+             </Col>
            }}
         </Row>
       </div>
-    </Col.Grid>;
+    </Col>;
   };
 };
 
@@ -167,7 +167,7 @@ let make = () => {
   <Section>
     <div className=CssHelper.container id="proposalsSection">
       <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col.Grid>
+        <Col col=Col.Twelve> <Heading value="All Proposals" size=Heading.H2 /> </Col>
       </Row>
       <Row>
         {switch (allSub) {

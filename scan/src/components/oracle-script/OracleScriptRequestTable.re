@@ -23,19 +23,19 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
     }
     paddingH={`px(24)}>
     <Row alignItems=Row.Center>
-      <Col.Grid col=Col.Two>
+      <Col col=Col.Two>
         {switch (requestsSub) {
          | Data({id}) => <TypeID.Request id />
          | _ => <LoadingCensorBar width=135 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (requestsSub) {
          | Data({txHash}) => <TxLink txHash width=230 weight=Text.Medium />
          | _ => <LoadingCensorBar width=230 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (requestsSub) {
          | Data({minCount, askCount, reportsCount}) =>
            <ProgressBar
@@ -45,16 +45,16 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            />
          | _ => <LoadingCensorBar width=212 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({resolveStatus}) => <RequestStatus resolveStatus />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({txTimestamp}) =>
@@ -71,7 +71,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
              </>
            }}
         </div>
-      </Col.Grid>
+      </Col>
     </Row>
   </TBody>;
 };
@@ -127,7 +127,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? <Row marginBottom=16>
-           <Col.Grid>
+           <Col>
              {switch (allSub) {
               | Data((_, totalRequestCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -142,11 +142,11 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
+           </Col>
          </Row>
        : <THead>
            <Row alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+             <Col col=Col.Two>
                {switch (allSub) {
                 | Data((_, totalRequestCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -161,11 +161,11 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text block=true value="Tx Hash" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text
                  block=true
                  value="Report Status"
@@ -173,8 +173,8 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Timestamp"
@@ -182,7 +182,7 @@ let make = (~oracleScriptID: ID.OracleScript.t) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
+             </Col>
            </Row>
          </THead>}
     {switch (allSub) {

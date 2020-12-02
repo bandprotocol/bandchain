@@ -130,7 +130,7 @@ module CountInputs = {
   [@react.component]
   let make = (~askCount, ~setAskCount, ~setMinCount, ~validatorCount) => {
     <Row marginBottom=24>
-      <Col.Grid col=Col.Two colSm=Col.Six>
+      <Col col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Text
             value="Ask Count"
@@ -162,8 +162,8 @@ module CountInputs = {
              |> React.array}
           </select>
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two colSm=Col.Six>
+      </Col>
+      <Col col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Text
             value="Min Count"
@@ -195,7 +195,7 @@ module CountInputs = {
              |> React.array}
           </select>
         </div>
-      </Col.Grid>
+      </Col>
     </Row>;
   };
 };
@@ -333,7 +333,7 @@ module ExecutionPart = {
           </div>
         </div>
       : <Row>
-          <Col.Grid>
+          <Col>
             <div className=Styles.container>
               {isUnused
                  ? React.null
@@ -434,7 +434,7 @@ module ExecutionPart = {
                  }
                }}
             </div>
-          </Col.Grid>
+          </Col>
         </Row>;
   };
 };
