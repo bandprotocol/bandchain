@@ -73,6 +73,7 @@ let make =
       ~placeholder="",
       ~inputType="text",
       ~autoFocus=false,
+      ~maxWarningMsg=false,
       ~id,
     ) => {
   let (status, setStatus) = React.useState(_ => Untouched);
@@ -107,7 +108,20 @@ let make =
          <>
            <HSpacing size=Spacing.md />
            <MaxButton
-             onClick={_ => onNewText(maxValue')}
+             onClick={_ =>
+               maxWarningMsg
+                 ? {
+                   let isConfirm =
+                     Webapi.Dom.(
+                       window
+                       |> Window.confirm(
+                            {j|You will not have balance to do any action after using max balance.|j},
+                          )
+                     );
+                   isConfirm ? onNewText(maxValue') : ();
+                 }
+                 : onNewText(maxValue')
+             }
              disabled={inputData.text == maxValue'}
            />
          </>

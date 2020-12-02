@@ -10,7 +10,7 @@ describe("Login", () => {
     cy.get('[id="mnemonicInput"]').type("s");
     cy.get('[id="mnemonicConnectButton"] > button').click();
     cy.get('[id="userInfoButton"]').click();
-    cy.get('[id="addressWrapper"] > a > span').should(
+    cy.get('[id="addressWrapper"]> div > a > span').should(
       "contain",
       "band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte"
     );
@@ -96,7 +96,7 @@ describe("Delegation", () => {
   });
 
   it("Should be able to withdraw reward with Carol", () => {
-    cy.get('[id="withdrawRewardContainer"] > button').click().wait(1000);
+    cy.get('[id="withdrawRewardContainer"] > button:nth-of-type(1)').click().wait(1000);
     cy.get('[id="memoInput"]').type("cypress");
     cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
     cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
@@ -106,4 +106,16 @@ describe("Delegation", () => {
     );
     cy.get('[id="closeModal"]').click();
   });
+
+  it("Should be able to reinvest with Carol", () => {
+    cy.get('[id="withdrawRewardContainer"] > button:nth-of-type(2)').click().wait(1000);
+    cy.get('[id="memoInput"]').type("cypress");
+    cy.get('[id="nextButtonContainer"] > button').click().wait(1000);
+    cy.get('[id="broadcastButtonContainer"] > button').click().wait(1000);
+    cy.get('[id="successMsgContainer"] > span').should(
+      "contain",
+      "Broadcast transaction success"
+    );
+    cy.get('[id="closeModal"]').click();
+  })
 });
