@@ -6,24 +6,16 @@ module Styles = {
       display(`flex),
       flexDirection(`column),
       width(`percent(100.)),
-      padding4(~top=`px(45), ~left=`px(18), ~right=`px(20), ~bottom=`px(0)),
+      padding2(~v=`zero, ~h=`px(18)),
     ]);
 
   let inputBar =
     style([
       width(`percent(100.)),
-      height(`px(30)),
+      height(`px(37)),
       paddingLeft(`px(9)),
-      borderRadius(`px(8)),
-      boxShadow(
-        Shadow.box(
-          ~inset=true,
-          ~x=`zero,
-          ~y=`px(3),
-          ~blur=`px(4),
-          Css.rgba(11, 29, 142, `num(0.1)),
-        ),
-      ),
+      borderRadius(`px(6)),
+      border(`px(1), `solid, Colors.blueGray3),
       focus([outline(`zero, `none, Colors.white)]),
     ]);
 
@@ -39,24 +31,12 @@ module Styles = {
 
   let connectBtn =
     style([
-      width(`px(100)),
-      height(`px(30)),
-      display(`flex),
-      justifySelf(`right),
-      justifyContent(`center),
-      alignItems(`center),
-      backgroundImage(
-        `linearGradient((
-          `deg(90.),
-          [(`percent(0.), Colors.blue7), (`percent(100.), Colors.bandBlue)],
-        )),
-      ),
+      width(`percent(100.)),
+      height(`px(37)),
+      backgroundColor(Colors.bandBlue),
       boxShadow(
         Shadow.box(~x=`zero, ~y=`px(4), ~blur=`px(8), Css.rgba(82, 105, 255, `num(0.25))),
       ),
-      borderRadius(`px(4)),
-      cursor(`pointer),
-      alignSelf(`flexEnd),
     ]);
 };
 
@@ -88,8 +68,9 @@ let make = (~chainID) => {
     };
 
   <div className=Styles.container>
-    <Text value="Enter Your Mnemonic" size=Text.Md weight=Text.Medium />
-    <VSpacing size=Spacing.sm />
+    <VSpacing size=Spacing.xl />
+    <Text value="Enter Your Mnemonic" size=Text.Lg weight=Text.Semibold />
+    <VSpacing size=Spacing.md />
     <input
       id="mnemonicInput"
       autoFocus=true
@@ -105,10 +86,10 @@ let make = (~chainID) => {
         }
       }
     />
-    <VSpacing size={`px(35)} />
+    <VSpacing size=Spacing.xl />
     <div id="mnemonicConnectButton" className={CssHelper.flexBox(~justify=`flexEnd, ())}>
-      <Button px=20 py=8 onClick={_ => createMnemonic()}>
-        <Text value="Connect" weight=Text.Bold size=Text.Md color=Colors.white />
+      <Button px=20 py=8 onClick={_ => createMnemonic()} style=Styles.connectBtn>
+        <Text value="Connect" weight=Text.Bold size=Text.Lg color=Colors.white />
       </Button>
     </div>
     <VSpacing size=Spacing.lg />

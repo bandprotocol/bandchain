@@ -4,7 +4,14 @@ import copy
 
 from pyband.client import Client
 from pyband.auth import Auth
+from pyband.utils import parse_epoch_time
 from pyband.data import (
+    Block,
+    BlockHeader,
+    BlockHeaderInfo,
+    BlockID,
+    HexBytes,
+    EpochTime,
     Request,
     RequestInfo,
     Report,
@@ -14,6 +21,111 @@ from pyband.data import (
 )
 
 VALIDATOR_TEST = "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec"
+
+
+BlOCK_TEST = Block(
+    block=BlockHeader(
+        header=BlockHeaderInfo(
+            chain_id="bandchain",
+            height=136639,
+            time=EpochTime(parse_epoch_time("2020-11-05T09:15:18.445494105Z")),
+            last_commit_hash=HexBytes(
+                bytes.fromhex(
+                    "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
+                )
+            ),
+            data_hash=HexBytes(
+                bytes.fromhex(
+                    "EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2"
+                )
+            ),
+            validators_hash=HexBytes(
+                bytes.fromhex(
+                    "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                )
+            ),
+            next_validators_hash=HexBytes(
+                bytes.fromhex(
+                    "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                )
+            ),
+            consensus_hash=HexBytes(
+                bytes.fromhex(
+                    "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45"
+                )
+            ),
+            app_hash=HexBytes(
+                bytes.fromhex(
+                    "6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF"
+                )
+            ),
+            last_results_hash=HexBytes(bytes.fromhex("")),
+            evidence_hash=HexBytes(bytes.fromhex("")),
+            proposer_address=HexBytes(
+                bytes.fromhex("BDB6A0728C8DFE2124536F16F2BA428FE767A8F9")
+            ),
+        )
+    ),
+    block_id=BlockID(
+        hash=HexBytes(
+            bytes.fromhex(
+                "391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53"
+            )
+        )
+    ),
+)
+
+BlOCK_WRONG_TEST = Block(
+    block=BlockHeader(
+        header=BlockHeaderInfo(
+            chain_id="bandchain",
+            height=136730,
+            time=EpochTime(parse_epoch_time("2020-11-05T09:15:18.445494105Z")),
+            last_commit_hash=HexBytes(
+                bytes.fromhex(
+                    "17B2CE4ABA910E85847537F1323DB95C9F16C20C60E9B9BBB04C633C3125BD92"
+                )
+            ),
+            data_hash=HexBytes(
+                bytes.fromhex(
+                    "EFE5E3F549554FEE8EB9B393740C250D74580427A96A175ABB105806039CFFE2"
+                )
+            ),
+            validators_hash=HexBytes(
+                bytes.fromhex(
+                    "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                )
+            ),
+            next_validators_hash=HexBytes(
+                bytes.fromhex(
+                    "E3F0EA129867E1AB4D7D6A97C23771D4D89B9E4DFE0A5B11E03B681244E00151"
+                )
+            ),
+            consensus_hash=HexBytes(
+                bytes.fromhex(
+                    "0EAA6F4F4B8BD1CC222D93BBD391D07F074DE6BE5A52C6964875BB355B7D0B45"
+                )
+            ),
+            app_hash=HexBytes(
+                bytes.fromhex(
+                    "6E2B1ECE9D912D86C25182E8B7419583ABCE978BFC66DC2556BB0D06A8D528EF"
+                )
+            ),
+            last_results_hash=HexBytes(bytes.fromhex("")),
+            evidence_hash=HexBytes(bytes.fromhex("")),
+            proposer_address=HexBytes(
+                bytes.fromhex("BDB6A0728C8DFE2124536F16F2BA428FE767A8F9")
+            ),
+        )
+    ),
+    block_id=BlockID(
+        hash=HexBytes(
+            bytes.fromhex(
+                "391E99908373F8590C928E0619956DA3D87EB654445DA4F25A185C9718561D53"
+            )
+        )
+    ),
+)
 
 REQUEST_TEST = RequestInfo(
     Request(
@@ -36,7 +148,13 @@ REQUEST_TEST = RequestInfo(
         Report("bandvaloper1yyv5jkqaukq0ajqn7vhkyhpff7h6e99j3gv0tr", [], True),
     ],
     Result(
-        RequestPacketData(1, 5, 3, "test", base64.b64decode("AAAABFVTRFQAAAADQ05ZAAAAAAAPQkA="),),
+        RequestPacketData(
+            1,
+            5,
+            3,
+            "test",
+            base64.b64decode("AAAABFVTRFQAAAADQ05ZAAAAAAAPQkA="),
+        ),
         ResponsePacketData(
             3000, 1596950963, 1596950966, 1, 3, "test", base64.b64decode("AAAAAABqbB0=")
         ),
@@ -45,7 +163,9 @@ REQUEST_TEST = RequestInfo(
 
 
 def test_get_msg_sign_bytes():
-    assert Auth.get_msg_sign_bytes("bandchain", VALIDATOR_TEST, "1", "1") == bytes.fromhex(
+    assert Auth.get_msg_sign_bytes(
+        "bandchain", VALIDATOR_TEST, "1", "1"
+    ) == bytes.fromhex(
         "7b22636861696e5f6964223a2262616e64636861696e222c2265787465726e616c5f6964223a2231222c22726571756573745f6964223a2231222c2276616c696461746f72223a2262616e6476616c6f706572317034307968337a6b6d6863763065637170336d63617a7938337361353772676a646536776563227d"
     )
 
@@ -114,11 +234,13 @@ def test_verify(mock_client):
         )
         == False
     )
-    mock_client.get_reporters.return_value = ["band1wmvh4uzemujfap5graugzckeazr39uy6lesd0g"]
+    mock_client.get_reporters.return_value = [
+        "band1wmvh4uzemujfap5graugzckeazr39uy6lesd0g"
+    ]
 
     # Expired request
     mock_client.get_request_by_id.return_value = REQUEST_TEST
-    mock_client.get_latest_block.return_value = {"block": {"header": {"height": 136730}}}
+    mock_client.get_latest_block.return_value = BlOCK_WRONG_TEST
     assert (
         auth.verify(
             "bandchain",
@@ -130,7 +252,7 @@ def test_verify(mock_client):
         )
         == False
     )
-    mock_client.get_latest_block.return_value = {"block": {"header": {"height": 136639}}}
+    mock_client.get_latest_block.return_value = BlOCK_TEST
 
     request = copy.deepcopy(REQUEST_TEST)
     request.request.requested_validators = request.request.requested_validators[:-1]
@@ -214,10 +336,10 @@ def test_is_reporter(mock_client):
 def test_verify_non_expired_request(mock_client):
     auth = Auth(mock_client)
 
-    mock_client.get_latest_block.return_value = {"block": {"header": {"height": 136639}}}
+    mock_client.get_latest_block.return_value = BlOCK_TEST
     assert auth.verify_non_expired_request(REQUEST_TEST.request) == True
 
-    mock_client.get_latest_block.return_value = {"block": {"header": {"height": 136730}}}
+    mock_client.get_latest_block.return_value = BlOCK_WRONG_TEST
     assert auth.verify_non_expired_request(REQUEST_TEST.request) == False
 
 
@@ -259,4 +381,3 @@ def test_verify_unsubmitted_report():
         )
         == True
     )
-

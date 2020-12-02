@@ -12,22 +12,16 @@
 
 ### Chain (Non-consensus)
 
-- (feat) [\#2757](https://github.com/bandprotocol/bandchain/pull/2757) Bring cosmos-hd-path flag
-- (bugs) [\#2730](https://github.com/bandprotocol/bandchain/pull/2730) Add Content-Type header on oracle module rest endpoints
-- (feat) [\#2718](https://github.com/bandprotocol/bandchain/pull/2718) Added more field in price cache
-- (feat) [\#2694](https://github.com/bandprotocol/bandchain/pull/2694) Added pricer to cache latest price
-- (feat) [\#2690](https://github.com/bandprotocol/bandchain/pull/2690) Added `multi_request_search`endpoint
-- (feat) [\#2653](https://github.com/bandprotocol/bandchain/pull/2653) Added `verify_request` endpoint
+- (impv) [\#2912](https://github.com/bandprotocol/bandchain/pull/2912) proof contain the real block time instead of time hash
 
 ### Yoda
 
 ### Emitter & Flusher
 
-- (bugs) [\#2641](https://github.com/bandprotocol/bandchain/pull/2641) Fix bug flusher when update validator and remove reporter
-- (impv) [\#2572](https://github.com/bandprotocol/bandchain/pull/2572) cdb: Implemented view table for track vote statistic
-
 ### Scan
 
+- (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
+- (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 - (chore) [\#2790](https://github.com/bandprotocol/bandchain/pull/2790) Remove redundant loading component
 - (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
 - (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
@@ -61,10 +55,6 @@
 
 ### Bridges
 
-- (docs) [\#2691](https://github.com/bandprotocol/bandchain/pull/2691) Add simple price db example for doc
-- (feat) [\#2632](https://github.com/bandprotocol/bandchain/pull/2632) Add aggregator contract for ICON bridge
-- (impv) [\#2626](https://github.com/bandprotocol/bandchain/pull/2626) Icon bridge fixed from auditing process
-
 ### Runtime
 
 ### Owasm
@@ -73,8 +63,15 @@
 
 ### Helpers
 
-- (impv) [\#2739](https://github.com/bandprotocol/bandchain/pull/2739) pyband: fix client raise error when get fail
-- (impv) [\#2652](https://github.com/bandprotocol/bandchain/pull/2652) pyband: use string instead of class annotation for Python3.6
-- (bugs) [\#2651](https://github.com/bandprotocol/bandchain/pull/2651) pyband: fix bug get latest block
+- (impv) [\#2941](https://github.com/bandprotocol/bandchain/pull/2941) pyband: Added return None when account does not exist
+- (bugs) [\#2935](https://github.com/bandprotocol/bandchain/pull/2935) bandchainjs: Fixed the msg field ordering
+- (impv) [\#2924](https://github.com/bandprotocol/bandchain/pull/2924) pyband: added new type and refactor the dataclass 
+- (feat) [\#2915](https://github.com/bandprotocol/bandchain/pull/2915) bandchainjs: Implemented getRequestIDByTxHash fn on client module
+- (feat) [\#2907](https://github.com/bandprotocol/bandchain/pull/2907) Bandchain.js: Implement get oracle script and get a request function
+- (impv) [\#2897](https://github.com/bandprotocol/bandchain/pull/2897) pyband: Added the address to account dataclass
+- (feat) [\#2885](https://github.com/bandprotocol/bandchain/pull/2885) Bandchain.js: Implement `Msg`
+- (feat) [\#2889](https://github.com/bandprotocol/bandchain/pull/2889) Bandchain.js: Started to create the client module with mock request test
+- (feat) [\#2887](https://github.com/bandprotocol/bandchain/pull/2887) pyband: Implemented `get_reference_data` on Client
+- (feat) [\#2883](https://github.com/bandprotocol/bandchain/pull/2883) pyband: Implemented get_price_symbols to client module
 
 ### MISC

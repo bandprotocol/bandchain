@@ -1,5 +1,6 @@
 import hashlib
 
+from typing import Tuple
 from bech32 import bech32_encode, bech32_decode, convertbits
 from bip32 import BIP32
 from ecdsa import SigningKey, VerifyingKey, SECP256k1, BadSignatureError
@@ -32,7 +33,7 @@ class PrivateKey:
         self.signing_key = None
 
     @classmethod
-    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> (str, "PrivateKey"):
+    def generate(cls, path=DEFAULT_DERIVATION_PATH) -> Tuple[str, "PrivateKey"]:
         """
         Generate new private key with random mnemonic phrase
 
@@ -40,15 +41,11 @@ class PrivateKey:
 
         :return: A tuple of mnemonic phrase and PrivateKey instance
         """
-        while True:
-            phrase = Mnemonic(language="english").generate(strength=256)
-            try:
-                return (phrase, cls.from_mnemonic(phrase))
-            except BIP32DerivationError:
-                pass
+        phrase = Mnemonic(language="english").generate(strength=256)
+        return (phrase, cls.from_mnemonic(phrase, path))
 
     @classmethod
-    def from_mnemonic(cls, words: str, path="m/44'/494'/0'/0/0") -> "PrivateKey":
+    def from_mnemonic(cls, words: str, path=DEFAULT_DERIVATION_PATH) -> "PrivateKey":
         """
         Create a PrivateKey instance from a given mnemonic phrase and a HD derivation path.
         If path is not given, default to Band's HD prefix 494 and all other indexes being zeroes.
@@ -61,18 +58,14 @@ class PrivateKey:
         seed = Mnemonic("english").to_seed(words)
         self = cls(_error_do_not_use_init_directly=True)
         self.signing_key = SigningKey.from_string(
-            BIP32.from_seed(seed).get_privkey_from_path(path),
-            curve=SECP256k1,
-            hashfunc=hashlib.sha256,
+            BIP32.from_seed(seed).get_privkey_from_path(path), curve=SECP256k1, hashfunc=hashlib.sha256
         )
         return self
 
     @classmethod
     def from_hex(cls, priv: str) -> "PrivateKey":
         self = cls(_error_do_not_use_init_directly=True)
-        self.signing_key = SigningKey.from_string(
-            bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256,
-        )
+        self.signing_key = SigningKey.from_string(bytes.fromhex(priv), curve=SECP256k1, hashfunc=hashlib.sha256)
         return self
 
     def to_hex(self) -> str:
@@ -99,9 +92,7 @@ class PrivateKey:
 
         :return: a signature of this private key over the given message
         """
-        return self.signing_key.sign_deterministic(
-            msg, hashfunc=hashlib.sha256, sigencode=sigencode_string_canonize,
-        )
+        return self.signing_key.sign_deterministic(msg, hashfunc=hashlib.sha256, sigencode=sigencode_string_canonize)
 
 
 class PublicKey:
@@ -123,11 +114,11 @@ class PublicKey:
     def _from_bech32(cls, bech: str, prefix: str) -> "PublicKey":
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
+        if bz is None:
+            raise ValueError("Cannot decode bech32")
         bz = convertbits(bz, 5, 8, False)
         self = cls(_error_do_not_use_init_directly=True)
-        self.verify_key = VerifyingKey.from_string(
-            bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256
-        )
+        self.verify_key = VerifyingKey.from_string(bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256)
         return self
 
     @classmethod
@@ -195,11 +186,20 @@ class Address:
     def __init__(self, addr: bytes) -> None:
         self.addr = addr
 
+    def __eq__(self, o: "Address") -> bool:
+        return self.addr == o.addr
+
     @classmethod
     def _from_bech32(cls, bech: str, prefix: str) -> "Address":
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
-        return cls(bytes(convertbits(bz, 5, 8, False)))
+        if bz is None:
+            raise ValueError("Cannot decode bech32")
+        eight_bit_r = convertbits(bz, 5, 8, False)
+        if eight_bit_r is None:
+            raise ValueError("Cannot convert to 8 bit")
+
+        return cls(bytes(eight_bit_r))
 
     @classmethod
     def from_acc_bech32(cls, bech: str) -> "Address":

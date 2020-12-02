@@ -38,6 +38,8 @@ class Handler(object):
         self.conn = conn
 
     def get_transaction_id(self, tx_hash):
+        if tx_hash is None:
+            return None
         return self.conn.execute(
             select([transactions.c.id]).where(transactions.c.hash == tx_hash)
         ).scalar()

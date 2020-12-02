@@ -11,7 +11,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/pricecache"
+	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -145,16 +145,18 @@ func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.Hand
 			rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		prices := make([]pricecache.Price, len(requestPrices.Symbols))
+		prices := make([]price.Price, len(requestPrices.Symbols))
 		height := int64(0)
 		for idx, symbol := range requestPrices.Symbols {
-			bz, h, err := cliCtx.Query(fmt.Sprintf("band/prices/%s", pricecache.GetFilename(symbol, requestPrices.MinCount, requestPrices.AskCount)))
-			height = h
+			bz, h, err := cliCtx.Query(fmt.Sprintf("band/prices/%s/%d/%d", symbol, requestPrices.AskCount, requestPrices.MinCount))
+			if h > height {
+				height = h
+			}
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusBadRequest, err.Error())
 				return
 			}
-			var price pricecache.Price
+			var price price.Price
 			err = cliCtx.Codec.UnmarshalBinaryBare(bz, &price)
 			if err != nil {
 				rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
@@ -167,6 +169,31 @@ func getRequestsPricesHandler(cliCtx context.CLIContext, route string) http.Hand
 			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
 			return
 		}
+		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
+	}
+}
+
+func getRequestsPriceSymbolsHandler(cliCtx context.CLIContext, route string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		cliCtx, ok := rest.ParseQueryHeightOrReturnBadRequest(w, cliCtx, r)
+		if !ok {
+			return
+		}
+
+		bz, height, err := cliCtx.Query(fmt.Sprintf("band/price_symbols/%s/%s", r.FormValue("ask_count"), r.FormValue("min_count")))
+
+		var symbols []string
+		if err := cliCtx.Codec.UnmarshalBinaryBare(bz, &symbols); err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		bz, err = types.QueryOK(symbols)
+		if err != nil {
+			rest.WriteErrorResponse(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
 		clientcmn.PostProcessQueryResponse(w, cliCtx.WithHeight(height), bz)
 	}
 }
