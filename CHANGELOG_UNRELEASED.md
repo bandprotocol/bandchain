@@ -23,39 +23,6 @@
 - (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
 - (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 - (chore) [\#2793](https://github.com/bandprotocol/bandchain/pull/2793) Remove legacy row and column
-- (impv) [\#2766](https://github.com/bandprotocol/bandchain/pull/2766) Revamp undelegate, redelegate, withdraw reward and vote modal
-- (chore) [\#2767](https://github.com/bandprotocol/bandchain/pull/2767) Revamp send token modal
-- (chore) [\#2749](https://github.com/bandprotocol/bandchain/pull/2749) Revamp delegate modal
-- (impv) [\#2727](https://github.com/bandprotocol/bandchain/pull/2727) Revamp connect modal
-- (impv) [\#2784](https://github.com/bandprotocol/bandchain/pull/2784) Revamp every state of confirmation popup
-- (bugs) [\#2783](https://github.com/bandprotocol/bandchain/pull/2783) Validate address prefix
-- (bugs) [\#2758](https://github.com/bandprotocol/bandchain/pull/2758) Fixed the wrapped button issue on safari
-- (impv) [\#2754](https://github.com/bandprotocol/bandchain/pull/2754) Polish UI, remove unused
-- (impv) [\#2747](https://github.com/bandprotocol/bandchain/pull/2747) Patch for fast sync and new GuanYu DB
-- (impv) [\#2740](https://github.com/bandprotocol/bandchain/pull/2740) Add UI test for all pages
-- (impv) [\#2731](https://github.com/bandprotocol/bandchain/pull/2731) Add no transaction placeholder and fix mobile margin
-- (impv) [\#2728](https://github.com/bandprotocol/bandchain/pull/2728) Add delegation, redelegation, undelegation and withdraw reward UI test
-- (impv) [\#2725](https://github.com/bandprotocol/bandchain/pull/2725) Show validator name if voter is validator
-- (impv) [\#2719](https://github.com/bandprotocol/bandchain/pull/2719) Implement query Band supply
-- (bugs) [\#2716](https://github.com/bandprotocol/bandchain/pull/2716) Fixed no decimal balance bug on account index
-  page
-- (impv) [\#2714](https://github.com/bandprotocol/bandchain/pull/2714) Handle NotFound case for Datasources and Oracle-scripts page
-- (chore) [\#2713](https://github.com/bandprotocol/bandchain/pull/2713) Remove redundant emptyContainer styles
-- (chore) [\#2695](https://github.com/bandprotocol/bandchain/pull/2695) Remove unused images and replace with icon.
-- (impv) [\#2693](https://github.com/bandprotocol/bandchain/pull/2693) Created the new button component and patched to all buttons
-- (impv) [\#2689](https://github.com/bandprotocol/bandchain/pull/2689) Styled the top part of account index page
-- (bugs) [\#2687](https://github.com/bandprotocol/bandchain/pull/2687) Fixed NaN number (Urgent)
-- (impv) [\#2684](https://github.com/bandprotocol/bandchain/pull/2684) Adjust validator voted from 250 to 100
-- (impv) [\#2676](https://github.com/bandprotocol/bandchain/pull/2676) Setup cypress to scan, added new sendToken testcase
-- (bugs) [\#2673](https://github.com/bandprotocol/bandchain/pull/2673) Fixed sorting on moniker with emoji
-- (impv) [\#2672](https://github.com/bandprotocol/bandchain/pull/2672) Hid the proposal desc from tx index page table
-- (impv) [\#2671](https://github.com/bandprotocol/bandchain/pull/2671) Adjusted tooltip width and added webapi
-- (impv) [\#2670](https://github.com/bandprotocol/bandchain/pull/2670) Format the count number
-- (feat) [\#2669](https://github.com/bandprotocol/bandchain/pull/2669) Add active validator's rank on Validator Index Page
-- (bugs) [\#2666](https://github.com/bandprotocol/bandchain/pull/2666) Handle rate limit msg when decoding
-- (impv) [\#2663](https://github.com/bandprotocol/bandchain/pull/2663) Fixed and updated `ChainIDBadge`
-- (impv) [\#2644](https://github.com/bandprotocol/bandchain/pull/2644) Added `netlify.toml` configuration
-- (feat) [\#2594](https://github.com/bandprotocol/bandchain/pull/2594) Added meta og tag to scan
 
 ### Bridges
 
