@@ -21,7 +21,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (depositSub) {
       | Data({depositor}) => depositor |> Address.toBech32
@@ -60,7 +60,7 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {

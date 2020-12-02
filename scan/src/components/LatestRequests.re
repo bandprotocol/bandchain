@@ -17,7 +17,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (requestSub) {
       | Data({id}) => id |> ID.Request.toString
@@ -60,7 +60,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {

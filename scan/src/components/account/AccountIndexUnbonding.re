@@ -10,7 +10,7 @@ let renderBody =
       reserveIndex,
       unbondingListSub: ApolloHooks.Subscription.variant(UnbondingSub.unbonding_list_t),
     ) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (unbondingListSub) {
       | Data({validator: {operatorAddress}, amount, completionTime}) =>
@@ -60,7 +60,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

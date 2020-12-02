@@ -11,7 +11,7 @@ let renderBody =
       txSub: ApolloHooks.Subscription.variant(TxSub.t),
       msgTransform: TxSub.Msg.t => TxSub.Msg.t,
     ) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (txSub) {
       | Data({txHash}) => txHash |> Hash.toHex
@@ -70,7 +70,7 @@ let renderBody =
          }}
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

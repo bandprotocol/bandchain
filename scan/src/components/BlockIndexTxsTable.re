@@ -5,7 +5,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (txSub) {
       | Data({txHash}) => txHash |> Hash.toHex
@@ -44,7 +44,7 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
          }}
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {

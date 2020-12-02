@@ -7,7 +7,7 @@ module Styles = {
 
 let renderBody =
     (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (delegationsSub) {
       | Data({amount, operatorAddress, reward}) =>
@@ -54,7 +54,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

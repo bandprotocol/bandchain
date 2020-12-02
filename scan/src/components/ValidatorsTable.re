@@ -18,7 +18,7 @@ module Styles = {
 
 let renderBody =
     (rank, validatorSub: ApolloHooks.Subscription.variant(ValidatorSub.t), votingPower) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (validatorSub) {
       | Data({operatorAddress}) => operatorAddress |> Address.toOperatorBech32
@@ -117,7 +117,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

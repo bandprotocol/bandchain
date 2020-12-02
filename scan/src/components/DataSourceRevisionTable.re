@@ -49,7 +49,7 @@ let make = (~id) =>
              </THead.Grid>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
-                  <TBody.Grid
+                  <TBody
                     paddingH={`px(24)}
                     key={
                       switch (transaction) {
@@ -101,7 +101,7 @@ let make = (~id) =>
                       </Col.Grid>
                       <Col.Grid> <HSpacing size=Spacing.lg /> </Col.Grid>
                     </Row>
-                  </TBody.Grid>
+                  </TBody>
                 })
               ->React.array}
            </>

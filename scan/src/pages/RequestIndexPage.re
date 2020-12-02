@@ -108,18 +108,18 @@ module KVTableContainer = {
           />
         : <>
             <TableHeader />
-            <TBody.Grid paddingH={`px(24)}>
+            <TBody paddingH={`px(24)}>
               <Row alignItems=Row.Center minHeight={`px(30)}>
                 <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                 <Col.Grid col=Col.Nine> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
               </Row>
-            </TBody.Grid>
-            <TBody.Grid paddingH={`px(24)}>
+            </TBody>
+            <TBody paddingH={`px(24)}>
               <Row alignItems=Row.Center minHeight={`px(30)}>
                 <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                 <Col.Grid col=Col.Nine> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
               </Row>
-            </TBody.Grid>
+            </TBody>
           </>;
     };
   };
@@ -144,7 +144,7 @@ module KVTableContainer = {
             <TableHeader />
             {decodes
              ->Belt.Array.map(({Obi.fieldName, fieldValue}) => {
-                 <TBody.Grid key={fieldName ++ fieldValue} paddingH={`px(24)}>
+                 <TBody key={fieldName ++ fieldValue} paddingH={`px(24)}>
                    <Row alignItems=Row.Center minHeight={`px(30)}>
                      <Col.Grid col=Col.Three>
                        <Text value=fieldName color=Colors.gray7 weight=Text.Thin />
@@ -153,7 +153,7 @@ module KVTableContainer = {
                        <Text value=fieldValue color=Colors.gray7 weight=Text.Thin breakAll=true />
                      </Col.Grid>
                    </Row>
-                 </TBody.Grid>
+                 </TBody>
                })
              ->React.array}
           </>;
@@ -493,7 +493,7 @@ let make = (~reqID) => {
                          idx={externalID ++ name}
                          styles=Styles.kvTableMobile
                        />
-                     : <TBody.Grid key=externalID paddingH={`px(24)}>
+                     : <TBody key=externalID paddingH={`px(24)}>
                          <Row alignItems=Row.Center minHeight={`px(30)}>
                            <Col.Grid col=Col.Three>
                              <Text value=externalID color=Colors.gray7 weight=Text.Thin />
@@ -516,7 +516,7 @@ let make = (~reqID) => {
                              </div>
                            </Col.Grid>
                          </Row>
-                       </TBody.Grid>
+                       </TBody>
                  })
                ->React.array
              | _ =>
@@ -530,7 +530,7 @@ let make = (~reqID) => {
                      idx="1"
                      styles=Styles.kvTableMobile
                    />
-                 : <TBody.Grid paddingH={`px(24)}>
+                 : <TBody paddingH={`px(24)}>
                      <Row alignItems=Row.Center minHeight={`px(30)}>
                        <Col.Grid col=Col.Three> <LoadingCensorBar width=60 height=15 /> </Col.Grid>
                        <Col.Grid col=Col.Four> <LoadingCensorBar width=100 height=15 /> </Col.Grid>
@@ -540,7 +540,7 @@ let make = (~reqID) => {
                          </div>
                        </Col.Grid>
                      </Row>
-                   </TBody.Grid>
+                   </TBody>
              }}
           </div>
         </Col.Grid>

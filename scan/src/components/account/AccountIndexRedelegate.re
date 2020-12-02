@@ -10,7 +10,7 @@ let renderBody =
       reserveIndex,
       redelegateListSub: ApolloHooks.Subscription.variant(RedelegateSub.redelegate_list_t),
     ) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (redelegateListSub) {
       | Data({
@@ -91,7 +91,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

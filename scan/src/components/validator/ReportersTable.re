@@ -14,7 +14,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (reporterSub) {
       | Data(address) => address |> Address.toBech32
@@ -30,7 +30,7 @@ let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Ad
          }}
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {

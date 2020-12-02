@@ -41,7 +41,7 @@ let sorting = (dataSources: array(DataSourceSub.t), sortedBy) => {
 
 let renderBody =
     (reserveIndex, dataSourcesSub: ApolloHooks.Subscription.variant(DataSourceSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (dataSourcesSub) {
       | Data({id}) => id |> ID.DataSource.toString
@@ -104,7 +104,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

@@ -84,7 +84,7 @@ module RenderBody = {
   let make =
       (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
     let (show, setShow) = React.useState(_ => false);
-    <TBody.Grid
+    <TBody
       key={
         switch (reportsSub) {
         | Data({txHash}) => txHash |> Hash.toHex
@@ -177,7 +177,7 @@ module RenderBody = {
          | _ => <LoadingCensorBar width=170 height=50 />
          }}
       </div>
-    </TBody.Grid>;
+    </TBody>;
   };
 };
 

@@ -124,7 +124,7 @@ let renderMostRequestedCard =
 
 let renderBody =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (oracleScriptSub) {
       | Data({id}) => id |> ID.OracleScript.toString
@@ -215,7 +215,7 @@ let renderBody =
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile =

@@ -1,5 +1,5 @@
 let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (blockSub) {
       | Data({height}) => height |> ID.Block.toString
@@ -65,7 +65,7 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {

@@ -42,7 +42,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (voteSub) {
       | Data({voter}) => voter |> Address.toBech32
@@ -97,7 +97,7 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
         </div>
       </Col.Grid>
     </Row>
-  </TBody.Grid>;
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
