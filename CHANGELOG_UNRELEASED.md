@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#2965](https://github.com/bandprotocol/bandchain/pull/2965) Fixed typo on the transaction modal
 - (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
 - (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 
