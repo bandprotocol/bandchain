@@ -135,7 +135,7 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 		h.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if msg, ok := msg.(staking.MsgCreateValidator); ok {
-				h.handleMsgCreateValidator(ctx, msg)
+				h.handleMsgCreateValidator(ctx, msg, make(common.JsDict))
 			}
 		}
 	}
