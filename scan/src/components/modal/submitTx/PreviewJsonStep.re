@@ -205,7 +205,7 @@ let make = (~rawTx, ~onBack, ~account: AccountContext.t) => {
          ])}>
          <img src=Images.fail className=Styles.resultIcon />
          <div className={CssHelper.mb()}>
-           <Text value="Broadcast transaction success" size=Text.Lg block=true align=Text.Center />
+           <Text value="Broadcast transaction fail" size=Text.Lg block=true align=Text.Center />
          </div>
          <Text value=err color=Colors.red3 align=Text.Center breakAll=true />
        </div>
