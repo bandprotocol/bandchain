@@ -1,5 +1,4 @@
 import { Message, Data, Client, Wallet, Obi } from './src/index'
-import { Message, Data, Client, Wallet, Obi } from './src/index'
 
 const { MsgSend } = Message
 const { Coin } = Data
