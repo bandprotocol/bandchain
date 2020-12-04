@@ -956,7 +956,10 @@ describe('Get reference data', () => {
     }
     mockedAxios.post.mockResolvedValue(resp)
 
-    const response = client.getReferenceData(['BTC/USD', 'TRX/ETH'])
+    const minCount = 10
+    const askCount = 16 
+
+    const response = client.getReferenceData(['BTC/USD', 'TRX/ETH'], minCount, askCount)
     const expected = [
       {
         pair: 'BTC/USD',
