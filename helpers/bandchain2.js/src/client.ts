@@ -11,6 +11,7 @@ import {
   OracleScript,
   RequestInfo,
   HexBytes,
+  EVMProof
 } from './data'
 import { Address } from './wallet'
 
@@ -486,5 +487,14 @@ export default class Client {
     }
 
     return requestIDs
+  }
+
+  async getRequestEVMProofByRequestID(requestID: number): Promise<EVMProof>  {
+    if (!Number.isInteger(requestID)) throw Error('requestID is not an integer')
+    const response = await this.getResult(`/oracle/proof/${requestID}`)
+    return {
+      jsonProof: response.jsonProof,
+      evmProofBytes: Buffer.from(response.evmProofBytes, "hex")
+    }
   }
 }
