@@ -15,7 +15,7 @@ module Styles = {
 
 let renderBody =
     (reserveIndex, delegatorSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (delegatorSub) {
       | Data({delegatorAddress}) => delegatorAddress |> Address.toBech32
@@ -23,21 +23,21 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Six>
+    <Row alignItems=Row.Center minHeight={`px(30)}>
+      <Col col=Col.Six>
         {switch (delegatorSub) {
          | Data({delegatorAddress}) => <AddressRender address=delegatorAddress />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (delegatorSub) {
          | Data({sharePercentage}) =>
            <Text block=true value={sharePercentage |> Format.fPretty} color=Colors.gray7 />
          | _ => <LoadingCensorBar width=100 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (delegatorSub) {
            | Data({amount}) =>
@@ -49,9 +49,9 @@ let renderBody =
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -94,8 +94,8 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (allSub) {
               | Data((_, delegatorCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -110,11 +110,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Six>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Six>
                {switch (allSub) {
                 | Data((_, delegatorCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -129,11 +129,11 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text block=true value="Share(%)" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Amount"
@@ -141,9 +141,9 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((delegators, delegatorCount)) =>
        let pageCount = Page.getPageCount(delegatorCount, pageSize);

@@ -61,21 +61,21 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="validatorsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Col>
           <Heading value="All Validators" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (topPartAllSub) {
            | Data((validatorCount, _, _, _, _)) =>
              <Heading value={validatorCount->string_of_int ++ " In total"} size=Heading.H3 />
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=36 marginBottomSm=24>
-        <Col.Grid>
+        </Col>
+      </Row>
+      <Row marginBottom=36 marginBottomSm=24>
+        <Col>
           <div className=Styles.infoContainer>
-            <Row.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six mbSm=48>
+            <Row>
+              <Col col=Col.Three colSm=Col.Six mbSm=48>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
                     value="Active Validators"
@@ -96,8 +96,8 @@ let make = () => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six mbSm=48>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six mbSm=48>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
                     value="Bonded Tokens"
@@ -116,8 +116,8 @@ let make = () => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
                     value="Inflation Rate"
@@ -138,8 +138,8 @@ let make = () => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading value="24 Hour AVG " size=Heading.H4 align=Heading.Center />
                   <Heading
@@ -160,17 +160,17 @@ let make = () => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=16 marginBottomSm=24>
-        <Col.Grid col=Col.Six colSm=Col.Eight mbSm=16>
+        </Col>
+      </Row>
+      <Row marginBottom=16 marginBottomSm=24>
+        <Col col=Col.Six colSm=Col.Eight mbSm=16>
           <SearchInput placeholder="Search Validator" onChange=setSearchTerm />
-        </Col.Grid>
+        </Col>
         {isMobile
-           ? <Col.Grid col=Col.Six colSm=Col.Four mbSm=16>
+           ? <Col col=Col.Six colSm=Col.Four mbSm=16>
                <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
                  <SortableDropdown
                    sortedBy
@@ -187,14 +187,14 @@ let make = () => {
                    ]
                  />
                </div>
-             </Col.Grid>
+             </Col>
            : React.null}
-        <Col.Grid col=Col.Six>
+        <Col col=Col.Six>
           <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
             <ToggleButton isActive setIsActive />
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <ValidatorsTable allSub searchTerm sortedBy setSortedBy />
     </div>
   </Section>;

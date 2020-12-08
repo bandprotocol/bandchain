@@ -54,7 +54,7 @@ let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
 
 let renderMostRequestedCard =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
-  <Col.Grid
+  <Col
     key={
       switch (oracleScriptSub) {
       | Data({id}) => id |> ID.OracleScript.toString
@@ -119,12 +119,12 @@ let renderMostRequestedCard =
         </div>
       </div>
     </div>
-  </Col.Grid>;
+  </Col>;
 };
 
 let renderBody =
     (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (oracleScriptSub) {
       | Data({id}) => id |> ID.OracleScript.toString
@@ -132,8 +132,8 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Five>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Five>
         {switch (oracleScriptSub) {
          | Data({id, name}) =>
            <div className={CssHelper.flexBox()}>
@@ -143,16 +143,16 @@ let renderBody =
            </div>
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (oracleScriptSub) {
          | Data({description}) =>
            let text = Ellipsis.format(~text=description, ~limit=70, ());
            <Text value=text block=true />;
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div
           className={CssHelper.flexBox(
             ~justify=`flexStart,
@@ -191,8 +191,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=70 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (oracleScriptSub) {
            | Data({timestamp: timestampOpt}) =>
@@ -213,9 +213,9 @@ let renderBody =
              </>
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -288,27 +288,27 @@ let make = () => {
            oracleScripts->Belt.Array.length > 0
              ? <>
                  <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-                 <Row.Grid>
+                 <Row>
                    {oracleScripts
                     ->Belt_Array.mapWithIndex((i, e) =>
                         renderMostRequestedCard(i, Sub.resolve(e))
                       )
                     ->React.array}
-                 </Row.Grid>
+                 </Row>
                </>
              : React.null
          | _ =>
            <>
              <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
-             <Row.Grid>
+             <Row>
                {Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
                 ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
                 ->React.array}
-             </Row.Grid>
+             </Row>
            </>
          }}
-        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-          <Col.Grid>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col>
             {switch (allSub) {
              | Data((_, oracleScriptsCount)) =>
                <Heading
@@ -317,13 +317,13 @@ let make = () => {
                />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
-          </Col.Grid>
-        </Row.Grid>
-        <Row.Grid alignItems=Row.Center marginBottom=16>
-          <Col.Grid col=Col.Six colSm=Col.Eight>
+          </Col>
+        </Row>
+        <Row alignItems=Row.Center marginBottom=16>
+          <Col col=Col.Six colSm=Col.Eight>
             <SearchInput placeholder="Search Oracle Script" onChange=setSearchTerm />
-          </Col.Grid>
-          <Col.Grid col=Col.Six colSm=Col.Four>
+          </Col>
+          <Col col=Col.Six colSm=Col.Four>
             <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
               <SortableDropdown
                 sortedBy
@@ -334,13 +334,13 @@ let make = () => {
                 ]
               />
             </div>
-          </Col.Grid>
-        </Row.Grid>
+          </Col>
+        </Row>
         {isMobile
            ? React.null
-           : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
-                 <Col.Grid col=Col.Five>
+           : <THead>
+               <Row alignItems=Row.Center>
+                 <Col col=Col.Five>
                    <div className=TElement.Styles.hashContainer>
                      <Text
                        block=true
@@ -349,11 +349,11 @@ let make = () => {
                        color=Colors.gray7
                      />
                    </div>
-                 </Col.Grid>
-                 <Col.Grid col=Col.Three>
+                 </Col>
+                 <Col col=Col.Three>
                    <Text block=true value="Description" weight=Text.Semibold color=Colors.gray7 />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Two>
+                 </Col>
+                 <Col col=Col.Two>
                    <Text
                      block=true
                      value="Request"
@@ -368,8 +368,8 @@ let make = () => {
                      color=Colors.gray7
                      align=Text.Right
                    />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Two>
+                 </Col>
+                 <Col col=Col.Two>
                    <Text
                      block=true
                      value="Timestamp"
@@ -377,9 +377,9 @@ let make = () => {
                      color=Colors.gray7
                      align=Text.Right
                    />
-                 </Col.Grid>
-               </Row.Grid>
-             </THead.Grid>}
+                 </Col>
+               </Row>
+             </THead>}
         {switch (allSub) {
          | Data((oracleScripts, oracleScriptsCount)) =>
            let pageCount = Page.getPageCount(oracleScriptsCount, pageSize);

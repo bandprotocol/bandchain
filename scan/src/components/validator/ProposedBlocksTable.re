@@ -19,18 +19,18 @@ module LoadingWithHeader = {
   [@react.component]
   let make = () => {
     <div className=Styles.tableWrapper>
-      <THead.Grid>
-        <Row.Grid alignItems=Row.Center>
-          <Col.Grid col=Col.Two>
+      <THead>
+        <Row alignItems=Row.Center>
+          <Col col=Col.Two>
             <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Seven>
+          </Col>
+          <Col col=Col.Seven>
             <Text block=true value="Block Hash" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.One>
+          </Col>
+          <Col col=Col.One>
             <Text block=true value="Txn" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Two>
+          </Col>
+          <Col col=Col.Two>
             <Text
               block=true
               value="Timestamp"
@@ -38,15 +38,15 @@ module LoadingWithHeader = {
               color=Colors.gray7
               align=Text.Right
             />
-          </Col.Grid>
-        </Row.Grid>
-      </THead.Grid>
+          </Col>
+        </Row>
+      </THead>
     </div>;
   };
 };
 
 let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (blockSub) {
       | Data({height}) => height |> ID.Block.toString
@@ -54,30 +54,30 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
          | _ => <LoadingCensorBar width=135 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Seven>
+      </Col>
+      <Col col=Col.Seven>
         {switch (blockSub) {
          | Data({hash}) =>
            <Text value={hash |> Hash.toHex(~upper=true)} block=true code=true ellipsis=true />
 
          | _ => <LoadingCensorBar width=522 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`center, ())}>
           {switch (blockSub) {
            | Data({txn}) => <Text value={txn |> Format.iPretty} align=Text.Center />
            | _ => <LoadingCensorBar width=20 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (blockSub) {
            | Data({timestamp}) =>
@@ -94,9 +94,9 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
              </>
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
@@ -137,15 +137,15 @@ let make = (~consensusAddress) => {
   <div className=Styles.tableWrapper>
     {isMobile
        ? React.null
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Two>
                <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Seven>
+             </Col>
+             <Col col=Col.Seven>
                <Text block=true value="Block Hash" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.One>
+             </Col>
+             <Col col=Col.One>
                <Text
                  block=true
                  value="Txn"
@@ -153,8 +153,8 @@ let make = (~consensusAddress) => {
                  color=Colors.gray7
                  align=Text.Center
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Timestamp"
@@ -162,9 +162,9 @@ let make = (~consensusAddress) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (blocksSub) {
      | Data(blocks) =>
        <>
