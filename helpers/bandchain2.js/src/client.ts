@@ -199,7 +199,9 @@ export default class Client {
     }
   }
 
-  async getReferenceData(pairs: string[]): Promise<ReferenceData[]> {
+  async getReferenceData(pairs: string[], minCount: number, askCount: number): Promise<ReferenceData[]> {
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
     let symbolSet: Set<string> = new Set()
     pairs.forEach((pair: string) => {
       let symbols = pair.split('/')
@@ -211,8 +213,8 @@ export default class Client {
     let symbolList: string[] = Array.from(symbolSet)
     let pricerBody = {
       symbols: symbolList,
-      min_count: 3,
-      ask_count: 4,
+      min_count: minCount,
+      ask_count: askCount,
     }
     let priceData = await this.postResult('/oracle/request_prices', pricerBody)
 
