@@ -91,11 +91,12 @@ export default class Client {
     }
   }
 
-  async getAccount(address: Address): Promise<Account> {
+  async getAccount(address: Address): Promise<Account | undefined> {
     const response = await this.getResult(
       `/auth/accounts/${address.toAccBech32()}`,
     )
     const value = response.value
+    if (!value.address) return
     return {
       address: Address.fromAccBech32(value.address),
       coins: value.coins.map(
