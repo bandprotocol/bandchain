@@ -21,7 +21,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (depositSub) {
       | Data({depositor}) => depositor |> Address.toBech32
@@ -29,14 +29,14 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid col=Col.Five>
+    <Row alignItems=Row.Center minHeight={`px(30)}>
+      <Col col=Col.Five>
         {switch (depositSub) {
          | Data({depositor}) => <AddressRender address=depositor />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Five>
+      </Col>
+      <Col col=Col.Five>
         {switch (depositSub) {
          | Data({txHashOpt}) =>
            switch (txHashOpt) {
@@ -45,8 +45,8 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
            }
          | _ => <LoadingCensorBar width=100 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (depositSub) {
            | Data({amount}) =>
@@ -58,9 +58,9 @@ let renderBody = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(Dep
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, depositSub: ApolloHooks.Subscription.variant(DepositSub.t)) => {
@@ -106,8 +106,8 @@ let make = (~proposalID) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (allSub) {
               | Data((_, depositCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -127,11 +127,11 @@ let make = (~proposalID) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Five>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Five>
                {switch (allSub) {
                 | Data((_, depositCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -146,11 +146,11 @@ let make = (~proposalID) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Five>
+             </Col>
+             <Col col=Col.Five>
                <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Amount"
@@ -158,9 +158,9 @@ let make = (~proposalID) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((delegators, depositCount)) =>
        let pageCount = Page.getPageCount(depositCount, pageSize);

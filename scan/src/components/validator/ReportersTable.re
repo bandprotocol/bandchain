@@ -14,7 +14,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (reporterSub) {
       | Data(address) => address |> Address.toBech32
@@ -22,15 +22,15 @@ let renderBody = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Ad
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-      <Col.Grid>
+    <Row alignItems=Row.Center minHeight={`px(30)}>
+      <Col>
         {switch (reporterSub) {
          | Data(address) => <AddressRender address />
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, reporterSub: ApolloHooks.Subscription.variant(Address.t)) => {
@@ -62,8 +62,8 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (allSub) {
               | Data((_, reporterCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -78,11 +78,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col>
                {switch (allSub) {
                 | Data((_, reporterCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -97,9 +97,9 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((reporters, reporterCount)) =>
        let pageCount = Page.getPageCount(reporterCount, pageSize);
