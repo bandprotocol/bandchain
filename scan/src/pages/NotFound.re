@@ -30,7 +30,9 @@ let make = () => {
     <div className=CssHelper.container>
       <VSpacing size=Spacing.xxl />
       <div className=Styles.pageContainer>
-        <Col> <img src=Images.notFoundBg className=Styles.logo /> </Col>
+        <div className={CssHelper.flexBox()}>
+          <img src=Images.notFoundBg className=Styles.logo />
+        </div>
         <VSpacing size=Spacing.xxl />
         <Text
           value="Oops! We cannot find the page you're looking for."

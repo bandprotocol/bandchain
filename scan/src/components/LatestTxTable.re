@@ -5,7 +5,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (txSub) {
       | Data({txHash}) => txHash |> Hash.toHex
@@ -13,20 +13,20 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Start>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Start>
+      <Col col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=110 />
          | _ => <LoadingCensorBar width=60 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         {switch (txSub) {
          | Data({blockHeight}) => <TypeID.Block id=blockHeight />
          | _ => <LoadingCensorBar width=50 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`center, ~align=`center, ())}>
           {switch (txSub) {
            | Data({success}) =>
@@ -34,16 +34,16 @@ let renderBody = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)
            | _ => <LoadingCensorBar width=20 height=20 radius=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Seven>
+      </Col>
+      <Col col=Col.Seven>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
            <TxMessages txHash messages success errMsg width=320 />
          | _ => <LoadingCensorBar width=320 height=15 />
          }}
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, txSub: ApolloHooks.Subscription.variant(TxSub.t)) => {
@@ -123,30 +123,30 @@ let make = () => {
     <VSpacing size={`px(16)} />
     {isMobile
        ? React.null
-       : <THead.Grid height=30>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+       : <THead height=30>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Two>
                <div className={CssHelper.flexBox()}>
                  <Text value="TX Hash" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <div className={CssHelper.flexBox()}>
                  <Text value="Block" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col.Grid>
-             <Col.Grid col=Col.One>
+             </Col>
+             <Col col=Col.One>
                <div className={CssHelper.flexBox(~justify=`center, ~align=`center, ())}>
                  <Text value="Status" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col.Grid>
-             <Col.Grid col=Col.Seven>
+             </Col>
+             <Col col=Col.Seven>
                <div className={CssHelper.flexBox()}>
                  <Text value="Actions" size=Text.Sm weight=Text.Semibold color=Colors.gray7 />
                </div>
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (txsSub) {
      | Data(txs) =>
        txs

@@ -146,17 +146,17 @@ module StakingInfo = {
     let reinvest = reward =>
       (validatorAddress, reward)->SubmitMsg.Reinvest->SubmitTx->OpenModal->dispatchModal;
     <>
-      <Row.Grid marginBottom=24>
-        <Col.Grid>
+      <Row marginBottom=24>
+        <Col>
           <Text
             value="Note: You have non-zero pending reward on this validator. Any additional staking actions will automatically withdraw that reward your balance."
             color=Colors.gray6
             weight=Text.Thin
           />
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid col=Col.Six>
+        </Col>
+      </Row>
+      <Row marginBottom=24>
+        <Col col=Col.Six>
           <div>
             <Heading value="Balance at Stake" size=Heading.H5 />
             <VSpacing size={`px(8)} />
@@ -166,8 +166,8 @@ module StakingInfo = {
              | _ => <DisplayBalance.Loading />
              }}
           </div>
-        </Col.Grid>
-        <Col.Grid col=Col.Six>
+        </Col>
+        <Col col=Col.Six>
           <div>
             <div className={CssHelper.flexBox()}>
               <Heading value="Unbonding Amount" size=Heading.H5 />
@@ -185,10 +185,10 @@ module StakingInfo = {
              | _ => <DisplayBalance.Loading />
              }}
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid style=Styles.rewardContainer alignItems=Row.Center>
-        <Col.Grid>
+        </Col>
+      </Row>
+      <Row style=Styles.rewardContainer alignItems=Row.Center>
+        <Col>
           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div>
               <Heading value="Reward" size=Heading.H5 />
@@ -220,8 +220,8 @@ module StakingInfo = {
                </>}
             </div>
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
     </>;
   };
 };

@@ -10,7 +10,7 @@ let renderBody =
       reserveIndex,
       unbondingListSub: ApolloHooks.Subscription.variant(UnbondingSub.unbonding_list_t),
     ) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (unbondingListSub) {
       | Data({validator: {operatorAddress}, amount, completionTime}) =>
@@ -21,8 +21,8 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Six>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Six>
         {switch (unbondingListSub) {
          | Data({validator: {operatorAddress, moniker, identity}}) =>
            <div className={CssHelper.flexBox()}>
@@ -35,8 +35,8 @@ let renderBody =
            </div>
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (unbondingListSub) {
            | Data({amount}) =>
@@ -44,8 +44,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (unbondingListSub) {
            | Data({completionTime}) =>
@@ -58,9 +58,9 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -111,8 +111,8 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (unbondingCountSub) {
               | Data(unbondingCount) =>
                 <div className={CssHelper.flexBox()}>
@@ -132,11 +132,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Six>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Six>
                {switch (unbondingCountSub) {
                 | Data(unbondingCount) =>
                   <div className={CssHelper.flexBox()}>
@@ -156,8 +156,8 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Amount (BAND)"
@@ -165,8 +165,8 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Unbonded At"
@@ -174,9 +174,9 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (unbondingListSub) {
      | Data(unbondingList) =>
        unbondingList->Belt.Array.size > 0

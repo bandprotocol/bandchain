@@ -103,11 +103,9 @@ let make = (~proposalID) => {
 
   <Section pbSm=0>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=16>
-        <Col.Grid>
-          <Heading value="Proposal" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
-        </Col.Grid>
-        <Col.Grid col=Col.Eight mbSm=16>
+      <Row marginBottom=40 marginBottomSm=16>
+        <Col> <Heading value="Proposal" size=Heading.H4 marginBottom=40 marginBottomSm=24 /> </Col>
+        <Col col=Col.Eight mbSm=16>
           {switch (allSub) {
            | Data(({id, name}, _, _)) =>
              <div className={CssHelper.flexBox()}>
@@ -117,8 +115,8 @@ let make = (~proposalID) => {
              </div>
            | _ => <LoadingCensorBar width=270 height=15 />
            }}
-        </Col.Grid>
-        <Col.Grid col=Col.Four>
+        </Col>
+        <Col col=Col.Four>
           <div
             className={Css.merge([
               CssHelper.flexBox(~justify=`flexEnd, ()),
@@ -129,21 +127,21 @@ let make = (~proposalID) => {
              | _ => <LoadingCensorBar width=100 height=15 radius=50 />
              }}
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid>
+        </Col>
+      </Row>
+      <Row marginBottom=24>
+        <Col>
           <div className=Styles.infoContainer>
-            <Row.Grid>
-              <Col.Grid>
+            <Row>
+              <Col>
                 <Heading
                   value="Information"
                   size=Heading.H4
                   style=Styles.infoHeader
                   marginBottom=24
                 />
-              </Col.Grid>
-              <Col.Grid col=Col.Six mb=24>
+              </Col>
+              <Col col=Col.Six mb=24>
                 <Heading value="Proposer" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({proposerAddressOpt}, _, _)) =>
@@ -154,35 +152,35 @@ let make = (~proposalID) => {
                    }
                  | _ => <LoadingCensorBar width=270 height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six mb=24>
+              </Col>
+              <Col col=Col.Six mb=24>
                 <Heading value="Submit Time" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({submitTime}, _, _)) => <Timestamp size=Text.Lg time=submitTime />
                  | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six mb=24>
+              </Col>
+              <Col col=Col.Six mb=24>
                 <Heading value="Proposal Type" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({proposalType}, _, _)) =>
                    <Text value=proposalType size=Text.Lg block=true />
                  | _ => <LoadingCensorBar width=90 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
-              <Col.Grid>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
                 <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({description}, _, _)) => <Markdown value=description />
                  | _ => <LoadingCensorBar width=270 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       {switch (allSub) {
        | Data((
            {status, name, votingStartTime, votingEndTime},
@@ -206,8 +204,8 @@ let make = (~proposalID) => {
          | Rejected
          | Failed =>
            <>
-             <Row.Grid>
-               <Col.Grid col=Col.Six mb=24 mbSm=16>
+             <Row>
+               <Col col=Col.Six mb=24 mbSm=16>
                  <div className=Styles.infoContainer>
                    <Heading
                      value="Voting Overview"
@@ -215,8 +213,8 @@ let make = (~proposalID) => {
                      style=Styles.infoHeader
                      marginBottom=24
                    />
-                   <Row.Grid marginTop=38 alignItems=Row.Center>
-                     <Col.Grid col=Col.Seven>
+                   <Row marginTop=38 alignItems=Row.Center>
+                     <Col col=Col.Seven>
                        <div className={CssHelper.flexBoxSm(~justify=`spaceAround, ())}>
                          {let turnoutPercent =
                             total /. (bondedToken |> Coin.getBandAmountFromCoin) *. 100.;
@@ -233,14 +231,13 @@ let make = (~proposalID) => {
                               </div>
                             : React.null}
                        </div>
-                     </Col.Grid>
-                     {isMobile
-                        ? <Col.Grid> <hr className=Styles.separatorLine /> </Col.Grid> : React.null}
-                     <Col.Grid col=Col.Five>
-                       <Row.Grid>
+                     </Col>
+                     {isMobile ? <Col> <hr className=Styles.separatorLine /> </Col> : React.null}
+                     <Col col=Col.Five>
+                       <Row>
                          {isMobile
                             ? React.null
-                            : <Col.Grid mb=24>
+                            : <Col mb=24>
                                 <Heading value="Total" size=Heading.H5 marginBottom=8 />
                                 <Text
                                   value={(total |> Format.fPretty(~digits=2)) ++ " BAND"}
@@ -248,21 +245,21 @@ let make = (~proposalID) => {
                                   block=true
                                   color=Colors.gray6
                                 />
-                              </Col.Grid>}
-                         <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                              </Col>}
+                         <Col mb=24 mbSm=0 colSm=Col.Six>
                            <Heading value="Voting Start" size=Heading.H5 marginBottom=8 />
                            <Timestamp.Grid size=Text.Lg time=votingStartTime />
-                         </Col.Grid>
-                         <Col.Grid mb=24 mbSm=0 colSm=Col.Six>
+                         </Col>
+                         <Col mb=24 mbSm=0 colSm=Col.Six>
                            <Heading value="Voting End" size=Heading.H5 marginBottom=8 />
                            <Timestamp.Grid size=Text.Lg time=votingEndTime />
-                         </Col.Grid>
-                       </Row.Grid>
-                     </Col.Grid>
-                   </Row.Grid>
+                         </Col>
+                       </Row>
+                     </Col>
+                   </Row>
                  </div>
-               </Col.Grid>
-               <Col.Grid col=Col.Six mb=24 mbSm=16>
+               </Col>
+               <Col col=Col.Six mb=24 mbSm=16>
                  <div className={Css.merge([Styles.infoContainer, Styles.resultsInfoContainer])}>
                    <div
                      className={Css.merge([
@@ -303,23 +300,21 @@ let make = (~proposalID) => {
                      </>
                    </div>
                  </div>
-               </Col.Grid>
-             </Row.Grid>
-             <Row.Grid marginBottom=24>
-               <Col.Grid> <VoteBreakdownTable proposalID /> </Col.Grid>
-             </Row.Grid>
+               </Col>
+             </Row>
+             <Row marginBottom=24> <Col> <VoteBreakdownTable proposalID /> </Col> </Row>
            </>
          }
        | _ => React.null
        }}
-      <Row.Grid marginBottom=24>
-        <Col.Grid>
+      <Row marginBottom=24>
+        <Col>
           <div className=Styles.infoContainer>
-            <Row.Grid>
-              <Col.Grid>
+            <Row>
+              <Col>
                 <Heading value="Deposit" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
-              </Col.Grid>
-              <Col.Grid col=Col.Six mbSm=24>
+              </Col>
+              <Col col=Col.Six mbSm=24>
                 <Heading value="Deposit Status" size=Heading.H5 marginBottom=8 />
                 {switch (proposalSub) {
                  | Data({totalDeposit, status}) =>
@@ -335,25 +330,23 @@ let make = (~proposalID) => {
                    }
                  | _ => <LoadingCensorBar width={isMobile ? 120 : 270} height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six>
+              </Col>
+              <Col col=Col.Six>
                 <Heading value="Deposit End Time" size=Heading.H5 marginBottom=8 />
                 {switch (proposalSub) {
                  | Data({depositEndTime}) => <Timestamp size=Text.Lg time=depositEndTime />
                  | _ => <LoadingCensorBar width=90 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <div className=Styles.tableContainer>
-        <Row.Grid>
-          <Col.Grid>
-            <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader />
-          </Col.Grid>
-          <Col.Grid> <DepositorTable proposalID /> </Col.Grid>
-        </Row.Grid>
+        <Row>
+          <Col> <Heading value="Depositors" size=Heading.H4 style=Styles.tableHeader /> </Col>
+          <Col> <DepositorTable proposalID /> </Col>
+        </Row>
       </div>
     </div>
   </Section>;

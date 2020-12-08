@@ -84,32 +84,31 @@ let make = (~headers=["Key", "Value"], ~rows) => {
   let valueWidth = Media.isMobile() ? 70 : 480;
   <div className=Styles.tabletContainer>
     <div className=Styles.tableSpacing>
-      <Row.Grid>
+      <Row>
         {headers
          ->Belt_List.mapWithIndex((i, header) => {
-             <Col.Grid key={header ++ (i |> string_of_int)} col=columnSize colSm=columnSize>
+             <Col key={header ++ (i |> string_of_int)} col=columnSize colSm=columnSize>
                <Text value=header weight=Text.Semibold height={Text.Px(18)} color=Colors.gray7 />
-             </Col.Grid>
+             </Col>
            })
          ->Belt_List.toArray
          ->React.array}
-      </Row.Grid>
+      </Row>
     </div>
     {rows
      ->Belt.List.mapWithIndex((i, row) => {
          <div
            key={"outerRow" ++ (i |> string_of_int)} className={Css.merge([Styles.tableSpacing])}>
-           <Row.Grid>
+           <Row>
              {row
               ->Belt_List.mapWithIndex((j, value) => {
-                  <Col.Grid
-                    key={"innerRow" ++ (j |> string_of_int)} col=columnSize colSm=columnSize>
+                  <Col key={"innerRow" ++ (j |> string_of_int)} col=columnSize colSm=columnSize>
                     {renderField(value, valueWidth)}
-                  </Col.Grid>
+                  </Col>
                 })
               ->Belt_List.toArray
               ->React.array}
-           </Row.Grid>
+           </Row>
          </div>
        })
      ->Belt.List.toArray
