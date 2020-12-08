@@ -53,8 +53,8 @@ module Styles = {
 };
 
 let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountup=false, ()) => {
-  <Row.Grid>
-    <Col.Grid col=Col.Six colSm=Col.Five>
+  <Row>
+    <Col col=Col.Six colSm=Col.Five>
       <div className={CssHelper.flexBox()}>
         <div className={Styles.squareIcon(color)} />
         <Text
@@ -65,8 +65,8 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
           tooltipPlacement=Text.AlignBottomStart
         />
       </div>
-    </Col.Grid>
-    <Col.Grid col=Col.Six colSm=Col.Seven>
+    </Col>
+    <Col col=Col.Six colSm=Col.Seven>
       <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
         <div className={CssHelper.flexBox()}>
           {isCountup
@@ -125,23 +125,23 @@ let balanceDetail = (~title, ~description, ~amount, ~usdPrice, ~color, ~isCountu
           />
         </div>
       </div>
-    </Col.Grid>
-  </Row.Grid>;
+    </Col>
+  </Row>;
 };
 
 module BalanceDetailLoading = {
   [@react.component]
   let make = () => {
-    <Row.Grid>
-      <Col.Grid col=Col.Six colSm=Col.Five> <LoadingCensorBar width=130 height=18 /> </Col.Grid>
-      <Col.Grid col=Col.Six colSm=Col.Seven>
+    <Row>
+      <Col col=Col.Six colSm=Col.Five> <LoadingCensorBar width=130 height=18 /> </Col>
+      <Col col=Col.Six colSm=Col.Seven>
         <div className={CssHelper.flexBox(~direction=`column, ~align=`flexEnd, ())}>
           <LoadingCensorBar width=120 height=20 />
           <VSpacing size=Spacing.xs />
           <LoadingCensorBar width=120 height=16 />
         </div>
-      </Col.Grid>
-    </Row.Grid>;
+      </Col>
+    </Row>;
   };
 };
 
@@ -223,11 +223,11 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
 
   <Section pbSm=0>
     <div className=CssHelper.container>
-      <Row.Grid marginBottom=40 marginBottomSm=24>
-        <Col.Grid> <Heading value="Account Detail" size=Heading.H4 /> </Col.Grid>
-      </Row.Grid>
-      <Row.Grid>
-        <Col.Grid col=Col.Six>
+      <Row marginBottom=40 marginBottomSm=24>
+        <Col> <Heading value="Account Detail" size=Heading.H4 /> </Col>
+      </Row>
+      <Row>
+        <Col col=Col.Six>
           <div
             className={Css.merge([
               CssHelper.flexBox(~direction=`column, ~justify=`spaceBetween, ~align=`stretch, ()),
@@ -301,8 +301,8 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                }}
             </div>
           </div>
-        </Col.Grid>
-        <Col.Grid col=Col.Six>
+        </Col>
+        <Col col=Col.Six>
           <div className=CssHelper.infoContainer>
             <Heading value="Balance" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
             <div className=Styles.amountBoxes>
@@ -409,8 +409,8 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                }}
             </div>
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <VSpacing size=Spacing.xl />
       <Tab
         tabs=[|

@@ -75,8 +75,8 @@ module UptimeBlock = {
 let make = (~consensusAddress) => {
   let getUptimeSub = ValidatorSub.getBlockUptimeByValidator(consensusAddress);
   <>
-    <Row.Grid marginBottom=24>
-      <Col.Grid>
+    <Row marginBottom=24>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.chartContainer])}>
           {switch (getUptimeSub) {
            | Data({validatorVotes}) =>
@@ -85,13 +85,13 @@ let make = (~consensusAddress) => {
                  <UptimeBlock key={blockHeight |> ID.Block.toString} status height=blockHeight />
                )
              ->React.array
-           | _ => <LoadingCensorBar fullWidth=true height=90  />
+           | _ => <LoadingCensorBar fullWidth=true height=90 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-    <Row.Grid>
-      <Col.Grid>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.labelBox])}>
           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div className={CssHelper.flexBox()}>
@@ -133,7 +133,7 @@ let make = (~consensusAddress) => {
              }}
           </div>
         </div>
-      </Col.Grid>
-    </Row.Grid>
+      </Col>
+    </Row>
   </>;
 };
