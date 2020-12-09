@@ -28,7 +28,7 @@ class Transaction:
         addr = self.msgs[0].get_sender()
         account = client.get_account(addr)
         if account == None:
-            raise SystemError("Account doesn't exist.")
+            raise ValueError("Account doesn't exist.")
         self.account_num = account.account_number
         self.sequence = account.sequence
         return self
