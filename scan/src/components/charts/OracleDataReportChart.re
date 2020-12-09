@@ -64,8 +64,8 @@ let make = (~oracleStatus, ~operatorAddress) => {
   let historicalOracleStatusSub =
     ValidatorSub.getHistoricalOracleStatus(operatorAddress, prevDate, oracleStatus);
   <>
-    <Row.Grid marginBottom=24>
-      <Col.Grid>
+    <Row marginBottom=24>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.chartContainer])}>
           {switch (historicalOracleStatusSub) {
            | Data({oracleStatusReports}) =>
@@ -81,10 +81,10 @@ let make = (~oracleStatus, ~operatorAddress) => {
            | _ => <LoadingCensorBar fullWidth=true height=90 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-    <Row.Grid>
-      <Col.Grid>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
         <div className={Css.merge([CssHelper.flexBox(), Styles.labelBox])}>
           <div className={CssHelper.flexBox(~justify=`spaceBetween, ())}>
             <div className={CssHelper.flexBox()}>
@@ -109,7 +109,7 @@ let make = (~oracleStatus, ~operatorAddress) => {
              }}
           </div>
         </div>
-      </Col.Grid>
-    </Row.Grid>
+      </Col>
+    </Row>
   </>;
 };

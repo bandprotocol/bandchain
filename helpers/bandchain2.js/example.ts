@@ -16,7 +16,7 @@ const msgSend = new MsgSend(from_addr, to_addr, amount)
 let result = msgSend.asJson()
 console.log(JSON.stringify(result))
 
-const client = new Client('http://d3n-debug.bandprotocol.com/rest')
+const client = new Client('https://guanyu-testnet3-query.bandchain.org')
 
 console.log(PrivateKey.generate())
 const x = PrivateKey.fromMnemonic('s')
@@ -86,3 +86,14 @@ const encodedData = obi.encodeInput({
 console.log(encodedData)
 
 console.log(obi.decodeInput(encodedData))
+
+
+const minCount = 10
+const askCount = 16
+
+const pairs = ["BTC/USDT", "ETH/USDT"]
+
+client
+  .getReferenceData(pairs, minCount, askCount)
+  .then((e) => console.log('get ref data: ', JSON.stringify(e)))
+  .catch((err) => console.log(err))
