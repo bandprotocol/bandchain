@@ -160,3 +160,9 @@ export interface RequestInfo {
   reports?: Report[]
   result?: Result
 }
+
+
+export interface EVMProof {
+  jsonProof: object
+  evmProofBytes: Buffer
+}

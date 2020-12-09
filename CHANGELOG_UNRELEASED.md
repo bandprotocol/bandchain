@@ -35,8 +35,9 @@
 
 ### Helpers
 
-- (impv) [\#2943](https://github.com/bandprotocol/bandchain/pull/2943) Bandchain.js: Added return `undefined` when account does not exist
+- (feat) [\#2972](https://github.com/bandprotocol/bandchain/pull/2972) pyband&bandchain.js: Added get request evm proof on pyband and bandchain.js
 - (impv) [\#2967](https://github.com/bandprotocol/bandchain/pull/2967) bandchain.js: Added new params to getReferenceData
+- (impv) [\#2943](https://github.com/bandprotocol/bandchain/pull/2943) Bandchain.js: Added return `undefined` when account does not exist
 - (impv) [\#2941](https://github.com/bandprotocol/bandchain/pull/2941) pyband: Added return None when account does not exist
 - (bugs) [\#2935](https://github.com/bandprotocol/bandchain/pull/2935) bandchainjs: Fixed the msg field ordering
 - (impv) [\#2924](https://github.com/bandprotocol/bandchain/pull/2924) pyband: added new type and refactor the dataclass
