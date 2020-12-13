@@ -32,12 +32,18 @@
     "singleQuote": true
   },
   "dependencies": {
+    "@ledgerhq/hw-transport-node-hid": "^5.34.0",
+    "@ledgerhq/hw-transport-webhid": "^5.34.0",
+    "@ledgerhq/hw-transport-webusb": "^5.34.1",
+    "@types/ledgerhq__hw-transport-node-hid": "^4.22.2",
+    "@types/ledgerhq__hw-transport-webusb": "^4.70.1",
     "axios": "^0.21.0",
     "bech32": "^1.1.4",
     "bip32": "^2.0.6",
     "bip39": "^3.0.2",
     "bitcoinjs-lib": "^5.2.0",
     "crypto": "^1.0.1",
+    "ledger-cosmos-js": "^2.1.8",
     "secp256k1": "^4.0.2"
   }
 }
