@@ -2416,14 +2416,14 @@
   resolved "https://registry.yarnpkg.com/@types/html-minifier-terser/-/html-minifier-terser-5.0.0.tgz#7532440c138605ced1b555935c3115ddd20e8bef"
   integrity sha512-q95SP4FdkmF0CwO0F2q0H6ZgudsApaY/yCtAQNRn1gduef5fGpyEphzy0YCq/N0UFvDSnLg5V8jFK/YGXlDiCw==
 
-"@types/htmlparser2@3.10.1":
-  version "3.10.1"
-  resolved "https://registry.yarnpkg.com/@types/htmlparser2/-/htmlparser2-3.10.1.tgz#1e65ba81401d53f425c1e2ba5a3d05c90ab742c7"
-  integrity sha512-fCxmHS4ryCUCfV9+CJZY1UjkbR+6Al/EQdX5Jh03qBj9gdlPG5q+7uNoDgE/ZNXb3XNWSAQgqKIWnbRCbOyyWA==
+"@types/htmlparser2@3.10.2":
+  version "3.10.2"
+  resolved "https://registry.yarnpkg.com/@types/htmlparser2/-/htmlparser2-3.10.2.tgz#bd43702eaf2f15c2d26784c8427352a0a4aa75eb"
+  integrity sha512-81vjuO800UMoHjYbCbqtBmfC3iCsrROKpqndo0acKiN6k/cpW+YOw9FzRP0ghujHeUNCOox2AQPrrMy6+j5UpQ==
   dependencies:
-    "@types/domhandler" "*"
     "@types/domutils" "*"
     "@types/node" "*"
+    domhandler "^2.4.0"
 
 "@types/http-cache-semantics@*":
   version "4.0.0"
@@ -5488,7 +5488,7 @@ domexception@^2.0.1:
   dependencies:
     webidl-conversions "^5.0.0"
 
-domhandler@2.4.2, domhandler@^2.3.0:
+domhandler@2.4.2, domhandler@^2.3.0, domhandler@^2.4.0:
   version "2.4.2"
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.4.2.tgz#8805097e933d65e85546f726d60f5eb88b44f803"
   integrity sha512-JiK04h0Ht5u/80fdLMCEmV4zkNh2BcoMFBmZ/91WtYZ8qVXSKjiw7fXMgFPnHcSZgOo3XdinHvmnDUeMf5R4wA==
@@ -6983,12 +6983,12 @@ html-minifier-terser@^5.0.1:
     relateurl "^0.2.7"
     terser "^4.6.3"
 
-html-react-parser@^0.14.2:
-  version "0.14.2"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.2.tgz#d8cd84e8dc041680f28274e0e41d637bc784d111"
-  integrity sha512-ZyjUlNZ0cAUhknoXSTfE2yZteY+pnbGXE3Flp5l3Qk40UvKDRp+F/nBvRbIHrWa7tGLZInigJoBuFylxyhGU9w==
+html-react-parser@^0.14.3:
+  version "0.14.3"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-0.14.3.tgz#bd126bba11dce88b97168b5c879e031b6c2209e5"
+  integrity sha512-scZ1DHGbyRv0AjsavBndhTzAOQ5iWxzmD5z74cXU07mMcegt8MtlQoHx3SVGhVAkScqNgk1hgKoE80S3OFUt4A==
   dependencies:
-    "@types/htmlparser2" "3.10.1"
+    "@types/htmlparser2" "3.10.2"
     html-dom-parser "0.3.0"
     react-property "1.0.1"
     style-to-js "1.1.0"
@@ -7249,9 +7249,9 @@ inherits@2.0.3:
   integrity sha1-Yzwsg+PaQqUC9SRmAiSA9CCCYd4=
 
 ini@^1.3.4, ini@^1.3.5, ini@~1.3.0:
-  version "1.3.5"
-  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.5.tgz#eee25f56db1c9ec6085e0c22778083f596abf927"
-  integrity sha512-RZY5huIKCMRWDUqZlEi72f/lmXKMvuszcMBduliQ3nnWbx9X/ZBQO7DijMEYS9EhHBb2qacRUMtC7svLwe0lcw==
+  version "1.3.7"
+  resolved "https://registry.yarnpkg.com/ini/-/ini-1.3.7.tgz#a09363e1911972ea16d7a8851005d84cf09a9a84"
+  integrity sha512-iKpRpXP+CrP2jyrxvg1kMUpXDyRUFDWurxbnVT1vQPx+Wz9uCYsMIqYuSBLV+PAaZG/d7kRLKRFc9oDMsH+mFQ==
 
 inline-style-parser@0.1.1:
   version "0.1.1"
