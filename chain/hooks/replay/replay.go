@@ -34,6 +34,7 @@ type Hook struct {
 	accsInBlock map[string]bool  // The accounts that need balance update at the end of block.
 	accsInTx    map[string]bool  // The accounts related to the current processing transaction.
 	msgs        []common.Message // The list of all messages to publish for this block.
+	stopHeight  int64
 
 	accountKeeper auth.AccountKeeper
 	bankKeeper    bank.Keeper
@@ -49,7 +50,7 @@ type Hook struct {
 func NewHook(
 	cdc *codec.Codec, accountKeeper auth.AccountKeeper, bankKeeper bank.Keeper, supplyKeeper supply.Keeper,
 	stakingKeeper staking.Keeper, mintKeeper mint.Keeper, distrKeeper distr.Keeper, govKeeper gov.Keeper,
-	oracleKeeper keeper.Keeper, kafkaURI string,
+	oracleKeeper keeper.Keeper, kafkaURI string, stopHeight int64,
 ) *Hook {
 	paths := strings.SplitN(kafkaURI, "@", 2)
 	return &Hook{
@@ -62,6 +63,7 @@ func NewHook(
 			BatchTimeout: 1 * time.Millisecond,
 			// Async:    true, // TODO: We may be able to enable async mode on replay
 		}),
+		stopHeight:    stopHeight,
 		accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		supplyKeeper:  supplyKeeper,
@@ -111,6 +113,9 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 
 // AfterBeginBlock specify actions need to do after begin block period (app.Hook interface).
 func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res abci.ResponseBeginBlock) {
+	if req.Header.GetHeight() >= h.stopHeight {
+		return
+	}
 	h.accsInBlock = make(map[string]bool)
 	h.accsInTx = make(map[string]bool)
 	h.msgs = []common.Message{}
@@ -129,6 +134,9 @@ func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res 
 
 // AfterDeliverTx specify actions need to do after transaction has been processed (app.Hook interface).
 func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res abci.ResponseDeliverTx) {
+	if ctx.BlockHeight() >= h.stopHeight {
+		return
+	}
 	if ctx.BlockHeight() == 0 {
 		return
 	}
@@ -186,6 +194,9 @@ func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res ab
 
 // AfterEndBlock specify actions need to do after end block period (app.Hook interface).
 func (h *Hook) AfterEndBlock(ctx sdk.Context, req abci.RequestEndBlock, res abci.ResponseEndBlock) {
+	if ctx.BlockHeight() >= h.stopHeight {
+		return
+	}
 	for _, event := range res.Events {
 		h.handleBeginBlockEndBlockEvent(ctx, event)
 	}

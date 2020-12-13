@@ -35,6 +35,8 @@ func (h *Hook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.AB
 		h.handleMsgRemoveReporter(ctx, txHash, msg, evMap, extra)
 	case staking.MsgCreateValidator:
 		h.handleMsgCreateValidator(ctx, txHash, msg, evMap, extra)
+	case staking.MsgEditValidator:
+		h.handleMsgEditValidator(ctx, txHash, msg, evMap, extra)
 	case staking.MsgDelegate:
 		h.handleMsgDelegate(ctx, txHash, msg, evMap, extra)
 	case staking.MsgUndelegate:

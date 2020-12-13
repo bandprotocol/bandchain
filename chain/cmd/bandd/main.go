@@ -40,6 +40,7 @@ const (
 	flagWithPricer            = "with-pricer"
 	flagWithRequestSearch     = "with-request-search"
 	flagReplayMode            = "replay-mode"
+	flagStopEmitterHeight     = "stop-emitter-height"
 )
 
 var invCheckPeriod uint
@@ -138,7 +139,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		bandApp.AddHook(replay.NewHook(
 			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
 			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
-			bandApp.OracleKeeper, viper.GetString(flagReplayMode)))
+			bandApp.OracleKeeper, viper.GetString(flagReplayMode), viper.GetInt64(flagStopEmitterHeight)))
 	}
 	return bandApp
 }
