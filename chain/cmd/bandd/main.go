@@ -78,6 +78,7 @@ func main() {
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
 	rootCmd.PersistentFlags().String(flagReplayMode, "", "[Experimental] Use emitter replay mode")
+	rootCmd.PersistentFlags().String(flagStopEmitterHeight, "", "[Experimental] Use emitter replay stop at height")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
