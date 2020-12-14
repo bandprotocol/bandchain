@@ -5,9 +5,9 @@ import secp256k1, { signatureImport } from 'secp256k1'
 import crypto from 'crypto'
 import { ECPair } from 'bitcoinjs-lib'
 import TransportNodeHid from '@ledgerhq/hw-transport-node-hid'
-// import TransportWebHid from '@ledgerhq/hw-transport-webhid'
+// import TransportWebHid from '@ledgerhq/hw-transport-webhid' // << TODO
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
-import { CosmosApp, LedgerResponse, AppInfo } from 'ledger-cosmos-js'
+import CosmosApp, {LedgerResponse, AppInfo} from 'ledger-cosmos-js'
 import { Transaction } from 'index'
 import {isBip44, bip44ToArray} from './helpers'
 // import CosmosApp from 'ledger-cosmos-js'
@@ -21,8 +21,13 @@ const BECH32_ADDR_ACC_PREFIX = 'band'
 const BECH32_ADDR_VAL_PREFIX = 'bandvaloper'
 const BECH32_ADDR_CONS_PREFIX = 'bandvalcons'
 
-const DEFAULT_DERIVATION_PATH = "m/44'/494'/0'/0'/0"
-const DEFAULT_DERIVATION_PATH_LEDGER = "m/44'/118'/0'/0'/0"
+const DEFAULT_DERIVATION_PATH = "m/44'/494'/0'/0/0"
+const DEFAULT_DERIVATION_PATH_LEDGER = "m/44'/118'/0'/0/0"
+
+enum ConnectType {
+  Node,
+  Web
+}
 
 export class Ledger {
   private cosmosApp?: CosmosApp
@@ -30,24 +35,41 @@ export class Ledger {
 
   private constructor() {}
 
-  static async connectLedgerWeb(hdPath: string): Promise<Ledger> {
+  private static async connect(hdPath: string, connectType: ConnectType): Promise<Ledger> {
     if (!isBip44(hdPath)) throw Error('Not BIP 44')
 
     let ledger = new Ledger()
     ledger.hdPath = hdPath
-    await ledger.connectLedgerWeb()
+    await ledger._connect(connectType)
 
     return ledger
   }
 
-  static async connectLedgerNode(hdPath: string): Promise<Ledger> {
-    if (!isBip44(hdPath)) throw Error('Not BIP 44')
+  private async _connect(connectType: ConnectType): Promise<void> {
+    if (this.cosmosApp) return
 
-    let ledger = new Ledger()
-    ledger.hdPath = hdPath
-    await ledger.connectLedgerNode()
+    let transport
+    switch (connectType) {
+      case ConnectType.Node:
+        transport = await TransportNodeHid.create(3)
+        break
+      case ConnectType.Web:
+        transport = await TransportWebUSB.create(3)
+        break
+    }
+    const ledgerCosmosApp = new CosmosApp(transport)
 
-    return ledger
+    this.cosmosApp = ledgerCosmosApp
+
+    await this.isCosmosAppOpen()
+  }
+
+  static async connectLedgerWeb(hdPath: string = DEFAULT_DERIVATION_PATH_LEDGER): Promise<Ledger> {
+    return Ledger.connect(hdPath, ConnectType.Web)
+  }
+
+  static async connectLedgerNode(hdPath: string = DEFAULT_DERIVATION_PATH_LEDGER): Promise<Ledger> {
+    return Ledger.connect(hdPath, ConnectType.Node)
   }
 
   checkLedgerError(response: LedgerResponse): void {
@@ -59,27 +81,27 @@ export class Ledger {
     }
   }
 
-  private async connectLedgerNode(): Promise<void> {
-    if (this.cosmosApp) return
+  // private async _connectLedgerNode(): Promise<void> {
+  //   if (this.cosmosApp) return
 
-    const transport = await TransportNodeHid.create(3, 3)
-    const ledgerCosmosApp = new CosmosApp(transport)
+  //   const transport = await TransportNodeHid.create(3, 3)
+  //   const ledgerCosmosApp = new CosmosApp(transport)
 
-    this.cosmosApp = ledgerCosmosApp
+  //   this.cosmosApp = ledgerCosmosApp
 
-    await this.isCosmosAppOpen()
-  }
+  //   await this.isCosmosAppOpen()
+  // }
 
-  private async connectLedgerWeb(): Promise<void> {
-    if (this.cosmosApp) return
+  // private async _connectLedgerWeb(): Promise<void> {
+  //   if (this.cosmosApp) return
 
-    const transport = await TransportWebUSB.create(3, 3)
-    const ledgerCosmosApp = new CosmosApp(transport)
+  //   const transport = await TransportWebUSB.create(3, 3)
+  //   const ledgerCosmosApp = new CosmosApp(transport)
 
-    this.cosmosApp = ledgerCosmosApp
+  //   this.cosmosApp = ledgerCosmosApp
 
-    await this.isCosmosAppOpen()
-  }
+  //   await this.isCosmosAppOpen()
+  // }
 
   async isCosmosAppOpen(): Promise<boolean> {
     // await this.connect()

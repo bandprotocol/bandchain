@@ -5,8 +5,14 @@ import { Message, Data, Wallet, Client, Transaction, Obi } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
-  const { PrivateKey, PublicKey, Address } = Wallet
+  const { PrivateKey, PublicKey, Address, Ledger } = Wallet
   const { Coin } = Data
+
+  const temp = async () => {
+    let ledger = await Ledger.connectLedgerNode()
+    ledger.appInfo()
+  }
+  
 
   const from_addr = Address.fromAccBech32(
     'band1jrhuqrymzt4mnvgw8cvy3s9zhx3jj0dq30qpte',
