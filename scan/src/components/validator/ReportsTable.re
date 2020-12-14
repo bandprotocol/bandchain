@@ -31,11 +31,9 @@ module Styles = {
 module DataSourceItem = {
   [@react.component]
   let make = (~dataSource: ReportSub.ValidatorReport.report_details_t) => {
-    <Row.Grid>
-      <Col.Grid col=Col.Two>
-        <Text block=true value={dataSource.externalID} color=Colors.gray7 />
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+    <Row>
+      <Col col=Col.Two> <Text block=true value={dataSource.externalID} color=Colors.gray7 /> </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~wrap=`nowrap, ())}>
           <TypeID.DataSource
             id={
@@ -52,8 +50,8 @@ module DataSourceItem = {
             ellipsis=true
           />
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <Text
           block=true
           value={
@@ -62,11 +60,9 @@ module DataSourceItem = {
                 }
           color=Colors.gray7
         />
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
-        <Text block=true value={dataSource.exitCode} color=Colors.gray7 />
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Two> <Text block=true value={dataSource.exitCode} color=Colors.gray7 /> </Col>
+      <Col col=Col.Three>
         <Text
           block=true
           value={dataSource.data |> JsBuffer.toUTF8}
@@ -74,8 +70,8 @@ module DataSourceItem = {
           color=Colors.gray7
           ellipsis=true
         />
-      </Col.Grid>
-    </Row.Grid>;
+      </Col>
+    </Row>;
   };
 };
 
@@ -84,7 +80,7 @@ module RenderBody = {
   let make =
       (~reserveIndex, ~reportsSub: ApolloHooks.Subscription.variant(ReportSub.ValidatorReport.t)) => {
     let (show, setShow) = React.useState(_ => false);
-    <TBody.Grid
+    <TBody
       key={
         switch (reportsSub) {
         | Data({txHash}) => txHash |> Hash.toHex
@@ -92,14 +88,14 @@ module RenderBody = {
         }
       }
       paddingH={`px(24)}>
-      <Row.Grid alignItems=Row.Center minHeight={`px(30)}>
-        <Col.Grid col=Col.Three>
+      <Row alignItems=Row.Center minHeight={`px(30)}>
+        <Col col=Col.Three>
           {switch (reportsSub) {
            | Data({request: {id}}) => <TypeID.Request id />
            | _ => <LoadingCensorBar width=135 height=15 />
            }}
-        </Col.Grid>
-        <Col.Grid col=Col.Four>
+        </Col>
+        <Col col=Col.Four>
           {switch (reportsSub) {
            | Data({request: {oracleScript: {oracleScriptID, name}}}) =>
              <div className={CssHelper.flexBox()}>
@@ -109,14 +105,14 @@ module RenderBody = {
              </div>
            | _ => <LoadingCensorBar width=270 height=15 />
            }}
-        </Col.Grid>
-        <Col.Grid col=Col.Three>
+        </Col>
+        <Col col=Col.Three>
           {switch (reportsSub) {
            | Data({txHash}) => <TxLink txHash width=140 />
            | _ => <LoadingCensorBar width=170 height=15 />
            }}
-        </Col.Grid>
-        <Col.Grid col=Col.Two>
+        </Col>
+        <Col col=Col.Two>
           <div
             onClick={_ => setShow(prev => !prev)}
             className={Css.merge([CssHelper.flexBox(~justify=`flexEnd, ()), Styles.toggle])}>
@@ -138,23 +134,23 @@ module RenderBody = {
              | _ => <LoadingCensorBar width=100 height=15 />
              }}
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <div className={Styles.dataSourceTable(show)}>
-        <Row.Grid>
-          <Col.Grid col=Col.Two>
+        <Row>
+          <Col col=Col.Two>
             <Text block=true value="External ID" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Three>
+          </Col>
+          <Col col=Col.Three>
             <Text block=true value="Data Source" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Two>
+          </Col>
+          <Col col=Col.Two>
             <Text block=true value="Param" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Two>
+          </Col>
+          <Col col=Col.Two>
             <Text block=true value="Exit Code" weight=Text.Semibold color=Colors.gray7 />
-          </Col.Grid>
-          <Col.Grid col=Col.Three>
+          </Col>
+          <Col col=Col.Three>
             <Text
               block=true
               value="Value"
@@ -162,8 +158,8 @@ module RenderBody = {
               align=Text.Right
               color=Colors.gray7
             />
-          </Col.Grid>
-        </Row.Grid>
+          </Col>
+        </Row>
         {switch (reportsSub) {
          | Data({reportDetails}) =>
            reportDetails
@@ -177,7 +173,7 @@ module RenderBody = {
          | _ => <LoadingCensorBar width=170 height=50 />
          }}
       </div>
-    </TBody.Grid>;
+    </TBody>;
   };
 };
 
@@ -249,8 +245,8 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (allSub) {
               | Data((_, reportsCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -265,11 +261,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Three>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Three>
                {switch (allSub) {
                 | Data((_, reportsCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -289,15 +285,15 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Five>
+             </Col>
+             <Col col=Col.Five>
                <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((reports, reportsCount)) =>
        let pageCount = Page.getPageCount(reportsCount, pageSize);

@@ -2,7 +2,7 @@ import requests
 import time
 
 from dacite import from_dict
-from typing import List
+from typing import List, Optional
 from .wallet import Address
 from .data import (
     Account,
@@ -17,6 +17,7 @@ from .data import (
     TransactionBlockMode,
     ReferencePrice,
     ReferencePriceUpdated,
+    EVMProof,
 )
 
 
@@ -87,10 +88,13 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_account(self, address: Address) -> Account:
+    def get_account(self, address: Address) -> Optional[Account]:
+        data = self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"]
+        if data["address"] == "":
+            return None
         return from_dict(
             data_class=Account,
-            data=self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"],
+            data=data,
             config=DACITE_CONFIG,
         )
 
@@ -130,8 +134,9 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_reporters(self, validator: str) -> List[str]:
-        return self._get_result("/oracle/reporters/{}".format(validator))
+    def get_reporters(self, validator: Address) -> List[Address]:
+        data = self._get_result("/oracle/reporters/{}".format(validator.to_val_bech32()))
+        return [Address.from_acc_bech32(bech) for bech in data]
 
     def get_price_symbols(self, min_count: int, ask_count: int) -> List[str]:
         return self._get_result(
@@ -157,7 +162,7 @@ class Client(object):
             raise ValueError("There is no request message in this tx")
         return request_ids
 
-    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int):
+    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
         symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
         data = self._post(
             "/oracle/request_prices",
@@ -199,3 +204,7 @@ class Client(object):
 
         except:
             raise ValueError("Error quering prices")
+
+    def get_request_evm_proof_by_request_id(self, request_id: int) -> EVMProof:
+        data = self._get_result("/oracle/proof/{}".format(request_id))
+        return EVMProof(json_proof=data["jsonProof"], evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])))

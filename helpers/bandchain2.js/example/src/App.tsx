@@ -1,7 +1,7 @@
 import React from 'react'
 import logo from './logo.svg'
 import './App.css'
-import { Message, Data, Wallet, Client, Transaction } from 'bandchain2.js'
+import { Message, Data, Wallet, Client, Transaction, Obi } from 'bandchain2.js'
 
 function App() {
   const { MsgSend } = Message
@@ -158,6 +158,25 @@ function App() {
     .getRequestByID(2)
     .then((e) => console.log('request by id: ', e))
     .catch((err) => console.log(err))
+
+  const obi = new Obi(`
+{
+  symbol: string,
+  multiplier: u64
+} / {
+  price: u64,
+  sources: [{ name: string, time: u64 }]
+}
+`)
+
+  const encodedData = obi.encodeInput({
+    symbol: 'BTC',
+    multiplier: BigInt('1000000000'),
+  })
+
+  console.log(encodedData)
+
+  console.log(obi.decodeInput(encodedData))
 
   return (
     <div className="App">

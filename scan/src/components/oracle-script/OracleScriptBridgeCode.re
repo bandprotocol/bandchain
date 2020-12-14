@@ -177,8 +177,8 @@ module GenerateDecodeCode = {
       | _ => "Code is not available."
       };
     <>
-      <Row.Grid marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
-        <Col.Grid>
+      <Row marginBottom=24 marginTop=24 marginTopSm=12 marginBottomSm=12>
+        <Col>
           <div className={CssHelper.flexBox()}>
             <Icon name="fal fa-file" size=16 />
             <HSpacing size=Spacing.sm />
@@ -190,8 +190,8 @@ module GenerateDecodeCode = {
               color=Colors.gray7
             />
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <div className=Styles.tableLowerContainer>
         <div className=Styles.copyContainer> <CopyButton data=code title="Copy Code" /> </div>
         {code |> renderCode}
@@ -205,8 +205,8 @@ let make = (~schema) => {
   let (targetPlatform, setTargetPlatform) = React.useState(_ => Ethereum);
   let (language, setLanguage) = React.useState(_ => Solidity);
   <div className=Styles.tableWrapper>
-    <Row.Grid marginBottom=24>
-      <Col.Grid col=Col.Three colSm=Col.Six>
+    <Row marginBottom=24>
+      <Col col=Col.Three colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Heading size=Heading.H5 value="Target Platform" />
           <HSpacing size=Spacing.xs />
@@ -238,8 +238,8 @@ let make = (~schema) => {
             </select>
           </div>
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Three colSm=Col.Six>
+      </Col>
+      <Col col=Col.Three colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Heading size=Heading.H5 value="Language" />
           <HSpacing size=Spacing.xs />
@@ -267,10 +267,10 @@ let make = (~schema) => {
             </select>
           </div>
         </div>
-      </Col.Grid>
-    </Row.Grid>
-    <Row.Grid marginBottom=24 marginBottomSm=12>
-      <Col.Grid>
+      </Col>
+    </Row>
+    <Row marginBottom=24 marginBottomSm=12>
+      <Col>
         <div className={CssHelper.flexBox()}>
           <Icon name="fal fa-file" size=16 />
           <HSpacing size=Spacing.sm />
@@ -282,8 +282,8 @@ let make = (~schema) => {
             color=Colors.gray7
           />
         </div>
-      </Col.Grid>
-    </Row.Grid>
+      </Col>
+    </Row>
     <div className=Styles.tableLowerContainer>
       <div className=Styles.copyContainer> <CopyButton data=schema title="Copy Code" /> </div>
       {schema |> renderCode}

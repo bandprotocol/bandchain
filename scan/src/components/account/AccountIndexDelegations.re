@@ -7,7 +7,7 @@ module Styles = {
 
 let renderBody =
     (reserveIndex, delegationsSub: ApolloHooks.Subscription.variant(DelegationSub.stake_t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (delegationsSub) {
       | Data({amount, operatorAddress, reward}) =>
@@ -19,8 +19,8 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Six>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Six>
         {switch (delegationsSub) {
          | Data({moniker, operatorAddress, identity}) =>
            <div className={CssHelper.flexBox()}>
@@ -33,8 +33,8 @@ let renderBody =
            </div>
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (delegationsSub) {
            | Data({amount}) =>
@@ -43,8 +43,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (delegationsSub) {
            | Data({reward}) =>
@@ -52,9 +52,9 @@ let renderBody =
            | _ => <LoadingCensorBar width=200 height=20 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -98,8 +98,8 @@ let make = (~address) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (delegationsCountSub) {
               | Data(delegationsCount) =>
                 <div className={CssHelper.flexBox()}>
@@ -119,11 +119,11 @@ let make = (~address) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Six>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Six>
                {switch (delegationsCountSub) {
                 | Data(delegationsCount) =>
                   <div className={CssHelper.flexBox()}>
@@ -143,8 +143,8 @@ let make = (~address) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Amount (BAND)"
@@ -152,8 +152,8 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Three>
+             </Col>
+             <Col col=Col.Three>
                <Text
                  block=true
                  value="Reward (BAND)"
@@ -161,9 +161,9 @@ let make = (~address) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (delegationsSub) {
      | Data(delegations) =>
        delegations->Belt.Array.size > 0

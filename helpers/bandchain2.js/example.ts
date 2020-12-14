@@ -1,8 +1,8 @@
-import { Message, Data, Client } from './src/index'
-import { Address, PrivateKey } from './src/wallet'
+import { Message, Data, Client, Wallet, Obi } from './src/index'
 
 const { MsgSend } = Message
 const { Coin } = Data
+const { Address, PrivateKey } = Wallet
 
 const amount = [new Coin(10000, 'uband')]
 const from_addr = Address.fromAccBech32(
@@ -16,7 +16,7 @@ const msgSend = new MsgSend(from_addr, to_addr, amount)
 let result = msgSend.asJson()
 console.log(JSON.stringify(result))
 
-const client = new Client('http://d3n-debug.bandprotocol.com/rest')
+const client = new Client('https://guanyu-testnet3-query.bandchain.org')
 
 console.log(PrivateKey.generate())
 const x = PrivateKey.fromMnemonic('s')
@@ -64,4 +64,36 @@ client
 client
   .getRequestByID(44893)
   .then((e) => console.log('request: ', JSON.stringify(e)))
+  .catch((err) => console.log(err))
+
+console.log('---------------------------------------')
+
+const obi = new Obi(`
+{
+  symbol: string,
+  multiplier: u64
+} / {
+  price: u64,
+  sources: [{ name: string, time: u64 }]
+}
+`)
+
+const encodedData = obi.encodeInput({
+  symbol: 'BTC',
+  multiplier: BigInt('1000000000'),
+})
+
+console.log(encodedData)
+
+console.log(obi.decodeInput(encodedData))
+
+
+const minCount = 10
+const askCount = 16
+
+const pairs = ["BTC/USDT", "ETH/USDT"]
+
+client
+  .getReferenceData(pairs, minCount, askCount)
+  .then((e) => console.log('get ref data: ', JSON.stringify(e)))
   .catch((err) => console.log(err))

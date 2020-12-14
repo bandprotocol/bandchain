@@ -11,6 +11,7 @@ import {
   OracleScript,
   RequestInfo,
   HexBytes,
+  EVMProof
 } from './data'
 import { Address } from './wallet'
 
@@ -80,6 +81,8 @@ export default class Client {
    */
 
   async getDataSource(id: number): Promise<DataSource> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/data_sources/${id}`)
     return {
       owner: Address.fromAccBech32(response.owner),
@@ -89,11 +92,12 @@ export default class Client {
     }
   }
 
-  async getAccount(address: Address): Promise<Account> {
+  async getAccount(address: Address): Promise<Account | undefined> {
     const response = await this.getResult(
       `/auth/accounts/${address.toAccBech32()}`,
     )
     const value = response.value
+    if (!value.address) return
     return {
       address: Address.fromAccBech32(value.address),
       coins: value.coins.map(
@@ -112,6 +116,8 @@ export default class Client {
    */
 
   async getOracleScript(id: number): Promise<OracleScript> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/oracle_scripts/${id}`)
     return {
       owner: Address.fromAccBech32(response.owner),
@@ -195,7 +201,9 @@ export default class Client {
     }
   }
 
-  async getReferenceData(pairs: string[]): Promise<ReferenceData[]> {
+  async getReferenceData(pairs: string[], minCount: number, askCount: number): Promise<ReferenceData[]> {
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
     let symbolSet: Set<string> = new Set()
     pairs.forEach((pair: string) => {
       let symbols = pair.split('/')
@@ -207,8 +215,8 @@ export default class Client {
     let symbolList: string[] = Array.from(symbolSet)
     let pricerBody = {
       symbols: symbolList,
-      min_count: 3,
-      ask_count: 4,
+      min_count: minCount,
+      ask_count: askCount,
     }
     let priceData = await this.postResult('/oracle/request_prices', pricerBody)
 
@@ -273,6 +281,10 @@ export default class Client {
     minCount: number,
     askCount: number,
   ): Promise<RequestInfo> {
+    if (!Number.isInteger(oid)) throw Error('oid is not an integer')
+    if (!Number.isInteger(minCount)) throw Error('minCount is not an integer')
+    if (!Number.isInteger(askCount)) throw Error('askCount is not an integer')
+
     const response = await this.getResult(`/oracle/request_search`, {
       params: {
         oid: oid,
@@ -370,6 +382,8 @@ export default class Client {
    */
 
   async getRequestByID(id: number): Promise<RequestInfo> {
+    if (!Number.isInteger(id)) throw Error('id is not an integer')
+
     const response = await this.getResult(`/oracle/requests/${id}`)
     return {
       request: {
@@ -474,5 +488,14 @@ export default class Client {
     }
 
     return requestIDs
+  }
+
+  async getRequestEVMProofByRequestID(requestID: number): Promise<EVMProof>  {
+    if (!Number.isInteger(requestID)) throw Error('requestID is not an integer')
+    const response = await this.getResult(`/oracle/proof/${requestID}`)
+    return {
+      jsonProof: response.jsonProof,
+      evmProofBytes: Buffer.from(response.evmProofBytes, "hex")
+    }
   }
 }
