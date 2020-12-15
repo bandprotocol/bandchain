@@ -3,7 +3,6 @@ package yoda
 import (
 	"fmt"
 	"strings"
-	"sync/atomic"
 	"time"
 
 	sdkCtx "github.com/cosmos/cosmos-sdk/client/context"
@@ -122,8 +121,8 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 			switch txRes.Code {
 			case 0:
 				l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
-				atomic.AddInt64(&c.pendingGauge, int64(-len(reports)))
-				atomic.AddInt64(&c.submittedCount, int64(len(reports)))
+				c.updatePendingGauge(int64(-len(reports)))
+				c.updateSubmittedCount(int64(len(reports)))
 				return
 			case sdkerrors.ErrOutOfGas.ABCICode():
 				// Increase gas limit and try to broadcast again

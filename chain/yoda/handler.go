@@ -3,7 +3,6 @@ package yoda
 import (
 	"encoding/hex"
 	"strconv"
-	"sync/atomic"
 
 	ckeys "github.com/cosmos/cosmos-sdk/client/keys"
 	"github.com/cosmos/cosmos-sdk/crypto/keys"
@@ -219,7 +218,7 @@ func handleRawRequests(c *Context, l *Logger, id types.RequestID, reqs []rawRequ
 }
 
 func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {
-	atomic.AddInt64(&c.handlingGauge, 1)
+	c.updateHandlingGauge(1)
 
 	exec, err := GetExecutable(c, l, req.dataSourceHash)
 	if err != nil {
@@ -268,5 +267,5 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			version:   result.Version,
 		}
 	}
-	atomic.AddInt64(&c.handlingGauge, -1)
+	c.updateHandlingGauge(-1)
 }
