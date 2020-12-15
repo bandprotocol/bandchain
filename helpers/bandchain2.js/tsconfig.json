@@ -43,9 +43,12 @@
     /* Module Resolution Options */
     "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
     "baseUrl": "src" /* Base directory to resolve non-absolute module names. */,
-    // "paths": {},                           /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */
+    // "paths": {}                            /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */,
     // "rootDirs": [],                        /* List of root folders whose combined content represents the structure of the project at runtime. */
-    "typeRoots": ["./src/types"],                       /* List of folders to include type definitions from. */
+    "typeRoots": [
+      "./typings",
+      "./node_modules/@types"
+    ] /* List of folders to include type definitions from. */,
     // "types": [],                           /* Type declaration files to be included in compilation. */
     "allowSyntheticDefaultImports": true /* Allow default imports from modules with no default export. This does not affect code emit, just typechecking. */,
     "esModuleInterop": true /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */,
@@ -64,7 +67,7 @@
 
     /* Advanced Options */
     "skipLibCheck": true /* Skip type checking of declaration files. */,
-    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+    "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */
   },
-  "include": ["src/**/*", "example-ledger.ts"]
+  "include": ["src/**/*"]
 }

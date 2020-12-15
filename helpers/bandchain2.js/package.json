@@ -22,7 +22,7 @@
   "scripts": {
     "clean": "rimraf coverage lib",
     "tsc": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
-    "prepublish": "yarn clean && yarn copy-dts-cjs && yarn copy-dts-esm && yarn tsc ",
+    "prepublish": "yarn clean && yarn copy-dts-cjs && yarn copy-dts-esm && yarn tsc",
     "dev": "ts-node example.ts",
     "dev:watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' example.ts",
     "test": "jest --coverage",
