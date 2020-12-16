@@ -1,17 +1,14 @@
+///<reference path="../typings/ledger-cosmos-js/index.d.ts" />
+
 import * as bip39 from 'bip39'
 import * as bip32 from 'bip32'
 import * as bech32 from 'bech32'
 import secp256k1, { signatureImport } from 'secp256k1'
 import crypto from 'crypto'
 import { ECPair } from 'bitcoinjs-lib'
-import TransportNodeHid from '@ledgerhq/hw-transport-node-hid'
-// import TransportWebHid from '@ledgerhq/hw-transport-webhid' // << TODO
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb'
 import CosmosApp, {LedgerResponse, AppInfo} from 'ledger-cosmos-js'
 import { Transaction } from 'index'
-import {isBip44, bip44ToArray} from './helpers'
-// import CosmosApp from 'ledger-cosmos-js'
-
+import {isBip44, bip44ToArray, promiseTimeout} from './helpers'
 
 const BECH32_PUBKEY_ACC_PREFIX = 'bandpub'
 const BECH32_PUBKEY_VAL_PREFIX = 'bandvaloperpub'
@@ -51,14 +48,24 @@ export class Ledger {
     let transport
     switch (connectType) {
       case ConnectType.Node:
+        const { default: TransportNodeHid } = require('@ledgerhq/hw-transport-node-hid')
         transport = await TransportNodeHid.create(3)
+
         break
       case ConnectType.Web:
-        transport = await TransportWebUSB.create(3)
+
+        if (navigator.usb) {
+          const { default: TransportWebUSB } = require('@ledgerhq/hw-transport-webusb')
+          transport = await TransportWebUSB.create(3)
+        } else {
+          const { default: TransportWebHid } = require('@ledgerhq/hw-transport-u2f')
+          transport = await TransportWebHid.create(3)
+        }
+
         break
     }
-    const ledgerCosmosApp = new CosmosApp(transport)
 
+    const ledgerCosmosApp = new CosmosApp(transport)
     this.cosmosApp = ledgerCosmosApp
 
     await this.isCosmosAppOpen()
@@ -72,7 +79,12 @@ export class Ledger {
     return Ledger.connect(hdPath, ConnectType.Node)
   }
 
-  checkLedgerError(response: LedgerResponse): void {
+  checkLedgerError(response?: LedgerResponse, errorOnUndefined?: string): void {
+    if (!response) {
+      if (errorOnUndefined) throw new Error(errorOnUndefined)
+      return
+    }
+
     switch(response.error_message) {
       case `No errors`:
         return
@@ -81,80 +93,33 @@ export class Ledger {
     }
   }
 
-  // private async _connectLedgerNode(): Promise<void> {
-  //   if (this.cosmosApp) return
-
-  //   const transport = await TransportNodeHid.create(3, 3)
-  //   const ledgerCosmosApp = new CosmosApp(transport)
-
-  //   this.cosmosApp = ledgerCosmosApp
-
-  //   await this.isCosmosAppOpen()
-  // }
-
-  // private async _connectLedgerWeb(): Promise<void> {
-  //   if (this.cosmosApp) return
-
-  //   const transport = await TransportWebUSB.create(3, 3)
-  //   const ledgerCosmosApp = new CosmosApp(transport)
-
-  //   this.cosmosApp = ledgerCosmosApp
-
-  //   await this.isCosmosAppOpen()
-  // }
-
   async isCosmosAppOpen(): Promise<boolean> {
-    // await this.connect()
+    const response = await promiseTimeout(this.cosmosApp!.appInfo(), 5000)
+    this.checkLedgerError(response, `Can't connect with CosmosApp`)
 
-    const response = await this.cosmosApp!.appInfo()
-    this.checkLedgerError(response)
-
-    const { appName } = response
+    const { appName } = response!
     if (appName.toLowerCase() !== 'cosmos') throw new Error(`Please close ${appName} and open the Cosmos app.`)
 
     return true
   }
 
-  // async getCosmosAppVersion(): Promise<string> {
-  //   await this.connect
-
-  //   const response = await this.cosmosApp!.getVersion()
-  //   this.checkLedgerError(response)
-
-  //   const {major, minor, patch} = response
-  //   const version = `${major}.${minor}.${patch}`
-
-  //   return version
-  // }
-
   async appInfo(): Promise<AppInfo> {
-    const response = await this.cosmosApp!.appInfo()
-    this.checkLedgerError(response)
+    const response = await promiseTimeout(this.cosmosApp!.appInfo(), 5000)
+    this.checkLedgerError(response, `Can't connect with CosmosApp`)
 
-    return response
+    return response!
   }
 
-  // async isReady(): Promise<void> {
-  //   const _ = await this.getCosmosAppVersion()
-
-  // }
-
-  // async get
-
-  // async isReady(): Promise<boolean> {
-  //   const _ = await this.
-
-  //   return true
-  // }
-
   async sign(transaction: Transaction): Promise<Buffer> {
-    const signature = await this.cosmosApp!.sign(bip44ToArray(this.hdPath), transaction.getSignData())
-    return Buffer.from(signatureImport(signature.signature))
+    const response = await this.cosmosApp!.sign(bip44ToArray(this.hdPath), transaction.getSignData())
+    this.checkLedgerError(response)
+    return Buffer.from(signatureImport(response.signature))
   }
 
   async toPubKey(): Promise<PublicKey> {
-    const response = await this.cosmosApp!.getAddressAndPubKey(bip44ToArray(this.hdPath), 'band')
-    return PublicKey.fromHex(response.compressed_pk.toString('hex'))
+    const response = await promiseTimeout(this.cosmosApp!.getAddressAndPubKey(bip44ToArray(this.hdPath), 'band'), 5000)
+    this.checkLedgerError(response, `Can't connect with CosmosApp`)
+    return PublicKey.fromHex(response!.compressed_pk.toString('hex'))
   }
 }
 
