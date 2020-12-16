@@ -191,6 +191,12 @@ class ReferencePrice(object):
     updated_at: ReferencePriceUpdated
 
 
+@dataclass
+class EVMProof(object):
+    json_proof: dict
+    evm_proof_bytes: HexBytes
+
+
 DACITE_CONFIG = Config(
     type_hooks={
         int: int,

@@ -5,7 +5,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (requestsSub) {
       | Data({id}) => id |> ID.Request.toString
@@ -13,14 +13,14 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Two>
         {switch (requestsSub) {
          | Data({id}) => <TypeID.Request id />
          | _ => <LoadingCensorBar width=135 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (requestsSub) {
          | Data({oracleScript: {oracleScriptID, name}}) =>
            <div className={CssHelper.flexBox()}>
@@ -30,8 +30,8 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            </div>
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (requestsSub) {
          | Data({requestedValidators, minCount, reports}) =>
            <ProgressBar
@@ -41,16 +41,16 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            />
          | _ => <LoadingCensorBar width=212 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({resolveStatus}) => <RequestStatus resolveStatus />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({transaction}) =>
@@ -66,9 +66,9 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
              </>
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -133,8 +133,8 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="requestsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid col=Col.Twelve>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Col col=Col.Twelve>
           <Heading value="All Requests" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (allSub) {
            | Data((_, totalRequestCount)) =>
@@ -144,13 +144,13 @@ let make = () => {
              />
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       {isMobile
          ? React.null
-         : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Two>
+         : <THead>
+             <Row alignItems=Row.Center>
+               <Col col=Col.Two>
                  <Text
                    block=true
                    value="Request ID"
@@ -158,11 +158,11 @@ let make = () => {
                    weight=Text.Semibold
                    color=Colors.gray7
                  />
-               </Col.Grid>
-               <Col.Grid col=Col.Four>
+               </Col>
+               <Col col=Col.Four>
                  <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
-               </Col.Grid>
-               <Col.Grid col=Col.Four>
+               </Col>
+               <Col col=Col.Four>
                  <Text
                    block=true
                    value="Report Status"
@@ -170,8 +170,8 @@ let make = () => {
                    weight=Text.Semibold
                    color=Colors.gray7
                  />
-               </Col.Grid>
-               <Col.Grid col=Col.Two>
+               </Col>
+               <Col col=Col.Two>
                  <Text
                    block=true
                    value="Timestamp"
@@ -179,9 +179,9 @@ let make = () => {
                    color=Colors.gray7
                    align=Text.Right
                  />
-               </Col.Grid>
-             </Row.Grid>
-           </THead.Grid>}
+               </Col>
+             </Row>
+           </THead>}
       {switch (allSub) {
        | Data((requests, requestsCount)) =>
          let pageCount = Page.getPageCount(requestsCount, pageSize);
