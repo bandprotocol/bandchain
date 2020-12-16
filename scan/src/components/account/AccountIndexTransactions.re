@@ -25,8 +25,8 @@ let make = (~accountAddress: Address.t) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (txsCountSub) {
               | Data(txsCount) =>
                 <div className={CssHelper.flexBox()}>
@@ -41,11 +41,11 @@ let make = (~accountAddress: Address.t) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Two>
                {switch (txsCountSub) {
                 | Data(txsCount) =>
                   <div className={CssHelper.flexBox()}>
@@ -65,11 +65,11 @@ let make = (~accountAddress: Address.t) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.One>
+             </Col>
+             <Col col=Col.One>
                <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.One>
+             </Col>
+             <Col col=Col.One>
                <Text
                  block=true
                  value="Status"
@@ -78,8 +78,8 @@ let make = (~accountAddress: Address.t) => {
                  color=Colors.gray7
                  align=Text.Center
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Gas Fee (BAND)"
@@ -87,12 +87,12 @@ let make = (~accountAddress: Address.t) => {
                  color=Colors.gray7
                  align=Text.Center
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Six>
+             </Col>
+             <Col col=Col.Six>
                <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     <TxsTable txsSub msgTransform={transform(accountAddress)} />
     {switch (txsCountSub) {
      | Data(txsCount) =>

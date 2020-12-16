@@ -33,8 +33,6 @@ module Styles = {
     ]);
 
   let padding = style([padding(`px(20))]);
-
-  let loading = style([width(`px(65)), height(`px(20)), marginBottom(`px(16))]);
 };
 
 [@react.component]
@@ -90,7 +88,7 @@ let make = (~request: RequestSub.t) => {
     </>
   | None =>
     <EmptyContainer height={`px(130)} backgroundColor=Colors.blueGray1>
-      <img src=Images.loadingCircles className=Styles.loading />
+      <Loading marginBottom={`px(16)} />
       <Heading
         size=Heading.H4
         value="Waiting for proof"

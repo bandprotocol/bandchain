@@ -1,11 +1,16 @@
-from distutils.core import setup
+import setuptools
 
-setup(
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
     name="pyband",
     packages=["pyband"],
-    version="0.0.9",
+    version="0.1.0",
     license="MIT",
     description="Python library for BandChain",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author="Band Protocol",
     author_email="dev@bandprotocol.com",
     url="https://github.com/bandprotocol/bandchain",

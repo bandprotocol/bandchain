@@ -1,8 +1,6 @@
 module Styles = {
   open Css;
 
-  let tableWrapper = style([padding2(~v=`px(20), ~h=`px(15))]);
-
   let nameContainer = style([width(`px(160))]);
 
   let icon = style([width(`px(80)), height(`px(80))]);
@@ -23,57 +21,30 @@ let make = (~id) =>
     let%Sub numRevisions = numRevisionsSub;
     let%Sub revisions = revisionsSub;
 
-    <div className=Styles.tableWrapper>
-      <Row>
-        <HSpacing size={`px(25)} />
-        <Text value={numRevisions |> string_of_int} weight=Text.Bold />
-        <HSpacing size={`px(5)} />
-        <Text value="Revisions" />
-      </Row>
-      <VSpacing size=Spacing.md />
-      <VSpacing size=Spacing.sm />
+    <div>
       {numRevisions > 0
          ? <>
              <THead>
-               <Row>
+               <Row alignItems=Row.Center>
                  <Col> <HSpacing size=Spacing.md /> </Col>
-                 <Col size=2.5>
-                   <div className=TElement.Styles.hashContainer>
+                 <Col col=Col.Three>
+                   <div className={CssHelper.flexBox()}>
+                     <Text value={numRevisions |> string_of_int} weight=Text.Semibold />
+                     <HSpacing size={`px(5)} />
                      <Text
-                       block=true
-                       value="NAME"
-                       size=Text.Sm
+                       value={numRevisions > 0 ? "Revisions" : "Revision"}
                        weight=Text.Semibold
-                       color=Colors.gray6
                      />
                    </div>
                  </Col>
-                 <Col size=3.3>
-                   <Text
-                     block=true
-                     value="TIMESTAMP"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
+                 <Col col=Col.Four>
+                   <Text block=true value="Timestamp" size=Text.Md weight=Text.Semibold />
                  </Col>
-                 <Col size=1.6>
-                   <Text
-                     block=true
-                     value="BLOCK"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
+                 <Col col=Col.One>
+                   <Text block=true value="Block" size=Text.Md weight=Text.Semibold />
                  </Col>
-                 <Col size=3.9>
-                   <Text
-                     block=true
-                     value="TX HASH"
-                     size=Text.Sm
-                     weight=Text.Semibold
-                     color=Colors.gray6
-                   />
+                 <Col col=Col.Four>
+                   <Text block=true value="TX HASH" size=Text.Md weight=Text.Semibold />
                  </Col>
                  <Col> <HSpacing size=Spacing.lg /> </Col>
                </Row>
@@ -81,6 +52,7 @@ let make = (~id) =>
              {revisions
               ->Belt.Array.map(({name, transaction}) => {
                   <TBody
+                    paddingH={`px(24)}
                     key={
                       switch (transaction) {
                       | Some(tx) => tx.hash |> Hash.toHex(~upper=true)
@@ -89,7 +61,7 @@ let make = (~id) =>
                     }>
                     <Row>
                       <Col> <HSpacing size=Spacing.md /> </Col>
-                      <Col size=2.5>
+                      <Col col=Col.Three>
                         <div className=Styles.nameContainer>
                           <Text
                             block=true
@@ -101,7 +73,7 @@ let make = (~id) =>
                           />
                         </div>
                       </Col>
-                      <Col size=3.3>
+                      <Col col=Col.Four>
                         {switch (transaction) {
                          | Some(tx) =>
                            <Timestamp
@@ -114,13 +86,13 @@ let make = (~id) =>
                          | None => <Text value="Genesis" weight=Text.Regular code=true />
                          }}
                       </Col>
-                      <Col size=1.6>
+                      <Col col=Col.One>
                         {switch (transaction) {
                          | Some(tx) => <TypeID.Block id={tx.blockHeight} />
                          | None => <Text value="Genesis" />
                          }}
                       </Col>
-                      <Col size=3.9>
+                      <Col col=Col.Four>
                         {switch (transaction) {
                          | Some(tx) => <TxLink txHash={tx.hash} width=300 weight=Text.Medium />
                          | None =>
