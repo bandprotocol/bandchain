@@ -49,8 +49,6 @@ module Styles = {
 
   let ledgerGuide = style([width(`px(248)), height(`px(38))]);
 
-  let loading = style([width(`px(100))]);
-
   let connectBtn = (~isLoading, ()) =>
     style([
       marginTop(`px(10)),
@@ -189,6 +187,7 @@ let make = (~chainID, ~ledgerApp) => {
              spacing={Text.Em(0.03)}
              weight=Text.Medium
            />
+           <Loading width={`px(100)} />
          </>
        | Error(err) =>
          <Text

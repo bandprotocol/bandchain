@@ -95,8 +95,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
   <Section pbSm=0>
     <div className=CssHelper.container>
       <Heading value="Validator Details" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
-      <Row.Grid marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
-        <Col.Grid col=Col.Nine>
+      <Row marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
+        <Col col=Col.Nine>
           <div
             className={Css.merge([
               CssHelper.flexBox(),
@@ -135,8 +135,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
              | _ => <LoadingCensorBar width=270 height=20 />
              }}
           </div>
-        </Col.Grid>
-        <Col.Grid col=Col.Three>
+        </Col>
+        <Col col=Col.Three>
           <div
             className={Css.merge([
               CssHelper.flexBox(~justify=`flexEnd, ()),
@@ -174,13 +174,13 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
              | _ => <LoadingCensorBar width=75 height=14 />
              }}
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24 marginBottomSm=16>
-        <Col.Grid>
+        </Col>
+      </Row>
+      <Row marginBottom=24 marginBottomSm=16>
+        <Col>
           <div className=Styles.infoContainer>
-            <Row.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six mbSm=48>
+            <Row>
+              <Col col=Col.Three colSm=Col.Six mbSm=48>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
                     value="Voting power"
@@ -215,8 +215,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    | _ => <LoadingCensorBar width=80 height=14 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six mbSm=48>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six mbSm=48>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading
                     value="Commission"
@@ -237,8 +237,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <Heading value="Uptime" size=Heading.H4 marginBottom=27 align=Heading.Center />
                   {switch (allSub) {
@@ -246,8 +246,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-              <Col.Grid col=Col.Three colSm=Col.Six>
+              </Col>
+              <Col col=Col.Three colSm=Col.Six>
                 <div className={CssHelper.flexBox(~direction=`column, ())}>
                   <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=27, ())])}>
                     <Heading value="Oracle Reports" size=Heading.H4 align=Heading.Center />
@@ -270,17 +270,17 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    | _ => <LoadingCensorBar width=100 height=24 />
                    }}
                 </div>
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid>
+        </Col>
+      </Row>
+      <Row marginBottom=24>
+        <Col>
           <div className=Styles.infoContainer>
             <Heading value="Information" size=Heading.H4 style=Styles.infoHeader marginBottom=24 />
-            <Row.Grid marginBottom=24>
-              <Col.Grid col=Col.Six mbSm=24>
+            <Row marginBottom=24>
+              <Col col=Col.Six mbSm=24>
                 <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Operator Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
@@ -299,8 +299,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    />
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six>
+              </Col>
+              <Col col=Col.Six>
                 <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Address" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
@@ -313,10 +313,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    <AddressRender address=operatorAddress position=AddressRender.Subtitle />
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
-            <Row.Grid marginBottom=24>
-              <Col.Grid col=Col.Six mbSm=24>
+              </Col>
+            </Row>
+            <Row marginBottom=24>
+              <Col col=Col.Six mbSm=24>
                 <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Commission Max Change" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
@@ -334,8 +334,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    />
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-              <Col.Grid col=Col.Six>
+              </Col>
+              <Col col=Col.Six>
                 <div className={Css.merge([CssHelper.flexBox(), CssHelper.mb(~size=8, ())])}>
                   <Heading value="Commission Max Rate" size=Heading.H5 />
                   <HSpacing size=Spacing.xs />
@@ -353,10 +353,10 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    />
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
-            <Row.Grid marginBottom=24>
-              <Col.Grid>
+              </Col>
+            </Row>
+            <Row marginBottom=24>
+              <Col>
                 <Heading value="Website" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({website}, _, _, _)) =>
@@ -365,23 +365,23 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                    </a>
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
-            <Row.Grid>
-              <Col.Grid>
+              </Col>
+            </Row>
+            <Row>
+              <Col>
                 <Heading value="Description" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({details}, _, _, _)) =>
                    <p> <Text value=details size=Text.Lg color=Colors.gray7 block=true /> </p>
                  | _ => <LoadingCensorBar width=260 height=15 />
                  }}
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
           </div>
-        </Col.Grid>
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid col=Col.Four mbSm=24>
+        </Col>
+      </Row>
+      <Row marginBottom=24>
+        <Col col=Col.Four mbSm=24>
           <div className={Css.merge([Styles.infoContainer, CssHelper.px(~size=12, ())])}>
             <div
               className={Css.merge([
@@ -402,13 +402,13 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                }}
             </div>
           </div>
-        </Col.Grid>
+        </Col>
         {isMobile
            ? React.null
-           : <Col.Grid col=Col.Eight> <ValidatorStakingInfo validatorAddress=address /> </Col.Grid>}
-      </Row.Grid>
-      <Row.Grid marginBottom=24>
-        <Col.Grid col=Col.Six mbSm=24>
+           : <Col col=Col.Eight> <ValidatorStakingInfo validatorAddress=address /> </Col>}
+      </Row>
+      <Row marginBottom=24>
+        <Col col=Col.Six mbSm=24>
           <div className=Styles.infoContainer>
             <div
               className={Css.merge([
@@ -427,8 +427,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
              | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
-        </Col.Grid>
-        <Col.Grid col=Col.Six>
+        </Col>
+        <Col col=Col.Six>
           <div className=Styles.infoContainer>
             <div
               className={Css.merge([
@@ -448,8 +448,8 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
              | _ => <LoadingCensorBar fullWidth=true height=90 />
              }}
           </div>
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       <Tab
         tabs=[|
           {name: "Oracle Reports", route: Route.ValidatorIndexPage(address, Route.Reports)},

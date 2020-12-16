@@ -11,7 +11,7 @@ let renderBody =
       txSub: ApolloHooks.Subscription.variant(TxSub.t),
       msgTransform: TxSub.Msg.t => TxSub.Msg.t,
     ) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (txSub) {
       | Data({txHash}) => txHash |> Hash.toHex
@@ -19,20 +19,20 @@ let renderBody =
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Start>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Start>
+      <Col col=Col.Two>
         {switch (txSub) {
          | Data({txHash}) => <TxLink txHash width=140 />
          | _ => <LoadingCensorBar width=140 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         {switch (txSub) {
          | Data({blockHeight}) => <TypeID.Block id=blockHeight />
          | _ => <LoadingCensorBar width=65 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`center, ())}>
           {switch (txSub) {
            | Data({success}) =>
@@ -40,8 +40,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=20 height=20 radius=20 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`center, ())}>
           {switch (txSub) {
            | Data({gasFee}) =>
@@ -53,8 +53,8 @@ let renderBody =
            | _ => <LoadingCensorBar width=65 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Six>
+      </Col>
+      <Col col=Col.Six>
         {switch (txSub) {
          | Data({messages, txHash, success, errMsg}) =>
            <div>
@@ -68,9 +68,9 @@ let renderBody =
            </div>
          | _ => <> <LoadingCensorBar width=400 height=15 /> </>
          }}
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =

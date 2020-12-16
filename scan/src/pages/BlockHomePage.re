@@ -1,5 +1,5 @@
 let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (blockSub) {
       | Data({height}) => height |> ID.Block.toString
@@ -7,14 +7,14 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Two>
         {switch (blockSub) {
          | Data({height}) => <TypeID.Block id=height />
          | _ => <LoadingCensorBar width=65 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (blockSub) {
          | Data({hash}) =>
            <Text
@@ -26,8 +26,8 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
            />
          | _ => <LoadingCensorBar fullWidth=true height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (blockSub) {
          | Data({validator}) =>
            <ValidatorMonikerLink
@@ -37,16 +37,16 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
            />
          | _ => <LoadingCensorBar fullWidth=true height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`center, ())}>
           {switch (blockSub) {
            | Data({txn}) => <Text value={txn |> Format.iPretty} code=true weight=Text.Medium />
            | _ => <LoadingCensorBar width=40 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (blockSub) {
            | Data({timestamp}) =>
@@ -63,9 +63,9 @@ let renderBody = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(Block
              </>
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, blockSub: ApolloHooks.Subscription.variant(BlockSub.t)) => {
@@ -106,8 +106,8 @@ let make = () => {
   <Section>
     <div className=CssHelper.container id="blocksSection">
       <div className=CssHelper.mobileSpacing>
-        <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-          <Col.Grid col=Col.Twelve>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col col=Col.Twelve>
             <Heading value="All Blocks" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
             {switch (blocksSub) {
              | Data(blocks) =>
@@ -123,13 +123,13 @@ let make = () => {
                />
              | _ => <LoadingCensorBar width=65 height=21 />
              }}
-          </Col.Grid>
-        </Row.Grid>
+          </Col>
+        </Row>
         {isMobile
            ? React.null
-           : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
-                 <Col.Grid col=Col.Two>
+           : <THead>
+               <Row alignItems=Row.Center>
+                 <Col col=Col.Two>
                    <Text
                      block=true
                      value="Block"
@@ -137,8 +137,8 @@ let make = () => {
                      weight=Text.Semibold
                      color=Colors.gray7
                    />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Four>
+                 </Col>
+                 <Col col=Col.Four>
                    <Text
                      block=true
                      value="Block Hash"
@@ -146,8 +146,8 @@ let make = () => {
                      weight=Text.Semibold
                      color=Colors.gray7
                    />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Three>
+                 </Col>
+                 <Col col=Col.Three>
                    <Text
                      block=true
                      value="Proposer"
@@ -155,8 +155,8 @@ let make = () => {
                      weight=Text.Semibold
                      color=Colors.gray7
                    />
-                 </Col.Grid>
-                 <Col.Grid col=Col.One>
+                 </Col>
+                 <Col col=Col.One>
                    <Text
                      block=true
                      value="Txn"
@@ -165,8 +165,8 @@ let make = () => {
                      color=Colors.gray7
                      align=Text.Center
                    />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Two>
+                 </Col>
+                 <Col col=Col.Two>
                    <Text
                      block=true
                      value="Timestamp"
@@ -175,9 +175,9 @@ let make = () => {
                      color=Colors.gray7
                      align=Text.Right
                    />
-                 </Col.Grid>
-               </Row.Grid>
-             </THead.Grid>}
+                 </Col>
+               </Row>
+             </THead>}
         {switch (blocksSub) {
          | Data(blocks) =>
            blocks
