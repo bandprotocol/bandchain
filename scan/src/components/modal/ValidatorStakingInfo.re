@@ -25,9 +25,11 @@ module Styles = {
 
 module ButtonSection = {
   [@react.component]
-  let make = (~validatorAddress) => {
+  let make = (~delegatorAddress, ~validatorAddress) => {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
+    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
+    let allSub = Sub.all2(validatorInfoSub, balanceAtStakeSub)
 
     let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
@@ -35,12 +37,14 @@ module ButtonSection = {
     let redelegate = () =>
       validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
-    switch (validatorInfoSub) {
-    | Data(validatorInfo) =>
+    switch (allSub) {
+    | Data((validatorInfo, {amount: {amount}})) =>
+      let disabled = amount === 0.;
       <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
           py=5
+          disabled
           onClick={_ => {
             validatorInfo.commission == 100.
               ? Webapi.Dom.(
@@ -52,11 +56,11 @@ module ButtonSection = {
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline onClick={_ => {undelegate()}}>
+        <Button px=20 py=5 variant=Button.Outline disabled onClick={_ => {undelegate()}}>
           <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline onClick={_ => {redelegate()}}>
+        <Button px=20 py=5 variant=Button.Outline disabled onClick={_ => {redelegate()}}>
           <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
       </div>
@@ -245,12 +249,12 @@ let make = (~validatorAddress) => {
         </CTooltip>
       </div>
       {switch (accountOpt) {
-       | Some(_) => <ButtonSection validatorAddress />
+       | Some({address: delegatorAddress}) => <ButtonSection validatorAddress delegatorAddress />
        | None => <VSpacing size={`px(28)} />
        }}
     </div>
     {switch (accountOpt) {
-     | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
+     | Some({address: delegatorAddress}) => <StakingInfo validatorAddress delegatorAddress />
      | None =>
        switch (trackingSub) {
        | Data({chainID}) =>
