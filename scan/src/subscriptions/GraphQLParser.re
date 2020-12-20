@@ -96,6 +96,7 @@ let coins = str =>
      );
 
 let addressExn = jsonOpt => jsonOpt |> Belt_Option.getExn |> Address.fromBech32;
+let addressOpt = jsonOpt => jsonOpt |> Belt.Option.map(_, Address.fromBech32);
 
 let numberWithDefault = jsonOpt =>
   jsonOpt |> Belt_Option.flatMap(_, Js.Json.decodeNumber) |> Belt.Option.getWithDefault(_, 0.0);
