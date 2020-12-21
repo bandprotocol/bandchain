@@ -148,7 +148,7 @@ module Content = {
                                      align=`center
                                      tooltipText={Ellipsis.format(
                                        ~text=dataSourceName,
-                                       ~limit=32,
+                                       ~limit=40,
                                        (),
                                      )}>
                                      <TypeID.DataSource id=dataSourceID position=TypeID.Subtitle />
