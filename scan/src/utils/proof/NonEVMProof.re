@@ -45,7 +45,8 @@ type multi_store_proof_t = {
 
 type block_header_merkle_parts_t = {
   versionAndChainIdHash: JsBuffer.t,
-  timeHash: JsBuffer.t,
+  timeSecond: int,
+  timeNanoSecond: int,
   lastBlockIDAndOther: JsBuffer.t,
   nextValidatorHashAndConsensusHash: JsBuffer.t,
   lastResultsHash: JsBuffer.t,
@@ -56,7 +57,7 @@ type tm_signature_t = {
   r: JsBuffer.t,
   s: JsBuffer.t,
   v: int,
-  signedPrefixSuffix: JsBuffer.t,
+  signedDataPrefix: JsBuffer.t,
   signedDataSuffix: JsBuffer.t,
 };
 
@@ -129,7 +130,8 @@ let decodeMultiStoreProof = json => {
 let decodeBlockHeaderMerkleParts = json => {
   JsonUtils.Decode.{
     versionAndChainIdHash: json |> field("versionAndChainIdHash", string) |> JsBuffer.fromHex,
-    timeHash: json |> field("timeHash", string) |> JsBuffer.fromHex,
+    timeSecond: json |> field("timeSecond", intstr),
+    timeNanoSecond: json |> field("timeNanoSecond", int),
     lastBlockIDAndOther: json |> field("lastBlockIDAndOther", string) |> JsBuffer.fromHex,
     nextValidatorHashAndConsensusHash:
       json |> field("nextValidatorHashAndConsensusHash", string) |> JsBuffer.fromHex,
@@ -143,7 +145,7 @@ let decodeTMSignature = json => {
     r: json |> field("r", string) |> JsBuffer.fromHex,
     s: json |> field("s", string) |> JsBuffer.fromHex,
     v: json |> field("v", int),
-    signedPrefixSuffix: json |> field("signedPrefixSuffix", string) |> JsBuffer.fromHex,
+    signedDataPrefix: json |> field("signedDataPrefix", string) |> JsBuffer.fromHex,
     signedDataSuffix: json |> field("signedDataSuffix", string) |> JsBuffer.fromHex,
   };
 };
@@ -265,34 +267,64 @@ let rec encode =
     }
   | BlockHeaderMerkleParts({
       versionAndChainIdHash,
-      timeHash,
+      timeSecond,
+      timeNanoSecond,
       lastBlockIDAndOther,
       nextValidatorHashAndConsensusHash,
       lastResultsHash,
       evidenceAndProposerHash,
     }) => {
-      Some(
-        JsBuffer.concat([|
-          versionAndChainIdHash,
-          timeHash,
-          lastBlockIDAndOther,
-          nextValidatorHashAndConsensusHash,
-          lastResultsHash,
-          evidenceAndProposerHash,
-        |]),
+      // Some(
+      //   JsBuffer.concat([|
+      //     versionAndChainIdHash,
+      //     timeSecond,
+      //     timeNanoSecond,
+      //     lastBlockIDAndOther,
+      //     nextValidatorHashAndConsensusHash,
+      //     lastResultsHash,
+      //     evidenceAndProposerHash,
+      //   |]),
+      // );
+      Obi.encode(
+        "{versionAndChainIdHash: bytes, timeSecond: u64, timeNanoSecond: u64, lastBlockIDAndOther: bytes, nextValidatorHashAndConsensusHash: bytes, lastResultsHash: bytes, evidenceAndProposerHash: bytes}/{_:u64}",
+        "input",
+        [|
+          {
+            fieldName: "versionAndChainIdHash",
+            fieldValue: versionAndChainIdHash |> JsBuffer.toHex(~with0x=true),
+          },
+          {fieldName: "timeSecond", fieldValue: timeSecond |> string_of_int},
+          {fieldName: "timeNanoSecond", fieldValue: timeNanoSecond |> string_of_int},
+          {
+            fieldName: "lastBlockIDAndOther",
+            fieldValue: lastBlockIDAndOther |> JsBuffer.toHex(~with0x=true),
+          },
+          {
+            fieldName: "nextValidatorHashAndConsensusHash",
+            fieldValue: nextValidatorHashAndConsensusHash |> JsBuffer.toHex(~with0x=true),
+          },
+          {
+            fieldName: "lastResultsHash",
+            fieldValue: lastResultsHash |> JsBuffer.toHex(~with0x=true),
+          },
+          {
+            fieldName: "evidenceAndProposerHash",
+            fieldValue: evidenceAndProposerHash |> JsBuffer.toHex(~with0x=true),
+          },
+        |],
       );
     }
-  | Signature({r, s, v, signedPrefixSuffix, signedDataSuffix}) => {
+  | Signature({r, s, v, signedDataPrefix, signedDataSuffix}) => {
       Obi.encode(
-        "{r: bytes, s: bytes, v: u8, signedPrefixSuffix: bytes, signedDataSuffix: bytes}/{_:u64}",
+        "{r: bytes, s: bytes, v: u8, signedDataPrefix: bytes, signedDataSuffix: bytes}/{_:u64}",
         "input",
         [|
           {fieldName: "r", fieldValue: r |> JsBuffer.toHex(~with0x=true)},
           {fieldName: "s", fieldValue: s |> JsBuffer.toHex(~with0x=true)},
           {fieldName: "v", fieldValue: v |> string_of_int},
           {
-            fieldName: "signedPrefixSuffix",
-            fieldValue: signedPrefixSuffix |> JsBuffer.toHex(~with0x=true),
+            fieldName: "signedDataPrefix",
+            fieldValue: signedDataPrefix |> JsBuffer.toHex(~with0x=true),
           },
           {
             fieldName: "signedDataSuffix",
