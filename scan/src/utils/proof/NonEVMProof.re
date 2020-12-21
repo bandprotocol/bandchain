@@ -274,17 +274,6 @@ let rec encode =
       lastResultsHash,
       evidenceAndProposerHash,
     }) => {
-      // Some(
-      //   JsBuffer.concat([|
-      //     versionAndChainIdHash,
-      //     timeSecond,
-      //     timeNanoSecond,
-      //     lastBlockIDAndOther,
-      //     nextValidatorHashAndConsensusHash,
-      //     lastResultsHash,
-      //     evidenceAndProposerHash,
-      //   |]),
-      // );
       Obi.encode(
         "{versionAndChainIdHash: bytes, timeSecond: u64, timeNanoSecond: u64, lastBlockIDAndOther: bytes, nextValidatorHashAndConsensusHash: bytes, lastResultsHash: bytes, evidenceAndProposerHash: bytes}/{_:u64}",
         "input",
