@@ -29,7 +29,8 @@ module ButtonSection = {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
     let accountSub = AccountSub.get(delegatorAddress);
-    let allSub = Sub.all2(validatorInfoSub, accountSub)
+    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
+    let allSub = Sub.all3(validatorInfoSub, accountSub, balanceAtStakeSub);
 
     let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
@@ -38,8 +39,9 @@ module ButtonSection = {
       validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
     switch (allSub) {
-    | Data((validatorInfo, {balance})) =>
-    let disabled = (balance |> Coin.getBandAmountFromCoins) == 0.;
+    | Data((validatorInfo, {balance}, {amount: {amount}})) =>
+      let disabled = balance |> Coin.getBandAmountFromCoins == 0.;
+      let disableDelegate = amount == 0.;
       <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
@@ -56,14 +58,16 @@ module ButtonSection = {
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline disabled onClick={_ => {undelegate()}}>
+        <Button
+          px=20 py=5 variant=Button.Outline disabled=disableDelegate onClick={_ => {undelegate()}}>
           <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline disabled onClick={_ => {redelegate()}}>
+        <Button
+          px=20 py=5 variant=Button.Outline disabled=disableDelegate onClick={_ => {redelegate()}}>
           <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
-      </div>
+      </div>;
     | _ => React.null
     };
   };
