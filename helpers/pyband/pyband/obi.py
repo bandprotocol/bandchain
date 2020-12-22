@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Tuple
 
 
 class PyObiSpec(object):
@@ -9,7 +9,7 @@ class PyObiSpec(object):
         cls.impls.append(cls)
 
     @classmethod
-    def from_spec(cls, spec):
+    def from_spec(cls, spec: str) -> Any:
         for impl in cls.impls:
             if impl.match_schema(spec):
                 return impl(spec)
@@ -35,13 +35,13 @@ class PyObiInteger(PyObiSpec):
         self.size_in_bytes = int(spec[1:]) // 8
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema[:1] in ["i", "u"] and schema[1:] in ["8", "16", "32", "64", "128", "256"]
 
-    def encode(self, value):
+    def encode(self, value: int) -> bytes:
         return value.to_bytes(self.size_in_bytes, byteorder="big", signed=self.is_signed)
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[int, bytes]:
         return (
             int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed),
             data[self.size_in_bytes :],
@@ -53,13 +53,13 @@ class PyObiBool(PyObiSpec):
         pass
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema == "bool"
 
-    def encode(self, value):
+    def encode(self, value: bool) -> bytes:
         return PyObiInteger("u8").encode(1 if value else 0)
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[bool, bytes]:
         u8, remaining = PyObiInteger("u8").decode(data)
         if u8 == 1:
             return True, remaining
@@ -75,7 +75,7 @@ class PyObiArray(PyObiSpec):
         self.intl_obi = self.from_spec(spec)
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         if not (schema[0] == "[" and schema[-1] == "]"):
             return False
         try:
@@ -92,7 +92,7 @@ class PyObiArray(PyObiSpec):
 
         return False
 
-    def encode(self, value):
+    def encode(self, value: list) -> bytes:
         if len(value) != self.size:
             raise ValueError("array size should be {} but got {}".format(self.size, len(value)))
         result = b""
@@ -100,7 +100,7 @@ class PyObiArray(PyObiSpec):
             result = result + self.intl_obi.encode(each)
         return result
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[list, bytes]:
         remaining = data[:]
         result = []
         for _ in range(self.size):
@@ -114,16 +114,16 @@ class PyObiVector(PyObiSpec):
         self.intl_obi = self.from_spec(spec[1:-1])
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema[0] == "[" and schema[-1] == "]"
 
-    def encode(self, value):
+    def encode(self, value: list) -> bytes:
         result = PyObiInteger("u32").encode(len(value))
         for each in value:
             result = result + self.intl_obi.encode(each)
         return result
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[list, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         result = []
         for _ in range(length):
@@ -153,16 +153,16 @@ class PyObiStruct(PyObiSpec):
             self.intl_obi_kvs.append((tokens[0], self.from_spec(tokens[1])))
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema[0] == "{" and schema[-1] == "}"
 
-    def encode(self, value):
+    def encode(self, value: dict) -> bytes:
         result = b""
         for key, spec in self.intl_obi_kvs:
             result = result + spec.encode(value[key])
         return result
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[dict, bytes]:
         result = {}
         for key, spec in self.intl_obi_kvs:
             result[key], data = spec.decode(data)
@@ -174,13 +174,13 @@ class PyObiString(PyObiSpec):
         pass
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema == "string"
 
-    def encode(self, value):
+    def encode(self, value: str) -> bytes:
         return PyObiInteger("u32").encode(len(value)) + value.encode()
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[str, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         return remaining[:length].decode(), remaining[length:]
 
@@ -190,13 +190,13 @@ class PyObiBytes(PyObiSpec):
         pass
 
     @classmethod
-    def match_schema(cls, schema):
+    def match_schema(cls, schema: str) -> bool:
         return schema == "bytes"
 
-    def encode(self, value):
+    def encode(self, value: bytes) -> bytes:
         return PyObiInteger("u32").encode(len(value)) + value
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[bytes, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         return remaining[:length], remaining[length:]
 
@@ -207,10 +207,10 @@ class PyObi(object):
         tokens = normalized_schema.split("/")
         self.schemas = [PyObiSpec.from_spec(token) for token in tokens]
 
-    def encode(self, data, index=0):
+    def encode(self, data: Any, index=0) -> bytes:
         return self.schemas[index].encode(data)
 
-    def decode(self, data, index=0):
+    def decode(self, data: bytes, index=0) -> Any:
         result, remaining = self.schemas[index].decode(data)
         if remaining:
             raise ValueError("Not all data is consumed after decoding input")
