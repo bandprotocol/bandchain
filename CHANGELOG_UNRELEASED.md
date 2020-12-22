@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#3011](https://github.com/bandprotocol/bandchain/pull/3011) Fix duplicated chart label
 - (chore) [\#2788](https://github.com/bandprotocol/bandchain/pull/2788) Remove unused dependencies
 - (chore) [\#2790](https://github.com/bandprotocol/bandchain/pull/2790) Remove redundant loading component
 - (bugs) [\#2965](https://github.com/bandprotocol/bandchain/pull/2965) Fixed typo on the transaction modal
