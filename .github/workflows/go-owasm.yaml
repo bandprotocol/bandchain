@@ -1,11 +1,12 @@
 name: go-owasm Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   go-wasm-test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./go-owasm
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'bandprotocol/bandchain'
 
     steps:
       - name: Code checkout
