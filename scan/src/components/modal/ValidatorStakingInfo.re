@@ -28,8 +28,8 @@ module ButtonSection = {
   let make = (~delegatorAddress, ~validatorAddress) => {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
-    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
-    let allSub = Sub.all2(validatorInfoSub, balanceAtStakeSub)
+    let accountSub = AccountSub.get(delegatorAddress);
+    let allSub = Sub.all2(validatorInfoSub, accountSub)
 
     let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
@@ -38,8 +38,8 @@ module ButtonSection = {
       validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
     switch (allSub) {
-    | Data((validatorInfo, {amount: {amount}})) =>
-      let disabled = amount === 0.;
+    | Data((validatorInfo, {balance})) =>
+    let disabled = (balance |> Coin.getBandAmountFromCoins) == 0.;
       <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
