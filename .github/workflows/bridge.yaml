@@ -1,16 +1,17 @@
 name: Bridge Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   bridges-evm-test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./bridges/evm
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'bandprotocol/bandchain'
 
     steps:
     - name: Code Checkout
       uses: actions/checkout@v2
-    
+
     - name: Setup node 12
       uses: actions/setup-node@v1
       with:

@@ -129,8 +129,8 @@ let parameterInput = (Obi.{fieldName, fieldType}, index, setCalldataArr) => {
 module CountInputs = {
   [@react.component]
   let make = (~askCount, ~setAskCount, ~setMinCount, ~validatorCount) => {
-    <Row.Grid marginBottom=24>
-      <Col.Grid col=Col.Two colSm=Col.Six>
+    <Row marginBottom=24>
+      <Col col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Text
             value="Ask Count"
@@ -162,8 +162,8 @@ module CountInputs = {
              |> React.array}
           </select>
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two colSm=Col.Six>
+      </Col>
+      <Col col=Col.Two colSm=Col.Six>
         <div className={Css.merge([CssHelper.flexBox(), Styles.titleSpacing])}>
           <Text
             value="Min Count"
@@ -195,8 +195,8 @@ module CountInputs = {
              |> React.array}
           </select>
         </div>
-      </Col.Grid>
-    </Row.Grid>;
+      </Col>
+    </Row>;
   };
 };
 
@@ -227,9 +227,7 @@ type result_t =
   | Success(TxCreator.tx_response_t);
 
 let loadingRender = (wDiv, wImg, h) => {
-  <div className={Styles.withWH(wDiv, h)}>
-    <img src=Images.loadingCircles className={Styles.withWH(wImg, h)} />
-  </div>;
+  <div className={Styles.withWH(wDiv, h)}> <Loading width=wImg /> </div>;
 };
 
 let resultRender = (result, schema) => {
@@ -332,8 +330,8 @@ module ExecutionPart = {
             />
           </div>
         </div>
-      : <Row.Grid>
-          <Col.Grid>
+      : <Row>
+          <Col>
             <div className=Styles.container>
               {isUnused
                  ? React.null
@@ -434,8 +432,8 @@ module ExecutionPart = {
                  }
                }}
             </div>
-          </Col.Grid>
-        </Row.Grid>;
+          </Col>
+        </Row>;
   };
 };
 
