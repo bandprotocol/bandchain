@@ -272,19 +272,18 @@ let make = () => {
   let pageSize = 10;
   let mostRequestedPageSize = isMobile ? 3 : 6;
   let oracleScriptsCountSub = OracleScriptSub.count(~searchTerm, ());
-  let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
-
   let mostRequestedOracleScriptSub =
     OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
+  let oracleScriptsSub = OracleScriptSub.getList(~pageSize, ~page, ~searchTerm, ());
 
-  let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
+  let allSub = Sub.all3(oracleScriptsSub, oracleScriptsCountSub, mostRequestedOracleScriptSub);
 
   <Section>
     <div className=CssHelper.container id="oraclescriptsSection">
       <div className=CssHelper.mobileSpacing>
         <Heading value="All Oracle Scripts" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
-        {switch (mostRequestedOracleScriptSub) {
-         | Data(oracleScripts) =>
+        {switch (allSub) {
+         | Data((_, _, oracleScripts)) =>
            oracleScripts->Belt.Array.length > 0
              ? <>
                  <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
@@ -310,7 +309,7 @@ let make = () => {
         <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
           <Col>
             {switch (allSub) {
-             | Data((_, oracleScriptsCount)) =>
+             | Data((_, oracleScriptsCount, _)) =>
                <Heading
                  value={(oracleScriptsCount |> Format.iPretty) ++ " In total"}
                  size=Heading.H3
@@ -381,7 +380,7 @@ let make = () => {
                </Row>
              </THead>}
         {switch (allSub) {
-         | Data((oracleScripts, oracleScriptsCount)) =>
+         | Data((oracleScripts, oracleScriptsCount, _)) =>
            let pageCount = Page.getPageCount(oracleScriptsCount, pageSize);
            <div className=Styles.tbodyContainer>
              {oracleScripts->Belt.Array.length > 0
