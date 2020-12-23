@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (impv) [\#3027](https://github.com/bandprotocol/bandchain/pull/3027) Improved the oracle script subscription
 - (bugs) [\#3011](https://github.com/bandprotocol/bandchain/pull/3011) Fix duplicated chart label
 - (chore) [\#2788](https://github.com/bandprotocol/bandchain/pull/2788) Remove unused dependencies
 - (chore) [\#2790](https://github.com/bandprotocol/bandchain/pull/2790) Remove redundant loading component
