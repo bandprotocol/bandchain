@@ -379,5 +379,8 @@ let rec encode =
     };
 
 let createProofFromJson = (proof: Js.Json.t) => {
-  Proof(proof |> decodeProof) |> encode |> Belt_Option.getWithDefault(_, JsBuffer.from([||]));
+  switch (Proof(proof |> decodeProof)) {
+  | result => result |> encode
+  | exception _ => None
+  };
 };
