@@ -84,7 +84,7 @@ function(data) {
                   function formatNumber(n) {
                       for (var i = 0; i < ranges.length; i++) {
                         if (n >= ranges[i].divider) {
-                            return (n / ranges[i].divider).toFixed(0) + ranges[i].suffix;
+                            return (n / ranges[i].divider).toFixed(1) + ranges[i].suffix;
                         }
                       }
                       return n.toFixed(0);
