@@ -1,5 +1,5 @@
 name: PyBand Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   pyband-test:
@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         python-version: [3.6, 3.7, 3.8, 3.9]
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'bandprotocol/bandchain'
 
     steps:
       - name: Code Checkout

@@ -1,4 +1,4 @@
-import re
+from typing import Any, Tuple
 
 
 class PyObiSpec(object):
@@ -9,13 +9,17 @@ class PyObiSpec(object):
         cls.impls.append(cls)
 
     @classmethod
-    def from_spec(cls, spec):
+    def from_spec(cls, spec: str) -> Any:
         for impl in cls.impls:
-            if re.match(impl.REGEX, spec):
+            if impl.match_schema(spec):
                 return impl(spec)
         raise ValueError("Cannot parse spec: {}".format(spec))
 
     def __init__(self, spec):
+        raise NotImplementedError()
+
+    @classmethod
+    def match_schema(cls, schema):
         raise NotImplementedError()
 
     def encode(self, value):
@@ -26,35 +30,100 @@ class PyObiSpec(object):
 
 
 class PyObiInteger(PyObiSpec):
-    REGEX = re.compile(r"^(u|i)(8|16|32|64|128|256)$")
-
     def __init__(self, spec):
         self.is_signed = spec[0] == "i"
         self.size_in_bytes = int(spec[1:]) // 8
 
-    def encode(self, value):
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema[:1] in ["i", "u"] and schema[1:] in ["8", "16", "32", "64", "128", "256"]
+
+    def encode(self, value: int) -> bytes:
         return value.to_bytes(self.size_in_bytes, byteorder="big", signed=self.is_signed)
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[int, bytes]:
         return (
-            int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed,),
+            int.from_bytes(data[: self.size_in_bytes], byteorder="big", signed=self.is_signed),
             data[self.size_in_bytes :],
         )
 
 
-class PyObiVector(PyObiSpec):
-    REGEX = re.compile(r"^\[.*\]$")
+class PyObiBool(PyObiSpec):
+    def __init__(self, spec="bool"):
+        pass
 
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema == "bool"
+
+    def encode(self, value: bool) -> bytes:
+        return PyObiInteger("u8").encode(1 if value else 0)
+
+    def decode(self, data: bytes) -> Tuple[bool, bytes]:
+        u8, remaining = PyObiInteger("u8").decode(data)
+        if u8 == 1:
+            return True, remaining
+        elif u8 == 0:
+            return False, remaining
+        raise ValueError("Boolean value must be 1 or 0 but got {}".format(u8))
+
+
+class PyObiArray(PyObiSpec):
+    def __init__(self, _spec):
+        [spec, size] = _spec[1:-1].rsplit(";", 1)
+        self.size = int(size, 10)
+        self.intl_obi = self.from_spec(spec)
+
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        if not (schema[0] == "[" and schema[-1] == "]"):
+            return False
+        try:
+            [spec, size] = schema[1:-1].rsplit(";", 1)
+        except:
+            return False
+
+        if not size.isdigit():
+            return False
+
+        for impl in cls.impls:
+            if impl.match_schema(spec):
+                return True
+
+        return False
+
+    def encode(self, value: list) -> bytes:
+        if len(value) != self.size:
+            raise ValueError("array size should be {} but got {}".format(self.size, len(value)))
+        result = b""
+        for each in value:
+            result = result + self.intl_obi.encode(each)
+        return result
+
+    def decode(self, data: bytes) -> Tuple[list, bytes]:
+        remaining = data[:]
+        result = []
+        for _ in range(self.size):
+            each, remaining = self.intl_obi.decode(remaining)
+            result.append(each)
+        return result, remaining
+
+
+class PyObiVector(PyObiSpec):
     def __init__(self, spec):
         self.intl_obi = self.from_spec(spec[1:-1])
 
-    def encode(self, value):
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema[0] == "[" and schema[-1] == "]"
+
+    def encode(self, value: list) -> bytes:
         result = PyObiInteger("u32").encode(len(value))
         for each in value:
             result = result + self.intl_obi.encode(each)
         return result
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[list, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         result = []
         for _ in range(length):
@@ -64,8 +133,6 @@ class PyObiVector(PyObiSpec):
 
 
 class PyObiStruct(PyObiSpec):
-    REGEX = re.compile(r"^{.*}$")
-
     def __init__(self, spec):
         self.intl_obi_kvs = []
         fields = [""]
@@ -85,13 +152,17 @@ class PyObiStruct(PyObiSpec):
                 raise ValueError("Expect at least one colon for each struct field")
             self.intl_obi_kvs.append((tokens[0], self.from_spec(tokens[1])))
 
-    def encode(self, value):
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema[0] == "{" and schema[-1] == "}"
+
+    def encode(self, value: dict) -> bytes:
         result = b""
         for key, spec in self.intl_obi_kvs:
             result = result + spec.encode(value[key])
         return result
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[dict, bytes]:
         result = {}
         for key, spec in self.intl_obi_kvs:
             result[key], data = spec.decode(data)
@@ -99,57 +170,60 @@ class PyObiStruct(PyObiSpec):
 
 
 class PyObiString(PyObiSpec):
-    REGEX = re.compile(r"^string$")
-
-    def __init__(self, spec):
+    def __init__(self, spec="string"):
         pass
 
-    def encode(self, value):
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema == "string"
+
+    def encode(self, value: str) -> bytes:
         return PyObiInteger("u32").encode(len(value)) + value.encode()
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[str, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         return remaining[:length].decode(), remaining[length:]
 
 
 class PyObiBytes(PyObiSpec):
-    REGEX = re.compile(r"^bytes$")
-
-    def __init__(self, spec):
+    def __init__(self, spec="bytes"):
         pass
 
-    def encode(self, value):
+    @classmethod
+    def match_schema(cls, schema: str) -> bool:
+        return schema == "bytes"
+
+    def encode(self, value: bytes) -> bytes:
         return PyObiInteger("u32").encode(len(value)) + value
 
-    def decode(self, data):
+    def decode(self, data: bytes) -> Tuple[bytes, bytes]:
         length, remaining = PyObiInteger("u32").decode(data)
         return remaining[:length], remaining[length:]
 
 
 class PyObi(object):
     def __init__(self, schema):
-        normalized_schema = re.sub(r"\s+", "", schema)
+        normalized_schema = "".join(schema.split())
         tokens = normalized_schema.split("/")
-        if len(tokens) != 2:
-            raise ValueError("Expect one forward slash in OBI schema")
-        self.input_schema = PyObiSpec.from_spec(tokens[0])
-        self.output_schema = PyObiSpec.from_spec(tokens[1])
+        self.schemas = [PyObiSpec.from_spec(token) for token in tokens]
 
-    def encode_input(self, value):
-        return self.input_schema.encode(value)
+    def encode(self, data: Any, index=0) -> bytes:
+        return self.schemas[index].encode(data)
 
-    def decode_input(self, data):
-        result, remaining = self.input_schema.decode(data)
+    def decode(self, data: bytes, index=0) -> Any:
+        result, remaining = self.schemas[index].decode(data)
         if remaining:
             raise ValueError("Not all data is consumed after decoding input")
         return result
 
-    def encode_output(self, value):
-        return self.output_schema.encode(value)
+    def encode_input(self, data: Any) -> bytes:
+        return self.encode(data, index=0)
 
-    def decode_output(self, data):
-        result, remaining = self.output_schema.decode(data)
-        if remaining:
-            raise ValueError("Not all data is consumed after decoding output")
-        return result
+    def encode_output(self, data: Any) -> bytes:
+        return self.encode(data, index=1)
 
+    def decode_input(self, data: bytes) -> Any:
+        return self.decode(data, index=0)
+
+    def decode_output(self, data: bytes) -> Any:
+        return self.decode(data, index=1)

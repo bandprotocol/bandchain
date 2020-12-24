@@ -1,5 +1,4 @@
-from pyband import Client, PyObi
-from pyband.wallet import PrivateKey
+from pyband import Client, PyObi, PrivateKey
 
 
 def main():
