@@ -1,4 +1,5 @@
 from typing import Any, Tuple
+from .error import SchemaError, DecodeError
 
 
 class PyObiSpec(object):
@@ -13,7 +14,7 @@ class PyObiSpec(object):
         for impl in cls.impls:
             if impl.match_schema(spec):
                 return impl(spec)
-        raise ValueError("Cannot parse spec: {}".format(spec))
+        raise SchemaError("Cannot parse spec: {}".format(spec))
 
     def __init__(self, spec):
         raise NotImplementedError()
@@ -213,7 +214,7 @@ class PyObi(object):
     def decode(self, data: bytes, index=0) -> Any:
         result, remaining = self.schemas[index].decode(data)
         if remaining:
-            raise ValueError("Not all data is consumed after decoding input")
+            raise DecodeError("Not all data is consumed after decoding input")
         return result
 
     def encode_input(self, data: Any) -> bytes:

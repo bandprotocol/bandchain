@@ -3,6 +3,7 @@ import pytest
 from pyband.data import Coin
 from pyband.message import MsgSend
 from pyband.wallet import Address
+from pyband.error import InsufficientCoinError
 
 
 def test_msg_send_creation_success():
@@ -33,7 +34,7 @@ def test_msg_send_nocoin_fail():
         amount=[],
     )
 
-    with pytest.raises(ValueError, match="Expect at least 1 coin"):
+    with pytest.raises(InsufficientCoinError, match="Expect at least 1 coin"):
         msg_send.validate()
 
 
@@ -44,5 +45,5 @@ def test_msg_send_validate_coin_fail():
         amount=[Coin(amount=-1000, denom="uband")],
     )
 
-    with pytest.raises(ValueError, match="Expect amount more than 0"):
+    with pytest.raises(InsufficientCoinError, match="Expect amount more than 0"):
         msg_send.validate()
