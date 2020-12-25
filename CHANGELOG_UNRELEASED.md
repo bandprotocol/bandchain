@@ -21,6 +21,7 @@
 ### Scan
 
 - (impv) [\#3008](https://github.com/bandprotocol/bandchain/pull/3008) Disable delegate button when balance is insufficient
+- (bugs) [\#3014](https://github.com/bandprotocol/bandchain/pull/3014) Fix auto width popup render the wrong size
 - (bugs) [\#3011](https://github.com/bandprotocol/bandchain/pull/3011) Fix duplicated chart label
 - (chore) [\#2788](https://github.com/bandprotocol/bandchain/pull/2788) Remove unused dependencies
 - (chore) [\#2790](https://github.com/bandprotocol/bandchain/pull/2790) Remove redundant loading component
