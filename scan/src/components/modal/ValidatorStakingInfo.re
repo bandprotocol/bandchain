@@ -40,13 +40,13 @@ module ButtonSection = {
 
     switch (allSub) {
     | Data((validatorInfo, {balance}, {amount: {amount}})) =>
-      let disabled = balance |> Coin.getBandAmountFromCoins == 0.;
-      let disableDelegate = amount == 0.;
+      let disableNoBalance = balance |> Coin.getBandAmountFromCoins == 0.;
+      let disableNoStake = amount == 0.;
       <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
           py=5
-          disabled
+          disabled=disableNoBalance
           onClick={_ => {
             validatorInfo.commission == 100.
               ? Webapi.Dom.(
@@ -59,12 +59,12 @@ module ButtonSection = {
         </Button>
         <HSpacing size=Spacing.md />
         <Button
-          px=20 py=5 variant=Button.Outline disabled=disableDelegate onClick={_ => {undelegate()}}>
+          px=20 py=5 variant=Button.Outline disabled=disableNoStake onClick={_ => undelegate()}>
           <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
         <Button
-          px=20 py=5 variant=Button.Outline disabled=disableDelegate onClick={_ => {redelegate()}}>
+          px=20 py=5 variant=Button.Outline disabled=disableNoStake onClick={_ => redelegate()}>
           <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
       </div>;
