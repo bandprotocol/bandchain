@@ -39,6 +39,7 @@
 
 ### Helpers
 
+- (impv) [\#3033](https://github.com/bandprotocol/bandchain/pull/3033) pyband: Declared the error to pyband world
 - (feat) [\#2972](https://github.com/bandprotocol/bandchain/pull/2972) pyband&bandchain.js: Added get request evm proof on pyband and bandchain.js
 - (impv) [\#2967](https://github.com/bandprotocol/bandchain/pull/2967) bandchain.js: Added new params to getReferenceData
 - (impv) [\#2943](https://github.com/bandprotocol/bandchain/pull/2943) Bandchain.js: Added return `undefined` when account does not exist
