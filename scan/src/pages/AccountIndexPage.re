@@ -145,9 +145,17 @@ module BalanceDetailLoading = {
   };
 };
 
-let totalBalanceRender = (amountBAND, usdPrice) => {
+let temp = ref(1);
+
+let totalBalanceRender = (amountBAND, usdPrice, address: Address.t) => {
+  Js.log(address |> Address.toBech32);
+  Js.log(temp);
+  temp := temp^ + 1;
+  let value = (temp^ /1000 mod 2) == 0;
   <>
-    <div
+    { value ? {
+      <div
+      key={address |> Address.toBech32}
       className={Css.merge([CssHelper.flexBox(~align=`flexEnd, ()), CssHelper.mb(~size=5, ())])}>
       <NumberCountup
         value=amountBAND
@@ -160,14 +168,32 @@ let totalBalanceRender = (amountBAND, usdPrice) => {
       <HSpacing size=Spacing.sm />
       <Text value="BAND" color=Colors.bandBlue size=Text.Lg code=false weight=Text.Thin />
     </div>
-    <div className={CssHelper.flexBox()}>
+    }:{
+      <div>
+        <div
+      key={address |> Address.toBech32}
+      className={Css.merge([CssHelper.flexBox(~align=`flexEnd, ()), CssHelper.mb(~size=5, ())])}>
       <NumberCountup
-        value={amountBAND *. usdPrice}
-        size=Text.Lg
+        value=amountBAND
+        size=Text.Xxxl
         weight=Text.Regular
         spacing={Text.Em(0.)}
-        color=Colors.gray7
+        color=Colors.bandBlue
+        smallNumber=true
       />
+      <HSpacing size=Spacing.sm />
+      <Text value="BAND" color=Colors.bandBlue size=Text.Lg code=false weight=Text.Thin />
+    </div>
+    </div>
+    }}
+    <div className={CssHelper.flexBox()}>
+      // <NumberCountup
+      //   value={amountBAND *. usdPrice}
+      //   size=Text.Lg
+      //   weight=Text.Regular
+      //   spacing={Text.Em(0.)}
+      //   color=Colors.gray7
+      // />
       <HSpacing size=Spacing.sm />
       <Text
         value={"USD " ++ "($" ++ (usdPrice |> Js.Float.toString) ++ " / BAND)"}
@@ -195,6 +221,12 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
   let topPartAllSub = Sub.all5(infoSub, accountSub, balanceAtStakeSub, unbondingSub, trackingSub);
 
   let sumBalance = (balance, amount, unbonding, reward, commission) => {
+    Js.log("-------------------------------------")
+    Js.log2("balance 1", balance);
+    Js.log2("balance 2", amount);
+    Js.log2("balance 3", unbonding);
+    Js.log2("balance 4", reward);
+    Js.log2("balance 5", commission);
     let availableBalance = balance->Coin.getBandAmountFromCoins;
     let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
     let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
@@ -292,6 +324,7 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                  totalBalanceRender(
                    sumBalance(balance, amount, unbonding, reward, commission),
                    financial.usdPrice,
+                   address
                  )
                | _ =>
                  <>
@@ -308,11 +341,11 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
             <div className=Styles.amountBoxes>
               {switch (topPartAllSub) {
                | Data((_, {balance, commission}, {amount, reward}, unbonding, _)) =>
-                 let availableBalance = balance->Coin.getBandAmountFromCoins;
-                 let balanceAtStakeAmount = amount->Coin.getBandAmountFromCoin;
-                 let unbondingAmount = unbonding->Coin.getBandAmountFromCoin;
-                 let rewardAmount = reward->Coin.getBandAmountFromCoin;
-                 let commissionAmount = commission->Coin.getBandAmountFromCoins;
+                 let availableBalance = 0.; //balance->Coin.getBandAmountFromCoins;
+                 let balanceAtStakeAmount = 0.;//amount->Coin.getBandAmountFromCoin;
+                 let unbondingAmount = 0.;//unbonding->Coin.getBandAmountFromCoin;
+                 let rewardAmount = 0.;//reward->Coin.getBandAmountFromCoin;
+                 let commissionAmount = 0.;//commission->Coin.getBandAmountFromCoins;
                  <AccountBarChart
                    availableBalance
                    balanceAtStake=balanceAtStakeAmount
@@ -322,72 +355,72 @@ let make = (~address, ~hashtag: Route.account_tab_t) => {
                  />;
                | _ => <LoadingCensorBar fullWidth=true height=12 radius=50 />
                }}
-              <div>
-                {switch (topPartAllSub) {
-                 | Data(({financial}, {balance}, _, _, _)) =>
-                   balanceDetail(
-                     ~title="Available",
-                     ~description="Balance available to send, delegate, etc",
-                     ~amount={
-                       balance->Coin.getBandAmountFromCoins;
-                     },
-                     ~usdPrice=financial.usdPrice,
-                     ~color=Colors.bandBlue,
-                     (),
-                   )
-                 | _ => <BalanceDetailLoading />
-                 }}
-              </div>
-              <div>
-                {switch (topPartAllSub) {
-                 | Data(({financial}, _, {amount}, _, _)) =>
-                   balanceDetail(
-                     ~title="Delegated",
-                     ~description="Balance currently delegated to validators",
-                     ~amount={
-                       amount->Coin.getBandAmountFromCoin;
-                     },
-                     ~usdPrice=financial.usdPrice,
-                     ~color=Colors.chartBalanceAtStake,
-                     (),
-                   )
-                 | _ => <BalanceDetailLoading />
-                 }}
-              </div>
-              <div>
-                {switch (topPartAllSub) {
-                 | Data(({financial}, _, _, unbonding, _)) =>
-                   balanceDetail(
-                     ~title="Unbonding",
-                     ~description=
-                       "Amount undelegated from validators awaiting 21 days lockup period",
-                     ~amount={
-                       unbonding->Coin.getBandAmountFromCoin;
-                     },
-                     ~usdPrice=financial.usdPrice,
-                     ~color=Colors.blue4,
-                     (),
-                   )
-                 | _ => <BalanceDetailLoading />
-                 }}
-              </div>
-              <div>
-                {switch (topPartAllSub) {
-                 | Data(({financial}, _, {reward}, _, _)) =>
-                   balanceDetail(
-                     ~title="Reward",
-                     ~description="Reward from staking to validators",
-                     ~amount={
-                       reward->Coin.getBandAmountFromCoin;
-                     },
-                     ~usdPrice=financial.usdPrice,
-                     ~color=Colors.chartReward,
-                     ~isCountup=true,
-                     (),
-                   )
-                 | _ => <BalanceDetailLoading />
-                 }}
-              </div>
+              // <div>
+              //   {switch (topPartAllSub) {
+              //    | Data(({financial}, {balance}, _, _, _)) =>
+              //      balanceDetail(
+              //        ~title="Available",
+              //        ~description="Balance available to send, delegate, etc",
+              //        ~amount={
+              //          balance->Coin.getBandAmountFromCoins;
+              //        },
+              //        ~usdPrice=financial.usdPrice,
+              //        ~color=Colors.bandBlue,
+              //        (),
+              //      )
+              //    | _ => <BalanceDetailLoading />
+              //    }}
+              // </div>
+              // <div>
+              //   {switch (topPartAllSub) {
+              //    | Data(({financial}, _, {amount}, _, _)) =>
+              //      balanceDetail(
+              //        ~title="Delegated",
+              //        ~description="Balance currently delegated to validators",
+              //        ~amount={
+              //          amount->Coin.getBandAmountFromCoin;
+              //        },
+              //        ~usdPrice=financial.usdPrice,
+              //        ~color=Colors.chartBalanceAtStake,
+              //        (),
+              //      )
+              //    | _ => <BalanceDetailLoading />
+              //    }}
+              // </div>
+              // <div>
+              //   {switch (topPartAllSub) {
+              //    | Data(({financial}, _, _, unbonding, _)) =>
+              //      balanceDetail(
+              //        ~title="Unbonding",
+              //        ~description=
+              //          "Amount undelegated from validators awaiting 21 days lockup period",
+              //        ~amount={
+              //          unbonding->Coin.getBandAmountFromCoin;
+              //        },
+              //        ~usdPrice=financial.usdPrice,
+              //        ~color=Colors.blue4,
+              //        (),
+              //      )
+              //    | _ => <BalanceDetailLoading />
+              //    }}
+              // </div>
+              // <div>
+              //   {switch (topPartAllSub) {
+              //    | Data(({financial}, _, {reward}, _, _)) =>
+              //      balanceDetail(
+              //        ~title="Reward",
+              //        ~description="Reward from staking to validators",
+              //        ~amount={
+              //          reward->Coin.getBandAmountFromCoin;
+              //        },
+              //        ~usdPrice=financial.usdPrice,
+              //        ~color=Colors.chartReward,
+              //        ~isCountup=true,
+              //        (),
+              //      )
+              //    | _ => <BalanceDetailLoading />
+              //    }}
+              // </div>
               {switch (topPartAllSub) {
                | Data(({financial}, {commission}, _, _, _)) =>
                  let commissionAmount = commission->Coin.getBandAmountFromCoins;

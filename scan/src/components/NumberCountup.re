@@ -1,5 +1,6 @@
 [@react.component]
 let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true, ~smallNumber=false) => {
+  Js.log2("value", value);
   let countup =
     Countup.context(
       Countup.props(
@@ -10,12 +11,28 @@ let make = (~value, ~size, ~weight, ~spacing, ~color=Colors.gray7, ~code=true, ~
         ~duration=4,
         ~useEasing=false,
         ~separator=",",
+        ~redraw=true
       ),
     );
 
   React.useEffect1(
     _ => {
+      // Js.log(countup);
+      // Js.log(value);
       Countup.updateGet(countup, value);
+      if (value==0.) {
+        // countup.reset();
+        let a = [%bs.raw {|
+          function() {
+            console.log(countup)
+            countup.resetCountUp();
+            console.log('fark');
+            // countup.reset();
+            // countup.update(999);
+          } 
+        |}];
+        a();
+      }
       None;
     },
     [|value|],

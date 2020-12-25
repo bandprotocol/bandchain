@@ -8,6 +8,7 @@ type props = {
   duration: int,
   useEasing: bool,
   separator: string,
+  redraw: bool,
 };
 
 [@bs.deriving abstract]
