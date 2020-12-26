@@ -5086,10 +5086,10 @@ html-escaper@^2.0.0:
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.1.tgz#beed86b5d2b921e92533aa11bce6d8e3b583dee7"
   integrity sha512-hNX23TjWwD3q56HpWjUHOKj1+4KKlnjv9PcmBUYKVpga+2cnb9nDx/B1o0yO4n+RZXZdiNxzx6B24C9aNMTkkQ==
 
-html-react-parser@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.0.0.tgz#7d4e352de30e71c4775703216663ec3ca9375a42"
-  integrity sha512-rBvIae/JCykQTfFYrjc8a65bJpprE4GHnj5IsoIm+4NEMHsyrgLYmdTtH5uM0YwCOH+LyWZMsGWBQMQJFRffYQ==
+html-react-parser@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.1.0.tgz#2f93a65ba7fb472115c507e04002d0b5da66948a"
+  integrity sha512-oBSVq6XlekdO6Ft3C2sXxXl/Y1f9fSiQQ9zoifpN9vet+4tsFIPrGUNM1hyA6335QnCmR98rbiczGZA1KhF23g==
   dependencies:
     html-dom-parser "0.5.0"
     react-property "1.0.1"
