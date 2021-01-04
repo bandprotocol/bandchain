@@ -275,7 +275,7 @@ let rec encode =
       evidenceAndProposerHash,
     }) => {
       Obi.encode(
-        "{versionAndChainIdHash: bytes, timeSecond: u64, timeNanoSecond: u64, lastBlockIDAndOther: bytes, nextValidatorHashAndConsensusHash: bytes, lastResultsHash: bytes, evidenceAndProposerHash: bytes}/{_:u64}",
+        "{versionAndChainIdHash: bytes, timeSecond: u64, timeNanoSecond: u32, lastBlockIDAndOther: bytes, nextValidatorHashAndConsensusHash: bytes, lastResultsHash: bytes, evidenceAndProposerHash: bytes}/{_:u64}",
         "input",
         [|
           {
