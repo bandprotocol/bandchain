@@ -323,7 +323,9 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="COMMISSION RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+        value={
+          (validator.commissionRate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+        }
         code=true
       />
     </div>
@@ -331,7 +333,9 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="COMMISSION MAX RATE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.commissionMaxRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+        value={
+          (validator.commissionMaxRate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+        }
         code=true
       />
     </div>
@@ -339,7 +343,9 @@ let renderCreateValidator = (validator: TxSub.Msg.CreateValidator.t) => {
     <div className=Styles.topicContainer>
       <Text value="COMMISSION MAX CHANGE" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
       <Text
-        value={validator.commissionMaxChange->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+        value={
+          (validator.commissionMaxChange *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+        }
         code=true
       />
     </div>
@@ -414,7 +420,7 @@ let renderEditValidator = (validator: TxSub.Msg.EditValidator.t) => {
       <Text
         value={
           switch (validator.commissionRate) {
-          | Some(rate) => rate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+          | Some(rate) => (rate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
           | None => "Unchanged"
           }
         }
