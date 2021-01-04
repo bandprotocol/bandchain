@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#3049](https://github.com/bandprotocol/bandchain/pull/3049) Fix wrong commission rate
 - (bugs) [\#3018](https://github.com/bandprotocol/bandchain/pull/3018) Updated non-evm proof fields
 - (bugs) [\#3014](https://github.com/bandprotocol/bandchain/pull/3014) Fix auto width popup render the wrong size
 - (bugs) [\#3011](https://github.com/bandprotocol/bandchain/pull/3011) Fix duplicated chart label
