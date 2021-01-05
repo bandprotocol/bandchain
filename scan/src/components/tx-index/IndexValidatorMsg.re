@@ -21,21 +21,28 @@ module CreateValidatorMsg = {
         <Heading value="Commission Rate" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
-          value={validator.commissionRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          value={
+            (validator.commissionRate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+          }
         />
       </Col>
       <Col col=Col.Six mb=24>
         <Heading value="Commission Max Rate" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
-          value={validator.commissionMaxRate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          value={
+            (validator.commissionMaxRate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+          }
         />
       </Col>
       <Col mb=24>
         <Heading value="Commission Max Change" size=Heading.H5 marginBottom=8 />
         <Text
           size=Text.Lg
-          value={validator.commissionMaxChange->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"}
+          value={
+            (validator.commissionMaxChange *. 100.)->Js.Float.toFixedWithPrecision(~digits=4)
+            ++ "%"
+          }
         />
       </Col>
       <Col col=Col.Six mb=24>
@@ -98,7 +105,7 @@ module EditValidatorMsg = {
           size=Text.Lg
           value={
             switch (validator.commissionRate) {
-            | Some(rate) => rate->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
+            | Some(rate) => (rate *. 100.)->Js.Float.toFixedWithPrecision(~digits=4) ++ "%"
             | None => "Unchanged"
             }
           }
