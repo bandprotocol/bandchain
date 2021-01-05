@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#3054](https://github.com/bandprotocol/bandchain/pull/3054) Order historical bonded token graph by ASC
 - (impv) [\#3008](https://github.com/bandprotocol/bandchain/pull/3008) Disable delegate button when balance is insufficient
 - (bugs) [\#3049](https://github.com/bandprotocol/bandchain/pull/3049) Fix wrong commission rate
 - (bugs) [\#3018](https://github.com/bandprotocol/bandchain/pull/3018) Updated non-evm proof fields
