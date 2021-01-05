@@ -6,7 +6,7 @@ type t = {
 module HistoricalConfig = [%graphql
   {|
   query HistoricalBondedToken($operator_address: String!) {
-    historical_bonded_token_on_validators(where: {validator: {operator_address: {_eq: $operator_address}}}) {
+    historical_bonded_token_on_validators(where: {validator: {operator_address: {_eq: $operator_address}}}, order_by: {timestamp: asc}) {
       bonded_tokens
       timestamp
     }
