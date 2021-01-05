@@ -24,7 +24,7 @@ from pyband.data import (
 )
 from pyband.utils import parse_epoch_time
 from pyband.data import Coin
-from pyband.error import EmptyRequestMsgError
+from pyband.exceptions import EmptyRequestMsgError
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 

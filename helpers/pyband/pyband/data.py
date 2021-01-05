@@ -5,7 +5,7 @@ from typing import List, Optional, NewType
 from dacite import Config
 from .utils import parse_epoch_time
 from .wallet import Address
-from .error import InsufficientCoinError
+from .exceptions import InsufficientCoinError
 
 HexBytes = NewType("HexBytes", bytes)
 EpochTime = NewType("EpochTime", int)

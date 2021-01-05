@@ -4,7 +4,7 @@ import time
 from dacite import from_dict
 from typing import List, Optional
 from .wallet import Address
-from .error import EmptyRequestMsgError, QueryError
+from .exceptions import EmptyRequestMsgError, QueryError
 from .data import (
     Account,
     Block,

@@ -5,7 +5,7 @@ from typing import List, Optional
 from .wallet import PublicKey
 from .constant import MAX_MEMO_CHARACTERS
 from .message import Msg
-from .error import EmptyMsgError, NotFoundError, UndefinedError, ValueTooLargeError
+from .exceptions import EmptyMsgError, NotFoundError, UndefinedError, ValueTooLargeError
 
 
 class Transaction:

@@ -2,7 +2,7 @@ import pytest
 from pyband.data import Coin
 from pyband.message import MsgDelegate
 from pyband.wallet import Address
-from pyband.error import InsufficientCoinError
+from pyband.exceptions import InsufficientCoinError
 
 
 def test_msg_delegate_creation_success():

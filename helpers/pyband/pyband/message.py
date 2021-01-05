@@ -5,7 +5,7 @@ from typing import List
 from .wallet import Address
 from .data import Coin
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
-from .error import InsufficientCoinError, NegativeIntegerError, ValueTooLargeError
+from .exceptions import InsufficientCoinError, NegativeIntegerError, ValueTooLargeError
 
 
 class Msg:

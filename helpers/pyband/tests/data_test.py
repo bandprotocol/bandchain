@@ -1,6 +1,6 @@
 import pytest
 from pyband.data import Coin
-from pyband.error import InsufficientCoinError
+from pyband.exceptions import InsufficientCoinError
 
 
 def test_coin_success():

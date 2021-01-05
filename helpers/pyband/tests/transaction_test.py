@@ -6,7 +6,7 @@ from pyband import Transaction
 from pyband.message import MsgRequest
 from pyband.wallet import Address, PrivateKey
 from pyband.client import Client
-from pyband.error import EmptyMsgError, UndefinedError, ValueTooLargeError
+from pyband.exceptions import EmptyMsgError, UndefinedError, ValueTooLargeError
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest/"
 

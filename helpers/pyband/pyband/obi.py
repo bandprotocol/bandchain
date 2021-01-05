@@ -1,5 +1,5 @@
 from typing import Any, Tuple
-from .error import SchemaError, DecodeError
+from .exceptions import SchemaError, DecodeError
 
 
 class PyObiSpec(object):

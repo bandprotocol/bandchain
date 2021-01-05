@@ -3,7 +3,7 @@ import pytest
 from pyband.data import Coin
 from pyband.message import MsgSend
 from pyband.wallet import Address
-from pyband.error import InsufficientCoinError
+from pyband.exceptions import InsufficientCoinError
 
 
 def test_msg_send_creation_success():

@@ -2,7 +2,7 @@ import pytest
 
 from pyband.message import MsgRequest
 from pyband.wallet import Address
-from pyband.error import NegativeIntegerError, ValueTooLargeError
+from pyband.exceptions import NegativeIntegerError, ValueTooLargeError
 
 
 def test_msg_request_creation_success():
