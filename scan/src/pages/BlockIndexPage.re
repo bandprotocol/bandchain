@@ -18,13 +18,8 @@ module Styles = {
 
   let pageContainer =
     style([
-      width(`percent(100.)),
       paddingTop(`px(50)),
       minHeight(`px(450)),
-      display(`flex),
-      flexDirection(`column),
-      alignItems(`center),
-      justifyContent(`center),
       backgroundColor(Colors.white),
       borderRadius(`px(4)),
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, `num(0.1)))),
@@ -50,7 +45,11 @@ let make = (~height) => {
     <Section>
       <div className=CssHelper.container>
         <VSpacing size=Spacing.xxl />
-        <div className=Styles.pageContainer>
+        <div
+          className={Css.merge([
+            Styles.pageContainer,
+            CssHelper.flexBox(~direction=`column, ~justify=`center, ()),
+          ])}>
           <div className={CssHelper.flexBox()}>
             <img src=Images.notFoundBg className=Styles.logo />
           </div>
