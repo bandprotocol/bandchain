@@ -1544,7 +1544,7 @@
     "@types/yargs" "^15.0.0"
     chalk "^4.0.0"
 
-"@ledgerhq/devices@^5.19.0", "@ledgerhq/devices@^5.36.0":
+"@ledgerhq/devices@^5.36.0":
   version "5.36.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/devices/-/devices-5.36.0.tgz#f4493bea44390325fcc7a2a0d03bba69fc1604ec"
   integrity sha512-EwQwLZcz66a2V07Bad0J+Q67LR2afj2NJChJNcA6/gqvzXrtNtJ37u1co9eLU7S5GGll5JGi7KdBqAD9ZTHaaQ==
@@ -1553,20 +1553,20 @@
     "@ledgerhq/logs" "^5.36.0"
     rxjs "^6.6.3"
 
-"@ledgerhq/errors@^5.19.0", "@ledgerhq/errors@^5.36.0":
+"@ledgerhq/errors@^5.36.0":
   version "5.36.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/errors/-/errors-5.36.0.tgz#9d178b54116ae81b1fbdfa80afcd33981453be4c"
   integrity sha512-VS6aFzn3IDUmSLaX2kAPg5sQOc5m7IwvswAGvoMc3FCi9/a1dXWwtiYn5rWd1QjDJlTKSfCwmSpvUMp8FKoY2Q==
 
-"@ledgerhq/hw-transport-webhid@^5.19.0":
-  version "5.19.0"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-5.19.0.tgz#48b5e3c94c710cace39af8954796480c942c95f2"
-  integrity sha512-D3f46bM5d73dXyZXO4hwnXIytU1xU4YJ1xNJP0a81xd8XyvD4TtzePqYebhX0myEb2qZYWJAtcVtm9ARLCtwyA==
+"@ledgerhq/hw-transport-webhid@^5.36.0":
+  version "5.36.0"
+  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webhid/-/hw-transport-webhid-5.36.0.tgz#08d6ab45bc75ab8d5ac4cc70e5217e5ee4ec0653"
+  integrity sha512-SmB4eVRZ4muyXwdvGLBiFUkVaO7bF3W6KxQRX89Mph/Ezdc2yg9Yz/7PJ19NtrSB3urgltHOK4QZxX3Y+usYTQ==
   dependencies:
-    "@ledgerhq/devices" "^5.19.0"
-    "@ledgerhq/errors" "^5.19.0"
-    "@ledgerhq/hw-transport" "^5.19.0"
-    "@ledgerhq/logs" "^5.19.0"
+    "@ledgerhq/devices" "^5.36.0"
+    "@ledgerhq/errors" "^5.36.0"
+    "@ledgerhq/hw-transport" "^5.36.0"
+    "@ledgerhq/logs" "^5.36.0"
 
 "@ledgerhq/hw-transport-webusb@^5.36.0":
   version "5.36.0"
@@ -1578,7 +1578,7 @@
     "@ledgerhq/hw-transport" "^5.36.0"
     "@ledgerhq/logs" "^5.36.0"
 
-"@ledgerhq/hw-transport@^5.19.0", "@ledgerhq/hw-transport@^5.25.0", "@ledgerhq/hw-transport@^5.36.0":
+"@ledgerhq/hw-transport@^5.25.0", "@ledgerhq/hw-transport@^5.36.0":
   version "5.36.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-5.36.0.tgz#b6e951c411182ece59c7b527f948240d1b0a8a51"
   integrity sha512-rwLTBUsdGCC3Ka4G99sqGbbyVhkVxXd4eWWeOb8gnuKhrTydZGkkP3JdZSHgWSrVRYTAUmkE1AnUmchbfh361w==
@@ -1587,7 +1587,7 @@
     "@ledgerhq/errors" "^5.36.0"
     events "^3.2.0"
 
-"@ledgerhq/logs@^5.19.0", "@ledgerhq/logs@^5.36.0":
+"@ledgerhq/logs@^5.36.0":
   version "5.36.0"
   resolved "https://registry.yarnpkg.com/@ledgerhq/logs/-/logs-5.36.0.tgz#78721347162fb834d90effa1123b363dc46e3a52"
   integrity sha512-HnD/hByteUL1MsJu1lMinY9bNq8++5mWJ8qHCW9dLC9LbsvWIqwLwmZiGcW0D2tX9p0/C5ESuIpJ9B/d2dReuw==
