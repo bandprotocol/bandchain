@@ -30,6 +30,20 @@ let make = () => {
   | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
   };
   let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
+  let (_, dispatchModal) = React.useContext(ModalContext.context);
+  let trackingSub = TrackingSub.use();
+
+  // If database is syncing the state (when replayOffset = -2).
+  React.useEffect1(
+    () => {
+      switch (trackingSub) {
+      | Data({replayOffset}) when replayOffset == (-2) => Syncing->OpenModal->dispatchModal
+      | _ => ()
+      };
+      None;
+    },
+    [|trackingSub|],
+  );
 
   <div className=Styles.container>
     <Header />
