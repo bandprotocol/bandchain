@@ -20,7 +20,7 @@ let make = () => {
       align=Heading.Center
     />
     <Text
-      value="The database has suddenly updated some changes for fixing some bugs. It means the old block and transaction information will not show on Cosmoscan for now. Please wait until the state up to date."
+      value="The database has suddenly updated some changes for fixing some bugs. It means the old block and transaction information will not show on Cosmoscan for now. Please wait until the state is up to date."
       size=Text.Lg
     />
   </div>;
