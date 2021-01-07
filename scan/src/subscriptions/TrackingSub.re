@@ -1,10 +1,14 @@
-type t = {chainID: string};
+type t = {
+  chainID: string,
+  replayOffset: int,
+};
 
 module Config = [%graphql
   {|
   subscription Tracking {
     tracking @bsRecord {
       chainID: chain_id
+      replayOffset: replay_offset
     }
   }
 |}
