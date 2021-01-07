@@ -99,10 +99,10 @@ let make = () => {
         />
         <VSpacing size={`px(4)} />
         {switch (txsSub) {
-         | ApolloHooks.Subscription.Data(requests) =>
+         | ApolloHooks.Subscription.Data(txs) =>
            <Text
              value={
-               requests
+               txs
                ->Belt.Array.get(0)
                ->Belt.Option.mapWithDefault(0, ({id}) => id)
                ->Format.iPretty
