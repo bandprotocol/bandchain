@@ -100,12 +100,12 @@ let make = () => {
         <VSpacing size={`px(4)} />
         {switch (txsSub) {
          | ApolloHooks.Subscription.Data(txs) =>
+           //  HACK: decrease tx count for guanyu testnet3 only
            <Text
              value={
-               txs
-               ->Belt.Array.get(0)
-               ->Belt.Option.mapWithDefault(0, ({id}) => id)
-               ->Format.iPretty
+               txs->Belt.Array.get(0)->Belt.Option.mapWithDefault(0, ({id}) => id)
+               - 2207294
+               |> Format.iPretty
              }
              size=Text.Lg
              color=Colors.gray7

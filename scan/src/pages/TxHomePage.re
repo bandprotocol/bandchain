@@ -1,11 +1,9 @@
 [@react.component]
 let make = () => {
-  let (page, setPage) = React.useState(_ => 1);
-  let pageSize = 10;
+  let pageSize = 20;
 
-  let txsSub = TxSub.getList(~pageSize, ~page, ());
+  let txsSub = TxSub.getList(~pageSize, ~page=1, ());
   let latestTxsSub = TxSub.getList(~pageSize=1, ~page=1, ());
-  let txsCountSub = TxSub.count();
 
   let isMobile = Media.isMobile();
 
@@ -18,10 +16,12 @@ let make = () => {
            | Data(txs) =>
              <Heading
                value={
-                 txs
-                 ->Belt.Array.get(0)
-                 ->Belt.Option.mapWithDefault(0, ({id}) => id)
-                 ->Format.iPretty
+                 //  HACK: decrease tx count for guanyu testnet3 only
+                 (
+                   txs->Belt.Array.get(0)->Belt.Option.mapWithDefault(0, ({id}) => id)
+                   - 2207294
+                   |> Format.iPretty
+                 )
                  ++ " In total"
                }
                size=Heading.H3
@@ -65,13 +65,6 @@ let make = () => {
              </Row>
            </THead>}
       <TxsTable txsSub />
-      {switch (txsCountSub) {
-       | Data(txsCount) =>
-         let pageCount = Page.getPageCount(txsCount, pageSize);
-
-         <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />;
-       | _ => React.null
-       }}
     </div>
   </Section>;
 };
