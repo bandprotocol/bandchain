@@ -38,7 +38,7 @@ let make = () => {
   React.useEffect2(
     () => {
       switch (trackingSub) {
-      | Data({replayOffset}) when replayOffset == (-2) && !syncing =>
+      | Data({replayOffset}) when replayOffset != (-2) && !syncing =>
         Syncing->OpenModal->dispatchModal;
         setSyncing(_ => true);
       | _ => ()
