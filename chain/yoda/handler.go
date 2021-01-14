@@ -240,6 +240,7 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			rawReport: types.NewRawReport(req.externalID, 255, nil),
 			err:       err,
 		}
+		return
 	}
 
 	result, err := c.executor.Exec(exec, req.calldata, map[string]interface{}{
@@ -257,6 +258,7 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			rawReport: types.NewRawReport(req.externalID, 255, nil),
 			err:       err,
 		}
+		return
 	} else {
 		l.Debug(
 			":sparkles: Query data done with calldata: %q, result: %q, exitCode: %d",
