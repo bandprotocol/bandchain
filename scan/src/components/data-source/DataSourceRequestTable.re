@@ -63,12 +63,16 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({txTimestamp}) =>
-             <Timestamp.Grid
-               time=txTimestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+             switch (txTimestamp) {
+             | Some(txTimestamp') =>
+               <Timestamp.Grid
+                 time=txTimestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Syncing" />
+             }
            | _ =>
              <>
                <LoadingCensorBar width=70 height=15 />
@@ -106,7 +110,13 @@ let renderBodyMobile =
             requestValidators: askCount,
           }),
         ),
-        ("Timestamp", Timestamp(txTimestamp)),
+        (
+          "Timestamp",
+          switch (txTimestamp) {
+          | Some(txTimestamp') => Timestamp(txTimestamp')
+          | None => Text("Syncing")
+          },
+        ),
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}

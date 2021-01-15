@@ -31,7 +31,11 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       </Col>
       <Col col=Col.Four>
         {switch (requestsSub) {
-         | Data({txHash}) => <TxLink txHash width=230 weight=Text.Medium />
+         | Data({txHash}) =>
+           switch (txHash) {
+           | Some(txHash') => <TxLink txHash=txHash' width=230 weight=Text.Medium />
+           | None => <Text value="Syncing" size=Text.Md weight=Text.Medium />
+           }
          | _ => <LoadingCensorBar width=230 height=15 />
          }}
       </Col>
@@ -58,12 +62,16 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({txTimestamp}) =>
-             <Timestamp.Grid
-               time=txTimestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+             switch (txTimestamp) {
+             | Some(txTimestamp') =>
+               <Timestamp.Grid
+                 time=txTimestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Syncing" />
+             }
            | _ =>
              <>
                <LoadingCensorBar width=70 height=15 />
@@ -83,7 +91,13 @@ let renderBodyMobile =
     <MobileCard
       values=InfoMobileCard.[
         ("Request ID", RequestID(id)),
-        ("Tx Hash", TxHash(txHash, 200)),
+        (
+          "Tx Hash",
+          {switch (txHash) {
+           | Some(txHash') => TxHash(txHash', 200)
+           | None => Text("Syncing")
+           }},
+        ),
         (
           "Report Status",
           ProgressBar({
@@ -92,7 +106,13 @@ let renderBodyMobile =
             requestValidators: askCount,
           }),
         ),
-        ("Timestamp", Timestamp(txTimestamp)),
+        (
+          "Timestamp",
+          switch (txTimestamp) {
+          | Some(txTimestamp') => Timestamp(txTimestamp')
+          | None => Text("Syncing")
+          },
+        ),
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}
