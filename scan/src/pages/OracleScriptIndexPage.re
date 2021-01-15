@@ -28,8 +28,8 @@ module Content = {
     <Section pbSm=0>
       <div className=CssHelper.container>
         <Heading value="Oracle Script" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
-        <Row.Grid marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
-          <Col.Grid col=Col.Eight>
+        <Row marginBottom=40 marginBottomSm=16 alignItems=Row.Center>
+          <Col col=Col.Eight>
             <div className={Css.merge([CssHelper.flexBox(), Styles.idCointainer])}>
               {switch (oracleScriptSub) {
                | Data({id, name}) =>
@@ -41,11 +41,11 @@ module Content = {
                | _ => <LoadingCensorBar width=270 height=15 />
                }}
             </div>
-          </Col.Grid>
-          <Col.Grid col=Col.Four>
+          </Col>
+          <Col col=Col.Four>
             <div className=Styles.infoContainer>
-              <Row.Grid>
-                <Col.Grid col=Col.Six colSm=Col.Six>
+              <Row>
+                <Col col=Col.Six colSm=Col.Six>
                   <div className={CssHelper.flexBox(~direction=`column, ())}>
                     <Heading
                       value="Requests"
@@ -64,8 +64,8 @@ module Content = {
                      | _ => <LoadingCensorBar width=100 height=15 />
                      }}
                   </div>
-                </Col.Grid>
-                <Col.Grid col=Col.Six colSm=Col.Six>
+                </Col>
+                <Col col=Col.Six colSm=Col.Six>
                   <div className={CssHelper.flexBox(~direction=`column, ())}>
                     <div
                       className={Css.merge([
@@ -96,13 +96,13 @@ module Content = {
                      | _ => <LoadingCensorBar width=100 height=15 />
                      }}
                   </div>
-                </Col.Grid>
-              </Row.Grid>
+                </Col>
+              </Row>
             </div>
-          </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
-          <Col.Grid>
+          </Col>
+        </Row>
+        <Row marginBottom=24>
+          <Col>
             <div className=Styles.infoContainer>
               <Heading
                 value="Information"
@@ -110,8 +110,8 @@ module Content = {
                 style=Styles.infoHeader
                 marginBottom=24
               />
-              <Row.Grid marginBottom=24>
-                <Col.Grid col=Col.Six>
+              <Row marginBottom=24>
+                <Col col=Col.Six>
                   <div className={CssHelper.flexBox()}>
                     <Heading value="Owner" size=Heading.H5 />
                     <HSpacing size=Spacing.xs />
@@ -125,8 +125,8 @@ module Content = {
                      <AddressRender address=owner position=AddressRender.Subtitle />
                    | _ => <LoadingCensorBar width=284 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Six>
+                </Col>
+                <Col col=Col.Six>
                   <div className={Css.merge([CssHelper.flexBox(), Styles.containerSpacingSm])}>
                     <Heading value="Data Sources" size=Heading.H5 />
                     <HSpacing size=Spacing.xs />
@@ -148,7 +148,7 @@ module Content = {
                                      align=`center
                                      tooltipText={Ellipsis.format(
                                        ~text=dataSourceName,
-                                       ~limit=32,
+                                       ~limit=40,
                                        (),
                                      )}>
                                      <TypeID.DataSource id=dataSourceID position=TypeID.Subtitle />
@@ -164,8 +164,8 @@ module Content = {
                      | _ => <LoadingCensorBar width=284 height=15 />
                      }}
                   </div>
-                </Col.Grid>
-              </Row.Grid>
+                </Col>
+              </Row>
               <Heading value="Description" size=Heading.H5 marginBottom=16 />
               {switch (oracleScriptSub) {
                | Data({description}) =>
@@ -173,8 +173,8 @@ module Content = {
                | _ => <LoadingCensorBar width=284 height=15 />
                }}
             </div>
-          </Col.Grid>
-        </Row.Grid>
+          </Col>
+        </Row>
         <Tab
           tabs=[|
             {
@@ -197,7 +197,7 @@ module Content = {
                 oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptExecute),
             },
             // {
-            //   name: "REVISIONS",
+            //   name: "Revisions",
             //   route:
             //     oracleScriptID |> ID.OracleScript.getRouteWithTab(_, Route.OracleScriptRevisions),
             // },

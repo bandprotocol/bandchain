@@ -35,26 +35,6 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, `num(0.1)))),
     ]);
   let notfoundLogo = style([width(`px(180)), marginRight(`px(10))]);
-  let infoContainerFullwidth =
-    style([
-      Media.mobile([
-        selector("> div", [flexBasis(`percent(100.))]),
-        selector("> div + div", [marginTop(`px(15))]),
-        selector("> div > div > div", [display(`block)]),
-      ]),
-    ]);
-  let infoContainerHalfwidth =
-    style([
-      Media.mobile([
-        selector(
-          "> div",
-          [flexGrow(0.), flexShrink(0.), flexBasis(`calc((`sub, `percent(50.), `px(20))))],
-        ),
-        selector("> div + div + div", [marginTop(`px(15))]),
-        selector("> div *", [alignItems(`flexStart)]),
-      ]),
-    ]);
-
   let infoContainer =
     style([
       backgroundColor(Colors.white),
@@ -75,7 +55,9 @@ module TxNotFound = {
       <div className=CssHelper.container>
         <VSpacing size=Spacing.lg />
         <div className=Styles.notfoundContainer>
-          <Col> <img src=Images.notFoundBg className=Styles.notfoundLogo /> </Col>
+          <div className={CssHelper.flexBox()}>
+            <img src=Images.notFoundBg className=Styles.notfoundLogo />
+          </div>
           <VSpacing size=Spacing.md />
           <Text
             value="Sorry, we are unable to retrieve information on this transaction hash."
@@ -94,17 +76,72 @@ module TxNotFound = {
   };
 };
 
+module TxSyncing = {
+  [@react.component]
+  let make = (~height, ~link) => {
+    <Section>
+      <div className=CssHelper.container>
+        <VSpacing size=Spacing.lg />
+        <div className=Styles.notfoundContainer>
+          <div className={CssHelper.flexBox()}>
+            <img src=Images.notFoundBg className=Styles.notfoundLogo />
+          </div>
+          <VSpacing size=Spacing.md />
+          <Text
+            value={j|This transaction is available on block #B$height but our database is syncing now.|j}
+            size=Text.Lg
+            color=Colors.blueGray6
+          />
+          <VSpacing size=Spacing.lg />
+          <div className={CssHelper.flexBox()}>
+            <Text
+              value="You can check the transaction information"
+              size=Text.Lg
+              color=Colors.blueGray6
+            />
+            <HSpacing size=Spacing.xs />
+            <a href=link target="_blank" rel="noopener">
+              <Text value="here" size=Text.Lg color=Colors.blueGray6 underline=true />
+            </a>
+          </div>
+        </div>
+      </div>
+    </Section>;
+  };
+};
+
+module TxNotFoundOrSyncing = {
+  [@react.component]
+  let make = (~txHash) => {
+    let txHash' = txHash |> Hash.toHex;
+    let path = {j|/txs/$txHash'|j};
+
+    let decodeHeight = json => json |> JsonUtils.Decode.at(["height"], JsonUtils.Decode.string);
+    let heightOpt = {
+      let resultOpt = AxiosHooks.use(path);
+      let%Opt result = resultOpt;
+
+      Opt.ret(decodeHeight(result));
+    };
+    switch (heightOpt) {
+    | Some(height) => <TxSyncing height link={Env.rpc ++ path} />
+    | None => <TxNotFound />
+    };
+  };
+};
+
 [@react.component]
 let make = (~txHash) => {
   let isMobile = Media.isMobile();
   let txSub = TxSub.get(txHash);
+
   switch (txSub) {
   | Loading
   | Data(_) =>
     <Section>
       <div className=CssHelper.container>
-        <Row.Grid marginBottom=40 marginBottomSm=16>
-          <Col.Grid>
+        <Row marginBottom=40 marginBottomSm=16>
+          <Col>
             <Heading value="Transaction" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
             <div
               className={Css.merge([
@@ -164,10 +201,15 @@ let make = (~txHash) => {
                  }}
               </div>
             </div>
-          </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
-          <Col.Grid>
+          </Col>
+        </Row>
+        {switch (txSub) {
+         | Data({success, errMsg}) when !success =>
+           <Row> <Col> <TxError.Full msg=errMsg /> </Col> </Row>
+         | _ => React.null
+         }}
+        <Row marginBottom=24>
+          <Col>
             <div className=Styles.infoContainer>
               <Heading
                 value="Information"
@@ -175,24 +217,24 @@ let make = (~txHash) => {
                 style=Styles.infoHeader
                 marginBottom=24
               />
-              <Row.Grid>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+              <Row>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Block" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({blockHeight}) =>
                      <TypeID.Block id=blockHeight position=TypeID.Subtitle />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                </Col>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Sender" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({sender}) =>
                      <AddressRender address=sender position=AddressRender.Subtitle />
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Six mb=24 mbSm=24>
+                </Col>
+                <Col col=Col.Six mb=24 mbSm=24>
                   <Heading value="Timestamp" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({timestamp}) =>
@@ -210,8 +252,8 @@ let make = (~txHash) => {
                      </div>
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid>
+                </Col>
+                <Col>
                   <Heading value="Memo" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({memo}) =>
@@ -226,25 +268,25 @@ let make = (~txHash) => {
                      </p>
                    | _ => <LoadingCensorBar width=280 height=15 />
                    }}
-                </Col.Grid>
-              </Row.Grid>
+                </Col>
+              </Row>
               <hr className=Styles.separatorLine />
-              <Row.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+              <Row>
+                <Col col=Col.Three colSm=Col.Six mbSm=24>
                   <Heading value="Gas Used" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasUsed}) => <Text value={gasUsed |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six mbSm=24>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six mbSm=24>
                   <Heading value="Gas Limit" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasLimit}) => <Text value={gasLimit |> Format.iPretty} size=Text.Lg />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six>
                   <Heading value="Gas Price (UBAND)" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasFee, gasLimit}) =>
@@ -259,8 +301,8 @@ let make = (~txHash) => {
                      />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-                <Col.Grid col=Col.Three colSm=Col.Six>
+                </Col>
+                <Col col=Col.Three colSm=Col.Six>
                   <Heading value="Fee (BAND)" size=Heading.H5 marginBottom=8 />
                   {switch (txSub) {
                    | Data({gasFee}) =>
@@ -270,35 +312,31 @@ let make = (~txHash) => {
                      />
                    | _ => <LoadingCensorBar width=75 height=15 />
                    }}
-                </Col.Grid>
-              </Row.Grid>
+                </Col>
+              </Row>
             </div>
-          </Col.Grid>
-        </Row.Grid>
-        <Row.Grid marginBottom=24>
-          <Col.Grid>
+          </Col>
+        </Row>
+        <Row marginBottom=24>
+          <Col>
             {switch (txSub) {
-             | Data({success, errMsg, messages}) =>
+             | Data({messages}) =>
                let msgCount = messages |> Belt.List.length;
-               <>
-                 {success ? React.null : <TxError.Full msg=errMsg />}
-                 <div className={CssHelper.flexBox()}>
-                   <Text value={msgCount |> string_of_int} size=Text.Lg />
-                   <HSpacing size=Spacing.md />
-                   <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
-                 </div>
-               </>;
+               <div className={CssHelper.flexBox()}>
+                 <Text value={msgCount |> string_of_int} size=Text.Lg />
+                 <HSpacing size=Spacing.md />
+                 <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
+               </div>;
              | _ => <LoadingCensorBar width=100 height=20 />
              }}
-          </Col.Grid>
-        </Row.Grid>
+          </Col>
+        </Row>
         {switch (txSub) {
-         | Data({messages}) =>
-           isMobile ? <TxMobileIndexPageTable messages /> : <TxIndexPageTable messages />
-         | _ => isMobile ? <TxMobileIndexPageTable.Loading /> : <TxIndexPageTable.Loading />
+         | Data({messages}) => <TxIndexPageTable messages />
+         | _ => <TxIndexPageTable.Loading />
          }}
       </div>
     </Section>
-  | _ => <TxNotFound />
+  | _ => <TxNotFoundOrSyncing txHash />
   };
 };

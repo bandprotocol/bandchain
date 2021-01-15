@@ -1,18 +1,19 @@
 name: Chain Workflow
-on: push
+on: [push, pull_request]
 
 jobs:
   chain-test:
     runs-on: ubuntu-latest
     env:
       working-directory: ./chain
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'bandprotocol/bandchain'
 
     steps:
       - name: Code checkout
         uses: actions/checkout@v2
 
       - name: Install Go
-        uses: actions/setup-go@v2-beta
+        uses: actions/setup-go@v2
         with:
           go-version: "1.14.7"
 

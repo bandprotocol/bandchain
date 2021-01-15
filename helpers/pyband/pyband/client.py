@@ -1,6 +1,8 @@
 import requests
+import time
 
 from dacite import from_dict
+from typing import List, Optional
 from .wallet import Address
 from .data import (
     Account,
@@ -13,6 +15,9 @@ from .data import (
     TransactionSyncMode,
     TransactionAsyncMode,
     TransactionBlockMode,
+    ReferencePrice,
+    ReferencePriceUpdated,
+    EVMProof,
 )
 
 
@@ -83,10 +88,13 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_account(self, address: Address) -> Account:
+    def get_account(self, address: Address) -> Optional[Account]:
+        data = self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"]
+        if data["address"] == "":
+            return None
         return from_dict(
             data_class=Account,
-            data=self._get_result("/auth/accounts/{}".format(address.to_acc_bech32()))["value"],
+            data=data,
             config=DACITE_CONFIG,
         )
 
@@ -126,5 +134,77 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_reporters(self, validator: str) -> list:
-        return self._get_result("/oracle/reporters/{}".format(validator))
+    def get_reporters(self, validator: Address) -> List[Address]:
+        data = self._get_result("/oracle/reporters/{}".format(validator.to_val_bech32()))
+        return [Address.from_acc_bech32(bech) for bech in data]
+
+    def get_price_symbols(self, min_count: int, ask_count: int) -> List[str]:
+        return self._get_result(
+            "/oracle/price_symbols",
+            params={
+                "min_count": min_count,
+                "ask_count": ask_count,
+            },
+        )
+
+    def get_request_id_by_tx_hash(self, tx_hash: HexBytes) -> List[int]:
+        msgs = self._get("/txs/{}".format(tx_hash.hex()))["logs"]
+        request_ids = []
+        for msg in msgs:
+            request_event = [event for event in msg["events"] if event["type"] == "request"]
+            if len(request_event) == 1:
+                attrs = request_event[0]["attributes"]
+                attr_id = [attr for attr in attrs if attr["key"] == "id"]
+                if len(attr_id) == 1:
+                    request_id = attr_id[0]["value"]
+                    request_ids.append(int(request_id))
+        if len(request_ids) == 0:
+            raise ValueError("There is no request message in this tx")
+        return request_ids
+
+    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
+        symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
+        data = self._post(
+            "/oracle/request_prices",
+            json={
+                "symbols": list(symbols),
+                "min_count": min_count,
+                "ask_count": ask_count,
+            },
+        )
+
+        try:
+            price_data = data["result"]
+            symbol_dict = {
+                "USD": {
+                    "multiplier": 1000000000,
+                    "px": 1000000000,
+                    "resolve_time": int(time.time()),
+                }
+            }
+            for price in price_data:
+                symbol_dict[price["symbol"]] = price
+
+            results = []
+            for pair in pairs:
+                [base_symbol, quote_symbol] = pair.split("/")
+                results.append(
+                    ReferencePrice(
+                        pair,
+                        rate=(int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"]))
+                        / (int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])),
+                        updated_at=ReferencePriceUpdated(
+                            int(symbol_dict[base_symbol]["resolve_time"]),
+                            int(symbol_dict[quote_symbol]["resolve_time"]),
+                        ),
+                    )
+                )
+
+            return results
+
+        except:
+            raise ValueError("Error quering prices")
+
+    def get_request_evm_proof_by_request_id(self, request_id: int) -> EVMProof:
+        data = self._get_result("/oracle/proof/{}".format(request_id))
+        return EVMProof(json_proof=data["jsonProof"], evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])))

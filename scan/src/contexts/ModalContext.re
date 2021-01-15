@@ -1,7 +1,8 @@
 type modal_t =
   | Connect(string)
   | SubmitTx(SubmitMsg.t)
-  | QRCode(Address.t);
+  | QRCode(Address.t)
+  | Syncing;
 
 type t = {
   canExit: bool,

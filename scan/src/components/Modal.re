@@ -92,6 +92,22 @@ let make = () => {
     dispatchModal(CloseModal);
   };
 
+  React.useEffect1(
+    () => {
+      let handleKey = event =>
+        if (ReactEvent.Keyboard.keyCode(event) == 27) {
+          switch (modalStateOpt) {
+          | Some({canExit}) => canExit ? closeModal() : ()
+          | None => ()
+          };
+        };
+
+      Document.addKeyboardEventListener("keydown", handleKey);
+      Some(() => Document.removeKeyboardEventListener("keydown", handleKey));
+    },
+    [|modalStateOpt|],
+  );
+
   switch (modalStateOpt) {
   | None => React.null
   | Some({modal, canExit, closing}) =>
@@ -108,6 +124,7 @@ let make = () => {
          | Connect(chainID) => <ConnectModal chainID />
          | SubmitTx(msg) => <SubmitTxModal msg />
          | QRCode(address) => <QRCodeModal address />
+         | Syncing => <SyncingModal />
          }}
       </div>
     </div>

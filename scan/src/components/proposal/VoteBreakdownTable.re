@@ -42,7 +42,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (voteSub) {
       | Data({voter}) => voter |> Address.toBech32
@@ -50,8 +50,8 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Five>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Five>
         {switch (voteSub) {
          | Data({voter, validator}) =>
            switch (validator) {
@@ -67,8 +67,8 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
            }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (voteSub) {
          | Data({txHashOpt}) =>
            switch (txHashOpt) {
@@ -77,8 +77,8 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
            }
          | _ => <LoadingCensorBar width=200 height=20 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (voteSub) {
            | Data({timestampOpt}) =>
@@ -95,9 +95,9 @@ let renderBody = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSu
            | _ => <LoadingCensorBar width=80 height=15 />
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile = (reserveIndex, voteSub: ApolloHooks.Subscription.variant(VoteSub.t)) => {
@@ -182,8 +182,8 @@ let make = (~proposalID) => {
     <div className=Styles.childrenContainer>
       <div className=Styles.tableWrapper>
         {isMobile
-           ? <Row.Grid marginBottom=16>
-               <Col.Grid>
+           ? <Row marginBottom=16>
+               <Col>
                  {switch (voteCountSub) {
                   | Data(voteCount) =>
                     <div className={CssHelper.flexBox()}>
@@ -198,11 +198,11 @@ let make = (~proposalID) => {
                     </div>
                   | _ => <LoadingCensorBar width=100 height=15 />
                   }}
-               </Col.Grid>
-             </Row.Grid>
-           : <THead.Grid>
-               <Row.Grid alignItems=Row.Center>
-                 <Col.Grid col=Col.Five>
+               </Col>
+             </Row>
+           : <THead>
+               <Row alignItems=Row.Center>
+                 <Col col=Col.Five>
                    {switch (voteCountSub) {
                     | Data(voteCount) =>
                       <div className={CssHelper.flexBox()}>
@@ -217,11 +217,11 @@ let make = (~proposalID) => {
                       </div>
                     | _ => <LoadingCensorBar width=100 height=15 />
                     }}
-                 </Col.Grid>
-                 <Col.Grid col=Col.Four>
+                 </Col>
+                 <Col col=Col.Four>
                    <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
-                 </Col.Grid>
-                 <Col.Grid col=Col.Three>
+                 </Col>
+                 <Col col=Col.Three>
                    <Text
                      block=true
                      value="Timestamp"
@@ -229,9 +229,9 @@ let make = (~proposalID) => {
                      color=Colors.gray7
                      align=Text.Right
                    />
-                 </Col.Grid>
-               </Row.Grid>
-             </THead.Grid>}
+                 </Col>
+               </Row>
+             </THead>}
         {switch (votesSub) {
          | Data(votes) =>
            votes->Belt.Array.size > 0

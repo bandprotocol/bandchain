@@ -4400,180 +4400,6 @@
                     "name": null,
                     "ofType": {
                       "kind": "ENUM",
-                      "name": "validators_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "validators_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "validators_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validators",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "OBJECT",
-                    "name": "validators",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "description": "An array relationship"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
-                      "name": "validators_select_column",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "distinct select on columns"
-              },
-              {
-                "name": "limit",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "limit the number of rows returned"
-              },
-              {
-                "name": "offset",
-                "defaultValue": null,
-                "type": {
-                  "kind": "SCALAR",
-                  "name": "Int",
-                  "ofType": null
-                },
-                "description": "skip the first n rows. Use only with order_by"
-              },
-              {
-                "name": "order_by",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "INPUT_OBJECT",
-                      "name": "validators_order_by",
-                      "ofType": null
-                    }
-                  }
-                },
-                "description": "sort the rows by one or more columns"
-              },
-              {
-                "name": "where",
-                "defaultValue": null,
-                "type": {
-                  "kind": "INPUT_OBJECT",
-                  "name": "validators_bool_exp",
-                  "ofType": null
-                },
-                "description": "filter the rows returned"
-              }
-            ],
-            "isDeprecated": false,
-            "deprecationReason": null,
-            "name": "validators_aggregate",
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "validators_aggregate",
-                "ofType": null
-              }
-            },
-            "description": "An aggregated array relationship"
-          },
-          {
-            "args": [
-              {
-                "name": "distinct_on",
-                "defaultValue": null,
-                "type": {
-                  "kind": "LIST",
-                  "name": null,
-                  "ofType": {
-                    "kind": "NON_NULL",
-                    "name": null,
-                    "ofType": {
-                      "kind": "ENUM",
                       "name": "votes_select_column",
                       "ofType": null
                     }
@@ -5325,16 +5151,6 @@
             "description": null
           },
           {
-            "name": "validators",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_bool_exp",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
             "name": "votes",
             "defaultValue": null,
             "type": {
@@ -5515,16 +5331,6 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "validators_obj_rel_insert_input",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validators",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_arr_rel_insert_input",
               "ofType": null
             },
             "description": null
@@ -5985,16 +5791,6 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "validators_order_by",
-              "ofType": null
-            },
-            "description": null
-          },
-          {
-            "name": "validators_aggregate",
-            "defaultValue": null,
-            "type": {
-              "kind": "INPUT_OBJECT",
-              "name": "validators_aggregate_order_by",
               "ofType": null
             },
             "description": null
@@ -75321,6 +75117,38 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "NON_NULL",
@@ -75738,6 +75566,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -75745,6 +75585,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -75823,6 +75673,26 @@
             "description": null
           },
           {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Int_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "topic",
             "defaultValue": null,
             "type": {
@@ -75869,6 +75739,16 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -75897,6 +75777,26 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -75957,6 +75857,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "SCALAR",
@@ -75981,6 +75905,26 @@
           },
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76045,6 +75989,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "SCALAR",
@@ -76069,6 +76037,26 @@
           },
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76262,6 +76250,26 @@
             "description": null
           },
           {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "topic",
             "defaultValue": null,
             "type": {
@@ -76327,6 +76335,18 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_offset",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "description": "column name"
           }
@@ -76352,6 +76372,26 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -76395,6 +76435,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76402,6 +76454,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76439,6 +76501,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76446,6 +76520,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76483,6 +76567,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76490,6 +76586,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76527,6 +76633,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76534,6 +76652,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76573,6 +76701,18 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_offset",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "description": "column name"
           }
@@ -76600,6 +76740,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76607,6 +76759,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76644,6 +76806,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76651,6 +76825,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -76688,6 +76872,18 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_offset",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
           }
         ]
       },
@@ -76695,6 +76891,16 @@
         "inputFields": [
           {
             "name": "kafka_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_offset",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",

@@ -11,8 +11,8 @@ let make = () => {
 
   <Section>
     <div className=CssHelper.container id="transactionsSection">
-      <Row.Grid alignItems=Row.Center marginBottom=40 marginBottomSm=24>
-        <Col.Grid col=Col.Twelve>
+      <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+        <Col col=Col.Twelve>
           <Heading value="All Transactions" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
           {switch (latestTxsSub) {
            | Data(txs) =>
@@ -28,19 +28,19 @@ let make = () => {
              />
            | _ => <LoadingCensorBar width=65 height=21 />
            }}
-        </Col.Grid>
-      </Row.Grid>
+        </Col>
+      </Row>
       {isMobile
          ? React.null
-         : <THead.Grid>
-             <Row.Grid alignItems=Row.Center>
-               <Col.Grid col=Col.Two>
+         : <THead>
+             <Row alignItems=Row.Center>
+               <Col col=Col.Two>
                  <Text block=true value="TX Hash" weight=Text.Semibold color=Colors.gray7 />
-               </Col.Grid>
-               <Col.Grid col=Col.One>
+               </Col>
+               <Col col=Col.One>
                  <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
-               </Col.Grid>
-               <Col.Grid col=Col.One>
+               </Col>
+               <Col col=Col.One>
                  <Text
                    block=true
                    value="Status"
@@ -49,8 +49,8 @@ let make = () => {
                    color=Colors.gray7
                    align=Text.Center
                  />
-               </Col.Grid>
-               <Col.Grid col=Col.Two>
+               </Col>
+               <Col col=Col.Two>
                  <Text
                    block=true
                    value="Gas Fee (BAND)"
@@ -58,12 +58,12 @@ let make = () => {
                    color=Colors.gray7
                    align=Text.Center
                  />
-               </Col.Grid>
-               <Col.Grid col=Col.Six>
+               </Col>
+               <Col col=Col.Six>
                  <Text block=true value="Actions" weight=Text.Semibold color=Colors.gray7 />
-               </Col.Grid>
-             </Row.Grid>
-           </THead.Grid>}
+               </Col>
+             </Row>
+           </THead>}
       <TxsTable txsSub />
       {switch (txsCountSub) {
        | Data(txsCount) =>

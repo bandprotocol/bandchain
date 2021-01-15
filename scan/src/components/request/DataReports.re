@@ -43,8 +43,8 @@ let make = (~reports: array(RequestSub.report_t)) => {
           <div
             key={operatorAddress |> Address.toOperatorBech32}
             className={Styles.reportCard(idx == reports->Belt.Array.size - 1)}>
-            <Row.Grid marginBottom=24>
-              <Col.Grid col=Col.Six mbSm=24>
+            <Row marginBottom=24>
+              <Col col=Col.Six mbSm=24>
                 <Heading value="Report by" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 <ValidatorMonikerLink
@@ -54,28 +54,24 @@ let make = (~reports: array(RequestSub.report_t)) => {
                   width={`percent(100.)}
                   avatarWidth=20
                 />
-              </Col.Grid>
-              <Col.Grid col=Col.Six>
+              </Col>
+              <Col col=Col.Six>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size={`px(8)} />
                 {switch (transactionOpt) {
                  | Some({hash}) => <TxLink txHash=hash width=280 />
                  | None => <Text value="Genesis Transaction" />
                  }}
-              </Col.Grid>
-            </Row.Grid>
+              </Col>
+            </Row>
             <div className=Styles.reportsTable>
               {isMobile
                  ? React.null
-                 : <Row.Grid alignItems=Row.Center marginBottom=16>
-                     <Col.Grid col=Col.Three>
-                       <Text value="External ID" weight=Text.Medium />
-                     </Col.Grid>
-                     <Col.Grid col=Col.Three>
-                       <Text value="Exit Code" weight=Text.Medium />
-                     </Col.Grid>
-                     <Col.Grid col=Col.Six> <Text value="Value" weight=Text.Medium /> </Col.Grid>
-                   </Row.Grid>}
+                 : <Row alignItems=Row.Center marginBottom=16>
+                     <Col col=Col.Three> <Text value="External ID" weight=Text.Medium /> </Col>
+                     <Col col=Col.Three> <Text value="Exit Code" weight=Text.Medium /> </Col>
+                     <Col col=Col.Six> <Text value="Value" weight=Text.Medium /> </Col>
+                   </Row>}
               {reportDetails
                ->Belt.Array.map(({externalID, exitCode, data}) => {
                    isMobile
@@ -89,21 +85,17 @@ let make = (~reports: array(RequestSub.report_t)) => {
                          idx={externalID ++ exitCode}
                          styles=Styles.mobileCard
                        />
-                     : <Row.Grid alignItems=Row.Start marginBottom=16 key=externalID>
-                         <Col.Grid col=Col.Three>
-                           <Text value=externalID weight=Text.Medium />
-                         </Col.Grid>
-                         <Col.Grid col=Col.Three>
-                           <Text value=exitCode weight=Text.Medium />
-                         </Col.Grid>
-                         <Col.Grid col=Col.Six>
+                     : <Row alignItems=Row.Start marginBottom=16 key=externalID>
+                         <Col col=Col.Three> <Text value=externalID weight=Text.Medium /> </Col>
+                         <Col col=Col.Three> <Text value=exitCode weight=Text.Medium /> </Col>
+                         <Col col=Col.Six>
                            <Text
                              value={data |> JsBuffer.toUTF8}
                              weight=Text.Medium
                              breakAll=true
                            />
-                         </Col.Grid>
-                       </Row.Grid>
+                         </Col>
+                       </Row>
                  })
                ->React.array}
             </div>

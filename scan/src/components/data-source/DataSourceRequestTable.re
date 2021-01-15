@@ -14,7 +14,7 @@ module Styles = {
 };
 
 let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
-  <TBody.Grid
+  <TBody
     key={
       switch (requestsSub) {
       | Data({id}) => id |> ID.Request.toString
@@ -22,14 +22,14 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       }
     }
     paddingH={`px(24)}>
-    <Row.Grid alignItems=Row.Center>
-      <Col.Grid col=Col.Two>
+    <Row alignItems=Row.Center>
+      <Col col=Col.Two>
         {switch (requestsSub) {
          | Data({id}) => <TypeID.Request id />
          | _ => <LoadingCensorBar width=135 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Four>
+      </Col>
+      <Col col=Col.Four>
         {switch (requestsSub) {
          | Data({oracleScriptID, oracleScriptName}) =>
            <div className={CssHelper.flexBox()}>
@@ -39,8 +39,8 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            </div>
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.Three>
+      </Col>
+      <Col col=Col.Three>
         {switch (requestsSub) {
          | Data({minCount, askCount, reportsCount}) =>
            <ProgressBar
@@ -50,25 +50,29 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
            />
          | _ => <LoadingCensorBar width=212 height=15 />
          }}
-      </Col.Grid>
-      <Col.Grid col=Col.One>
+      </Col>
+      <Col col=Col.One>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({resolveStatus}) => <RequestStatus resolveStatus />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
-      </Col.Grid>
-      <Col.Grid col=Col.Two>
+      </Col>
+      <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
            | Data({txTimestamp}) =>
-             <Timestamp.Grid
-               time=txTimestamp
-               size=Text.Md
-               weight=Text.Regular
-               textAlign=Text.Right
-             />
+             switch (txTimestamp) {
+             | Some(txTimestamp') =>
+               <Timestamp.Grid
+                 time=txTimestamp'
+                 size=Text.Md
+                 weight=Text.Regular
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Syncing" />
+             }
            | _ =>
              <>
                <LoadingCensorBar width=70 height=15 />
@@ -76,9 +80,9 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
              </>
            }}
         </div>
-      </Col.Grid>
-    </Row.Grid>
-  </TBody.Grid>;
+      </Col>
+    </Row>
+  </TBody>;
 };
 
 let renderBodyMobile =
@@ -106,7 +110,13 @@ let renderBodyMobile =
             requestValidators: askCount,
           }),
         ),
-        ("Timestamp", Timestamp(txTimestamp)),
+        (
+          "Timestamp",
+          switch (txTimestamp) {
+          | Some(txTimestamp') => Timestamp(txTimestamp')
+          | None => Text("Syncing")
+          },
+        ),
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}
@@ -140,8 +150,8 @@ let make = (~dataSourceID: ID.DataSource.t) => {
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
+       ? <Row marginBottom=16>
+           <Col>
              {switch (allSub) {
               | Data((_, totalRequestCount)) =>
                 <div className={CssHelper.flexBox()}>
@@ -156,11 +166,11 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                 </div>
               | _ => <LoadingCensorBar width=100 height=15 />
               }}
-           </Col.Grid>
-         </Row.Grid>
-       : <THead.Grid>
-           <Row.Grid alignItems=Row.Center>
-             <Col.Grid col=Col.Two>
+           </Col>
+         </Row>
+       : <THead>
+           <Row alignItems=Row.Center>
+             <Col col=Col.Two>
                {switch (allSub) {
                 | Data((_, totalRequestCount)) =>
                   <div className={CssHelper.flexBox()}>
@@ -175,11 +185,11 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                   </div>
                 | _ => <LoadingCensorBar width=100 height=15 />
                 }}
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
-             </Col.Grid>
-             <Col.Grid col=Col.Four>
+             </Col>
+             <Col col=Col.Four>
                <Text
                  block=true
                  value="Report Status"
@@ -187,8 +197,8 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                  weight=Text.Semibold
                  color=Colors.gray7
                />
-             </Col.Grid>
-             <Col.Grid col=Col.Two>
+             </Col>
+             <Col col=Col.Two>
                <Text
                  block=true
                  value="Timestamp"
@@ -196,9 +206,9 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                  color=Colors.gray7
                  align=Text.Right
                />
-             </Col.Grid>
-           </Row.Grid>
-         </THead.Grid>}
+             </Col>
+           </Row>
+         </THead>}
     {switch (allSub) {
      | Data((requests, requestsCount)) =>
        let pageCount = Page.getPageCount(requestsCount, pageSize);
