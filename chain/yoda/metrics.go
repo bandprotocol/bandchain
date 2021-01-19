@@ -12,6 +12,7 @@ type yodaCollector struct {
 	context                   *Context
 	reportsHandlingGaugeDesc  *prometheus.Desc
 	reportsPendingGaugeDesc   *prometheus.Desc
+	reportsErrorCountDesc     *prometheus.Desc
 	reportsSubmittedCountDesc *prometheus.Desc
 }
 
@@ -26,6 +27,10 @@ func NewYodaCollector(c *Context) prometheus.Collector {
 			"yoda_reports_pending_count",
 			"Number of reports currently pending for submission",
 			nil, nil),
+		reportsErrorCountDesc: prometheus.NewDesc(
+			"yoda_reports_error_total",
+			"Number of report errors since last yoda restart",
+			nil, nil),
 		reportsSubmittedCountDesc: prometheus.NewDesc(
 			"yoda_reports_submitted_total",
 			"Number of reports submitted since last yoda restart",
@@ -36,6 +41,7 @@ func NewYodaCollector(c *Context) prometheus.Collector {
 func (collector yodaCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- collector.reportsHandlingGaugeDesc
 	ch <- collector.reportsPendingGaugeDesc
+	ch <- collector.reportsErrorCountDesc
 	ch <- collector.reportsSubmittedCountDesc
 }
 
@@ -44,6 +50,8 @@ func (collector yodaCollector) Collect(ch chan<- prometheus.Metric) {
 		float64(atomic.LoadInt64(&collector.context.handlingGauge)))
 	ch <- prometheus.MustNewConstMetric(collector.reportsPendingGaugeDesc, prometheus.GaugeValue,
 		float64(atomic.LoadInt64(&collector.context.pendingGauge)))
+	ch <- prometheus.MustNewConstMetric(collector.reportsErrorCountDesc, prometheus.CounterValue,
+		float64(atomic.LoadInt64(&collector.context.errorCount)))
 	ch <- prometheus.MustNewConstMetric(collector.reportsSubmittedCountDesc, prometheus.CounterValue,
 		float64(atomic.LoadInt64(&collector.context.submittedCount)))
 }

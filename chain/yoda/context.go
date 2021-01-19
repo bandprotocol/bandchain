@@ -51,6 +51,7 @@ type Context struct {
 	metricsEnabled bool
 	handlingGauge  int64
 	pendingGauge   int64
+	errorCount     int64
 	submittedCount int64
 }
 
@@ -68,6 +69,12 @@ func (c *Context) updateHandlingGauge(amount int64) {
 func (c *Context) updatePendingGauge(amount int64) {
 	if c.metricsEnabled {
 		atomic.AddInt64(&c.pendingGauge, amount)
+	}
+}
+
+func (c *Context) updateErrorCount(amount int64) {
+	if c.metricsEnabled {
+		atomic.AddInt64(&c.errorCount, amount)
 	}
 }
 

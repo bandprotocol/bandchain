@@ -38,7 +38,7 @@ func signAndBroadcast(
 	)
 	// txBldr, err = authclient.EnrichWithGas(txBldr, cliCtx, []sdk.Msg{msg})
 	// if err != nil {
-	// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", err.Error())
+	// 	l.Error(":exploding_head: Failed to enrich with gas with error: %s", c, err.Error())
 	// 	return
 	// }
 
@@ -68,7 +68,8 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 
 	for i, report := range reports {
 		if err := report.msg.ValidateBasic(); err != nil {
-			l.Error(":exploding_head: Failed to validate basic with error: %s", err.Error())
+			l.Error(":exploding_head: Failed to validate basic with error: %s", c, err.Error())
+			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 		msgs[i] = report.msg
@@ -106,7 +107,8 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 			break
 		}
 		if txHash == "" {
-			l.Error(":exploding_head: Cannot try to broadcast more than %d try", c.maxTry)
+			l.Error(":exploding_head: Cannot try to broadcast more than %d try", c, c.maxTry)
+			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 		txFound := false
@@ -131,16 +133,19 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 				txFound = true
 				break FindTx
 			default:
-				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", txRes.Code, txRes.RawLog, txRes.TxHash)
+				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", c, txRes.Code, txRes.RawLog, txRes.TxHash)
+				c.updatePendingGauge(int64(-len(reports)))
 				return
 			}
 		}
 		if !txFound {
-			l.Error(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", txHash)
+			l.Error(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", c, txHash)
+			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 	}
-	l.Error(":anxious_face_with_sweat: Cannot send reports with adjusted gas: %d", gasLimit)
+	l.Error(":anxious_face_with_sweat: Cannot send reports with adjusted gas: %d", c, gasLimit)
+	c.updatePendingGauge(int64(-len(reports)))
 	return
 }
 
@@ -151,7 +156,7 @@ func GetExecutable(c *Context, l *Logger, hash string) ([]byte, error) {
 		l.Debug(":magnifying_glass_tilted_left: Fetching data source hash: %s from bandchain querier", hash)
 		res, err := c.client.ABCIQueryWithOptions(fmt.Sprintf("custom/%s/%s/%s", types.StoreKey, types.QueryData, hash), nil, rpcclient.ABCIQueryOptions{})
 		if err != nil {
-			l.Error(":exploding_head: Failed to get data source with error: %s", err.Error())
+			l.Error(":exploding_head: Failed to get data source with error: %s", c, err.Error())
 			return nil, err
 		}
 		resValue = res.Response.GetValue()
