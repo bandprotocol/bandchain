@@ -191,12 +191,8 @@ class Client(object):
                 results.append(
                     ReferencePrice(
                         pair,
-                        rate=(
-                            int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"])
-                        )
-                        / (
-                            int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])
-                        ),
+                        rate=(int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"]))
+                        / (int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])),
                         updated_at=ReferencePriceUpdated(
                             int(symbol_dict[base_symbol]["resolve_time"]),
                             int(symbol_dict[quote_symbol]["resolve_time"]),
@@ -211,7 +207,4 @@ class Client(object):
 
     def get_request_evm_proof_by_request_id(self, request_id: int) -> EVMProof:
         data = self._get_result("/oracle/proof/{}".format(request_id))
-        return EVMProof(
-            json_proof=data["jsonProof"],
-            evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])),
-        )
+        return EVMProof(json_proof=data["jsonProof"], evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])))
