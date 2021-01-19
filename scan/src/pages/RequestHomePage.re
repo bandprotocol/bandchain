@@ -53,12 +53,16 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       <Col col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
-           | Data({transaction}) =>
-             <Timestamp.Grid
-               time={transaction.block.timestamp}
-               size=Text.Md
-               textAlign=Text.Right
-             />
+           | Data({transactionOpt}) =>
+             switch (transactionOpt) {
+             | Some(transaction) =>
+               <Timestamp.Grid
+                 time={transaction.block.timestamp}
+                 size=Text.Md
+                 textAlign=Text.Right
+               />
+             | None => <Text value="Syncing" />
+             }
            | _ =>
              <>
                <LoadingCensorBar width=70 height=15 />
@@ -76,7 +80,7 @@ let renderBodyMobile =
   switch (requestsSub) {
   | Data({
       id,
-      transaction,
+      transactionOpt,
       oracleScript: {oracleScriptID, name},
       requestedValidators,
       minCount,
@@ -99,7 +103,13 @@ let renderBodyMobile =
             },
           }),
         ),
-        ("Timestamp", Timestamp(transaction.block.timestamp)),
+        (
+          "Timestamp",
+          switch (transactionOpt) {
+          | Some(transaction) => Timestamp(transaction.block.timestamp)
+          | None => Text("Syncing")
+          },
+        ),
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}

@@ -58,18 +58,21 @@ let make = (~id: ID.Request.t) => {
            py=10
            px=14
          />
-         <CopyButton
-           data={
-             proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)
-           }
-           title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
-           py=10
-           px=14
-         />
+         {let nonEVMProofOpt = proof.jsonProof->NonEVMProof.createProofFromJson;
+          switch (nonEVMProofOpt) {
+          | Some(proof) =>
+            <CopyButton
+              data={proof |> JsBuffer.toHex(~with0x=false)}
+              title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
+              py=10
+              px=14
+            />
+          | _ => React.null
+          }}
        </div>
      | _ =>
        <div className={Styles.withWH(`percent(100.), `auto)}>
-         <img src=Images.loadingCircles className={Styles.withWH(`px(104), `px(30))} />
+         <Loading width={`px(104)} />
        </div>
      }}
   </div>;

@@ -83,7 +83,7 @@ module RenderBody = {
     <TBody
       key={
         switch (reportsSub) {
-        | Data({txHash}) => txHash |> Hash.toHex
+        | Data({request}) => request.id |> ID.Request.toString
         | _ => reserveIndex |> string_of_int
         }
       }
@@ -108,7 +108,11 @@ module RenderBody = {
         </Col>
         <Col col=Col.Three>
           {switch (reportsSub) {
-           | Data({txHash}) => <TxLink txHash width=140 />
+           | Data({txHash}) =>
+             switch (txHash) {
+             | Some(txHash') => <TxLink txHash=txHash' width=140 />
+             | None => <Text value="Syncing" />
+             }
            | _ => <LoadingCensorBar width=170 height=15 />
            }}
         </Col>
@@ -187,7 +191,13 @@ module RenderBodyMobile = {
         values=InfoMobileCard.[
           ("Request ID", RequestID(id)),
           ("Oracle Script", OracleScript(oracleScriptID, name)),
-          ("TX Hash", TxHash(txHash, Media.isSmallMobile() ? 170 : 200)),
+          (
+            "TX Hash",
+            switch (txHash) {
+            | Some(txHash') => TxHash(txHash', Media.isSmallMobile() ? 170 : 200)
+            | None => Text("Syncing")
+            },
+          ),
         ]
         key={id |> ID.Request.toString}
         idx={id |> ID.Request.toString}
@@ -303,12 +313,12 @@ let make = (~address) => {
               ->Belt_Array.mapWithIndex((i, e) =>
                   isMobile
                     ? <RenderBodyMobile
-                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        key={(i |> string_of_int) ++ (e.request.id |> ID.Request.toString)}
                         reserveIndex=i
                         reportsSub={Sub.resolve(e)}
                       />
                     : <RenderBody
-                        key={(i |> string_of_int) ++ (e.txHash |> Hash.toHex)}
+                        key={(i |> string_of_int) ++ (e.request.id |> ID.Request.toString)}
                         reserveIndex=i
                         reportsSub={Sub.resolve(e)}
                       />

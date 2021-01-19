@@ -55,8 +55,6 @@ module Styles = {
   let dataSourceContainer = style([width(`percent(100.))]);
 
   let validatorReportStatus = style([marginBottom(`px(13))]);
-
-  let loading = style([width(`px(65)), height(`px(20)), marginBottom(`px(16))]);
 };
 
 module ValidatorReportStatus = {
@@ -216,9 +214,13 @@ let make = (~reqID) => {
                 <VSpacing size={`px(8)} />
                 {switch (requestSub) {
                  | Data({requester}) =>
-                   <div className=Styles.addressContainer>
-                     <AddressRender address=requester position=AddressRender.Subtitle />
-                   </div>
+                   switch (requester) {
+                   | Some(requester') =>
+                     <div className=Styles.addressContainer>
+                       <AddressRender address=requester' position=AddressRender.Subtitle />
+                     </div>
+                   | None => <Text value="Syncing" />
+                   }
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col>
@@ -228,8 +230,11 @@ let make = (~reqID) => {
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size=Spacing.sm />
                 {switch (requestSub) {
-                 | Data({transaction: {hash}}) =>
-                   <TxLink txHash=hash width={isMobile ? 260 : 360} />
+                 | Data({transactionOpt}) =>
+                   switch (transactionOpt) {
+                   | Some({hash}) => <TxLink txHash=hash width={isMobile ? 260 : 360} />
+                   | None => <Text value="Syncing" />
+                   }
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col>
@@ -237,16 +242,20 @@ let make = (~reqID) => {
                 <Heading value="Fee" size=Heading.H5 />
                 <VSpacing size=Spacing.sm />
                 {switch (requestSub) {
-                 | Data({transaction: {gasFee}}) =>
-                   <Text
-                     block=true
-                     value={
-                       (gasFee |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=2))
-                       ++ " BAND"
-                     }
-                     size=Text.Lg
-                     color=Colors.gray7
-                   />
+                 | Data({transactionOpt}) =>
+                   switch (transactionOpt) {
+                   | Some({gasFee}) =>
+                     <Text
+                       block=true
+                       value={
+                         (gasFee |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=2))
+                         ++ " BAND"
+                       }
+                       size=Text.Lg
+                       color=Colors.gray7
+                     />
+                   | None => <Text value="Syncing" />
+                   }
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col>
@@ -376,7 +385,7 @@ let make = (~reqID) => {
                  <KVTableContainer decodesOpt />;
                | (Pending, _) =>
                  <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
-                   <img src=Images.loadingCircles className=Styles.loading />
+                   <Loading marginBottom={`px(16)} />
                    <Heading
                      size=Heading.H4
                      value="Waiting for result"
@@ -417,7 +426,7 @@ let make = (~reqID) => {
                | Success => <RequestProof request />
                | Pending =>
                  <EmptyContainer height={`px(200)} backgroundColor=Colors.blueGray1>
-                   <img src=Images.loadingCircles className=Styles.loading />
+                   <Loading marginBottom={`px(16)} />
                    <Heading
                      size=Heading.H4
                      value="Waiting for result"

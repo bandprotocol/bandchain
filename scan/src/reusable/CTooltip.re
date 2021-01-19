@@ -20,7 +20,7 @@ module Styles = {
     ]);
 
   let hiddenTooltipSm = style([Media.mobile([display(`none)])]);
-  let tooltipItem = (width_, padding_, align_, fsize_) =>
+  let tooltipItem = (maxWidth_, padding_, align_, fsize_) =>
     style([
       position(`absolute),
       display(`block),
@@ -28,7 +28,8 @@ module Styles = {
       textAlign(align_),
       backgroundColor(Colors.gray7),
       borderRadius(`px(4)),
-      width(`px(width_)),
+      maxWidth(`px(maxWidth_)),
+      unsafe("width", "max-content"),
       color(Colors.white),
       padding(`px(padding_)),
       opacity(0.),
@@ -50,6 +51,7 @@ module Styles = {
       style([
         top(`percent(50.)),
         right(`percent(100.)),
+        left(`px(-200)),
         transform(`translateY(`percent(-50.))),
         before([
           top(`percent(50.)),
@@ -62,6 +64,7 @@ module Styles = {
       style([
         top(`percent(50.)),
         left(`percent(100.)),
+        right(`px(-200)),
         transform(`translateY(`percent(-50.))),
         before([
           top(`percent(50.)),
@@ -74,6 +77,7 @@ module Styles = {
       style([
         bottom(`percent(100.)),
         left(`percent(50.)),
+        right(`px(-200)),
         transform(`translateX(`percent(-50.))),
         before([
           transform(`translateX(`percent(-50.))),
@@ -86,6 +90,7 @@ module Styles = {
       style([
         top(`percent(100.)),
         left(`percent(50.)),
+        right(`px(-200)),
         transform(`translateX(`percent(-50.))),
         before([
           transform(`translateX(`percent(-50.))),
@@ -207,22 +212,10 @@ module Styles = {
       ]);
 };
 
-let calculatedWidthbyText = (innerText, fsize) => {
-  open Webapi.Dom;
-  open Webapi.Canvas;
-  open Webapi.Canvas.Canvas2d;
-  let canvasEl = Document.createElement("canvas", document);
-  let ctx = CanvasElement.getContext2d(canvasEl);
-  font(ctx, fsize |> string_of_int);
-  let measureText = ctx |> measureText(innerText);
-
-  measureText |> width |> int_of_float;
-};
-
 [@react.component]
 let make =
     (
-      ~width=0,
+      ~width=200,
       ~pd=10,
       ~fsize=12,
       ~align=`left,
@@ -233,11 +226,10 @@ let make =
       ~styles="",
       ~children,
     ) => {
-  let calculatedWidthbyText = calculatedWidthbyText(tooltipText, fsize);
   <div className={Css.merge([Styles.tooltipContainer, styles])}>
     <div
       className={Css.merge([
-        Styles.tooltipItem(width == 0 ? calculatedWidthbyText : width, pd, align, fsize),
+        Styles.tooltipItem(width, pd, align, fsize),
         Styles.placement(tooltipPlacement),
         Styles.placementSm(tooltipPlacementSm),
         mobile ? "" : Styles.hiddenTooltipSm,

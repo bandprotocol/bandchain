@@ -35,26 +35,6 @@ module Styles = {
       boxShadow(Shadow.box(~x=`zero, ~y=`px(2), ~blur=`px(4), rgba(0, 0, 0, `num(0.1)))),
     ]);
   let notfoundLogo = style([width(`px(180)), marginRight(`px(10))]);
-  let infoContainerFullwidth =
-    style([
-      Media.mobile([
-        selector("> div", [flexBasis(`percent(100.))]),
-        selector("> div + div", [marginTop(`px(15))]),
-        selector("> div > div > div", [display(`block)]),
-      ]),
-    ]);
-  let infoContainerHalfwidth =
-    style([
-      Media.mobile([
-        selector(
-          "> div",
-          [flexGrow(0.), flexShrink(0.), flexBasis(`calc((`sub, `percent(50.), `px(20))))],
-        ),
-        selector("> div + div + div", [marginTop(`px(15))]),
-        selector("> div *", [alignItems(`flexStart)]),
-      ]),
-    ]);
-
   let infoContainer =
     style([
       backgroundColor(Colors.white),
@@ -96,10 +76,65 @@ module TxNotFound = {
   };
 };
 
+module TxSyncing = {
+  [@react.component]
+  let make = (~height, ~link) => {
+    <Section>
+      <div className=CssHelper.container>
+        <VSpacing size=Spacing.lg />
+        <div className=Styles.notfoundContainer>
+          <div className={CssHelper.flexBox()}>
+            <img src=Images.notFoundBg className=Styles.notfoundLogo />
+          </div>
+          <VSpacing size=Spacing.md />
+          <Text
+            value={j|This transaction is available on block #B$height but our database is syncing now.|j}
+            size=Text.Lg
+            color=Colors.blueGray6
+          />
+          <VSpacing size=Spacing.lg />
+          <div className={CssHelper.flexBox()}>
+            <Text
+              value="You can check the transaction information"
+              size=Text.Lg
+              color=Colors.blueGray6
+            />
+            <HSpacing size=Spacing.xs />
+            <a href=link target="_blank" rel="noopener">
+              <Text value="here" size=Text.Lg color=Colors.blueGray6 underline=true />
+            </a>
+          </div>
+        </div>
+      </div>
+    </Section>;
+  };
+};
+
+module TxNotFoundOrSyncing = {
+  [@react.component]
+  let make = (~txHash) => {
+    let txHash' = txHash |> Hash.toHex;
+    let path = {j|/txs/$txHash'|j};
+
+    let decodeHeight = json => json |> JsonUtils.Decode.at(["height"], JsonUtils.Decode.string);
+    let heightOpt = {
+      let resultOpt = AxiosHooks.use(path);
+      let%Opt result = resultOpt;
+
+      Opt.ret(decodeHeight(result));
+    };
+    switch (heightOpt) {
+    | Some(height) => <TxSyncing height link={Env.rpc ++ path} />
+    | None => <TxNotFound />
+    };
+  };
+};
+
 [@react.component]
 let make = (~txHash) => {
   let isMobile = Media.isMobile();
   let txSub = TxSub.get(txHash);
+
   switch (txSub) {
   | Loading
   | Data(_) =>
@@ -292,7 +327,6 @@ let make = (~txHash) => {
                  <HSpacing size=Spacing.md />
                  <Text value={msgCount > 1 ? "messages" : "message"} size=Text.Lg />
                </div>;
-
              | _ => <LoadingCensorBar width=100 height=20 />
              }}
           </Col>
@@ -303,6 +337,6 @@ let make = (~txHash) => {
          }}
       </div>
     </Section>
-  | _ => <TxNotFound />
+  | _ => <TxNotFoundOrSyncing txHash />
   };
 };

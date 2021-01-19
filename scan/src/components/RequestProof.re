@@ -33,8 +33,6 @@ module Styles = {
     ]);
 
   let padding = style([padding(`px(20))]);
-
-  let loading = style([width(`px(65)), height(`px(20)), marginBottom(`px(16))]);
 };
 
 [@react.component]
@@ -71,14 +69,17 @@ let make = (~request: RequestSub.t) => {
           pySm=10
           pxSm=12
         />
-        <CopyButton
-          data={proof.jsonProof->NonEVMProof.createProofFromJson |> JsBuffer.toHex(~with0x=false)}
-          title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
-          py=12
-          px=20
-          pySm=10
-          pxSm=12
-        />
+        {let nonEVMProofOpt = proof.jsonProof->NonEVMProof.createProofFromJson;
+         switch (nonEVMProofOpt) {
+         | Some(proof) =>
+           <CopyButton
+             data={proof |> JsBuffer.toHex(~with0x=false)}
+             title={isMobile ? "non-EVM" : "Copy non-EVM proof"}
+             py=10
+             px=14
+           />
+         | _ => React.null
+         }}
       </div>
       {showProof
          ? <div className=Styles.scriptContainer>
@@ -90,7 +91,7 @@ let make = (~request: RequestSub.t) => {
     </>
   | None =>
     <EmptyContainer height={`px(130)} backgroundColor=Colors.blueGray1>
-      <img src=Images.loadingCircles className=Styles.loading />
+      <Loading marginBottom={`px(16)} />
       <Heading
         size=Heading.H4
         value="Waiting for proof"

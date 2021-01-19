@@ -25,9 +25,12 @@ module Styles = {
 
 module ButtonSection = {
   [@react.component]
-  let make = (~validatorAddress) => {
+  let make = (~delegatorAddress, ~validatorAddress) => {
     let (_, dispatchModal) = React.useContext(ModalContext.context);
     let validatorInfoSub = ValidatorSub.get(validatorAddress);
+    let accountSub = AccountSub.get(delegatorAddress);
+    let balanceAtStakeSub = DelegationSub.getStakeByValidator(delegatorAddress, validatorAddress);
+    let allSub = Sub.all3(validatorInfoSub, accountSub, balanceAtStakeSub);
 
     let delegate = () => validatorAddress->SubmitMsg.Delegate->SubmitTx->OpenModal->dispatchModal;
     let undelegate = () =>
@@ -35,12 +38,15 @@ module ButtonSection = {
     let redelegate = () =>
       validatorAddress->SubmitMsg.Redelegate->SubmitTx->OpenModal->dispatchModal;
 
-    switch (validatorInfoSub) {
-    | Data(validatorInfo) =>
+    switch (allSub) {
+    | Data((validatorInfo, {balance}, {amount: {amount}})) =>
+      let disableNoBalance = balance |> Coin.getBandAmountFromCoins == 0.;
+      let disableNoStake = amount == 0.;
       <div className={CssHelper.flexBox()} id="validatorDelegationinfoDlegate">
         <Button
           px=20
           py=5
+          disabled=disableNoBalance
           onClick={_ => {
             validatorInfo.commission == 100.
               ? Webapi.Dom.(
@@ -52,14 +58,16 @@ module ButtonSection = {
           <Text value="Delegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline onClick={_ => {undelegate()}}>
+        <Button
+          px=20 py=5 variant=Button.Outline disabled=disableNoStake onClick={_ => undelegate()}>
           <Text value="Undelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
         <HSpacing size=Spacing.md />
-        <Button px=20 py=5 variant=Button.Outline onClick={_ => {redelegate()}}>
+        <Button
+          px=20 py=5 variant=Button.Outline disabled=disableNoStake onClick={_ => redelegate()}>
           <Text value="Redelegate" weight=Text.Medium nowrap=true block=true />
         </Button>
-      </div>
+      </div>;
     | _ => React.null
     };
   };
@@ -245,12 +253,12 @@ let make = (~validatorAddress) => {
         </CTooltip>
       </div>
       {switch (accountOpt) {
-       | Some(_) => <ButtonSection validatorAddress />
+       | Some({address: delegatorAddress}) => <ButtonSection validatorAddress delegatorAddress />
        | None => <VSpacing size={`px(28)} />
        }}
     </div>
     {switch (accountOpt) {
-     | Some({address}) => <StakingInfo validatorAddress delegatorAddress=address />
+     | Some({address: delegatorAddress}) => <StakingInfo validatorAddress delegatorAddress />
      | None =>
        switch (trackingSub) {
        | Data({chainID}) =>
