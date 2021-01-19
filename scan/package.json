@@ -12,7 +12,7 @@
     "@apollo/react-hooks": "^3.1.5",
     "@cosmostation/cosmosjs": "^0.5.5",
     "@glennsl/bs-json": "^5.0.2",
-    "@ledgerhq/hw-transport-webhid": "^5.19.0",
+    "@ledgerhq/hw-transport-webhid": "^5.39.1",
     "@ledgerhq/hw-transport-webusb": "^5.38.0",
     "@material-ui/core": "^4.11.2",
     "@sentry/browser": "^5.30.0",
