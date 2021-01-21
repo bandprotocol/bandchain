@@ -24,8 +24,8 @@ jobs:
       - name: Build and push docker container
         uses: docker/build-push-action@v2
         with:
-          context: ./chain
-          file: ./Dockerfile.ci
+          context: .
+          file: ./chain/Dockerfile.ci
           push: true
           tags: odinprotocol/core:latest
 
