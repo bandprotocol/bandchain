@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       working-directory: ./bridges/evm
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'bandprotocol/bandchain'
+    if: false
 
     steps:
     - name: Code Checkout
