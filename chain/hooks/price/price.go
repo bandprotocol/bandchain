@@ -11,10 +11,10 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/util"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/obi"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/keeper"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // Hook uses levelDB to store the latest price of standard price reference.

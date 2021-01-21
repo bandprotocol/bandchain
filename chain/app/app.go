@@ -34,9 +34,9 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	bandante "github.com/bandprotocol/bandchain/chain/x/oracle/ante"
-	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	bandante "github.com/GeoDB-Limited/odincore/chain/x/oracle/ante"
+	bandsupply "github.com/GeoDB-Limited/odincore/chain/x/supply"
 )
 
 const (

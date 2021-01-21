@@ -10,8 +10,8 @@ import (
 	"github.com/stretchr/testify/require"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/testapp"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 func defaultVotes() []abci.VoteInfo {

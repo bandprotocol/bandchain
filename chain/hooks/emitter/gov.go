@@ -5,7 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/gov"
 	"github.com/cosmos/cosmos-sdk/x/gov/types"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
 )
 
 var (

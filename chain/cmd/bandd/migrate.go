@@ -5,8 +5,8 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/app"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"

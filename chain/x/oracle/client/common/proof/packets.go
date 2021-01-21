@@ -1,7 +1,7 @@
 package proof
 
 import (
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // RequestPacketEthereum is an Ethereum version of OracleRequestPacketData for solidity ABI-encoding.

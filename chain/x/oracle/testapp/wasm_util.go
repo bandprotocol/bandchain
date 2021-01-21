@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/go-owasm/api"
 )
 
 func compile(code []byte) []byte {

@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tendermint/tendermint/crypto/secp256k1"
 
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/GeoDB-Limited/odincore/go-owasm/api"
 )
 
 var (

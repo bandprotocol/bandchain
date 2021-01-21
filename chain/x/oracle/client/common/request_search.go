@@ -8,7 +8,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/context"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 func queryLatestRequest(cliCtx context.CLIContext, oid, calldata, askCount, minCount string) (types.RequestID, error) {

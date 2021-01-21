@@ -5,7 +5,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/bandrng"
 )
 
 func TestRngRandom(t *testing.T) {

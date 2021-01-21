@@ -8,9 +8,9 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/bandrng"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	owasm "github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/bandrng"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
+	owasm "github.com/GeoDB-Limited/odincore/go-owasm/api"
 )
 
 // GetRandomValidators returns a pseudorandom subset of active validators. Each validator has

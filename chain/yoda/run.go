@@ -18,9 +18,9 @@ import (
 	httpclient "github.com/tendermint/tendermint/rpc/client/http"
 	tmtypes "github.com/tendermint/tendermint/types"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/chain/yoda/executor"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/filecache"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/yoda/executor"
 )
 
 const (

@@ -6,8 +6,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/spf13/cobra"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/client/cli"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/client/rest"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/client/cli"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/client/rest"
 	"github.com/cosmos/cosmos-sdk/client/context"
 	"github.com/cosmos/cosmos-sdk/codec"
 	sdk "github.com/cosmos/cosmos-sdk/types"

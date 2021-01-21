@@ -16,9 +16,9 @@ import (
 	tmbytes "github.com/tendermint/tendermint/libs/bytes"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
-	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/obi"
+	clientcmn "github.com/GeoDB-Limited/odincore/chain/x/oracle/client/common"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 var (

@@ -8,7 +8,7 @@ import (
 	stakingexported "github.com/cosmos/cosmos-sdk/x/staking/exported"
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // valWithPower is an internal type to track validator with voting power inside of AllocateTokens.

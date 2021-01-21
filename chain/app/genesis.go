@@ -18,7 +18,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/supply"
 	"github.com/cosmos/cosmos-sdk/x/upgrade"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
 )
 
 // GenesisState defines a type alias for the Band genesis application state.

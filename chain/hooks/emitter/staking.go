@@ -3,7 +3,7 @@ package emitter
 import (
 	"time"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/staking"
 	"github.com/cosmos/cosmos-sdk/x/staking/exported"

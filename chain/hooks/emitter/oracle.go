@@ -3,9 +3,9 @@ package emitter
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 func parseBytes(b []byte) []byte {

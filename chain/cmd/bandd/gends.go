@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"path/filepath"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/filecache"
 	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/server"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,8 +14,8 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // AddGenesisDataSourceCmd returns add-data-source cobra Command.

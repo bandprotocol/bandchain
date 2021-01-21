@@ -7,8 +7,8 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	lru "github.com/hashicorp/golang-lru"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/keeper"
 )
 
 var (

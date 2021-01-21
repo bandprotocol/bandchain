@@ -1,9 +1,9 @@
-module github.com/bandprotocol/bandchain/chain
+module github.com/GeoDB-Limited/odincore/chain
 
 go 1.13
 
 require (
-	github.com/bandprotocol/bandchain/go-owasm v0.0.0-00010101000000-000000000000
+	github.com/GeoDB-Limited/odincore/go-owasm v0.0.0-00010101000000-000000000000
 	github.com/cosmos/cosmos-sdk v0.39.2
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.19
@@ -38,4 +38,4 @@ require (
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.1
 
-replace github.com/bandprotocol/bandchain/go-owasm => ../go-owasm
+replace github.com/GeoDB-Limited/odincore/go-owasm => ../go-owasm

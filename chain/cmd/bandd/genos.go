@@ -13,10 +13,10 @@ import (
 	"github.com/spf13/viper"
 	"github.com/tendermint/tendermint/libs/cli"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/filecache"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/go-owasm/api"
 )
 
 // AddGenesisOracleScriptCmd returns add-oracle-script cobra Command.

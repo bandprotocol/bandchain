@@ -6,8 +6,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/go-owasm/api"
 )
 
 // HasOracleScript checks if the oracle script of this ID exists in the storage.

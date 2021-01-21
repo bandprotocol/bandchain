@@ -3,7 +3,7 @@ package bandchain.chain.x.oracle.v1;
 
 import "third_party/proto/gogoproto/gogo.proto";
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/bandprotocol/bandchain/chain/x/oracle/types";
+option go_package = "github.com/GeoDB-Limited/odincore/chain/x/oracle/types";
 
 // MsgRequestData is a message for sending a data oracle request.
 message MsgRequestData {

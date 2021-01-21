@@ -20,11 +20,11 @@ import (
 	abci "github.com/tendermint/tendermint/abci/types"
 	"github.com/tendermint/tendermint/crypto/tmhash"
 
-	bandapp "github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/keeper"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	bandapp "github.com/GeoDB-Limited/odincore/chain/app"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/keeper"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // Hook uses Kafka functionality to act as an event producer for all events in the blockchains.

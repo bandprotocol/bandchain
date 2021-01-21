@@ -4,7 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/auth/exported"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/common"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/common"
 )
 
 func (h *Hook) emitAuthModule(ctx sdk.Context) {

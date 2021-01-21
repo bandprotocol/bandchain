@@ -14,8 +14,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/auth"
 	"github.com/cosmos/cosmos-sdk/x/auth/client/utils"
 
-	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/app"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 	rpcclient "github.com/tendermint/tendermint/rpc/client"
 )
 

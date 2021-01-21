@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
-	"github.com/bandprotocol/bandchain/chain/app"
+	"github.com/GeoDB-Limited/odincore/chain/app"
 )
 
 const (

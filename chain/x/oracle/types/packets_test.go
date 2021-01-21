@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/obi"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/obi"
 )
 
 func mustDecodeString(hexstr string) []byte {

@@ -8,8 +8,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/params"
 	"github.com/tendermint/tendermint/libs/log"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/filecache"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 const (

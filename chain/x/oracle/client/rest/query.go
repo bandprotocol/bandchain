@@ -11,9 +11,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/types/rest"
 	"github.com/gorilla/mux"
 
-	"github.com/bandprotocol/bandchain/chain/hooks/price"
-	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/price"
+	clientcmn "github.com/GeoDB-Limited/odincore/chain/x/oracle/client/common"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 type RequestPrices struct {

@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/cobra"
 
-	clientcmn "github.com/bandprotocol/bandchain/chain/x/oracle/client/common"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	clientcmn "github.com/GeoDB-Limited/odincore/chain/x/oracle/client/common"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 // GetQueryCmd returns the cli query commands for this module.

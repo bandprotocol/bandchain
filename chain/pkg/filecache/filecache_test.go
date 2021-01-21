@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
+	"github.com/GeoDB-Limited/odincore/chain/pkg/filecache"
 )
 
 func TestAddFile(t *testing.T) {

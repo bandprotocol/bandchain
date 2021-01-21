@@ -24,11 +24,11 @@ import (
 	tmtypes "github.com/tendermint/tendermint/types"
 	dbm "github.com/tendermint/tm-db"
 
-	"github.com/bandprotocol/bandchain/chain/app"
-	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
-	"github.com/bandprotocol/bandchain/chain/hooks/price"
-	"github.com/bandprotocol/bandchain/chain/hooks/request"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
+	"github.com/GeoDB-Limited/odincore/chain/app"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/emitter"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/price"
+	"github.com/GeoDB-Limited/odincore/chain/hooks/request"
+	"github.com/GeoDB-Limited/odincore/chain/x/oracle/types"
 )
 
 const (
