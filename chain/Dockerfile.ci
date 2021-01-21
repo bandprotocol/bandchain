@@ -1,0 +1,23 @@
+FROM golang:1.13.5-buster as builder
+
+WORKDIR /go-owasm
+COPY go-owasm/. /go-owasm
+
+WORKDIR /chain
+COPY chain/ /chain
+
+COPY chain/docker-config/run.sh .
+
+RUN wget https://github.com/WebAssembly/wabt/releases/download/1.0.17/wabt-1.0.17-ubuntu.tar.gz
+RUN tar -zxf wabt-1.0.17-ubuntu.tar.gz
+RUN sudo cp wabt-1.0.17/bin/wat2wasm /usr/local/bin
+
+RUN make install && make faucet
+
+
+FROM debian:buster
+
+COPY --from=builder /go/bin/bandd /usr/local/bin/
+
+ENTRYPOINT ["bandd"]
+#CMD bandd start --rpc.laddr tcp://0.0.0.0:26657
