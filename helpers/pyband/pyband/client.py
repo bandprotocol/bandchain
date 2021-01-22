@@ -42,7 +42,7 @@ class Client(object):
         data = self._post("/txs", json={"tx": data, "mode": "sync"})
         if "code" in data:
             code = int(data["code"])
-            error_log = data["raw_log"]
+            error_log = data.get("raw_log")
         else:
             code = 0
             error_log = None
@@ -61,7 +61,7 @@ class Client(object):
         data = self._post("/txs", json={"tx": data, "mode": "block"})
         if "code" in data:
             code = int(data["code"])
-            error_log = data["raw_log"]
+            error_log = data.get("raw_log")
             log = []
         else:
             code = 0
