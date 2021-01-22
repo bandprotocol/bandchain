@@ -1,13 +1,21 @@
-FROM golang:1.13.5-buster
+FROM ubuntu:18.04
 
-WORKDIR /go-owasm
-COPY go-owasm/. /go-owasm
+# built binaries
+COPY build/bandcli bin/bandcli
+COPY build/bandd bin/bandd
 
-WORKDIR /chain
-COPY chain/ /chain
+# go-owasm built dynamic lib
+COPY build/libgo_owasm.so lib/libgo_owasm.so
 
-COPY chain/docker-config/run.sh .
+COPY docker-config/validator1/ validator1/
+COPY docker-config/validator2/ validator2/
+COPY docker-config/validator3/ validator3/
+COPY docker-config/validator4/ validator4/
 
-RUN make install && make faucet
+COPY docker-config/query-node/ query-node/
 
-CMD bandd start --rpc.laddr tcp://0.0.0.0:26657
+# generated genesis
+COPY docker-config/genesis.json genesis.json
+COPY docker-config/run.sh run.sh
+
+CMD bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
