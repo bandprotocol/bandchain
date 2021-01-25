@@ -872,23 +872,9 @@ module Msg = {
   };
 
   module Unjail = {
-    type success_t = {
-      address: Address.t,
-      identity: string,
-      moniker: string,
-    };
+    type t = {address: Address.t};
 
-    type fail_t = {address: Address.t};
-
-    let decodeSuccess = json => {
-      JsonUtils.Decode.{
-        address: json |> at(["msg", "address"], string) |> Address.fromBech32,
-        identity: json |> at(["extra", "identity"], string),
-        moniker: json |> at(["extra", "moniker"], string),
-      };
-    };
-
-    let decodeFail = json => {
+    let decode = json => {
       JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
     };
   };
@@ -1110,8 +1096,8 @@ module Msg = {
     | RedelegateMsgFail(Redelegate.fail_t)
     | WithdrawRewardMsgSuccess(WithdrawReward.success_t)
     | WithdrawRewardMsgFail(WithdrawReward.fail_t)
-    | UnjailMsgSuccess(Unjail.success_t)
-    | UnjailMsgFail(Unjail.fail_t)
+    | UnjailMsgSuccess(Unjail.t)
+    | UnjailMsgFail(Unjail.t)
     | SetWithdrawAddressMsgSuccess(SetWithdrawAddress.t)
     | SetWithdrawAddressMsgFail(SetWithdrawAddress.t)
     | SubmitProposalMsgSuccess(SubmitProposal.success_t)
@@ -1343,7 +1329,7 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgSuccess(json |> Undelegate.decodeSuccess)
       | RedelegateBadge => RedelegateMsgSuccess(json |> Redelegate.decodeSuccess)
       | WithdrawRewardBadge => WithdrawRewardMsgSuccess(json |> WithdrawReward.decodeSuccess)
-      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decodeSuccess)
+      | UnjailBadge => UnjailMsgSuccess(json |> Unjail.decode)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgSuccess(json |> SetWithdrawAddress.decode)
       | SubmitProposalBadge => SubmitProposalMsgSuccess(json |> SubmitProposal.decodeSuccess)
       | DepositBadge => DepositMsgSuccess(json |> Deposit.decodeSuccess)
@@ -1397,7 +1383,7 @@ module Msg = {
       | UndelegateBadge => UndelegateMsgFail(json |> Undelegate.decodeFail)
       | RedelegateBadge => RedelegateMsgFail(json |> Redelegate.decodeFail)
       | WithdrawRewardBadge => WithdrawRewardMsgFail(json |> WithdrawReward.decodeFail)
-      | UnjailBadge => UnjailMsgFail(json |> Unjail.decodeFail)
+      | UnjailBadge => UnjailMsgFail(json |> Unjail.decode)
       | SetWithdrawAddressBadge => SetWithdrawAddressMsgFail(json |> SetWithdrawAddress.decode)
       | SubmitProposalBadge => SubmitProposalMsgFail(json |> SubmitProposal.decodeFail)
       | DepositBadge => DepositMsgFail(json |> Deposit.decodeFail)
