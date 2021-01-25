@@ -336,8 +336,8 @@ let renderBody = (msg: TxSub.Msg.t) =>
   | CreateValidatorMsgFail(validator) => <IndexValidatorMsg.CreateValidatorMsg validator />
   | EditValidatorMsgSuccess(validator)
   | EditValidatorMsgFail(validator) => <IndexValidatorMsg.EditValidatorMsg validator />
-  | UnjailMsgSuccess(unjail) => <IndexValidatorMsg.UnjailMsg unjail />
-  | UnjailMsgFail(unjail) => <IndexValidatorMsg.UnjailFailMsg unjail />
+  | UnjailMsgSuccess(unjail)
+  | UnjailMsgFail(unjail) => <IndexValidatorMsg.UnjailMsg unjail />
   | SetWithdrawAddressMsgSuccess(set)
   | SetWithdrawAddressMsgFail(set) => <IndexValidatorMsg.SetWithdrawAddressMsg set />
   | SubmitProposalMsgSuccess(proposal) => <IndexProposalMsg.SubmitProposalMsg proposal />
