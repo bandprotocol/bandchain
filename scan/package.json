@@ -13,7 +13,7 @@
     "@cosmostation/cosmosjs": "^0.5.5",
     "@glennsl/bs-json": "^5.0.2",
     "@ledgerhq/hw-transport-webhid": "^5.19.0",
-    "@ledgerhq/hw-transport-webusb": "^5.38.0",
+    "@ledgerhq/hw-transport-webusb": "^5.40.0",
     "@material-ui/core": "^4.11.2",
     "@sentry/browser": "^6.0.2",
     "axios": "^0.21.1",
