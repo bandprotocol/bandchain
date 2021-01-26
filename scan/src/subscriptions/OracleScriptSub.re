@@ -21,7 +21,6 @@ type internal_t = {
   transaction: option(transaction_t),
   relatedDataSources: array(related_data_sources),
   requestStat: option(request_stat_t),
-  responsesLast1Day: array(response_last_1_day_t),
 };
 
 type t = {
@@ -49,7 +48,6 @@ let toExternal =
         transaction: txOpt,
         relatedDataSources,
         requestStat: requestStatOpt,
-        responsesLast1Day,
       },
     ) => {
   id,
@@ -66,8 +64,10 @@ let toExternal =
     relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
   // Note: requestCount can't be nullable value.
   requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
-  responseTime:
-    responsesLast1Day->Belt.Array.map(({responseTime}) => responseTime)->Belt.Array.get(0),
+  // HACK: disable for now
+  responseTime: None,
+  // responseTime:
+  //   responsesLast1Day->Belt.Array.map(({responseTime}) => responseTime)->Belt.Array.get(0),
 };
 
 module MultiConfig = [%graphql
@@ -93,10 +93,6 @@ module MultiConfig = [%graphql
       }
       requestStat: request_stat @bsRecord {
         count
-      }
-      responsesLast1Day: response_last_1_day(where: {resolve_status: {_eq: "Success"}}) @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   }
@@ -126,10 +122,6 @@ module SingleConfig = [%graphql
       }
       requestStat: request_stat @bsRecord {
         count
-      }
-      responsesLast1Day: response_last_1_day @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   },
