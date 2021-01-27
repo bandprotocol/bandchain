@@ -34,16 +34,16 @@ func GenesisDocFromFile(genDocFile string, cdc *codec.Codec) (*tmtypes.GenesisDo
 	}
 
 	var genDoc tmtypes.GenesisDoc
-	err = cdc.UnmarshalJSON(jsonBlob, &genDoc)
-	if err != nil {
-		return nil, err
-	}
-
 	// Set up Tendermint consensus params with default value.
 	genDoc.ConsensusParams.Evidence = tmtypes.DefaultEvidenceParams()
 	genDoc.ConsensusParams.Block.MaxBytes = 1000000 // 1M bytes
 	genDoc.ConsensusParams.Block.MaxGas = 5000000   // 5M gas
 	genDoc.ConsensusParams.Block.TimeIotaMs = 1000  // 1 second
+
+	err = cdc.UnmarshalJSON(jsonBlob, &genDoc)
+	if err != nil {
+		return nil, err
+	}
 
 	if err := genDoc.ValidateAndComplete(); err != nil {
 		return nil, err
