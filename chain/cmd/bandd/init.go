@@ -117,6 +117,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 			if err != nil {
 				return err
 			}
+
 			genDoc := &types.GenesisDoc{}
 			genDoc.ChainID = chainID
 			genDoc.Validators = nil
@@ -126,6 +127,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 			genDoc.ConsensusParams.Block.MaxGas = 5000000   // 5M gas
 			genDoc.ConsensusParams.Block.TimeIotaMs = 1000  // 1 second
 			genDoc.ConsensusParams.Validator.PubKeyTypes = []string{types.ABCIPubKeyTypeSecp256k1}
+
 			if _, err := os.Stat(genFile); err != nil {
 				if !os.IsNotExist(err) {
 					return err
@@ -136,6 +138,7 @@ func InitCmd(ctx *server.Context, cdc *codec.Codec, customAppState map[string]js
 					return err
 				}
 			}
+
 			if err = genutil.ExportGenesisFile(genDoc, genFile); err != nil {
 				return err
 			}
