@@ -1,0 +1,413 @@
+{
+  "genesis_time": "2021-01-20T08:43:15.536745083Z",
+  "chain_id": "bandchain",
+  "consensus_params": {
+    "block": {
+      "max_bytes": "1000000",
+      "max_gas": "5000000",
+      "time_iota_ms": "1000"
+    },
+    "evidence": {
+      "max_age_num_blocks": "100000",
+      "max_age_duration": "172800000000000"
+    },
+    "validator": {
+      "pub_key_types": [
+        "secp256k1"
+      ]
+    }
+  },
+  "app_hash": "",
+  "app_state": {
+    "mint": {
+      "minter": {
+        "inflation": "0.130000000000000000",
+        "annual_provisions": "0.000000000000000000"
+      },
+      "params": {
+        "mint_denom": "uband",
+        "inflation_rate_change": "0.130000000000000000",
+        "inflation_max": "0.200000000000000000",
+        "inflation_min": "0.070000000000000000",
+        "goal_bonded": "0.670000000000000000",
+        "blocks_per_year": "10519200"
+      }
+    },
+    "upgrade": {},
+    "supply": {
+      "supply": []
+    },
+    "oracle": {
+      "params": {
+        "max_raw_request_count": "12",
+        "max_ask_count": "16",
+        "expiration_block_count": "100",
+        "base_request_gas": "150000",
+        "per_validator_request_gas": "30000",
+        "sampling_try_count": "3",
+        "oracle_reward_percentage": "70",
+        "inactive_penalty_duration": "600000000000"
+      },
+      "data_sources": [],
+      "oracle_scripts": []
+    },
+    "staking": {
+      "params": {
+        "unbonding_time": "1814400000000000",
+        "max_validators": 100,
+        "max_entries": 7,
+        "historical_entries": 1000,
+        "bond_denom": "uband"
+      },
+      "last_total_power": "0",
+      "last_validator_powers": null,
+      "validators": null,
+      "delegations": null,
+      "unbonding_delegations": null,
+      "redelegations": null,
+      "exported": false
+    },
+    "bank": {
+      "send_enabled": true
+    },
+    "genutil": {
+      "gentxs": [
+        {
+          "type": "cosmos-sdk/StdTx",
+          "value": {
+            "msg": [
+              {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                  "description": {
+                    "moniker": "Bobby.fish 🐡",
+                    "identity": "",
+                    "website": "https://www.wwe.com/superstars/bobby-fish",
+                    "security_contact": "",
+                    "details": "Fish is best known for his appearances with Ring of Honor (ROH) from 2013 to 2017, where he wrestled as one-half of the tag team reDRagon and held the ROH World Tag Team Championship three times and the ROH World Television Championship once."
+                  },
+                  "commission": {
+                    "rate": "0.100000000000000000",
+                    "max_rate": "0.200000000000000000",
+                    "max_change_rate": "0.010000000000000000"
+                  },
+                  "min_self_delegation": "1",
+                  "delegator_address": "band1cg26m90y3wk50p9dn8pema8zmaa22plxa0hnrg",
+                  "validator_address": "bandvaloper1cg26m90y3wk50p9dn8pema8zmaa22plx3ensxr",
+                  "pubkey": "bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w",
+                  "value": {
+                    "denom": "uband",
+                    "amount": "100000000"
+                  }
+                }
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas": "200000"
+            },
+            "signatures": [
+              {
+                "pub_key": {
+                  "type": "tendermint/PubKeySecp256k1",
+                  "value": "A/ZOjavNhqMCYhH8l0QB+CxqgjoacZ5zo20Torc60Z2G"
+                },
+                "signature": "F/d+XHlns+aVGPSktTwebQMHoPwltF1O7ypJvZEm4ThBr+BU+AdiGvsnP1lrvk42ULEdQZQiSChjJOkFb3w3yQ=="
+              }
+            ],
+            "memo": "0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656"
+          }
+        },
+        {
+          "type": "cosmos-sdk/StdTx",
+          "value": {
+            "msg": [
+              {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                  "description": {
+                    "moniker": "🙎‍♀️Alice \u0026 Co.",
+                    "identity": "",
+                    "website": "https://www.alice.org/",
+                    "security_contact": "",
+                    "details": "Alice's Adventures in Wonderland (commonly shortened to Alice in Wonderland) is an 1865 novel written by English author Charles Lutwidge Dodgson under the pseudonym Lewis Carroll."
+                  },
+                  "commission": {
+                    "rate": "0.100000000000000000",
+                    "max_rate": "0.200000000000000000",
+                    "max_change_rate": "0.010000000000000000"
+                  },
+                  "min_self_delegation": "1",
+                  "delegator_address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
+                  "validator_address": "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec",
+                  "pubkey": "bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg",
+                  "value": {
+                    "denom": "uband",
+                    "amount": "100000000"
+                  }
+                }
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas": "200000"
+            },
+            "signatures": [
+              {
+                "pub_key": {
+                  "type": "tendermint/PubKeySecp256k1",
+                  "value": "AiS3jI4M4wP0Aqn+4RhteonBF82QvzdR6OGFF2rlFKMk"
+                },
+                "signature": "oMnb+uFkvAxpJBJdyhTbYasLrOVJ56H3/c3wtXbJ9uoqn3fAPxkdyBwcikVB8klLzLTkpo2gEsqPHJ95dhjHDQ=="
+              }
+            ],
+            "memo": "11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656"
+          }
+        },
+        {
+          "type": "cosmos-sdk/StdTx",
+          "value": {
+            "msg": [
+              {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                  "description": {
+                    "moniker": "Eve 🦹🏿‍♂️the evil with a really long moniker name",
+                    "identity": "",
+                    "website": "https://www.imdb.com/title/tt9055008/",
+                    "security_contact": "",
+                    "details": "Evil is an American supernatural drama television series created by Robert King and Michelle King that premiered on September 26, 2019, on CBS. The series is produced by CBS Television Studios and King Size Productions."
+                  },
+                  "commission": {
+                    "rate": "0.100000000000000000",
+                    "max_rate": "0.200000000000000000",
+                    "max_change_rate": "0.010000000000000000"
+                  },
+                  "min_self_delegation": "1",
+                  "delegator_address": "band1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrp4dtgru",
+                  "validator_address": "bandvaloper1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrpem0txh",
+                  "pubkey": "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
+                  "value": {
+                    "denom": "uband",
+                    "amount": "100000000"
+                  }
+                }
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas": "200000"
+            },
+            "signatures": [
+              {
+                "pub_key": {
+                  "type": "tendermint/PubKeySecp256k1",
+                  "value": "A0xE7F3hapiSgQYJLYzIw7yQk8mxGch/vrYesWw7l0E/"
+                },
+                "signature": "fFGDOy/fStf7qZD4/vSZyyuqqJlG6heVtLoEyNpQ5VdwaJ/IiqlVNJfnwL/NSyzOKHvxUA/iUiTD2Nus1952Lg=="
+              }
+            ],
+            "memo": "63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656"
+          }
+        },
+        {
+          "type": "cosmos-sdk/StdTx",
+          "value": {
+            "msg": [
+              {
+                "type": "cosmos-sdk/MsgCreateValidator",
+                "value": {
+                  "description": {
+                    "moniker": "Carol",
+                    "identity": "",
+                    "website": "https://www.marvel.com/characters/captain-marvel-carol-danvers",
+                    "security_contact": "",
+                    "details": "Carol Susan Jane Danvers is a fictional superhero appearing in American comic books published by Marvel Comics. Created by writer Roy Thomas and artist Gene Colan."
+                  },
+                  "commission": {
+                    "rate": "0.100000000000000000",
+                    "max_rate": "0.200000000000000000",
+                    "max_change_rate": "0.010000000000000000"
+                  },
+                  "min_self_delegation": "1",
+                  "delegator_address": "band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q",
+                  "validator_address": "bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst",
+                  "pubkey": "bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m",
+                  "value": {
+                    "denom": "uband",
+                    "amount": "100000000"
+                  }
+                }
+              }
+            ],
+            "fee": {
+              "amount": [],
+              "gas": "200000"
+            },
+            "signatures": [
+              {
+                "pub_key": {
+                  "type": "tendermint/PubKeySecp256k1",
+                  "value": "AovhpOwo4sb1E8XmEEOkCRY7FPDtcheV6uS/jdhN2CS4"
+                },
+                "signature": "WyjBLBk3cL3inp8sNigxjb3rQXwt+OVoEQbH+9MhI0Z1/pJ6smISfBjxyIn/8FSln4TFzUa5HwGl3CyrCumGUg=="
+              }
+            ],
+            "memo": "7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656"
+          }
+        }
+      ]
+    },
+    "crisis": {
+      "constant_fee": {
+        "denom": "uband",
+        "amount": "10000000000"
+      }
+    },
+    "gov": {
+      "starting_proposal_id": "1",
+      "deposits": null,
+      "votes": null,
+      "proposals": null,
+      "deposit_params": {
+        "min_deposit": [
+          {
+            "denom": "uband",
+            "amount": "1000000000"
+          }
+        ],
+        "max_deposit_period": "172800000000000"
+      },
+      "voting_params": {
+        "voting_period": "172800000000000"
+      },
+      "tally_params": {
+        "quorum": "0.334000000000000000",
+        "threshold": "0.500000000000000000",
+        "veto": "0.334000000000000000"
+      }
+    },
+    "slashing": {
+      "params": {
+        "signed_blocks_window": "30000",
+        "min_signed_per_window": "0.050000000000000000",
+        "downtime_jail_duration": "600000000000",
+        "slash_fraction_double_sign": "0.050000000000000000",
+        "slash_fraction_downtime": "0.000100000000000000"
+      },
+      "signing_infos": {},
+      "missed_blocks": {}
+    },
+    "evidence": {
+      "params": {
+        "max_evidence_age": "120000000000"
+      },
+      "evidence": []
+    },
+    "auth": {
+      "params": {
+        "max_memo_characters": "256",
+        "tx_sig_limit": "7",
+        "tx_size_cost_per_byte": "5",
+        "sig_verify_cost_ed25519": "590",
+        "sig_verify_cost_secp256k1": "1000"
+      },
+      "accounts": [
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
+            "coins": [
+              {
+                "denom": "uband",
+                "amount": "10000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "band1cg26m90y3wk50p9dn8pema8zmaa22plxa0hnrg",
+            "coins": [
+              {
+                "denom": "uband",
+                "amount": "10000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q",
+            "coins": [
+              {
+                "denom": "uband",
+                "amount": "10000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "band1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrp4dtgru",
+            "coins": [
+              {
+                "denom": "uband",
+                "amount": "10000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
+            "coins": [
+              {
+                "denom": "uband",
+                "amount": "100000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        }
+      ]
+    },
+    "distribution": {
+      "params": {
+        "community_tax": "0.020000000000000000",
+        "base_proposer_reward": "0.030000000000000000",
+        "bonus_proposer_reward": "0.120000000000000000",
+        "withdraw_addr_enabled": true
+      },
+      "fee_pool": {
+        "community_pool": []
+      },
+      "delegator_withdraw_infos": [],
+      "previous_proposer": "",
+      "outstanding_rewards": [],
+      "validator_accumulated_commissions": [],
+      "validator_historical_rewards": [],
+      "validator_current_rewards": [],
+      "delegator_starting_infos": [],
+      "validator_slash_events": []
+    }
+  }
+}
