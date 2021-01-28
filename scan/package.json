@@ -28,7 +28,7 @@
     "chart.js": "^2.9.4",
     "clipboard-copy": "^4.0.1",
     "crypto": "^1.0.1",
-    "html-react-parser": "^1.2.1",
+    "html-react-parser": "^1.2.2",
     "js-sha256": "^0.9.0",
     "ledger-cosmos-js": "^2.1.8",
     "marked": "^1.2.7",
