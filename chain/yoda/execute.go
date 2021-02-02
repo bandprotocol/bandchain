@@ -55,10 +55,11 @@ func signAndBroadcast(
 }
 
 func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWithKey) {
-	// Return key when done with SubmitReport whether successfully or not.
+	// Return key and update pending metric when done with SubmitReport whether successfully or not.
 	defer func() {
 		c.freeKeys <- keyIndex
 	}()
+	defer c.updatePendingGauge(int64(-len(reports)))
 
 	// Summarize execute version
 	versionMap := make(map[string]bool)
@@ -69,7 +70,6 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 	for i, report := range reports {
 		if err := report.msg.ValidateBasic(); err != nil {
 			l.Error(":exploding_head: Failed to validate basic with error: %s", c, err.Error())
-			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 		msgs[i] = report.msg
@@ -108,7 +108,6 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 		}
 		if txHash == "" {
 			l.Error(":exploding_head: Cannot try to broadcast more than %d try", c, c.maxTry)
-			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 		txFound := false
@@ -123,7 +122,6 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 			switch txRes.Code {
 			case 0:
 				l.Info(":smiling_face_with_sunglasses: Successfully broadcast tx with hash: %s", txHash)
-				c.updatePendingGauge(int64(-len(reports)))
 				c.updateSubmittedCount(int64(len(reports)))
 				return
 			case sdkerrors.ErrOutOfGas.ABCICode():
@@ -134,18 +132,15 @@ func SubmitReport(c *Context, l *Logger, keyIndex int64, reports []ReportMsgWith
 				break FindTx
 			default:
 				l.Error(":exploding_head: Tx returned nonzero code %d with log %s, tx hash: %s", c, txRes.Code, txRes.RawLog, txRes.TxHash)
-				c.updatePendingGauge(int64(-len(reports)))
 				return
 			}
 		}
 		if !txFound {
 			l.Error(":question_mark: Cannot get transaction response from hash: %s transaction might be included in the next few blocks or check your node's health.", c, txHash)
-			c.updatePendingGauge(int64(-len(reports)))
 			return
 		}
 	}
 	l.Error(":anxious_face_with_sweat: Cannot send reports with adjusted gas: %d", c, gasLimit)
-	c.updatePendingGauge(int64(-len(reports)))
 	return
 }
 

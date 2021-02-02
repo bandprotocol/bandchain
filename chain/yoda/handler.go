@@ -218,6 +218,7 @@ func handleRawRequests(c *Context, l *Logger, id types.RequestID, reqs []rawRequ
 }
 
 func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id types.RequestID, processingResultCh chan processingResult) {
+	defer c.updateHandlingGauge(-1)
 	c.updateHandlingGauge(1)
 
 	exec, err := GetExecutable(c, l, req.dataSourceHash)
@@ -229,7 +230,6 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			),
 			err: err,
 		}
-		c.updateHandlingGauge(-1)
 		return
 	}
 
@@ -241,7 +241,6 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			rawReport: types.NewRawReport(req.externalID, 255, nil),
 			err:       err,
 		}
-		c.updateHandlingGauge(-1)
 		return
 	}
 
@@ -260,7 +259,6 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			rawReport: types.NewRawReport(req.externalID, 255, nil),
 			err:       err,
 		}
-		c.updateHandlingGauge(-1)
 		return
 	} else {
 		l.Debug(
@@ -272,5 +270,4 @@ func handleRawRequest(c *Context, l *Logger, req rawRequest, key keys.Info, id t
 			version:   result.Version,
 		}
 	}
-	c.updateHandlingGauge(-1)
 }
