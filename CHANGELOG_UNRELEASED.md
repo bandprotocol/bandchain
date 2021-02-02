@@ -20,6 +20,7 @@
 
 ### Scan
 
+- (bugs) [\#3098](https://github.com/bandprotocol/bandchain/pull/3098) Remove extra fields in Unjail message
 - (bugs) [\#3054](https://github.com/bandprotocol/bandchain/pull/3054) Order historical bonded token graph by ASC
 - (impv) [\#3008](https://github.com/bandprotocol/bandchain/pull/3008) Disable delegate button when balance is insufficient
 - (bugs) [\#3049](https://github.com/bandprotocol/bandchain/pull/3049) Fix wrong commission rate
@@ -43,6 +44,7 @@
 
 ### Helpers
 
+- (bugs) [\#3084](https://github.com/bandprotocol/bandchain/pull/3084) pyband: raw_log can be none and get KeyError exception
 - (feat) [\#2972](https://github.com/bandprotocol/bandchain/pull/2972) pyband&bandchain.js: Added get request evm proof on pyband and bandchain.js
 - (impv) [\#2967](https://github.com/bandprotocol/bandchain/pull/2967) bandchain.js: Added new params to getReferenceData
 - (impv) [\#2943](https://github.com/bandprotocol/bandchain/pull/2943) Bandchain.js: Added return `undefined` when account does not exist
