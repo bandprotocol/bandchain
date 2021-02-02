@@ -53,7 +53,13 @@ let sorting = (oracleSctipts: array(OracleScriptSub.t), sortedBy) => {
 };
 
 let renderMostRequestedCard =
-    (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
+    (
+      reserveIndex,
+      oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t),
+      statsSub: ApolloHooks.Subscription.variant(array(OracleScriptSub.response_last_1_day_t)),
+    ) => {
+  let allSub = Sub.all2(oracleScriptSub, statsSub);
+
   <Col.Grid
     key={
       switch (oracleScriptSub) {
@@ -101,19 +107,19 @@ let renderMostRequestedCard =
         </div>
         <div className=Styles.requestResponseBox>
           <Heading size=Heading.H5 value="Response time" marginBottom=8 />
-          {switch (oracleScriptSub) {
-           | Data({responseTime: responseTimeOpt}) =>
-             switch (responseTimeOpt) {
-             | Some(responseTime') =>
+          {switch (allSub) {
+           | Data(({id}, stats)) =>
+             let resultOpt = stats->Belt.Array.getBy(stat => id == stat.id);
+             switch (resultOpt) {
+             | Some({responseTime}) =>
                <Text
                  size=Text.Lg
-                 value={(responseTime' |> Format.fPretty(~digits=2)) ++ " s"}
+                 value={(responseTime |> Format.fPretty(~digits=2)) ++ " s"}
                  weight=Text.Regular
                  block=true
                />
              | None => <Text value="TBD" />
-             }
-
+             };
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -123,7 +129,13 @@ let renderMostRequestedCard =
 };
 
 let renderBody =
-    (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
+    (
+      reserveIndex,
+      oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t),
+      statsSub: ApolloHooks.Subscription.variant(array(OracleScriptSub.response_last_1_day_t)),
+    ) => {
+  let allSub = Sub.all2(oracleScriptSub, statsSub);
+
   <TBody.Grid
     key={
       switch (oracleScriptSub) {
@@ -160,8 +172,9 @@ let renderBody =
             ~direction=`column,
             (),
           )}>
-          {switch (oracleScriptSub) {
-           | Data({requestCount, responseTime: responseTimeOpt}) =>
+          {switch (allSub) {
+           | Data(({id, requestCount}, stats)) =>
+             let resultOpt = stats->Belt.Array.getBy(stat => id == stat.id);
              <>
                <div>
                  <Text
@@ -175,9 +188,9 @@ let renderBody =
                <div>
                  <Text
                    value={
-                     switch (responseTimeOpt) {
-                     | Some(responseTime') =>
-                       "(" ++ (responseTime' |> Format.fPretty(~digits=2)) ++ " s)"
+                     switch (resultOpt) {
+                     | Some({responseTime}) =>
+                       "(" ++ (responseTime |> Format.fPretty(~digits=2)) ++ " s)"
                      | None => "(TBD)"
                      }
                    }
@@ -187,7 +200,7 @@ let renderBody =
                    align=Text.Right
                  />
                </div>
-             </>
+             </>;
            | _ => <LoadingCensorBar width=70 height=15 />
            }}
         </div>
@@ -219,14 +232,31 @@ let renderBody =
 };
 
 let renderBodyMobile =
-    (reserveIndex, oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t)) => {
+    (
+      reserveIndex,
+      oracleScriptSub: ApolloHooks.Subscription.variant(OracleScriptSub.t),
+      statsSub: ApolloHooks.Subscription.variant(array(OracleScriptSub.response_last_1_day_t)),
+    ) => {
   switch (oracleScriptSub) {
-  | Data({id, timestamp: timestampOpt, description, name, requestCount, responseTime}) =>
+  | Data({id, timestamp: timestampOpt, description, name, requestCount}) =>
     <MobileCard
       values=InfoMobileCard.[
         ("Oracle Script", OracleScript(id, name)),
         ("Description", Text(description)),
-        ("Request&\nResponse time", RequestResponse({requestCount, responseTime})),
+        (
+          "Request&\nResponse time",
+          switch (statsSub) {
+          | Data(stats) =>
+            RequestResponse({
+              requestCount,
+              responseTime:
+                stats
+                ->Belt.Array.getBy(stat => id == stat.id)
+                ->Belt.Option.map(({responseTime}) => responseTime),
+            })
+          | _ => Loading(80)
+          },
+        ),
         (
           "Timestamp",
           switch (timestampOpt) {
@@ -276,6 +306,7 @@ let make = () => {
 
   let mostRequestedOracleScriptSub =
     OracleScriptSub.getList(~pageSize=mostRequestedPageSize, ~page=1, ~searchTerm="", ());
+  let statsSub = OracleScriptSub.getResponseTimeList();
 
   let allSub = Sub.all2(oracleScriptsSub, oracleScriptsCountSub);
 
@@ -291,7 +322,7 @@ let make = () => {
                  <Row.Grid>
                    {oracleScripts
                     ->Belt_Array.mapWithIndex((i, e) =>
-                        renderMostRequestedCard(i, Sub.resolve(e))
+                        renderMostRequestedCard(i, Sub.resolve(e), statsSub)
                       )
                     ->React.array}
                  </Row.Grid>
@@ -302,7 +333,7 @@ let make = () => {
              <Heading value="Most Requested" size=Heading.H4 marginBottom=16 />
              <Row.Grid>
                {Belt_Array.make(mostRequestedPageSize, ApolloHooks.Subscription.NoData)
-                ->Belt_Array.mapWithIndex((i, noData) => renderMostRequestedCard(i, noData))
+                ->Belt_Array.mapWithIndex((i, e) => renderMostRequestedCard(i, e, NoData))
                 ->React.array}
              </Row.Grid>
            </>
@@ -389,7 +420,8 @@ let make = () => {
                   ->sorting(sortedBy)
                   ->Belt_Array.mapWithIndex((i, e) =>
                       isMobile
-                        ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                        ? renderBodyMobile(i, Sub.resolve(e), statsSub)
+                        : renderBody(i, Sub.resolve(e), statsSub)
                     )
                   ->React.array
                 : <EmptyContainer>
@@ -413,8 +445,8 @@ let make = () => {
          | _ =>
            <div className=Styles.tbodyContainer>
              {Belt_Array.make(10, ApolloHooks.Subscription.NoData)
-              ->Belt_Array.mapWithIndex((i, noData) =>
-                  isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
+              ->Belt_Array.mapWithIndex((i, e) =>
+                  isMobile ? renderBodyMobile(i, e, NoData) : renderBody(i, e, NoData)
                 )
               ->React.array}
            </div>
