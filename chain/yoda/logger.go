@@ -23,8 +23,9 @@ func (l *Logger) Info(format string, args ...interface{}) {
 	l.logger.Info(emoji.Sprintf(format, args...))
 }
 
-func (l *Logger) Error(format string, args ...interface{}) {
+func (l *Logger) Error(format string, c *Context, args ...interface{}) {
 	l.logger.Error(emoji.Sprintf(format, args...))
+	c.updateErrorCount(1)
 }
 
 func (l *Logger) With(keyvals ...interface{}) *Logger {
