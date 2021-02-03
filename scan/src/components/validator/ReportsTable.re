@@ -247,8 +247,7 @@ let make = (~address) => {
         address |> Address.toOperatorBech32;
       },
     );
-  let reportsCountSub = ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
-
+  let reportsCountSub = ReportSub.ValidatorReport.count(address);
   let allSub = Sub.all2(reportsSub, reportsCountSub);
 
   let isMobile = Media.isMobile();

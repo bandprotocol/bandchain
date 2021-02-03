@@ -410,7 +410,7 @@ let getHistoricalOracleStatus = (operatorAddress, greater, oracleStatus) => {
   let parsedReports =
     if (!oracleStatus && x##historical_oracle_statuses->Belt.Array.size == 0) {
       rawParsedReports->Belt.Array.map(({timestamp}) =>
-        HistoryOracleParser.{timestamp, status: false}
+        {HistoryOracleParser.timestamp, status: false}
       );
     } else {
       rawParsedReports;
