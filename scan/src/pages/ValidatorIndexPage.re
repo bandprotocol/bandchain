@@ -85,8 +85,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
   let isMobile = Media.isMobile();
   let validatorSub = ValidatorSub.get(address);
   let bondedTokenCountSub = ValidatorSub.getTotalBondedAmount();
-  let oracleReportsCountSub =
-    ReportSub.ValidatorReport.count(address |> Address.toOperatorBech32);
+  let oracleReportsCountSub = ReportSub.ValidatorReport.count(address);
   // for finding validator rank
   let validatorsSub = ValidatorSub.getList(~isActive=true, ());
 

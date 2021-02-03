@@ -83,10 +83,8 @@ module ValidatorReport = {
     {|
     subscription ReportsCount ($validator: String!) {
       validators_by_pk(operator_address: $validator) {
-        reports_aggregate {
-          aggregate{
-            count @bsDecoder(fn: "Belt_Option.getExn")
-          }
+        validator_report_count {
+          count
         }
       }
     }
@@ -113,14 +111,17 @@ module ValidatorReport = {
     let (result, _) =
       ApolloHooks.useSubscription(
         ReportCountConfig.definition,
-        ~variables=ReportCountConfig.makeVariables(~validator, ()),
+        ~variables=
+          ReportCountConfig.makeVariables(~validator=validator |> Address.toOperatorBech32, ()),
       );
     result
-    |> Sub.map(_, x => {
-         switch (x##validators_by_pk) {
-         | Some(x') => x'##reports_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
-         | None => 0
+    |> Sub.map(_, each =>
+         {
+           let%Opt x = each##validators_by_pk;
+           let%Opt y = x##validator_report_count;
+           Some(y##count->Belt.Option.getExn);
          }
-       });
+         |> Belt.Option.getWithDefault(_, 0)
+       );
   };
 };
