@@ -1,6 +1,6 @@
 #!/bin/bash
 
-bandd init $1 --chain-id bandchain
+bandd init $1 --chain-id bandchain --timeout-commit 4000
 
 pwd
 

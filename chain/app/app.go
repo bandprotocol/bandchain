@@ -40,8 +40,8 @@ import (
 )
 
 const (
-	AppName          = "BandApp"
-	Bech32MainPrefix = "band"
+	Name             = "Odin"
+	Bech32MainPrefix = "odin"
 	Bip44CoinType    = 494
 )
 
@@ -141,7 +141,7 @@ func NewBandApp(
 	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
 ) *BandApp {
 	cdc := MakeCodec()
-	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
+	bApp := bam.NewBaseApp(Name, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
 	bApp.SetCommitMultiStoreTracer(traceStore)
 	bApp.SetAppVersion(version.Version)
 	keys := sdk.NewKVStoreKeys(
