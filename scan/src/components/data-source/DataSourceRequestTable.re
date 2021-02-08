@@ -132,50 +132,53 @@ let make = (~dataSourceID: ID.DataSource.t) => {
   let pageSize = 5;
 
   let requestsSub = RequestSub.Mini.getListByDataSource(dataSourceID, ~pageSize, ~page, ());
-  let totalRequestCountSub = RequestSub.countByDataSource(dataSourceID);
+  // let totalRequestCountSub = RequestSub.countByDataSource(dataSourceID);
 
-  let allSub = Sub.all2(requestsSub, totalRequestCountSub);
+  // let allSub = Sub.all2(requestsSub, totalRequestCountSub);
 
   let isMobile = Media.isMobile();
 
   <div className=Styles.tableWrapper>
     {isMobile
-       ? <Row.Grid marginBottom=16>
-           <Col.Grid>
-             {switch (allSub) {
-              | Data((_, totalRequestCount)) =>
-                <div className={CssHelper.flexBox()}>
-                  <Text
-                    block=true
-                    value={totalRequestCount |> Format.iPretty}
-                    weight=Text.Semibold
-                    color=Colors.gray7
-                  />
-                  <HSpacing size=Spacing.xs />
-                  <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
-                </div>
-              | _ => <LoadingCensorBar width=100 height=15 />
-              }}
-           </Col.Grid>
-         </Row.Grid>
+       ? React.null
+       //  ? <Row.Grid marginBottom=16>
+       //      <Col.Grid>
+       //        {switch (allSub) {
+       //         | Data((_, totalRequestCount)) =>
+       //           <div className={CssHelper.flexBox()}>
+       //             <Text
+       //               block=true
+       //               value={totalRequestCount |> Format.iPretty}
+       //               weight=Text.Semibold
+       //               color=Colors.gray7
+       //             />
+       //             <HSpacing size=Spacing.xs />
+       //             <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
+       //           </div>
+       //         | _ => <LoadingCensorBar width=100 height=15 />
+       //         }}
+       //      </Col.Grid>
+       //    </Row.Grid>
        : <THead.Grid>
            <Row.Grid alignItems=Row.Center>
              <Col.Grid col=Col.Two>
-               {switch (allSub) {
-                | Data((_, totalRequestCount)) =>
-                  <div className={CssHelper.flexBox()}>
-                    <Text
-                      block=true
-                      value={totalRequestCount |> Format.iPretty}
-                      weight=Text.Semibold
-                      color=Colors.gray7
-                    />
-                    <HSpacing size=Spacing.xs />
-                    <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
-                  </div>
-                | _ => <LoadingCensorBar width=100 height=15 />
-                }}
-             </Col.Grid>
+               //  {switch (allSub) {
+               //   | Data((_, totalRequestCount)) =>
+               //     <div className={CssHelper.flexBox()}>
+               //       <Text
+               //         block=true
+               //         value={totalRequestCount |> Format.iPretty}
+               //         weight=Text.Semibold
+               //         color=Colors.gray7
+               //       />
+               //       <HSpacing size=Spacing.xs />
+               //       <Text block=true value="Requests" weight=Text.Semibold color=Colors.gray7 />
+               //     </div>
+               //   | _ => <LoadingCensorBar width=100 height=15 />
+               //   }}
+
+                 <Text block=true value="Request ID" weight=Text.Semibold color=Colors.gray7 />
+               </Col.Grid>
              <Col.Grid col=Col.Four>
                <Text block=true value="Oracle Script" weight=Text.Semibold color=Colors.gray7 />
              </Col.Grid>
@@ -199,9 +202,10 @@ let make = (~dataSourceID: ID.DataSource.t) => {
              </Col.Grid>
            </Row.Grid>
          </THead.Grid>}
-    {switch (allSub) {
-     | Data((requests, requestsCount)) =>
-       let pageCount = Page.getPageCount(requestsCount, pageSize);
+    {switch (requestsSub) {
+     | Data(requests) =>
+       //  let pageCount = Page.getPageCount(requestsCount, pageSize);
+       let requestsCount = requests->Belt.Array.length;
        <>
          {requestsCount > 0
             ? requests
@@ -220,13 +224,13 @@ let make = (~dataSourceID: ID.DataSource.t) => {
                   color=Colors.bandBlue
                 />
               </EmptyContainer>}
-         {isMobile
-            ? React.null
-            : <Pagination
-                currentPage=page
-                pageCount
-                onPageChange={newPage => setPage(_ => newPage)}
-              />}
+         //  {isMobile
+         //     ? React.null
+         //     : <Pagination
+         //         currentPage=page
+         //         pageCount
+         //         onPageChange={newPage => setPage(_ => newPage)}
+         //       />}
        </>;
      | _ =>
        Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)

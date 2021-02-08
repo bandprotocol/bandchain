@@ -61,26 +61,26 @@ let renderBody =
          | _ => <LoadingCensorBar width=300 height=15 />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.Four>
+      <Col.Grid col=Col.Five>
         {switch (dataSourcesSub) {
          | Data({description}) => <Text value=description block=true />
          | _ => <LoadingCensorBar width=270 height=15 />
          }}
       </Col.Grid>
-      <Col.Grid col=Col.One>
-        {switch (dataSourcesSub) {
-         | Data({requestCount}) =>
-           <div>
-             <Text
-               value={requestCount |> Format.iPretty}
-               weight=Text.Medium
-               block=true
-               ellipsis=true
-             />
-           </div>
-         | _ => <LoadingCensorBar width=70 height=15 />
-         }}
-      </Col.Grid>
+      // <Col.Grid col=Col.One>
+      //   {switch (dataSourcesSub) {
+      //    | Data({requestCount}) =>
+      //      <div>
+      //        <Text
+      //          value={requestCount |> Format.iPretty}
+      //          weight=Text.Medium
+      //          block=true
+      //          ellipsis=true
+      //        />
+      //      </div>
+      //    | _ => <LoadingCensorBar width=70 height=15 />
+      //    }}
+      // </Col.Grid>
       <Col.Grid col=Col.Two>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (dataSourcesSub) {
@@ -115,7 +115,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Data Source", DataSource(id, name)),
         ("Description", Text(description)),
-        ("Requests", Count(requestCount)),
+        // ("Requests", Count(requestCount)),
         (
           "Timestamp",
           switch (timestampOpt) {
@@ -132,7 +132,7 @@ let renderBodyMobile =
       values=InfoMobileCard.[
         ("Data Source", Loading(70)),
         ("Description", Loading(136)),
-        ("Requests", Loading(20)),
+        // ("Requests", Loading(20)),
         ("Timestamp", Loading(166)),
       ]
       key={reserveIndex |> string_of_int}
@@ -212,7 +212,7 @@ let make = () => {
                      />
                    </div>
                  </Col.Grid>
-                 <Col.Grid col=Col.Four>
+                 <Col.Grid col=Col.Five>
                    <Text
                      block=true
                      value="Description"
@@ -221,15 +221,15 @@ let make = () => {
                      color=Colors.gray7
                    />
                  </Col.Grid>
-                 <Col.Grid col=Col.One>
-                   <Text
-                     block=true
-                     value="Requests"
-                     size=Text.Md
-                     weight=Text.Semibold
-                     color=Colors.gray7
-                   />
-                 </Col.Grid>
+                 //  <Col.Grid col=Col.One>
+                 //    <Text
+                 //      block=true
+                 //      value="Requests"
+                 //      size=Text.Md
+                 //      weight=Text.Semibold
+                 //      color=Colors.gray7
+                 //    />
+                 //  </Col.Grid>
                  <Col.Grid col=Col.Two>
                    <Text
                      block=true
