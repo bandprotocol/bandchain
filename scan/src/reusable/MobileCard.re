@@ -104,15 +104,29 @@ module InnerPanel = {
 };
 
 [@react.component]
-let make = (~values, ~idx, ~status=?, ~requestStatus=?, ~styles="", ~panels=[]) => {
+let make =
+    (
+      ~values,
+      ~idx,
+      ~status=?,
+      ~requestStatusSub: option(RequestSub.resolve_status_t)=?,
+      ~requestStatusQuery: option(RequestQuery.resolve_status_t)=?,
+      ~styles="",
+      ~panels=[],
+    ) => {
   let (show, setShow) = React.useState(_ => false);
   <div className={Css.merge([Styles.cardContainer, styles])}>
     {switch (status) {
      | Some(success) => <img src={success ? Images.success : Images.fail} className=Styles.logo />
      | None => React.null
      }}
-    {switch (requestStatus) {
-     | Some(resolveStatus) => <RequestStatus resolveStatus style=Styles.logo />
+    //  HACK: Just choose one of these
+    {switch (requestStatusSub) {
+     | Some(resolveStatus) => <RequestStatus.Sub resolveStatus style=Styles.logo />
+     | None => React.null
+     }}
+    {switch (requestStatusQuery) {
+     | Some(resolveStatus) => <RequestStatus.Query resolveStatus style=Styles.logo />
      | None => React.null
      }}
     <InnerPanel values idx />

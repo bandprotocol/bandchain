@@ -53,7 +53,7 @@ let renderBody = (reserveIndex, requestSub: ApolloHooks.Subscription.variant(Req
              <div className={CssHelper.flexBox()}>
                <Text value={j|$reportedCount of $requestedCount|j} />
                <HSpacing size=Spacing.sm />
-               <RequestStatus resolveStatus />
+               <RequestStatus.Sub resolveStatus />
              </div>;
            | _ => <LoadingCensorBar width=70 height=15 />
            }}
@@ -76,7 +76,7 @@ let renderBodyMobile = (reserveIndex, requestSub: ApolloHooks.Subscription.varia
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}
-      requestStatus=resolveStatus
+      requestStatusSub=resolveStatus
     />;
   | _ =>
     <MobileCard

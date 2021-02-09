@@ -272,7 +272,7 @@ let make = (~reqID) => {
                 <Heading value="Resolve Status" size=Heading.H5 marginBottom=8 />
                 {switch (requestSub) {
                  | Data({resolveStatus}) =>
-                   <RequestStatus resolveStatus display=RequestStatus.Full />
+                   <RequestStatus.Sub resolveStatus display=RequestStatus.Full />
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col.Grid>

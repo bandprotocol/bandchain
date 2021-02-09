@@ -13,7 +13,7 @@ module Styles = {
   let noDataImage = style([width(`auto), height(`px(70)), marginBottom(`px(16))]);
 };
 
-let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
+let renderBody = (reserveIndex, requestsSub: ApolloHooks.Query.variant(RequestQuery.t)) => {
   <TBody.Grid
     key={
       switch (requestsSub) {
@@ -54,7 +54,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
       <Col.Grid col=Col.One>
         <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
           {switch (requestsSub) {
-           | Data({resolveStatus}) => <RequestStatus resolveStatus />
+           | Data({resolveStatus}) => <RequestStatus.Query resolveStatus />
            | _ => <LoadingCensorBar width=100 height=15 />
            }}
         </div>
@@ -81,8 +81,7 @@ let renderBody = (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(Re
   </TBody.Grid>;
 };
 
-let renderBodyMobile =
-    (reserveIndex, requestsSub: ApolloHooks.Subscription.variant(RequestSub.Mini.t)) => {
+let renderBodyMobile = (reserveIndex, requestsSub: ApolloHooks.Query.variant(RequestQuery.t)) => {
   switch (requestsSub) {
   | Data({
       id,
@@ -110,7 +109,7 @@ let renderBodyMobile =
       ]
       key={id |> ID.Request.toString}
       idx={id |> ID.Request.toString}
-      requestStatus=resolveStatus
+      requestStatusQuery=resolveStatus
     />
   | _ =>
     <MobileCard
@@ -128,10 +127,11 @@ let renderBodyMobile =
 
 [@react.component]
 let make = (~dataSourceID: ID.DataSource.t) => {
-  let (page, setPage) = React.useState(_ => 1);
+  // let (page, setPage) = React.useState(_ => 1);
+  let page = 1;
   let pageSize = 5;
 
-  let requestsSub = RequestSub.Mini.getListByDataSource(dataSourceID, ~pageSize, ~page, ());
+  let requestQuery = RequestQuery.getListByDataSource(dataSourceID, ~pageSize, ~page, ());
   // let totalRequestCountSub = RequestSub.countByDataSource(dataSourceID);
 
   // let allSub = Sub.all2(requestsSub, totalRequestCountSub);
@@ -202,7 +202,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
              </Col.Grid>
            </Row.Grid>
          </THead.Grid>}
-    {switch (requestsSub) {
+    {switch (requestQuery) {
      | Data(requests) =>
        //  let pageCount = Page.getPageCount(requestsCount, pageSize);
        let requestsCount = requests->Belt.Array.length;
@@ -211,7 +211,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
             ? requests
               ->Belt_Array.mapWithIndex((i, e) =>
                   isMobile
-                    ? renderBodyMobile(i, Sub.resolve(e)) : renderBody(i, Sub.resolve(e))
+                    ? renderBodyMobile(i, Query.resolve(e)) : renderBody(i, Query.resolve(e))
                 )
               ->React.array
             : <EmptyContainer>
@@ -233,7 +233,7 @@ let make = (~dataSourceID: ID.DataSource.t) => {
          //       />}
        </>;
      | _ =>
-       Belt_Array.make(pageSize, ApolloHooks.Subscription.NoData)
+       Belt_Array.make(pageSize, ApolloHooks.Query.NoData)
        ->Belt_Array.mapWithIndex((i, noData) =>
            isMobile ? renderBodyMobile(i, noData) : renderBody(i, noData)
          )
