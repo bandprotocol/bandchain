@@ -17,6 +17,7 @@ FROM debian:latest
 COPY --from=builder /go-owasm/api/libgo_owasm.so /lib/libgo_owasm.so
 COPY --from=builder /go/bin/bandd /usr/local/bin/bandd
 COPY --from=builder /go/bin/bandcli /usr/local/bin/bandcli
+COPY --from=builder /go/bin/bandcli /usr/local/bin/yoda
 
 COPY chain/docker-config/validator1/ validator1/
 COPY chain/docker-config/validator2/ validator2/
