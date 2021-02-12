@@ -1,6 +1,6 @@
 {
   "genesis_time": "2021-01-20T08:43:15.536745083Z",
-  "chain_id": "bandchain",
+  "chain_id": "odin",
   "consensus_params": {
     "block": {
       "max_bytes": "1000000",
@@ -17,15 +17,53 @@
       ]
     }
   },
+  "validators": [
+    {
+      "address": "5179b0bb203248e03d2a1342896133b5c58e1e44",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "AnJK4pz+t0lwUdCe39joIjUsTINht1dkdkW3jIzHTOiF"
+      },
+      "power": "100",
+      "name": "validator2"
+    },
+    {
+      "address": "f23391b5dbf982e37fb7dadea64aae21cae4c172",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "A/V/OZek6B2PMh6XEJJ+IsLm0w+22PdJqeSgevs7O3kJ"
+      },
+      "power": "100",
+      "name": "validator1"
+    },
+    {
+      "address": "bdb6a0728c8dfe2124536f16f2ba428fe767a8f9",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "A6VP+qhMjy95h4Lei5YqhHhOKISHp0eBOghXJDpg4roz"
+      },
+      "power": "100",
+      "name": "validator3"
+    },
+    {
+      "address": "f0c23921727d869745c4f9703cf33996b1d2b715",
+      "pub_key": {
+        "type": "tendermint/PubKeySecp256k1",
+        "value": "A9A3CPFh0Vg/SeQmCkKysI07oYbXgDojzDrNEvB02ddv"
+      },
+      "power": "100",
+      "name": "validator4"
+    }
+  ],
   "app_hash": "",
   "app_state": {
     "mint": {
       "minter": {
-        "inflation": "0.130000000000000000",
+        "inflation": "0.120000000000000000",
         "annual_provisions": "0.000000000000000000"
       },
       "params": {
-        "mint_denom": "uband",
+        "mint_denom": "loki",
         "inflation_rate_change": "0.130000000000000000",
         "inflation_max": "0.200000000000000000",
         "inflation_min": "0.070000000000000000",
@@ -57,11 +95,68 @@
         "max_validators": 100,
         "max_entries": 7,
         "historical_entries": 1000,
-        "bond_denom": "uband"
+        "bond_denom": "loki"
       },
       "last_total_power": "0",
       "last_validator_powers": null,
-      "validators": null,
+      "validators": [
+        {
+          "description": {
+            "moniker": "validator1"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "operator_address": "odinvaloper17geerdwmlxpwxlahmt02vj4wy89wfstj8pacf5",
+          "consensus_pubkey": "odinvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusju7cycr",
+          "tokens": "100000000"
+        },
+        {
+          "description": {
+            "moniker": "validator2"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "operator_address": "odinvaloper129umpweqxfywq0f2zdpgjcfnkhzcu8jyfu5nes",
+          "consensus_pubkey": "odinvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2tf85y9",
+          "tokens": "100000000"
+        },
+        {
+          "description": {
+            "moniker": "validator3"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "operator_address": "odinvaloper1hkm2qu5v3hlzzfzndut09wjz3lnk028edv7qkg",
+          "consensus_pubkey": "odinvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arx4d3n5s",
+          "tokens": "100000000"
+        },
+        {
+          "description": {
+            "moniker": "validator4"
+          },
+          "commission": {
+            "rate": "0.100000000000000000",
+            "max_rate": "0.200000000000000000",
+            "max_change_rate": "0.010000000000000000"
+          },
+          "min_self_delegation": "1",
+          "operator_address": "odinvaloper17rprjgtj0krfw3wyl9creueej6ca9dc4a65n80",
+          "consensus_pubkey": "odinvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7qng8ce",
+          "tokens": "100000000"
+        }
+      ],
       "delegations": null,
       "unbonding_delegations": null,
       "redelegations": null,
@@ -70,197 +165,10 @@
     "bank": {
       "send_enabled": true
     },
-    "genutil": {
-      "gentxs": [
-        {
-          "type": "cosmos-sdk/StdTx",
-          "value": {
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgCreateValidator",
-                "value": {
-                  "description": {
-                    "moniker": "Bobby.fish 🐡",
-                    "identity": "",
-                    "website": "https://www.wwe.com/superstars/bobby-fish",
-                    "security_contact": "",
-                    "details": "Fish is best known for his appearances with Ring of Honor (ROH) from 2013 to 2017, where he wrestled as one-half of the tag team reDRagon and held the ROH World Tag Team Championship three times and the ROH World Television Championship once."
-                  },
-                  "commission": {
-                    "rate": "0.100000000000000000",
-                    "max_rate": "0.200000000000000000",
-                    "max_change_rate": "0.010000000000000000"
-                  },
-                  "min_self_delegation": "1",
-                  "delegator_address": "band1cg26m90y3wk50p9dn8pema8zmaa22plxa0hnrg",
-                  "validator_address": "bandvaloper1cg26m90y3wk50p9dn8pema8zmaa22plx3ensxr",
-                  "pubkey": "bandvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2gj9q6w",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
-                }
-              }
-            ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "A/ZOjavNhqMCYhH8l0QB+CxqgjoacZ5zo20Torc60Z2G"
-                },
-                "signature": "F/d+XHlns+aVGPSktTwebQMHoPwltF1O7ypJvZEm4ThBr+BU+AdiGvsnP1lrvk42ULEdQZQiSChjJOkFb3w3yQ=="
-              }
-            ],
-            "memo": "0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656"
-          }
-        },
-        {
-          "type": "cosmos-sdk/StdTx",
-          "value": {
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgCreateValidator",
-                "value": {
-                  "description": {
-                    "moniker": "🙎‍♀️Alice \u0026 Co.",
-                    "identity": "",
-                    "website": "https://www.alice.org/",
-                    "security_contact": "",
-                    "details": "Alice's Adventures in Wonderland (commonly shortened to Alice in Wonderland) is an 1865 novel written by English author Charles Lutwidge Dodgson under the pseudonym Lewis Carroll."
-                  },
-                  "commission": {
-                    "rate": "0.100000000000000000",
-                    "max_rate": "0.200000000000000000",
-                    "max_change_rate": "0.010000000000000000"
-                  },
-                  "min_self_delegation": "1",
-                  "delegator_address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
-                  "validator_address": "bandvaloper1p40yh3zkmhcv0ecqp3mcazy83sa57rgjde6wec",
-                  "pubkey": "bandvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusjl96sxg",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
-                }
-              }
-            ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AiS3jI4M4wP0Aqn+4RhteonBF82QvzdR6OGFF2rlFKMk"
-                },
-                "signature": "oMnb+uFkvAxpJBJdyhTbYasLrOVJ56H3/c3wtXbJ9uoqn3fAPxkdyBwcikVB8klLzLTkpo2gEsqPHJ95dhjHDQ=="
-              }
-            ],
-            "memo": "11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656"
-          }
-        },
-        {
-          "type": "cosmos-sdk/StdTx",
-          "value": {
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgCreateValidator",
-                "value": {
-                  "description": {
-                    "moniker": "Eve 🦹🏿‍♂️the evil with a really long moniker name",
-                    "identity": "",
-                    "website": "https://www.imdb.com/title/tt9055008/",
-                    "security_contact": "",
-                    "details": "Evil is an American supernatural drama television series created by Robert King and Michelle King that premiered on September 26, 2019, on CBS. The series is produced by CBS Television Studios and King Size Productions."
-                  },
-                  "commission": {
-                    "rate": "0.100000000000000000",
-                    "max_rate": "0.200000000000000000",
-                    "max_change_rate": "0.010000000000000000"
-                  },
-                  "min_self_delegation": "1",
-                  "delegator_address": "band1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrp4dtgru",
-                  "validator_address": "bandvaloper1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrpem0txh",
-                  "pubkey": "bandvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7rg2nxj",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
-                }
-              }
-            ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "A0xE7F3hapiSgQYJLYzIw7yQk8mxGch/vrYesWw7l0E/"
-                },
-                "signature": "fFGDOy/fStf7qZD4/vSZyyuqqJlG6heVtLoEyNpQ5VdwaJ/IiqlVNJfnwL/NSyzOKHvxUA/iUiTD2Nus1952Lg=="
-              }
-            ],
-            "memo": "63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656"
-          }
-        },
-        {
-          "type": "cosmos-sdk/StdTx",
-          "value": {
-            "msg": [
-              {
-                "type": "cosmos-sdk/MsgCreateValidator",
-                "value": {
-                  "description": {
-                    "moniker": "Carol",
-                    "identity": "",
-                    "website": "https://www.marvel.com/characters/captain-marvel-carol-danvers",
-                    "security_contact": "",
-                    "details": "Carol Susan Jane Danvers is a fictional superhero appearing in American comic books published by Marvel Comics. Created by writer Roy Thomas and artist Gene Colan."
-                  },
-                  "commission": {
-                    "rate": "0.100000000000000000",
-                    "max_rate": "0.200000000000000000",
-                    "max_change_rate": "0.010000000000000000"
-                  },
-                  "min_self_delegation": "1",
-                  "delegator_address": "band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q",
-                  "validator_address": "bandvaloper1j9vk75jjty02elhwqqjehaspfslaem8pr20qst",
-                  "pubkey": "bandvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arxkkn82m",
-                  "value": {
-                    "denom": "uband",
-                    "amount": "100000000"
-                  }
-                }
-              }
-            ],
-            "fee": {
-              "amount": [],
-              "gas": "200000"
-            },
-            "signatures": [
-              {
-                "pub_key": {
-                  "type": "tendermint/PubKeySecp256k1",
-                  "value": "AovhpOwo4sb1E8XmEEOkCRY7FPDtcheV6uS/jdhN2CS4"
-                },
-                "signature": "WyjBLBk3cL3inp8sNigxjb3rQXwt+OVoEQbH+9MhI0Z1/pJ6smISfBjxyIn/8FSln4TFzUa5HwGl3CyrCumGUg=="
-              }
-            ],
-            "memo": "7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656"
-          }
-        }
-      ]
-    },
+    "genutil": {},
     "crisis": {
       "constant_fee": {
-        "denom": "uband",
+        "denom": "loki",
         "amount": "10000000000"
       }
     },
@@ -272,7 +180,7 @@
       "deposit_params": {
         "min_deposit": [
           {
-            "denom": "uband",
+            "denom": "loki",
             "amount": "1000000000"
           }
         ],
@@ -316,10 +224,25 @@
         {
           "type": "cosmos-sdk/Account",
           "value": {
-            "address": "band1p40yh3zkmhcv0ecqp3mcazy83sa57rgjp07dun",
+            "address": "odin1nnfeguq30x6nwxjhaypxymx3nulyspsuja4a2x",
             "coins": [
               {
-                "denom": "uband",
+                "denom": "loki",
+                "amount": "1000000000000000"
+              }
+            ],
+            "public_key": null,
+            "account_number": "0",
+            "sequence": "0"
+          }
+        },
+        {
+          "type": "cosmos-sdk/Account",
+          "value": {
+            "address": "odin17geerdwmlxpwxlahmt02vj4wy89wfstj2ufxqq",
+            "coins": [
+              {
+                "denom": "loki",
                 "amount": "10000000000000"
               }
             ],
@@ -331,10 +254,10 @@
         {
           "type": "cosmos-sdk/Account",
           "value": {
-            "address": "band1cg26m90y3wk50p9dn8pema8zmaa22plxa0hnrg",
+            "address": "odin129umpweqxfywq0f2zdpgjcfnkhzcu8jyypqdsy",
             "coins": [
               {
-                "denom": "uband",
+                "denom": "loki",
                 "amount": "10000000000000"
               }
             ],
@@ -346,10 +269,10 @@
         {
           "type": "cosmos-sdk/Account",
           "value": {
-            "address": "band1j9vk75jjty02elhwqqjehaspfslaem8p0utr4q",
+            "address": "odin1hkm2qu5v3hlzzfzndut09wjz3lnk028eq327lu",
             "coins": [
               {
-                "denom": "uband",
+                "denom": "loki",
                 "amount": "10000000000000"
               }
             ],
@@ -361,26 +284,11 @@
         {
           "type": "cosmos-sdk/Account",
           "value": {
-            "address": "band1ma0cxd4wpcqk3kz7fr8x609rqmgqgvrp4dtgru",
+            "address": "odin17rprjgtj0krfw3wyl9creueej6ca9dc4s8qdwm",
             "coins": [
               {
-                "denom": "uband",
+                "denom": "loki",
                 "amount": "10000000000000"
-              }
-            ],
-            "public_key": null,
-            "account_number": "0",
-            "sequence": "0"
-          }
-        },
-        {
-          "type": "cosmos-sdk/Account",
-          "value": {
-            "address": "band1m5lq9u533qaya4q3nfyl6ulzqkpkhge9q8tpzs",
-            "coins": [
-              {
-                "denom": "uband",
-                "amount": "100000000000000"
               }
             ],
             "public_key": null,

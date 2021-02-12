@@ -1,55 +1,134 @@
-version: "3.7"
+version: "3.5"
 
 services:
-  multi-validator1-node:
-    image: odinprotocol/band-validator:initial
+  init1:
+    image: odinprotocol/core:latest
+    container_name: init1
+    command: ./init-scripts/init.sh validator1
+    volumes:
+      - ./init-scripts:/init-scripts
+      - ./init.sh:/init.sh
+      - vol1:/root/.bandd
+      - ./genesis.json:/genesis.json
+
+  init2:
+    image: odinprotocol/core:latest
+    container_name: init2
+    depends_on:
+      - init1
+    command: ./init-scripts/init.sh validator2
+    volumes:
+      - ./init-scripts:/init-scripts
+      - ./init.sh:/init.sh
+      - vol2:/root/.bandd
+      - ./genesis.json:/genesis.json
+
+  init3:
+    image: odinprotocol/core:latest
+    container_name: init3
+    depends_on:
+      - init2
+    command: ./init-scripts/init.sh validator3
+    volumes:
+      - ./init-scripts:/init-scripts
+      - vol3:/root/.bandd
+      - ./genesis.json:/genesis.json
+
+  init4:
+    image: odinprotocol/core:latest
+    container_name: init4
+    depends_on:
+      - init3
+    command: ./init.sh validator4 && ./run.sh
+    volumes:
+      - ./run.sh:/run.sh
+      - ./init-scripts:/init-scripts
+      - vol4:/root/.bandd
+      - ./genesis.json:/genesis.json
+
+  validator1:
+    image: odinprotocol/core:latest
+    container_name: validator1
+    depends_on:
+      - init4
     networks:
-      bandchain:
+      default:
         ipv4_address: 172.18.0.11
-    command: sh -c "chmod +x ./run.sh && ./run.sh validator1"
+    command: bandd start --rpc.laddr tcp://0.0.0.0:26657 --p2p.persistent_peers 11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656,0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656,63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656,7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656
+    volumes:
+      - vol1:/root/.bandd
 
-  multi-validator2-node:
-    image: odinprotocol/band-validator:initial
+  validator2:
+    container_name: validator2
+    image: odinprotocol/core:latest
+    depends_on:
+      - validator1
     networks:
-      bandchain:
+      default:
         ipv4_address: 172.18.0.12
-    command: sh -c "chmod +x ./run.sh && ./run.sh validator2"
+    command: bandd start --rpc.laddr tcp://0.0.0.0:26657 --p2p.persistent_peers 11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656,0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656,63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656,7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656
+    volumes:
+      - vol2:/root/.bandd
 
-  multi-validator3-node:
-    image: odinprotocol/band-validator:initial
+  validator3:
+    container_name: validator3
+    image: odinprotocol/core:latest
+    depends_on:
+      - validator2
     networks:
-      bandchain:
+      default:
         ipv4_address: 172.18.0.13
-    command: sh -c "chmod +x ./run.sh && ./run.sh validator3"
+    command: bandd start --rpc.laddr tcp://0.0.0.0:26657 --p2p.persistent_peers 11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656,0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656,63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656,7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656
+    volumes:
+      - vol3:/root/.bandd
 
-  multi-validator4-node:
-    image: odinprotocol/band-validator:initial
+  validator4:
+    container_name: validator4
+    image: odinprotocol/core:latest
+    depends_on:
+      - validator3
     networks:
-      bandchain:
+      default:
         ipv4_address: 172.18.0.14
-    command: sh -c "chmod +x ./run.sh && ./run.sh validator4"
-
-  query-node:
-    image: odinprotocol/band-validator:initial
+    command: bandd start --rpc.laddr tcp://0.0.0.0:26657 --p2p.persistent_peers 11392b605378063b1c505c0ab123f04bd710d7d7@172.18.0.11:26656,0851086afcd835d5a6fb0ffbf96fcdf74fec742e@172.18.0.12:26656,63808bd64f2ec19acb2a494c8ce8467c595f6fba@172.18.0.14:26656,7b58b086dd915a79836eb8bfa956aeb9488d13b0@172.18.0.13:26656
     ports:
       - 26657:26657
-    networks:
-      bandchain:
-        ipv4_address: 172.18.0.15
-    command: sh -c "chmod +x ./run.sh && ./run.sh query-node"
+      - 26655:26656
+    volumes:
+      - vol4:/root/.bandd
 
   rest-server:
-    image: odinprotocol/band-validator:initial
+    image: odinprotocol/core:latest
     networks:
-      bandchain:
+      default:
         ipv4_address: 172.18.0.20
     restart: always
+    depends_on:
+      - validator4
     ports:
       - 1317:1317
-    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
+    command: bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.14:26657 --chain-id odin --trust-node
+
+  geo-provider:
+    image: odinprotocol/geo-provider:latest
+    networks:
+      default:
+        ipv4_address: 172.18.0.21
+    restart: always
+    volumes:
+      - ./data:/go/app/data
+    ports:
+      - 5000:80
+    command: geo-provider
+
+volumes:
+  vol1:
+  vol2:
+  vol3:
+  vol4:
 
 networks:
-  bandchain:
+  default:
     ipam:
       driver: default
       config:

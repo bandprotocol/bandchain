@@ -16,6 +16,6 @@ COPY docker-config/query-node/ query-node/
 
 # generated genesis
 COPY docker-config/genesis.json genesis.json
-COPY docker-config/run.sh run.sh
+COPY docker-config/init.sh run.sh
 
 CMD bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node

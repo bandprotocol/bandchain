@@ -17,17 +17,15 @@ FROM debian:latest
 COPY --from=builder /go-owasm/api/libgo_owasm.so /lib/libgo_owasm.so
 COPY --from=builder /go/bin/bandd /usr/local/bin/bandd
 COPY --from=builder /go/bin/bandcli /usr/local/bin/bandcli
-COPY --from=builder /go/bin/bandcli /usr/local/bin/yoda
+COPY --from=builder /go/bin/yoda /usr/local/bin/yoda
+COPY --from=builder /go/bin/faucet /usr/local/bin/faucet
 
 COPY chain/docker-config/validator1/ validator1/
 COPY chain/docker-config/validator2/ validator2/
 COPY chain/docker-config/validator3/ validator3/
 COPY chain/docker-config/validator4/ validator4/
 
-COPY chain/docker-config/query-node/ query-node/
-
 # generated genesis
 COPY chain/docker-config/genesis.json genesis.json
-COPY chain/docker-config/run.sh run.sh
 
 CMD ["bandd", "--help"]
