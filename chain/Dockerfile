@@ -1,21 +1,35 @@
-FROM ubuntu:18.04
+FROM golang:1.13.5-buster as builder
 
-# built binaries
-COPY build/bandcli bin/bandcli
-COPY build/bandd bin/bandd
+WORKDIR /go-owasm
+COPY go-owasm/. /go-owasm
 
-# go-owasm built dynamic lib
-COPY build/libgo_owasm.so lib/libgo_owasm.so
+WORKDIR /chain
+COPY chain/ /chain
 
-COPY docker-config/validator1/ validator1/
-COPY docker-config/validator2/ validator2/
-COPY docker-config/validator3/ validator3/
-COPY docker-config/validator4/ validator4/
+RUN wget https://github.com/WebAssembly/wabt/releases/download/1.0.17/wabt-1.0.17-ubuntu.tar.gz
+RUN tar -zxf wabt-1.0.17-ubuntu.tar.gz
+RUN cp wabt-1.0.17/bin/wat2wasm /usr/local/bin
 
-COPY docker-config/query-node/ query-node/
+RUN make install && make faucet
+
+FROM debian:latest
+
+RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
+
+RUN apt-get install wget
+
+COPY --from=builder /go-owasm/api/libgo_owasm.so /lib/libgo_owasm.so
+COPY --from=builder /go/bin/bandd /usr/local/bin/bandd
+COPY --from=builder /go/bin/bandcli /usr/local/bin/bandcli
+COPY --from=builder /go/bin/yoda /usr/local/bin/yoda
+COPY --from=builder /go/bin/faucet /usr/local/bin/faucet
+
+COPY chain/docker-config/validator1/ validator1/
+COPY chain/docker-config/validator2/ validator2/
+COPY chain/docker-config/validator3/ validator3/
+COPY chain/docker-config/validator4/ validator4/
 
 # generated genesis
-COPY docker-config/genesis.json genesis.json
-COPY docker-config/init.sh run.sh
+COPY chain/docker-config/genesis.json genesis.json
 
-CMD bandcli rest-server --laddr tcp://0.0.0.0:1317 --node tcp://172.18.0.15:26657 --chain-id bandchain --trust-node
+CMD ["bandd", "--help"]
