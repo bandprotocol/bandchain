@@ -16,7 +16,7 @@ FROM debian:latest
 
 RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates
 
-RUN apt-get install wget
+RUN  apt-get update && apt-get install -y wget
 
 COPY --from=builder /go-owasm/api/libgo_owasm.so /lib/libgo_owasm.so
 COPY --from=builder /go/bin/bandd /usr/local/bin/bandd
