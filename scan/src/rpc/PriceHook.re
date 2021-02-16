@@ -34,9 +34,7 @@ let getBandUsd24Change = () => {
   Js.Promise.race([|coingeckoPromise, cryptocomparePromise|]);
 };
 
-let getBandInfo = () => {
-  // TODO: abstract later
-  let client = BandChainJS.createClient("https://api-gm-lb.bandchain.org");
+let getBandInfo = client => {
   let ratesPromise = client->BandChainJS.getReferenceData([|"BAND/USD", "BAND/BTC"|]);
   let supplyPromise = Axios.get("https://supply.bandchain.org/circulating");
   let usd24HrChangePromise = getBandUsd24Change();
