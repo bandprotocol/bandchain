@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",
+    "@bandprotocol/bandchain.js": "^1.2.0",
     "@cosmostation/cosmosjs": "^0.5.5",
     "@glennsl/bs-json": "^5.0.2",
     "@ledgerhq/hw-transport-webhid": "^5.19.0",
@@ -18,6 +19,7 @@
     "@sentry/browser": "^6.1.0",
     "axios": "^0.21.1",
     "axios-hooks": "^2.3.0",
+    "bandchain2.js": "^0.0.1",
     "bech32": "^1.1.4",
     "bs-axios": "^0.0.43",
     "bs-css-emotion": "^2.3.0",
@@ -49,6 +51,8 @@
     "semver": "^7.3.2"
   },
   "devDependencies": {
+    "@babel/core": "^7.12.16",
+    "@babel/preset-react": "^7.12.13",
     "@baransu/graphql_ppx_re": "^0.7.1",
     "@glennsl/bs-jest": "^0.6.0",
     "bs-platform": "^7.0.1",
