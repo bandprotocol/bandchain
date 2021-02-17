@@ -36,7 +36,7 @@
     "obi.js": "^1.0.2",
     "parcel-plugin-custom-dist-structure": "^1.1.16",
     "qrcode.react": "^1.0.1",
-    "react": "^16.14.0",
+    "react": "^17.0.1",
     "react-countup": "^4.3.3",
     "react-dom": "^16.14.0",
     "react-highlight": "^0.13.0",
