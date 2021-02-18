@@ -1415,10 +1415,10 @@
     lodash "^4.17.19"
     to-fast-properties "^2.0.0"
 
-"@bandprotocol/bandchain.js@^1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-1.2.0.tgz#ac9d3d6c19616cbb9b460bc759e9af6a449d2dcc"
-  integrity sha512-TZjn3XyyXkmBt8tV1/Mh6FEb9Vv7h+71L18erBcRVScjW/VONmJzw6Np7PlwCg0nx3yKyufNMQYj35+Es/WQ2w==
+"@bandprotocol/bandchain.js@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@bandprotocol/bandchain.js/-/bandchain.js-1.2.1.tgz#bb87da8ad79014e53493c3a3b62db31c25152a2f"
+  integrity sha512-WJhh5s1Uqthr304PC79cO1zN08kdR1cRjM3sNmG9/lfI3/D3eFXwFznPPEuR7dsYGohHx9LUqO8YADcbzQXQSA==
   dependencies:
     axios "^0.21.0"
     bech32 "^1.1.4"
@@ -2786,19 +2786,6 @@ balanced-match@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
-
-bandchain2.js@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/bandchain2.js/-/bandchain2.js-0.0.1.tgz#b7fc3a554fddd92199a8e6004f242fd2d191fc63"
-  integrity sha512-c33vfKmUihGu+qiYgKsp8zkxYciPsFvuwkr2OCvg+p+oxZTOt5YtR4RKUhm/quECCuNKStfXVKbeROTdKHh70Q==
-  dependencies:
-    axios "^0.21.0"
-    bech32 "^1.1.4"
-    bip32 "^2.0.6"
-    bip39 "^3.0.2"
-    bitcoinjs-lib "^5.2.0"
-    crypto "^1.0.1"
-    secp256k1 "^4.0.2"
 
 base-x@^3.0.2:
   version "3.0.8"

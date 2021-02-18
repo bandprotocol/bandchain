@@ -5,7 +5,8 @@ type reference_data_t = {
   rate: float,
 };
 
-[@bs.module "bandchain2.js"] [@bs.new] external createClient: string => client_t = "Client";
+[@bs.module "@bandprotocol/bandchain.js"] [@bs.new]
+external createClient: string => client_t = "Client";
 [@bs.send]
 external getReferenceData: (client_t, array(string)) => Js.Promise.t(array(reference_data_t)) =
   "getReferenceData";
