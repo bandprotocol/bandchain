@@ -4,24 +4,29 @@ let context = React.createContext(ContextHelper.default);
 
 [@react.component]
 let make = (~children) => {
-  let (financialOptCG, reloadCG) = PriceHook.CoinGekco.get();
-  let (financialOptCC, reloadCC) = PriceHook.CrytoCompare.get();
-
-  let reload = () => {
-    reloadCG();
-    reloadCC();
-  };
+  let client = BandChainJS.createClient("https://api-gm-lb.bandchain.org");
+  let (financialOpt, setFinancialOpt) = React.useState(_ => None);
 
   React.useEffect0(() => {
-    let intervalID = Js.Global.setInterval(reload, 60000);
+    let fetchData = () => {
+      let _ =
+        PriceHook.getBandInfo(client)
+        |> Js.Promise.then_(bandInfoOpt => {
+             setFinancialOpt(_ => bandInfoOpt);
+             Promise.ret();
+           });
+      ();
+    };
+
+    fetchData();
+    let intervalID = Js.Global.setInterval(fetchData, 60000);
     Some(() => Js.Global.clearInterval(intervalID));
   });
 
   let data = {
-    switch (financialOptCG, financialOptCC) {
-    | (Some(financial), _) => Some({financial: financial})
-    | (_, Some(financial)) => Some({financial: financial})
-    | (_, _) => None
+    switch (financialOpt) {
+    | Some(financial) => Some({financial: financial})
+    | _ => None
     };
   };
 
