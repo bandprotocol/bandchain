@@ -4,100 +4,56 @@ type t = {
   usd24HrChange: float,
   btcPrice: float,
   btcMarketCap: float,
-  btc24HrChange: float,
   circulatingSupply: float,
 };
 
-module CoinGekco = {
-  let get = () => {
-    let decode = (usdJson, btcJson, circulatingSupply) =>
-      JsonUtils.Decode.{
-        usdPrice: usdJson |> at(["band-protocol", "usd"], JsonUtils.Decode.float),
-        usdMarketCap: usdJson |> at(["band-protocol", "usd_market_cap"], JsonUtils.Decode.float),
-        usd24HrChange:
-          usdJson |> at(["band-protocol", "usd_24h_change"], JsonUtils.Decode.float),
-        btcPrice: btcJson |> at(["band-protocol", "btc"], JsonUtils.Decode.float),
-        btcMarketCap: btcJson |> at(["band-protocol", "btc_market_cap"], JsonUtils.Decode.float),
-        btc24HrChange:
-          btcJson |> at(["band-protocol", "btc_24h_change"], JsonUtils.Decode.float),
-        circulatingSupply,
-      };
+let getBandUsd24Change = () => {
+  let coingeckoPromise =
+    Axios.get(
+      "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true",
+    )
+    |> Js.Promise.then_(result =>
+         Promise.ret(
+           result##data
+           |> JsonUtils.Decode.at(["band-protocol", "usd_24h_change"], JsonUtils.Decode.float),
+         )
+       );
 
-    let usdJsonUrl = "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=usd&include_market_cap=true&include_24hr_change=true";
-    let btcJsonUrl = "https://api.coingecko.com/api/v3/simple/price?ids=band-protocol&vs_currencies=btc&include_market_cap=true&include_24hr_change=true";
-    let supplyJsonUrl = "https://supply.bandchain.org/circulating";
+  let cryptocomparePromise =
+    Axios.get("https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=USD")
+    |> Js.Promise.then_(result =>
+         Promise.ret(
+           result##data
+           |> JsonUtils.Decode.at(
+                ["RAW", "BAND", "USD", "CHANGEPCT24HOUR"],
+                JsonUtils.Decode.float,
+              ),
+         )
+       );
 
-    let (usdJson, usdReload) = AxiosHooks.useWithReload(usdJsonUrl);
-    let (btcJson, btcReload) = AxiosHooks.useWithReload(btcJsonUrl);
-    let (supplyJson, supplyReload) = AxiosHooks.useWithReload(supplyJsonUrl);
-
-    let reload = () => {
-      usdReload((), ());
-      btcReload((), ());
-      supplyReload((), ());
-    };
-
-    let data = {
-      let%Opt usd = usdJson;
-      let%Opt btc = btcJson;
-      let%Opt supply = supplyJson;
-      let%Opt circulatingSupply = supply |> Js.Json.decodeNumber;
-
-      Some(decode(usd, btc, circulatingSupply));
-    };
-
-    (data, reload);
-  };
+  Js.Promise.race([|coingeckoPromise, cryptocomparePromise|]);
 };
 
-module CrytoCompare = {
-  let get = () => {
-    let decode = (usdJson, btcJson, circulatingSupply) =>
-      switch (
-        JsonUtils.Decode.{
-          usdPrice: usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float),
-          usdMarketCap:
-            (usdJson |> at(["RAW", "BAND", "USD", "PRICE"], JsonUtils.Decode.float))
-            *. circulatingSupply,
-          usd24HrChange:
-            usdJson |> at(["RAW", "BAND", "USD", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
-          btcPrice: btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float),
-          btcMarketCap:
-            (btcJson |> at(["RAW", "BAND", "BTC", "PRICE"], JsonUtils.Decode.float))
-            *. circulatingSupply,
-          btc24HrChange:
-            btcJson |> at(["RAW", "BAND", "BTC", "CHANGEPCT24HOUR"], JsonUtils.Decode.float),
-          circulatingSupply,
-        }
-      ) {
-      | result => Some(result)
-      | exception _ => None
-      };
+let getBandInfo = client => {
+  let ratesPromise = client->BandChainJS.getReferenceData([|"BAND/USD", "BAND/BTC"|]);
+  let supplyPromise = Axios.get("https://supply.bandchain.org/circulating");
+  let usd24HrChangePromise = getBandUsd24Change();
 
-    let usdJsonUrl = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=USD";
-    let btcJsonUrl = "https://min-api.cryptocompare.com/data/pricemultifull?fsyms=BAND&tsyms=BTC";
-    let supplyJsonUrl = "https://supply.bandchain.org/circulating";
+  let%Promise (rates, supplyData, usd24HrChange) =
+    Js.Promise.all3((ratesPromise, supplyPromise, usd24HrChangePromise));
+  let bandInfoOpt = {
+    let%Opt {rate: bandUsd} = rates->Belt.Array.get(0);
+    let%Opt {rate: bandBtc} = rates->Belt.Array.get(1);
+    let supply = supplyData##data;
 
-    let (usdJson, usdReload) = AxiosHooks.useWithReload(usdJsonUrl);
-    let (btcJson, btcReload) = AxiosHooks.useWithReload(btcJsonUrl);
-    let (supplyJson, supplyReload) = AxiosHooks.useWithReload(supplyJsonUrl);
-
-    let reload = () => {
-      usdReload((), ());
-      btcReload((), ());
-      supplyReload((), ());
-    };
-
-    let data = {
-      let%Opt usd = usdJson;
-      let%Opt btc = btcJson;
-      let%Opt supply = supplyJson;
-      let%Opt circulatingSupply = supply |> Js.Json.decodeNumber;
-
-      let%Opt result = decode(usd, btc, circulatingSupply);
-      Some(result);
-    };
-
-    (data, reload);
+    Some({
+      usdPrice: bandUsd,
+      usdMarketCap: bandUsd *. supply,
+      usd24HrChange,
+      btcPrice: bandBtc,
+      btcMarketCap: bandBtc *. supply,
+      circulatingSupply: supply,
+    });
   };
+  bandInfoOpt->Promise.ret;
 };

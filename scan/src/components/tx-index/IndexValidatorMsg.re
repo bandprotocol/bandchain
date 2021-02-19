@@ -140,26 +140,7 @@ module EditValidatorMsg = {
 
 module UnjailMsg = {
   [@react.component]
-  let make = (~unjail: TxSub.Msg.Unjail.success_t) => {
-    <Row>
-      <Col col=Col.Six>
-        <Heading value="Validator" size=Heading.H5 marginBottom=8 />
-        <ValidatorMonikerLink
-          validatorAddress={unjail.address}
-          moniker={unjail.moniker}
-          identity={unjail.identity}
-          width={`percent(100.)}
-          avatarWidth=20
-          size=Text.Lg
-        />
-      </Col>
-    </Row>;
-  };
-};
-
-module UnjailFailMsg = {
-  [@react.component]
-  let make = (~unjail: TxSub.Msg.Unjail.fail_t) => {
+  let make = (~unjail: TxSub.Msg.Unjail.t) => {
     <Row>
       <Col col=Col.Six>
         <Heading value="Validator" size=Heading.H5 marginBottom=8 />

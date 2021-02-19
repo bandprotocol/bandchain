@@ -7,8 +7,8 @@ type block_t = {timestamp: MomentRe.Moment.t};
 type transaction_t = {block: block_t};
 type request_stat_t = {count: int};
 type response_last_1_day_t = {
+  id: ID.OracleScript.t,
   responseTime: float,
-  resolveStatus: string,
 };
 
 type internal_t = {
@@ -21,7 +21,6 @@ type internal_t = {
   transaction: option(transaction_t),
   relatedDataSources: array(related_data_sources),
   requestStat: option(request_stat_t),
-  responsesLast1Day: array(response_last_1_day_t),
 };
 
 type t = {
@@ -34,7 +33,6 @@ type t = {
   timestamp: option(MomentRe.Moment.t),
   relatedDataSources: list(data_source_t),
   requestCount: int,
-  responseTime: option(float),
 };
 
 let toExternal =
@@ -49,7 +47,6 @@ let toExternal =
         transaction: txOpt,
         relatedDataSources,
         requestStat: requestStatOpt,
-        responsesLast1Day,
       },
     ) => {
   id,
@@ -66,8 +63,6 @@ let toExternal =
     relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
   // Note: requestCount can't be nullable value.
   requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
-  responseTime:
-    responsesLast1Day->Belt.Array.map(({responseTime}) => responseTime)->Belt.Array.get(0),
 };
 
 module MultiConfig = [%graphql
@@ -93,10 +88,6 @@ module MultiConfig = [%graphql
       }
       requestStat: request_stat @bsRecord {
         count
-      }
-      responsesLast1Day: response_last_1_day(where: {resolve_status: {_eq: "Success"}}) @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
       }
     }
   }
@@ -127,10 +118,6 @@ module SingleConfig = [%graphql
       requestStat: request_stat @bsRecord {
         count
       }
-      responsesLast1Day: response_last_1_day @bsRecord {
-        responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
-        resolveStatus: resolve_status @bsDecoder(fn: "GraphQLParser.jsonToStringExn")
-      }
     }
   },
 |}
@@ -146,6 +133,28 @@ module OracleScriptsCountConfig = [%graphql
     }
   }
 |}
+];
+
+module MultiOracleScriptStatLast1DayConfig = [%graphql
+  {|
+  subscription MultiOracleScriptStatLast1DayConfig {
+    oracle_script_statistic_last_1_day(where: {resolve_status: {_eq: "Success"}}) @bsRecord {
+      id @bsDecoder(fn: "ID.OracleScript.fromIntExn")
+      responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
+    }
+  }
+  |}
+];
+
+module SingleOracleScriptStatLast1DayConfig = [%graphql
+  {|
+  subscription SingleOracleScriptStatLast1DayConfig($id: Int!) {
+    oracle_script_statistic_last_1_day(where: {resolve_status: {_eq: "Success"}, id: {_eq: $id}}) @bsRecord {
+      id @bsDecoder(fn: "ID.OracleScript.fromIntExn")
+      responseTime: response_time @bsDecoder(fn: "GraphQLParser.floatWithDefault")
+    }
+  }
+  |}
 ];
 
 let get = id => {
@@ -183,4 +192,19 @@ let count = (~searchTerm, ()) => {
   |> Sub.map(_, x =>
        x##oracle_scripts_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count)
      );
+};
+
+let getResponseTimeList = () => {
+  let (result, _) = ApolloHooks.useSubscription(MultiOracleScriptStatLast1DayConfig.definition);
+  result |> Sub.map(_, internal => internal##oracle_script_statistic_last_1_day);
+};
+
+let getResponseTime = id => {
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      SingleOracleScriptStatLast1DayConfig.definition,
+      ~variables=SingleConfig.makeVariables(~id=id |> ID.OracleScript.toInt, ()),
+    );
+  result
+  |> Sub.map(_, internal => internal##oracle_script_statistic_last_1_day |> Belt.Array.get(_, 0));
 };

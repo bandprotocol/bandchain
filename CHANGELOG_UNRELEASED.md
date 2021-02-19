@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (impv) [\#3129](https://github.com/bandprotocol/bandchain/pull/3129) Separate oracle script stat from main subscription
+- (bugs) [\#3098](https://github.com/bandprotocol/bandchain/pull/3098) Remove extra fields in Unjail message
 - (bugs) [\#3054](https://github.com/bandprotocol/bandchain/pull/3054) Order historical bonded token graph by ASC
 - (impv) [\#3008](https://github.com/bandprotocol/bandchain/pull/3008) Disable delegate button when balance is insufficient
 - (bugs) [\#3049](https://github.com/bandprotocol/bandchain/pull/3049) Fix wrong commission rate

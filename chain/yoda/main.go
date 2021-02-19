@@ -27,16 +27,17 @@ const (
 
 // Config data structure for yoda daemon.
 type Config struct {
-	ChainID          string `mapstructure:"chain-id"`          // ChainID of the target chain
-	NodeURI          string `mapstructure:"node"`              // Remote RPC URI of BandChain node to connect to
-	Validator        string `mapstructure:"validator"`         // The validator address that I'm responsible for
-	GasPrices        string `mapstructure:"gas-prices"`        // Gas prices of the transaction
-	LogLevel         string `mapstructure:"log-level"`         // Log level of the logger
-	Executor         string `mapstructure:"executor"`          // Executor name and URL (example: "Executor name:URL")
-	BroadcastTimeout string `mapstructure:"broadcast-timeout"` // The time that Yoda will wait for tx commit
-	RPCPollInterval  string `mapstructure:"rpc-poll-interval"` // The duration of rpc poll interval
-	MaxTry           uint64 `mapstructure:"max-try"`           // The maximum number of tries to submit a report transaction
-	MaxReport        uint64 `mapstructure:"max-report"`        // The maximum number of reports in one transaction
+	ChainID           string `mapstructure:"chain-id"`            // ChainID of the target chain
+	NodeURI           string `mapstructure:"node"`                // Remote RPC URI of BandChain node to connect to
+	Validator         string `mapstructure:"validator"`           // The validator address that I'm responsible for
+	GasPrices         string `mapstructure:"gas-prices"`          // Gas prices of the transaction
+	LogLevel          string `mapstructure:"log-level"`           // Log level of the logger
+	Executor          string `mapstructure:"executor"`            // Executor name and URL (example: "Executor name:URL")
+	BroadcastTimeout  string `mapstructure:"broadcast-timeout"`   // The time that Yoda will wait for tx commit
+	RPCPollInterval   string `mapstructure:"rpc-poll-interval"`   // The duration of rpc poll interval
+	MaxTry            uint64 `mapstructure:"max-try"`             // The maximum number of tries to submit a report transaction
+	MaxReport         uint64 `mapstructure:"max-report"`          // The maximum number of reports in one transaction
+	MetricsListenAddr string `mapstructure:"metrics-listen-addr"` // Address to listen on for prometheus metrics
 }
 
 // Global instances.
