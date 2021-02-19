@@ -24,7 +24,7 @@ require (
 	github.com/poy/onpar v1.0.1 // indirect
 	github.com/prometheus/client_golang v1.5.1
 	github.com/rakyll/statik v0.1.7 // indirect
-	github.com/segmentio/kafka-go v0.3.7
+	github.com/segmentio/kafka-go v0.4.9
 	github.com/spf13/cobra v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
