@@ -2,7 +2,7 @@ import pytest
 from pyband.data import Coin
 from pyband.message import MsgDelegate
 from pyband.wallet import Address
-from pyband.exceptions import InsufficientCoinError
+from pyband.exceptions import NegativeIntegerError
 
 
 def test_msg_delegate_creation_success():
@@ -33,5 +33,5 @@ def test_msg_delegate_coin_fail():
         amount=Coin(amount=-1000000, denom="uband"),
     )
 
-    with pytest.raises(InsufficientCoinError, match="Expect amount more than 0"):
+    with pytest.raises(NegativeIntegerError, match="Expect amount more than 0"):
         msg_delegate.amount.validate()

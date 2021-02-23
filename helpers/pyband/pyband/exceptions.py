@@ -1,50 +1,54 @@
-class EmptyRequestMsgError(Exception):
+class PybandError(Exception):
     pass
 
 
-class QueryError(Exception):
+class EmptyRequestMsgError(PybandError):
     pass
 
 
-class NegativeIntegerError(Exception):
+class QueryError(PybandError):
     pass
 
 
-class ValueTooLargeError(Exception):
+class NegativeIntegerError(PybandError):
     pass
 
 
-class InsufficientCoinError(Exception):
+class ValueTooLargeError(PybandError):
     pass
 
 
-class EmptyMsgError(Exception):
+class InsufficientCoinError(PybandError):
     pass
 
 
-class NotFoundError(Exception):
+class EmptyMsgError(PybandError):
     pass
 
 
-class UndefinedError(Exception):
+class NotFoundError(PybandError):
     pass
 
 
-class DecodeError(Exception):
+class UndefinedError(PybandError):
     pass
 
 
-class ConvertError(Exception):
+class DecodeError(PybandError):
     pass
 
 
-class UnsuccessfulCallError(Exception):
+class ConvertError(PybandError):
     pass
 
 
-class CreateError(Exception):
+class UnsuccessfulCallError(PybandError):
     pass
 
 
-class SchemaError(Exception):
+class CreateError(PybandError):
+    pass
+
+
+class SchemaError(PybandError):
     pass

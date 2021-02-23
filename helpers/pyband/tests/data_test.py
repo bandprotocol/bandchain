@@ -1,6 +1,6 @@
 import pytest
 from pyband.data import Coin
-from pyband.exceptions import InsufficientCoinError
+from pyband.exceptions import NegativeIntegerError
 
 
 def test_coin_success():
@@ -14,7 +14,7 @@ def test_coin_success():
 def test_coin_amount_fail():
     coin = Coin(amount=-5000, denom="uband")
 
-    with pytest.raises(InsufficientCoinError, match="Expect amount more than 0"):
+    with pytest.raises(NegativeIntegerError, match="Expect amount more than 0"):
         coin.validate()
 
 

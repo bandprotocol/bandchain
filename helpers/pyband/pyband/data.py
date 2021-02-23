@@ -5,7 +5,7 @@ from typing import List, Optional, NewType
 from dacite import Config
 from .utils import parse_epoch_time
 from .wallet import Address
-from .exceptions import InsufficientCoinError
+from .exceptions import NegativeIntegerError
 
 HexBytes = NewType("HexBytes", bytes)
 EpochTime = NewType("EpochTime", int)
@@ -25,7 +25,7 @@ class Coin(object):
 
     def validate(self) -> bool:
         if self.amount < 0:
-            raise InsufficientCoinError("Expect amount more than 0")
+            raise NegativeIntegerError("Expect amount more than 0")
 
         if len(self.denom) == 0:
             raise ValueError("Expect denom")
