@@ -25,6 +25,8 @@ module Content = {
         ~oracleScriptID,
         ~hashtag,
       ) => {
+    let statSub = OracleScriptSub.getResponseTime(oracleScriptID);
+
     <Section pbSm=0>
       <div className=CssHelper.container>
         <Heading value="Oracle Script" size=Heading.H4 marginBottom=40 marginBottomSm=24 />
@@ -80,12 +82,12 @@ module Content = {
                         <Icon name="fal fa-info-circle" size=12 />
                       </CTooltip>
                     </div>
-                    {switch (oracleScriptSub) {
-                     | Data({responseTime: responseTimeOpt}) =>
+                    {switch (statSub) {
+                     | Data(statOpt) =>
                        <Text
                          value={
-                           switch (responseTimeOpt) {
-                           | Some(responseTime') => responseTime' |> Format.fPretty(~digits=2)
+                           switch (statOpt) {
+                           | Some({responseTime}) => responseTime |> Format.fPretty(~digits=2)
                            | None => "TBD"
                            }
                          }

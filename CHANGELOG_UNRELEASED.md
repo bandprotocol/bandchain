@@ -20,6 +20,8 @@
 
 ### Scan
 
+- (impv) [\#3129](https://github.com/bandprotocol/bandchain/pull/3129) Separate oracle script stat from main subscription
+- (bugs) [\#3098](https://github.com/bandprotocol/bandchain/pull/3098) Remove extra fields in Unjail message
 - (bugs) [\#3054](https://github.com/bandprotocol/bandchain/pull/3054) Order historical bonded token graph by ASC
 - (impv) [\#3008](https://github.com/bandprotocol/bandchain/pull/3008) Disable delegate button when balance is insufficient
 - (bugs) [\#3049](https://github.com/bandprotocol/bandchain/pull/3049) Fix wrong commission rate
@@ -32,6 +34,7 @@
 - (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
 - (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 - (chore) [\#2793](https://github.com/bandprotocol/bandchain/pull/2793) Remove legacy row and column
+- (impv) [\#2686](https://github.com/bandprotocol/bandchain/pull/2686) Support array on generateDecodeLibSolidity 
 
 ### Bridges
 
@@ -44,6 +47,7 @@
 ### Helpers
 
 - (impv) [\#3033](https://github.com/bandprotocol/bandchain/pull/3033) pyband: Declared the error to pyband world
+- (bugs) [\#3084](https://github.com/bandprotocol/bandchain/pull/3084) pyband: raw_log can be none and get KeyError exception
 - (feat) [\#2972](https://github.com/bandprotocol/bandchain/pull/2972) pyband&bandchain.js: Added get request evm proof on pyband and bandchain.js
 - (impv) [\#2967](https://github.com/bandprotocol/bandchain/pull/2967) bandchain.js: Added new params to getReferenceData
 - (impv) [\#2943](https://github.com/bandprotocol/bandchain/pull/2943) Bandchain.js: Added return `undefined` when account does not exist
