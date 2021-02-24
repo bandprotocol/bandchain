@@ -1,6 +1,7 @@
 package app
 
 import (
+	"github.com/cosmos/cosmos-sdk/x/mint"
 	"io"
 	"os"
 	"path/filepath"
@@ -20,7 +21,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/evidence"
 	"github.com/cosmos/cosmos-sdk/x/genutil"
 	"github.com/cosmos/cosmos-sdk/x/gov"
-	"github.com/cosmos/cosmos-sdk/x/mint"
 	"github.com/cosmos/cosmos-sdk/x/params"
 	paramsclient "github.com/cosmos/cosmos-sdk/x/params/client"
 	"github.com/cosmos/cosmos-sdk/x/slashing"
@@ -34,6 +34,7 @@ import (
 	tmos "github.com/tendermint/tendermint/libs/os"
 	dbm "github.com/tendermint/tm-db"
 
+	odinmint "github.com/GeoDB-Limited/odincore/chain/x/mint"
 	"github.com/GeoDB-Limited/odincore/chain/x/oracle"
 	bandante "github.com/GeoDB-Limited/odincore/chain/x/oracle/ante"
 	bandsupply "github.com/GeoDB-Limited/odincore/chain/x/supply"
@@ -57,7 +58,7 @@ var (
 		bank.AppModuleBasic{},
 		supply.AppModuleBasic{},
 		staking.AppModuleBasic{},
-		mint.AppModuleBasic{},
+		odinmint.AppModuleBasic{},
 		distr.AppModuleBasic{},
 		gov.NewAppModuleBasic(paramsclient.ProposalHandler, distr.ProposalHandler, upgradeclient.ProposalHandler),
 		params.AppModuleBasic{},
@@ -163,6 +164,7 @@ func NewBandApp(
 	bankSubspace := app.ParamsKeeper.Subspace(bank.DefaultParamspace)
 	stakingSubspace := app.ParamsKeeper.Subspace(staking.DefaultParamspace)
 	mintSubspace := app.ParamsKeeper.Subspace(mint.DefaultParamspace)
+	wrappedMintSubspace := app.ParamsKeeper.Subspace(odinmint.DefaultParamspace)
 	distrSubspace := app.ParamsKeeper.Subspace(distr.DefaultParamspace)
 	slashingSubspace := app.ParamsKeeper.Subspace(slashing.DefaultParamspace)
 	evidenceSubspace := app.ParamsKeeper.Subspace(evidence.DefaultParamspace)
@@ -176,8 +178,13 @@ func NewBandApp(
 	// wrappedSupplyKeeper overrides burn token behavior to instead transfer to community pool.
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
 	stakingKeeper := staking.NewKeeper(cdc, keys[staking.StoreKey], &wrappedSupplyKeeper, stakingSubspace)
-	app.MintKeeper = mint.NewKeeper(cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName)
+	// vanillaMintKeeper to be used inside new MintKeeper
+	app.MintKeeper = mint.NewKeeper(cdc, keys[mint.StoreKey], mintSubspace, &stakingKeeper, &wrappedSupplyKeeper, auth.FeeCollectorName)
 	app.DistrKeeper = distr.NewKeeper(cdc, keys[distr.StoreKey], distrSubspace, &stakingKeeper, app.SupplyKeeper, auth.FeeCollectorName, app.ModuleAccountAddrs())
+	// wrappedMintKeeper uses additional parameter for minting
+	wrappedMintKeeper := odinmint.NewKeeper(cdc, app.MintKeeper, wrappedMintSubspace)
+	// wrappedMintKeeper is initialized after supply keeper, so needs to be set afterwards
+	wrappedSupplyKeeper.SetMintKeeper(&wrappedMintKeeper)
 	// DistrKeeper must be set afterward due to the circular reference between supply-staking-distr.
 	wrappedSupplyKeeper.SetDistrKeeper(&app.DistrKeeper)
 	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
@@ -207,7 +214,7 @@ func NewBandApp(
 		supply.NewAppModule(app.SupplyKeeper, app.AccountKeeper),
 		crisis.NewAppModule(&app.CrisisKeeper),
 		gov.NewAppModule(app.GovKeeper, app.AccountKeeper, app.SupplyKeeper),
-		mint.NewAppModule(app.MintKeeper),
+		odinmint.NewAppModule(wrappedMintKeeper, mint.NewAppModule(app.MintKeeper)),
 		slashing.NewAppModule(app.SlashingKeeper, app.AccountKeeper, app.StakingKeeper),
 		distr.NewAppModule(app.DistrKeeper, app.AccountKeeper, app.SupplyKeeper, app.StakingKeeper),
 		staking.NewAppModule(app.StakingKeeper, app.AccountKeeper, app.SupplyKeeper),

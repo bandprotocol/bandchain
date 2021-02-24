@@ -1,6 +1,9 @@
 package obi
 
 import (
+	"encoding/base64"
+	"encoding/hex"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -23,6 +26,15 @@ type ExampleData struct {
 	Px     uint64  `obi:"px"`
 	In     Inner   `obi:"in"`
 	Arr    []int16 `obi:"arr"`
+}
+
+type SerializeData struct {
+	Symbol     string `obi:"symbol"`
+	Multiplier uint64 `obi:"multiplier"`
+}
+
+type SomeData struct {
+	Uuids []string `obi:"uuids"`
 }
 
 type InvalidStruct struct {
@@ -196,4 +208,28 @@ func TestEncodeNotSupported(t *testing.T) {
 func TestEncodeNotSupport(t *testing.T) {
 	notSupportBool := true
 	require.PanicsWithError(t, "obi: unsupported value type: bool", func() { MustEncode(notSupportBool) })
+}
+
+func TestEncodeSomeData(t *testing.T) {
+	fmt.Println(hex.EncodeToString(MustEncode(
+		SomeData{
+			Uuids: []string{
+				"F46795AA-4D66-4D8E-911D-0D8E9BD905A0",
+				"33DE13AC-F5A8-4E62-AC5A-A3127CB9F2CB",
+				"29BC341C-6CB6-4773-961E-CE098CF313AC",
+				"631EDD2F-2637-4243-9792-9E35A05B994C",
+				"B4249D2C-995F-49C4-9A31-8F1FD128AC0F",
+			},
+		}),
+	))
+
+	fmt.Println(hex.EncodeToString(MustEncode(SerializeData{
+		Symbol:     "BTC",
+		Multiplier: 1000000000,
+	})))
+
+	str, _ := base64.RawStdEncoding.DecodeString("AAAAKkY0Njc5NUFBLTRENjYtNEQ4RS05MTFELTBEOEU5QkQ5MDVBMCA9PiAKCg==")
+	fmt.Println(len(str))
+	fmt.Println(string(str))
+	fmt.Println(len([]byte("AAAAKkY0Njc5NUFBLTRENjYtNEQ4RS05MTFELTBEOEU5QkQ5MDVBMCA9PiAKCg==")))
 }

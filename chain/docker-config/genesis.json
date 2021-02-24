@@ -24,7 +24,7 @@
         "type": "tendermint/PubKeySecp256k1",
         "value": "AnJK4pz+t0lwUdCe39joIjUsTINht1dkdkW3jIzHTOiF"
       },
-      "power": "100",
+      "power": "1000",
       "name": "validator2"
     },
     {
@@ -33,7 +33,7 @@
         "type": "tendermint/PubKeySecp256k1",
         "value": "A/V/OZek6B2PMh6XEJJ+IsLm0w+22PdJqeSgevs7O3kJ"
       },
-      "power": "100",
+      "power": "1000",
       "name": "validator1"
     },
     {
@@ -42,7 +42,7 @@
         "type": "tendermint/PubKeySecp256k1",
         "value": "A6VP+qhMjy95h4Lei5YqhHhOKISHp0eBOghXJDpg4roz"
       },
-      "power": "100",
+      "power": "1000",
       "name": "validator3"
     },
     {
@@ -51,7 +51,7 @@
         "type": "tendermint/PubKeySecp256k1",
         "value": "A9A3CPFh0Vg/SeQmCkKysI07oYbXgDojzDrNEvB02ddv"
       },
-      "power": "100",
+      "power": "1000",
       "name": "validator4"
     }
   ],
@@ -60,20 +60,29 @@
     "mint": {
       "minter": {
         "inflation": "0.120000000000000000",
-        "annual_provisions": "0.000000000000000000"
+        "annual_provisions": "0.120000000000000000"
       },
       "params": {
         "mint_denom": "loki",
-        "inflation_rate_change": "0.130000000000000000",
-        "inflation_max": "0.200000000000000000",
-        "inflation_min": "0.070000000000000000",
+        "inflation_rate_change": "0.000000000000000000",
+        "inflation_max": "0.000000000000000000",
+        "inflation_min": "0.000000000000000000",
         "goal_bonded": "0.670000000000000000",
         "blocks_per_year": "10519200"
       }
     },
     "upgrade": {},
     "supply": {
-      "supply": []
+      "supply": [
+        {
+          "denom": "loki",
+          "amount": "100000000000000"
+        },
+        {
+          "denom": "geo",
+          "amount": "1000000000000000"
+        }
+      ]
     },
     "oracle": {
       "params": {
@@ -112,7 +121,7 @@
           "min_self_delegation": "1",
           "operator_address": "odinvaloper17geerdwmlxpwxlahmt02vj4wy89wfstj8pacf5",
           "consensus_pubkey": "odinvalconspub1addwnpepq06h7wvh5n5pmrejr6t3pyn7ytpwd5c0kmv0wjdfujs847em8dusju7cycr",
-          "tokens": "100000000"
+          "tokens": "1000000000"
         },
         {
           "description": {
@@ -126,7 +135,7 @@
           "min_self_delegation": "1",
           "operator_address": "odinvaloper129umpweqxfywq0f2zdpgjcfnkhzcu8jyfu5nes",
           "consensus_pubkey": "odinvalconspub1addwnpepqfey4c5ul6m5juz36z0dlk8gyg6jcnyrvxm4werkgkmcerx8fn5g2tf85y9",
-          "tokens": "100000000"
+          "tokens": "1000000000"
         },
         {
           "description": {
@@ -140,7 +149,7 @@
           "min_self_delegation": "1",
           "operator_address": "odinvaloper1hkm2qu5v3hlzzfzndut09wjz3lnk028edv7qkg",
           "consensus_pubkey": "odinvalconspub1addwnpepqwj5l74gfj8j77v8st0gh932s3uyu2yys7n50qf6pptjgwnqu2arx4d3n5s",
-          "tokens": "100000000"
+          "tokens": "1000000000"
         },
         {
           "description": {
@@ -154,7 +163,7 @@
           "min_self_delegation": "1",
           "operator_address": "odinvaloper17rprjgtj0krfw3wyl9creueej6ca9dc4a65n80",
           "consensus_pubkey": "odinvalconspub1addwnpepq0grwz83v8g4s06fusnq5s4jkzxnhgvx67qr5g7v8tx39ur5m8tk7qng8ce",
-          "tokens": "100000000"
+          "tokens": "1000000000"
         }
       ],
       "delegations": null,
@@ -228,7 +237,7 @@
             "coins": [
               {
                 "denom": "loki",
-                "amount": "1000000000000000"
+                "amount": "0"
               }
             ],
             "public_key": null,
@@ -243,7 +252,7 @@
             "coins": [
               {
                 "denom": "loki",
-                "amount": "10000000000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -258,7 +267,7 @@
             "coins": [
               {
                 "denom": "loki",
-                "amount": "10000000000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -273,7 +282,7 @@
             "coins": [
               {
                 "denom": "loki",
-                "amount": "10000000000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -288,7 +297,7 @@
             "coins": [
               {
                 "denom": "loki",
-                "amount": "10000000000000"
+                "amount": "1000000000"
               }
             ],
             "public_key": null,
@@ -306,7 +315,16 @@
         "withdraw_addr_enabled": true
       },
       "fee_pool": {
-        "community_pool": []
+        "community_pool": [
+          {
+            "denom": "loki",
+            "amount": "99992000000000"
+          },
+          {
+            "denom": "geo",
+            "amount": "1000000000000000"
+          }
+        ]
       },
       "delegator_withdraw_infos": [],
       "previous_proposer": "",
