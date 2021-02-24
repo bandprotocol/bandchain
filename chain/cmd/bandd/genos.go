@@ -16,7 +16,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/pkg/filecache"
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/bandprotocol/go-owasm/api"
 )
 
 // AddGenesisOracleScriptCmd returns add-oracle-script cobra Command.
@@ -33,10 +33,11 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 			if err != nil {
 				return err
 			}
-			compiledData, err := api.Compile(data, types.MaxCompiledWasmCodeSize)
+			vm, err := api.NewVm(0) // Compile didn't use cache
 			if err != nil {
 				return err
 			}
+			compiledData, err := vm.Compile(data, types.MaxCompiledWasmCodeSize)
 			filename := f.AddFile(compiledData)
 			owner, err := sdk.AccAddressFromBech32(args[4])
 			if err != nil {
