@@ -41,7 +41,7 @@
     "react-countup": "^4.3.3",
     "react-dom": "^16.14.0",
     "react-highlight": "^0.13.0",
-    "react-select": "^3.2.0",
+    "react-select": "^4.1.0",
     "reason-apollo": "^0.18.0",
     "reason-apollo-hooks": "^6.0.0",
     "reason-react": ">=0.7.1",
