@@ -2,6 +2,7 @@ import pytest
 
 from pyband.message import MsgRequest
 from pyband.wallet import Address
+from pyband.exceptions import NegativeIntegerError, ValueTooLargeError
 
 
 def test_msg_request_creation_success():
@@ -38,10 +39,7 @@ def test_msg_request_get_sender():
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
 
-    assert (
-        msg_request.get_sender().to_acc_bech32()
-        == "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"
-    )
+    assert msg_request.get_sender().to_acc_bech32() == "band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"
 
 
 def test_msg_request_creation_oracle_script_id_fail():
@@ -53,7 +51,7 @@ def test_msg_request_creation_oracle_script_id_fail():
         client_id="from_pyband",
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
-    with pytest.raises(ValueError, match="oracle script id cannot less than zero"):
+    with pytest.raises(NegativeIntegerError, match="oracle script id cannot less than zero"):
         msg_request.validate()
 
 
@@ -68,7 +66,7 @@ def test_msg_request_creation_calldata_fail():
         client_id="from_pyband",
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
-    with pytest.raises(ValueError, match="too large calldata"):
+    with pytest.raises(ValueTooLargeError, match="too large calldata"):
         msg_request.validate()
 
 
@@ -81,9 +79,7 @@ def test_msg_request_creation_ask_count_fail():
         client_id="from_pyband",
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
-    with pytest.raises(
-        ValueError, match="invalid ask count got: min count: 4, ask count: 3"
-    ):
+    with pytest.raises(ValueError, match="invalid ask count got: min count: 4, ask count: 3"):
         msg_request.validate()
 
 
@@ -109,5 +105,5 @@ def test_msg_request_creation_client_id_count_fail():
         client_id="Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum",
         sender=Address.from_acc_bech32("band13eznuehmqzd3r84fkxu8wklxl22r2qfmtlth8c"),
     )
-    with pytest.raises(ValueError, match="too long client id"):
+    with pytest.raises(ValueTooLargeError, match="too long client id"):
         msg_request.validate()
