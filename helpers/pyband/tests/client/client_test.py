@@ -24,6 +24,7 @@ from pyband.data import (
 )
 from pyband.utils import parse_epoch_time
 from pyband.data import Coin
+from pyband.exceptions import EmptyRequestMsgError
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 
@@ -1091,7 +1092,7 @@ def test_get_request_id_by_tx_hash_no_request_msg(requests_mock):
         },
         status_code=200,
     )
-    with pytest.raises(ValueError, match="There is no request message in this tx"):
+    with pytest.raises(EmptyRequestMsgError, match="There is no request message in this tx"):
         client.get_request_id_by_tx_hash(
             HexBytes(bytes.fromhex("9F83E4994C048F784D0E30F45696C0A1E5BA7407B2E1833B439FA172B3B75F00"))
         )

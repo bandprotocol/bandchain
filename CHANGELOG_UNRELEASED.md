@@ -47,6 +47,7 @@
 
 ### Helpers
 
+- (impv) [\#3033](https://github.com/bandprotocol/bandchain/pull/3033) pyband: Declared the error to pyband world
 - (bugs) [\#3084](https://github.com/bandprotocol/bandchain/pull/3084) pyband: raw_log can be none and get KeyError exception
 - (feat) [\#2972](https://github.com/bandprotocol/bandchain/pull/2972) pyband&bandchain.js: Added get request evm proof on pyband and bandchain.js
 - (impv) [\#2967](https://github.com/bandprotocol/bandchain/pull/2967) bandchain.js: Added new params to getReferenceData
