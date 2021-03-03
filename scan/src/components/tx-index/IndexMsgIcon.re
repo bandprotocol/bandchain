@@ -9,6 +9,7 @@ module Styles = {
         | ValidatorMsg => Colors.blue12
         | ProposalMsg => Colors.blue13
         | DataMsg => Colors.blue14
+        | IBCMsg => Colors.blue13
         | _ => Colors.bandBlue
         },
       ),
@@ -36,7 +37,8 @@ let make = (~category: TxSub.Msg.msg_cat_t) => {
      | ValidatorMsg => <Icon name="fas fa-user" color=Colors.white size=14 />
      | ProposalMsg => <Icon name="fal fa-file" color=Colors.white size=14 />
      | DataMsg => <Icon name="fal fa-globe" color=Colors.white size=14 />
-     | _ => <Icon name="far fa-wallet" color=Colors.white size=14 />
+     | IBCMsg => <Icon name="fal fa-exchange-alt" color=Colors.white size=14 />
+     | _ => <Icon name="fal fa-question-circle" color=Colors.white size=14 />
      }}
   </div>;
 };

@@ -71608,6 +71608,22 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "NON_NULL",
@@ -72142,6 +72158,16 @@
             "description": null
           },
           {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "topic",
             "defaultValue": null,
             "type": {
@@ -72241,6 +72267,16 @@
             "description": null
           },
           {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "topic",
             "defaultValue": null,
             "type": {
@@ -72308,6 +72344,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "SCALAR",
@@ -72342,6 +72390,16 @@
           },
           {
             "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -72418,6 +72476,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_topic",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "type": {
               "kind": "SCALAR",
@@ -72452,6 +72522,16 @@
           },
           {
             "name": "replay_offset",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -72655,6 +72735,16 @@
             "description": null
           },
           {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "topic",
             "defaultValue": null,
             "type": {
@@ -72701,6 +72791,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "replay_topic",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "topic",
             "description": "column name"
           }
@@ -72736,6 +72832,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "replay_topic",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -73046,6 +73152,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "replay_offset",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "replay_topic",
             "description": "column name"
           },
           {

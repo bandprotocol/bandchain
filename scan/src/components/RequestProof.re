@@ -69,7 +69,7 @@ let make = (~request: RequestSub.t) => {
           pySm=10
           pxSm=12
         />
-        {let nonEVMProofOpt = proof.jsonProof->NonEVMProof.createProofFromJson;
+        {let nonEVMProofOpt = proof.jsonProof->NonEVMProof.createProoffromJsonString;
          switch (nonEVMProofOpt) {
          | Some(proof) =>
            <CopyButton

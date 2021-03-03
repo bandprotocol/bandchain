@@ -116,7 +116,7 @@ module Internal = {
   //   subscription Packets($limit: Int!, $offset: Int!) {
   //     packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
   //       isIncoming: is_incoming
-  //       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+  //       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJsonString")
   //       channel: my_channel
   //       port: my_port
   //       yourChainID: your_chain_id

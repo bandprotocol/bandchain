@@ -378,7 +378,7 @@ let rec encode =
       );
     };
 
-let createProofFromJson = (proof: Js.Json.t) => {
+let createProoffromJsonString = (proof: Js.Json.t) => {
   switch (Proof(proof |> decodeProof)) {
   | result => result |> encode
   | exception _ => None

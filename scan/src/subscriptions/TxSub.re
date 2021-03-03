@@ -62,6 +62,7 @@ module Msg = {
     | ValidatorMsg
     | ProposalMsg
     | DataMsg
+    | IBCMsg
     | UnknownMsg;
 
   let getBadgeVariantFromString = badge => {
@@ -78,6 +79,18 @@ module Msg = {
     | "remove_reporter" => RemoveReporterBadge
     | "create_validator" => CreateValidatorBadge
     | "edit_validator" => EditValidatorBadge
+    | "delegate" => DelegateBadge
+    | "begin_unbonding" => UndelegateBadge
+    | "begin_redelegate" => RedelegateBadge
+    | "withdraw_delegator_reward" => WithdrawRewardBadge
+    | "unjail" => UnjailBadge
+    | "set_withdraw_address" => SetWithdrawAddressBadge
+    | "submit_proposal" => SubmitProposalBadge
+    | "deposit" => DepositBadge
+    | "vote" => VoteBadge
+    | "withdraw_validator_commission" => WithdrawCommissionBadge
+    | "multisend" => MultiSendBadge
+    | "activate" => ActivateBadge
     | "create_client" => CreateClientBadge
     | "update_client" => UpdateClientBadge
     | "submit_client_misbehaviour" => SubmitClientMisbehaviourBadge
@@ -91,21 +104,9 @@ module Msg = {
     | "channel_open_confirm" => ChannelOpenConfirmBadge
     | "channel_close_init" => ChannelCloseInitBadge
     | "channel_close_confirm" => ChannelCloseConfirmBadge
-    | "ics04/opaque" => PacketBadge
+    | "recv_packet" => PacketBadge
     | "ics04/timeout" => TimeoutBadge
     | "acknowledgement" => AcknowledgementBadge
-    | "delegate" => DelegateBadge
-    | "begin_unbonding" => UndelegateBadge
-    | "begin_redelegate" => RedelegateBadge
-    | "withdraw_delegator_reward" => WithdrawRewardBadge
-    | "unjail" => UnjailBadge
-    | "set_withdraw_address" => SetWithdrawAddressBadge
-    | "submit_proposal" => SubmitProposalBadge
-    | "deposit" => DepositBadge
-    | "vote" => VoteBadge
-    | "withdraw_validator_commission" => WithdrawCommissionBadge
-    | "multisend" => MultiSendBadge
-    | "activate" => ActivateBadge
     | _ => UnknownBadge
     };
   };
@@ -151,7 +152,7 @@ module Msg = {
 
     let decodeSuccess = json =>
       JsonUtils.Decode.{
-        id: json |> at(["extra", "id"], ID.DataSource.fromJson),
+        id: json |> at(["extra", "id"], ID.DataSource.fromJsonInt),
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
@@ -178,7 +179,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> at(["msg", "data_source_id"], ID.DataSource.fromJson),
+        id: json |> at(["msg", "data_source_id"], ID.DataSource.fromJsonString),
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
@@ -204,7 +205,7 @@ module Msg = {
 
     let decodeSuccess = json =>
       JsonUtils.Decode.{
-        id: json |> at(["extra", "id"], ID.OracleScript.fromJson),
+        id: json |> at(["extra", "id"], ID.OracleScript.fromJsonInt),
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
@@ -231,7 +232,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        id: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        id: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJsonString),
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         code: json |> at(["msg", "code"], string) |> JsBuffer.fromBase64,
@@ -261,8 +262,8 @@ module Msg = {
 
     let decodeSuccess = json => {
       JsonUtils.Decode.{
-        id: json |> at(["extra", "id"], ID.Request.fromJson),
-        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        id: json |> at(["extra", "id"], ID.Request.fromJsonString),
+        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJsonString),
         oracleScriptName: json |> at(["extra", "name"], string),
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
         askCount: json |> at(["msg", "ask_count"], int),
@@ -274,7 +275,7 @@ module Msg = {
 
     let decodeFail = json => {
       JsonUtils.Decode.{
-        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJson),
+        oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJsonString),
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
         askCount: json |> at(["msg", "ask_count"], int),
         minCount: json |> at(["msg", "min_count"], int),
@@ -293,7 +294,7 @@ module Msg = {
 
     let decode = json =>
       JsonUtils.Decode.{
-        requestID: json |> at(["msg", "request_id"], ID.Request.fromJson),
+        requestID: json |> at(["msg", "request_id"], ID.Request.fromJsonString),
         rawReports: json |> at(["msg", "raw_reports"], list(RawDataReport.decode)),
         validator: json |> at(["msg", "validator"], string) |> Address.fromBech32,
         reporter: json |> at(["msg", "reporter"], string) |> Address.fromBech32,
@@ -426,305 +427,6 @@ module Msg = {
             |> Belt.Option.map(_, Coin.newUBANDFromAmount),
         }
       | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
-      };
-    };
-  };
-
-  module CreateClient = {
-    type t = {
-      address: Address.t,
-      clientID: string,
-      chainID: string,
-      trustingPeriod: MomentRe.Duration.t,
-      unbondingPeriod: MomentRe.Duration.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        address: json |> field("address", string) |> Address.fromBech32,
-        clientID: json |> field("client_id", string),
-        chainID: "band-consumer",
-        trustingPeriod:
-          (json |> field("trusting_period", JsonUtils.Decode.float))
-          /. 1_000_000.
-          |> MomentRe.durationMillis,
-        unbondingPeriod:
-          (json |> field("unbonding_period", JsonUtils.Decode.float))
-          /. 1_000_000.
-          |> MomentRe.durationMillis,
-      };
-    };
-  };
-
-  module UpdateClient = {
-    type t = {
-      address: Address.t,
-      clientID: string,
-      chainID: string,
-      validatorHash: Hash.t,
-      prevValidatorHash: Hash.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        address: json |> field("address", string) |> Address.fromBech32,
-        clientID: json |> field("client_id", string),
-        chainID: "band-consumer",
-        validatorHash:
-          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
-        prevValidatorHash:
-          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
-      };
-    };
-  };
-
-  module SubmitClientMisbehaviour = {
-    type t = {
-      address: Address.t,
-      clientID: string,
-      chainID: string,
-      validatorHash: Hash.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        address: json |> field("address", string) |> Address.fromBech32,
-        clientID: json |> field("client_id", string),
-        chainID: "band-consumer",
-        validatorHash:
-          "88A40098ACD2B9DDBD81E1397217BD0BC6D5B90C86D3614927B2CCDF4A3023BD" |> Hash.fromBase64,
-      };
-    };
-  };
-
-  module Packet = {
-    type common_t = {
-      sequence: int,
-      sourcePort: string,
-      sourceChannel: string,
-      destinationPort: string,
-      destinationChannel: string,
-      timeoutHeight: int,
-      chainID: string,
-    };
-
-    type t = {
-      sender: Address.t,
-      data: string,
-      common: common_t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        sender: json |> field("signer", string) |> Address.fromBech32,
-        data: json |> at(["packet", "data"], string) |> Js.String.toUpperCase,
-        common: {
-          sequence: json |> at(["packet", "sequence"], int),
-          sourcePort: json |> at(["packet", "source_port"], string),
-          sourceChannel: json |> at(["packet", "source_channel"], string),
-          destinationPort: json |> at(["packet", "destination_port"], string),
-          destinationChannel: json |> at(["packet", "destination_channel"], string),
-          timeoutHeight: json |> at(["packet", "timeout_height"], int),
-          chainID: "band-consumer",
-        },
-      };
-    };
-  };
-
-  module Acknowledgement = {
-    type t = {
-      common: Packet.common_t,
-      sender: Address.t,
-      acknowledgement: string,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        common: {
-          sequence: 999,
-          sourcePort: "gjdojfpjfp",
-          sourceChannel: "gjdojfpjfp",
-          destinationPort: "gjdojfpjfp",
-          destinationChannel: "gjdojfpjfp",
-          timeoutHeight: 999999,
-          chainID: "band-consumer",
-        },
-        sender: json |> field("address", string) |> Address.fromBech32,
-        acknowledgement: "iKQAmKzSud29geE5che9C8bVuQyG02FJJ7LM...",
-      };
-  };
-
-  module Timeout = {
-    type t = {
-      sender: Address.t,
-      common: Packet.common_t,
-      nextSequenceReceive: int,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        sender: json |> field("signer", string) |> Address.fromBech32,
-        common: {
-          sequence: json |> at(["packet", "sequence"], int),
-          sourcePort: json |> at(["packet", "source_port"], string),
-          sourceChannel: json |> at(["packet", "source_channel"], string),
-          destinationPort: json |> at(["packet", "destination_port"], string),
-          destinationChannel: json |> at(["packet", "destination_channel"], string),
-          timeoutHeight: json |> at(["packet", "timeout_height"], int),
-          chainID: "band-consumer",
-        },
-        nextSequenceReceive: json |> at(["packet", "next_sequence_receive"], int),
-      };
-  };
-
-  module ConnectionCommon = {
-    type t = {
-      chainID: string,
-      connectionID: string,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        chainID: "band-consumer",
-        connectionID: json |> field("connection_id", string),
-      };
-  };
-
-  module ConnectionOpenInit = {
-    type t = {
-      signer: Address.t,
-      common: ConnectionCommon.t,
-      clientID: string,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ConnectionCommon.decode,
-        clientID: json |> field("client_id", string),
-      };
-  };
-
-  module ConnectionOpenTry = {
-    type t = {
-      signer: Address.t,
-      common: ConnectionCommon.t,
-      clientID: string,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        clientID: json |> field("client_id", string),
-        common: json |> ConnectionCommon.decode,
-      };
-  };
-
-  module ConnectionOpenAck = {
-    type t = {
-      signer: Address.t,
-      common: ConnectionCommon.t,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ConnectionCommon.decode,
-      };
-  };
-
-  module ConnectionOpenConfirm = {
-    type t = {
-      signer: Address.t,
-      common: ConnectionCommon.t,
-    };
-    let decode = json =>
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ConnectionCommon.decode,
-      };
-  };
-
-  module ChannelCommon = {
-    type t = {
-      chainID: string,
-      portID: string,
-      channelID: string,
-    };
-
-    let decode = json => {
-      JsonUtils.Decode.{
-        chainID: "band-consumer",
-        portID: json |> field("port_id", string),
-        channelID: json |> field("channel_id", string),
-      };
-    };
-  };
-
-  module ChannelOpenInit = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
-      };
-    };
-  };
-
-  module ChannelOpenTry = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
-      };
-    };
-  };
-
-  module ChannelOpenAck = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
-      };
-    };
-  };
-
-  module ChannelOpenConfirm = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
-      };
-    };
-  };
-
-  module ChannelCloseInit = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
-      };
-    };
-  };
-
-  module ChannelCloseConfirm = {
-    type t = {
-      signer: Address.t,
-      common: ChannelCommon.t,
-    };
-    let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> field("signer", string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
       };
     };
   };
@@ -914,7 +616,7 @@ module Msg = {
         title: json |> at(["msg", "content", "title"], string),
         description: json |> at(["msg", "content", "description"], string),
         initialDeposit: json |> at(["msg", "initial_deposit"], list(Coin.decodeCoin)),
-        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJson),
+        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJsonString),
       };
     };
 
@@ -945,7 +647,7 @@ module Msg = {
     let decodeSuccess = json => {
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJsonString),
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
         title: json |> at(["extra", "title"], string),
       };
@@ -954,7 +656,7 @@ module Msg = {
     let decodeFail = json => {
       JsonUtils.Decode.{
         depositor: json |> at(["msg", "depositor"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJsonString),
         amount: json |> at(["msg", "amount"], list(Coin.decodeCoin)),
       };
     };
@@ -976,7 +678,7 @@ module Msg = {
     let decodeSuccess = json => {
       JsonUtils.Decode.{
         voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJsonString),
         option: json |> at(["msg", "option"], string),
         title: json |> at(["extra", "title"], string),
       };
@@ -985,7 +687,7 @@ module Msg = {
     let decodeFail = json => {
       JsonUtils.Decode.{
         voterAddress: json |> at(["msg", "voter"], string) |> Address.fromBech32,
-        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJson),
+        proposalID: json |> at(["msg", "proposal_id"], ID.Proposal.fromJsonString),
         option: json |> at(["msg", "option"], string),
       };
     };
@@ -1048,6 +750,304 @@ module Msg = {
     };
   };
 
+  module CreateClient = {
+    type t = {
+      signer: Address.t,
+      chainID: string,
+      trustingPeriod: string,
+      unbondingPeriod: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        chainID: json |> at(["msg", "client_state", "chain_id"], string),
+        trustingPeriod: json |> at(["msg", "client_state", "trusting_period"], string),
+        unbondingPeriod: json |> at(["msg", "client_state", "unbonding_period"], string),
+      };
+    };
+  };
+
+  module UpdateClient = {
+    type t = {
+      signer: Address.t,
+      clientID: string,
+      chainID: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        clientID: json |> at(["msg", "client_id"], string),
+        chainID: json |> at(["msg", "header", "signed_header", "header", "chain_id"], string),
+      };
+    };
+  };
+
+  module SubmitClientMisbehaviour = {
+    type t = {
+      signer: Address.t,
+      clientID: string,
+      chainID: string,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        clientID: "client_id",
+        chainID: "band-consumer",
+      };
+    };
+  };
+
+  module Packet = {
+    type common_t = {
+      sequence: string,
+      sourcePort: string,
+      sourceChannel: string,
+      destinationPort: string,
+      destinationChannel: string,
+      timeoutHeight: string,
+      chainID: string,
+    };
+
+    type t = {
+      sender: Address.t,
+      data: string,
+      common: common_t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        sender: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        data: json |> at(["msg", "packet", "data"], string) |> Js.String.toUpperCase,
+        common: {
+          sequence: json |> at(["msg", "packet", "sequence"], string),
+          sourcePort: json |> at(["msg", "packet", "source_port"], string),
+          sourceChannel: json |> at(["msg", "packet", "source_channel"], string),
+          destinationPort: json |> at(["msg", "packet", "destination_port"], string),
+          destinationChannel: json |> at(["msg", "packet", "destination_channel"], string),
+          timeoutHeight:
+            json |> at(["msg", "packet", "timeout_height", "revision_height"], string),
+          chainID: "band-consumer",
+        },
+      };
+    };
+  };
+
+  module Acknowledgement = {
+    type t = {
+      common: Packet.common_t,
+      sender: Address.t,
+      acknowledgement: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        common: {
+          sequence: "999",
+          sourcePort: "gjdojfpjfp",
+          sourceChannel: "gjdojfpjfp",
+          destinationPort: "gjdojfpjfp",
+          destinationChannel: "gjdojfpjfp",
+          timeoutHeight: "999999",
+          chainID: "band-consumer",
+        },
+        sender: json |> field("address", string) |> Address.fromBech32,
+        acknowledgement: "iKQAmKzSud29geE5che9C8bVuQyG02FJJ7LM...",
+      };
+  };
+
+  module Timeout = {
+    type t = {
+      sender: Address.t,
+      common: Packet.common_t,
+      nextSequenceReceive: int,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        sender: json |> field("signer", string) |> Address.fromBech32,
+        common: {
+          sequence: json |> at(["msg", "packet", "sequence"], string),
+          sourcePort: json |> at(["msg", "packet", "source_port"], string),
+          sourceChannel: json |> at(["msg", "packet", "source_channel"], string),
+          destinationPort: json |> at(["msg", "packet", "destination_port"], string),
+          destinationChannel: json |> at(["msg", "packet", "destination_channel"], string),
+          timeoutHeight: json |> at(["msg", "packet", "timeout_height"], string),
+          chainID: "band-consumer",
+        },
+        nextSequenceReceive: json |> at(["msg", "packet", "next_sequence_receive"], int),
+      };
+  };
+
+  module ConnectionCommon = {
+    type t = {
+      chainID: string,
+      connectionID: string,
+    };
+  };
+
+  module ConnectionOpenInit = {
+    type t = {
+      signer: Address.t,
+      common: ConnectionCommon.t,
+      clientID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: {
+          chainID: "band-consumer",
+          connectionID: "TODO",
+        },
+        clientID: json |> at(["msg", "client_id"], string),
+      };
+  };
+
+  module ConnectionOpenTry = {
+    type t = {
+      signer: Address.t,
+      common: ConnectionCommon.t,
+      clientID: string,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        clientID: "client_id mock",
+        common: {
+          chainID: "band-consumer",
+          connectionID: "TODO",
+        },
+      };
+  };
+
+  module ConnectionOpenAck = {
+    type t = {
+      signer: Address.t,
+      common: ConnectionCommon.t,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: {
+          chainID: "band-consumer",
+          connectionID: json |> at(["msg", "connection_id"], string),
+        },
+      };
+  };
+
+  module ConnectionOpenConfirm = {
+    type t = {
+      signer: Address.t,
+      common: ConnectionCommon.t,
+    };
+    let decode = json =>
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: {
+          chainID: "band-consumer",
+          connectionID: "TODO",
+        },
+      };
+  };
+
+  module ChannelCommon = {
+    type t = {
+      chainID: string,
+      portID: string,
+      channelID: string,
+    };
+
+    let decode = json => {
+      JsonUtils.Decode.{
+        chainID: "band-consumer",
+        portID: json |> at(["msg", "port_id"], string),
+        channelID: json |> at(["msg", "counterparty_channel_id"], string),
+      };
+    };
+  };
+
+  module ChannelOpenInit = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: {
+          chainID: "band-consumer",
+          portID: json |> at(["msg", "channel", "counterparty", "port_id"], string),
+          channelID: json |> at(["msg", "channel", "counterparty", "channel_id"], string),
+        },
+      };
+    };
+  };
+
+  module ChannelOpenTry = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: json |> ChannelCommon.decode,
+      };
+    };
+  };
+
+  module ChannelOpenAck = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: {
+          chainID: "band-consumer",
+          portID: json |> at(["msg", "port_id"], string),
+          channelID: json |> at(["msg", "counterparty_channel_id"], string),
+        },
+      };
+    };
+  };
+
+  module ChannelOpenConfirm = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: json |> ChannelCommon.decode,
+      };
+    };
+  };
+
+  module ChannelCloseInit = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: json |> ChannelCommon.decode,
+      };
+    };
+  };
+
+  module ChannelCloseConfirm = {
+    type t = {
+      signer: Address.t,
+      common: ChannelCommon.t,
+    };
+    let decode = json => {
+      JsonUtils.Decode.{
+        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
+        common: json |> ChannelCommon.decode,
+      };
+    };
+  };
+
   type t =
     | SendMsgSuccess(Send.t)
     | SendMsgFail(Send.t)
@@ -1072,22 +1072,6 @@ module Msg = {
     | CreateValidatorMsgFail(CreateValidator.t)
     | EditValidatorMsgSuccess(EditValidator.t)
     | EditValidatorMsgFail(EditValidator.t)
-    | CreateClientMsg(CreateClient.t)
-    | UpdateClientMsg(UpdateClient.t)
-    | SubmitClientMisbehaviourMsg(SubmitClientMisbehaviour.t)
-    | ConnectionOpenInitMsg(ConnectionOpenInit.t)
-    | ConnectionOpenTryMsg(ConnectionOpenTry.t)
-    | ConnectionOpenAckMsg(ConnectionOpenAck.t)
-    | ConnectionOpenConfirmMsg(ConnectionOpenConfirm.t)
-    | ChannelOpenInitMsg(ChannelOpenInit.t)
-    | ChannelOpenTryMsg(ChannelOpenTry.t)
-    | ChannelOpenAckMsg(ChannelOpenAck.t)
-    | ChannelOpenConfirmMsg(ChannelOpenConfirm.t)
-    | ChannelCloseInitMsg(ChannelCloseInit.t)
-    | ChannelCloseConfirmMsg(ChannelCloseConfirm.t)
-    | PacketMsg(Packet.t)
-    | AcknowledgementMsg(Acknowledgement.t)
-    | TimeoutMsg(Timeout.t)
     | DelegateMsgSuccess(Delegate.success_t)
     | DelegateMsgFail(Delegate.fail_t)
     | UndelegateMsgSuccess(Undelegate.success_t)
@@ -1112,6 +1096,22 @@ module Msg = {
     | MultiSendMsgFail(MultiSend.t)
     | ActivateMsgSuccess(Activate.t)
     | ActivateMsgFail(Activate.t)
+    | CreateClientMsg(CreateClient.t)
+    | UpdateClientMsg(UpdateClient.t)
+    | SubmitClientMisbehaviourMsg(SubmitClientMisbehaviour.t)
+    | ConnectionOpenInitMsg(ConnectionOpenInit.t)
+    | ConnectionOpenTryMsg(ConnectionOpenTry.t)
+    | ConnectionOpenAckMsg(ConnectionOpenAck.t)
+    | ConnectionOpenConfirmMsg(ConnectionOpenConfirm.t)
+    | ChannelOpenInitMsg(ChannelOpenInit.t)
+    | ChannelOpenTryMsg(ChannelOpenTry.t)
+    | ChannelOpenAckMsg(ChannelOpenAck.t)
+    | ChannelOpenConfirmMsg(ChannelOpenConfirm.t)
+    | ChannelCloseInitMsg(ChannelCloseInit.t)
+    | ChannelCloseConfirmMsg(ChannelCloseConfirm.t)
+    | PacketMsg(Packet.t)
+    | AcknowledgementMsg(Acknowledgement.t)
+    | TimeoutMsg(Timeout.t)
     | UnknownMsg;
 
   let getCreator = msg => {
@@ -1165,10 +1165,9 @@ module Msg = {
       firstInput.address;
     | ActivateMsgSuccess(activator)
     | ActivateMsgFail(activator) => activator.validatorAddress
-    //TODO: Revisit IBC msg
-    | CreateClientMsg(client) => client.address
-    | UpdateClientMsg(client) => client.address
-    | SubmitClientMisbehaviourMsg(client) => client.address
+    | CreateClientMsg(client) => client.signer
+    | UpdateClientMsg(client) => client.signer
+    | SubmitClientMisbehaviourMsg(client) => client.signer
     | ConnectionOpenInitMsg(connection) => connection.signer
     | ConnectionOpenTryMsg(connection) => connection.signer
     | ConnectionOpenAckMsg(connection) => connection.signer
@@ -1217,24 +1216,23 @@ module Msg = {
     | WithdrawCommissionBadge => {name: "Withdraw Commission", category: TokenMsg}
     | MultiSendBadge => {name: "Multi Send", category: TokenMsg}
     | ActivateBadge => {name: "Activate", category: ValidatorMsg}
-    | UnknownBadge => {name: "Unknown", category: TokenMsg}
-    //TODO: Revisit IBC msg
-    | CreateClientBadge => {name: "Create Client", category: TokenMsg}
-    | UpdateClientBadge => {name: "Update Client", category: TokenMsg}
-    | SubmitClientMisbehaviourBadge => {name: "Submit Client Misbehaviour", category: TokenMsg}
-    | ConnectionOpenInitBadge => {name: "Connection Open Init", category: TokenMsg}
-    | ConnectionOpenTryBadge => {name: "Connection Open Try", category: TokenMsg}
-    | ConnectionOpenAckBadge => {name: "Connection Open Ack", category: TokenMsg}
-    | ConnectionOpenConfirmBadge => {name: "Connection Open Confirm", category: TokenMsg}
-    | ChannelOpenInitBadge => {name: "Channel Open Init", category: TokenMsg}
-    | ChannelOpenTryBadge => {name: "Channel Open Try", category: TokenMsg}
-    | ChannelOpenAckBadge => {name: "Channel Open Ack", category: TokenMsg}
-    | ChannelOpenConfirmBadge => {name: "Channel Open Confirm", category: TokenMsg}
-    | ChannelCloseInitBadge => {name: "Channel Close Init", category: TokenMsg}
-    | ChannelCloseConfirmBadge => {name: "Channel Close Confirm", category: TokenMsg}
-    | PacketBadge => {name: "Packet", category: TokenMsg}
-    | AcknowledgementBadge => {name: "Acknowledgement", category: TokenMsg}
-    | TimeoutBadge => {name: "Timeout", category: TokenMsg}
+    | CreateClientBadge => {name: "Create Client", category: IBCMsg}
+    | UpdateClientBadge => {name: "Update Client", category: IBCMsg}
+    | SubmitClientMisbehaviourBadge => {name: "Submit Client Misbehaviour", category: IBCMsg}
+    | ConnectionOpenInitBadge => {name: "Connection Open Init", category: IBCMsg}
+    | ConnectionOpenTryBadge => {name: "Connection Open Try", category: IBCMsg}
+    | ConnectionOpenAckBadge => {name: "Connection Open Ack", category: IBCMsg}
+    | ConnectionOpenConfirmBadge => {name: "Connection Open Confirm", category: IBCMsg}
+    | ChannelOpenInitBadge => {name: "Channel Open Init", category: IBCMsg}
+    | ChannelOpenTryBadge => {name: "Channel Open Try", category: IBCMsg}
+    | ChannelOpenAckBadge => {name: "Channel Open Ack", category: IBCMsg}
+    | ChannelOpenConfirmBadge => {name: "Channel Open Confirm", category: IBCMsg}
+    | ChannelCloseInitBadge => {name: "Channel Close Init", category: IBCMsg}
+    | ChannelCloseConfirmBadge => {name: "Channel Close Confirm", category: IBCMsg}
+    | PacketBadge => {name: "Packet", category: IBCMsg}
+    | AcknowledgementBadge => {name: "Acknowledgement", category: IBCMsg}
+    | TimeoutBadge => {name: "Timeout", category: IBCMsg}
+    | UnknownBadge => {name: "Unknown", category: UnknownMsg}
     };
   };
 
@@ -1287,8 +1285,6 @@ module Msg = {
     | MultiSendMsgFail(_) => getBadge(MultiSendBadge)
     | ActivateMsgSuccess(_) => getBadge(ActivateBadge)
     | ActivateMsgFail(_) => getBadge(ActivateBadge)
-    | UnknownMsg => getBadge(UnknownBadge)
-    //TODO: Revisit IBC msg
     | CreateClientMsg(_) => getBadge(CreateClientBadge)
     | UpdateClientMsg(_) => getBadge(UpdateClientBadge)
     | SubmitClientMisbehaviourMsg(_) => getBadge(SubmitClientMisbehaviourBadge)
@@ -1305,10 +1301,24 @@ module Msg = {
     | PacketMsg(_) => getBadge(PacketBadge)
     | AcknowledgementMsg(_) => getBadge(AcknowledgementBadge)
     | TimeoutMsg(_) => getBadge(TimeoutBadge)
+    | UnknownMsg => getBadge(UnknownBadge)
     };
   };
 
-  let decodeAction = json => {
+  // HACK: change it to Reason thing later
+  let parseJson: Js.Json.t => Js.Json.t = [%bs.raw
+    {|
+function(json) {
+  return {
+    ...json,
+    msg: JSON.parse(json.msg)
+  }
+}
+  |}
+  ];
+
+  let decodeAction = rawJson => {
+    let json = rawJson |> parseJson;
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
       | SendBadge => SendMsgSuccess(json |> Send.decode)
@@ -1338,8 +1348,6 @@ module Msg = {
         WithdrawCommissionMsgSuccess(json |> WithdrawCommission.decodeSuccess)
       | MultiSendBadge => MultiSendMsgSuccess(json |> MultiSend.decode)
       | ActivateBadge => ActivateMsgSuccess(json |> Activate.decode)
-      | UnknownBadge => UnknownMsg
-      //TODO: Revisit IBC msg
       | CreateClientBadge => CreateClientMsg(json |> CreateClient.decode)
       | UpdateClientBadge => UpdateClientMsg(json |> UpdateClient.decode)
       | SubmitClientMisbehaviourBadge =>
@@ -1357,13 +1365,14 @@ module Msg = {
       | ChannelCloseConfirmBadge => ChannelCloseConfirmMsg(json |> ChannelCloseConfirm.decode)
       | PacketBadge => PacketMsg(json |> Packet.decode)
       | TimeoutBadge => TimeoutMsg(json |> Timeout.decode)
-      // TODO: handle case correctly
       | AcknowledgementBadge => AcknowledgementMsg(json |> Acknowledgement.decode)
+      | UnknownBadge => UnknownMsg
       }
     );
   };
 
-  let decodeFailAction = json => {
+  let decodeFailAction = rawJson => {
+    let json = rawJson |> parseJson;
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
       | SendBadge => SendMsgFail(json |> Send.decode)
@@ -1392,8 +1401,25 @@ module Msg = {
         WithdrawCommissionMsgFail(json |> WithdrawCommission.decodeFail)
       | MultiSendBadge => MultiSendMsgFail(json |> MultiSend.decode)
       | ActivateBadge => ActivateMsgFail(json |> Activate.decode)
+      | CreateClientBadge => CreateClientMsg(json |> CreateClient.decode)
+      | UpdateClientBadge => UpdateClientMsg(json |> UpdateClient.decode)
+      | SubmitClientMisbehaviourBadge =>
+        SubmitClientMisbehaviourMsg(json |> SubmitClientMisbehaviour.decode)
+      | ConnectionOpenInitBadge => ConnectionOpenInitMsg(json |> ConnectionOpenInit.decode)
+      | ConnectionOpenTryBadge => ConnectionOpenTryMsg(json |> ConnectionOpenTry.decode)
+      | ConnectionOpenAckBadge => ConnectionOpenAckMsg(json |> ConnectionOpenAck.decode)
+      | ConnectionOpenConfirmBadge =>
+        ConnectionOpenConfirmMsg(json |> ConnectionOpenConfirm.decode)
+      | ChannelOpenInitBadge => ChannelOpenInitMsg(json |> ChannelOpenInit.decode)
+      | ChannelOpenTryBadge => ChannelOpenTryMsg(json |> ChannelOpenTry.decode)
+      | ChannelOpenAckBadge => ChannelOpenAckMsg(json |> ChannelOpenAck.decode)
+      | ChannelOpenConfirmBadge => ChannelOpenConfirmMsg(json |> ChannelOpenConfirm.decode)
+      | ChannelCloseInitBadge => ChannelCloseInitMsg(json |> ChannelCloseInit.decode)
+      | ChannelCloseConfirmBadge => ChannelCloseConfirmMsg(json |> ChannelCloseConfirm.decode)
+      | PacketBadge => PacketMsg(json |> Packet.decode)
+      | TimeoutBadge => TimeoutMsg(json |> Timeout.decode)
+      | AcknowledgementBadge => AcknowledgementMsg(json |> Acknowledgement.decode)
       | UnknownBadge => UnknownMsg
-      | _ => UnknownMsg
       }
     );
   };
@@ -1471,8 +1497,8 @@ let toExternal =
   memo,
   timestamp: block.timestamp,
   messages: {
-    let msg = messages |> Js.Json.decodeArray |> Belt.Option.getExn |> Belt.List.fromArray;
-    msg->Belt.List.map(success ? Msg.decodeAction : Msg.decodeFailAction);
+    let msgs = messages |> Js.Json.decodeArray |> Belt.Option.getExn |> Belt.List.fromArray;
+    msgs->Belt.List.map(success ? Msg.decodeAction : Msg.decodeFailAction);
   },
   errMsg: errMsg->Belt.Option.getWithDefault(""),
 };
@@ -1569,7 +1595,6 @@ module MultiBySenderConfig = [%graphql
         }
       }
     }
-
   }
 |}
 ];
