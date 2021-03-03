@@ -69,7 +69,7 @@ func init() {
 	Validator1 = createArbitraryAccount(r)
 	Validator2 = createArbitraryAccount(r)
 	Validator3 = createArbitraryAccount(r)
-	owasmVM, err := owasm.NewVm(1024)
+	owasmVM, err := owasm.NewVm(10)
 	if err != nil {
 		panic(err)
 	}

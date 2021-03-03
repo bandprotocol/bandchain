@@ -3,7 +3,7 @@ module github.com/bandprotocol/bandchain/chain
 go 1.13
 
 require (
-	github.com/bandprotocol/go-owasm v0.0.0-20210224142907-b38d76851043
+	github.com/bandprotocol/go-owasm v0.0.0-20210302151800-4672de718591
 	github.com/cosmos/cosmos-sdk v0.39.2
 	github.com/cosmos/go-bip39 v0.0.0-20180819234021-555e2067c45d
 	github.com/ethereum/go-ethereum v1.9.19

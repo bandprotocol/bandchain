@@ -75,7 +75,7 @@ func main() {
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
-	rootCmd.PersistentFlags().Uint64(flagWithOwasmCacheSize, 256, "[Experimental] Amount of memory to cache compiled oracle scripts (MB)")
+	rootCmd.PersistentFlags().Uint(flagWithOwasmCacheSize, 100, "[Experimental] Number of oracle scripts to cache")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -102,7 +102,7 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 		viper.GetString(flags.FlagHome),
 		viper.GetBool(flagDisableFeelessReports),
-		viper.GetUint64(flagWithOwasmCacheSize),
+		viper.GetUint32(flagWithOwasmCacheSize),
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -142,7 +142,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint64(flagWithOwasmCacheSize))
+		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
 		err := bandApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -151,6 +151,6 @@ func exportAppStateAndTMValidators(
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint64(flagWithOwasmCacheSize))
+	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
 	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

@@ -38,6 +38,9 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 				return err
 			}
 			compiledData, err := vm.Compile(data, types.MaxCompiledWasmCodeSize)
+			if err != nil {
+				return err
+			}
 			filename := f.AddFile(compiledData)
 			owner, err := sdk.AccAddressFromBech32(args[4])
 			if err != nil {
