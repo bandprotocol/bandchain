@@ -61,8 +61,7 @@ let toExternal =
   },
   relatedDataSources:
     relatedDataSources->Belt.Array.map(({dataSource}) => dataSource)->Belt.List.fromArray,
-  // Note: requestCount can't be nullable value.
-  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
+  requestCount: requestStatOpt->Belt.Option.mapWithDefault(0, ({count}) => count),
 };
 
 module MultiConfig = [%graphql
