@@ -5,6 +5,7 @@ from typing import List, Optional
 from .wallet import PublicKey
 from .constant import MAX_MEMO_CHARACTERS
 from .message import Msg
+from .exceptions import EmptyMsgError, NotFoundError, UndefinedError, ValueTooLargeError
 
 
 class Transaction:
@@ -23,12 +24,12 @@ class Transaction:
 
     def with_auto(self, client: Client) -> "Transaction":
         if len(self.msgs) == 0:
-            raise ValueError("messsage is empty, please use with_messages at least 1 message")
+            raise EmptyMsgError("messsage is empty, please use with_messages at least 1 message")
 
         addr = self.msgs[0].get_sender()
         account = client.get_account(addr)
         if account is None:
-            raise ValueError("Account doesn't exist.")
+            raise NotFoundError("Account doesn't exist.")
         self.account_num = account.account_number
         self.sequence = account.sequence
         return self
@@ -55,23 +56,23 @@ class Transaction:
 
     def with_memo(self, memo: str) -> "Transaction":
         if len(memo) > MAX_MEMO_CHARACTERS:
-            raise ValueError("memo is too large")
+            raise ValueTooLargeError("memo is too large")
 
         self.memo = memo
         return self
 
     def get_sign_data(self) -> bytes:
         if len(self.msgs) == 0:
-            raise ValueError("message is empty")
+            raise EmptyMsgError("message is empty")
 
         if self.account_num is None:
-            raise ValueError("account_num should be defined")
+            raise UndefinedError("account_num should be defined")
 
         if self.sequence is None:
-            raise ValueError("sequence should be defined")
+            raise UndefinedError("sequence should be defined")
 
         if self.chain_id is None:
-            raise ValueError("chain_id should be defined")
+            raise UndefinedError("chain_id should be defined")
 
         for msg in self.msgs:
             msg.validate()
