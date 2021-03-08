@@ -2,14 +2,14 @@
 # It is not intended for manual editing.
 [[package]]
 name = "obi"
-version = "0.1.1"
+version = "0.0.2"
 dependencies = [
  "obi-derive",
 ]
 
 [[package]]
 name = "obi-derive"
-version = "0.1.1"
+version = "0.0.2"
 dependencies = [
  "obi-derive-internal",
  "quote 0.3.15",
@@ -18,7 +18,7 @@ dependencies = [
 
 [[package]]
 name = "obi-derive-internal"
-version = "0.1.1"
+version = "0.0.2"
 dependencies = [
  "proc-macro2",
  "quote 1.0.6",
