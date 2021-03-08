@@ -96,9 +96,7 @@ def test_encode_decode_signed_integer():
     assert PyObiInteger("i16").encode(-(2 ** 15)) == bytes.fromhex("8000")
     assert PyObiInteger("i32").encode(-(2 ** 31)) == bytes.fromhex("80000000")
     assert PyObiInteger("i64").encode(-(2 ** 63)) == bytes.fromhex("8000000000000000")
-    assert PyObiInteger("i128").encode(-(2 ** 127)) == bytes.fromhex(
-        "80000000000000000000000000000000"
-    )
+    assert PyObiInteger("i128").encode(-(2 ** 127)) == bytes.fromhex("80000000000000000000000000000000")
     assert PyObiInteger("i256").encode(-(2 ** 255)) == bytes.fromhex(
         "8000000000000000000000000000000000000000000000000000000000000000"
     )
@@ -173,9 +171,7 @@ def test_encode_decode_str_success():
 
 def test_encode_decode_bytes():
     # encode
-    assert PyObiBytes().encode(bytes([1, 2, 3, 4, 5, 6, 7, 8, 9])) == bytes.fromhex(
-        "00000009010203040506070809"
-    )
+    assert PyObiBytes().encode(bytes([1, 2, 3, 4, 5, 6, 7, 8, 9])) == bytes.fromhex("00000009010203040506070809")
 
     # decode
     assert PyObiBytes().decode(bytes.fromhex("00000009010203040506070809")) == (
@@ -189,16 +185,12 @@ def test_encode_decode_array():
     # bool
     assert PyObiArray("[bool;0]").encode([]) == bytes.fromhex("")
     assert PyObiArray("[bool;1]").encode([False]) == bytes.fromhex("00")
-    assert PyObiArray("[bool;5]").encode([True, False, True, False, True]) == bytes.fromhex(
-        "0100010001"
-    )
+    assert PyObiArray("[bool;5]").encode([True, False, True, False, True]) == bytes.fromhex("0100010001")
 
     # integer
     assert PyObiArray("[i32;0]").encode([]) == bytes.fromhex("")
     assert PyObiArray("[i32;1]").encode([999]) == bytes.fromhex("000003e7")
-    assert PyObiArray("[i32;3]").encode([11, 2222, 33333]) == bytes.fromhex(
-        "0000000b000008ae00008235"
-    )
+    assert PyObiArray("[i32;3]").encode([11, 2222, 33333]) == bytes.fromhex("0000000b000008ae00008235")
 
     # string
     assert PyObiArray("[string;0]").encode([]) == bytes.fromhex("")
@@ -218,25 +210,29 @@ def test_encode_decode_array():
 
     # bytes
     assert PyObiArray("[bytes;0]").encode([]) == bytes.fromhex("")
-    assert PyObiArray("[bytes;1]").encode([bytes.fromhex("ababab")]) == bytes.fromhex(
-        "00000003ababab"
-    )
+    assert PyObiArray("[bytes;1]").encode([bytes.fromhex("ababab")]) == bytes.fromhex("00000003ababab")
     assert PyObiArray("[bytes;3]").encode(
         [bytes.fromhex("ababab"), bytes.fromhex("cd"), bytes.fromhex("efef")]
     ) == bytes.fromhex("00000003ababab00000001cd00000002efef")
 
     # array
     assert PyObiArray("[[bool;2];0]").encode([]) == bytes.fromhex("")
-    assert PyObiArray("[[bool;2];3]").encode(
-        [[False, False], [True, True], [False, True]]
-    ) == bytes.fromhex("000001010001")
+    assert PyObiArray("[[bool;2];3]").encode([[False, False], [True, True], [False, True]]) == bytes.fromhex(
+        "000001010001"
+    )
 
     # decode
     # bool
     assert PyObiArray("[bool;0]").decode(bytes.fromhex("")) == ([], b"")
     assert PyObiArray("[bool;1]").decode(bytes.fromhex("00")) == ([False], b"")
     assert PyObiArray("[bool;5]").decode(bytes.fromhex("0100010001")) == (
-        [True, False, True, False, True,],
+        [
+            True,
+            False,
+            True,
+            False,
+            True,
+        ],
         b"",
     )
 
@@ -244,7 +240,11 @@ def test_encode_decode_array():
     assert PyObiArray("[i32;0]").decode(bytes.fromhex("")) == ([], b"")
     assert PyObiArray("[i32;1]").decode(bytes.fromhex("000003e7")) == ([999], b"")
     assert PyObiArray("[i32;3]").decode(bytes.fromhex("0000000b000008ae00008235")) == (
-        [11, 2222, 33333,],
+        [
+            11,
+            2222,
+            33333,
+        ],
         b"",
     )
 
@@ -261,9 +261,10 @@ def test_encode_decode_array():
         [bytes.fromhex("ababab")],
         b"",
     )
-    assert PyObiArray("[bytes;3]").decode(
-        bytes.fromhex("00000003ababab00000001cd00000002efef")
-    ) == ([bytes.fromhex("ababab"), bytes.fromhex("cd"), bytes.fromhex("efef")], b"")
+    assert PyObiArray("[bytes;3]").decode(bytes.fromhex("00000003ababab00000001cd00000002efef")) == (
+        [bytes.fromhex("ababab"), bytes.fromhex("cd"), bytes.fromhex("efef")],
+        b"",
+    )
 
     # vector
     assert PyObiArray("[[u64];0]").decode(bytes.fromhex("")) == ([], b"")
@@ -273,24 +274,24 @@ def test_encode_decode_array():
         )
     ) == ([[1, 2, 3, 4, 5], []], b"")
     assert PyObiArray("[[string];3]").decode(
-        bytes.fromhex(
-            "00000003000000016100000000000000016200000000000000020000000361616100000003626262"
-        )
+        bytes.fromhex("00000003000000016100000000000000016200000000000000020000000361616100000003626262")
     ) == ([["a", "", "b"], [], ["aaa", "bbb"]], b"")
 
     # array
     assert PyObiArray("[[bool;2];0]").decode(bytes.fromhex("")) == ([], b"")
     assert PyObiArray("[[bool;2];3]").decode(bytes.fromhex("000001010001")) == (
-        [[False, False], [True, True], [False, True],],
+        [
+            [False, False],
+            [True, True],
+            [False, True],
+        ],
         b"",
     )
 
 
 def test_encode_decode_vec():
     # encode
-    assert PyObiVector("[i32]").encode([87654321, -12345678]) == bytes.fromhex(
-        "0000000205397fb1ff439eb2"
-    )
+    assert PyObiVector("[i32]").encode([87654321, -12345678]) == bytes.fromhex("0000000205397fb1ff439eb2")
     assert PyObiVector("[string]").encode(["mumu", "imprefvicticious"]) == bytes.fromhex(
         "00000002000000046d756d7500000010696d70726566766963746963696f7573"
     )
@@ -307,14 +308,15 @@ def test_encode_decode_vec():
 
 def test_encode_decode_struct():
     # encode
-    assert PyObiStruct("""{symbol:string,px:u64}""").encode(
-        {"symbol": "BTC", "px": 7777777777777777777}
-    ).hex() == ("000000034254436bf037ae325f1c71")
+    assert PyObiStruct("""{symbol:string,px:u64}""").encode({"symbol": "BTC", "px": 7777777777777777777}).hex() == (
+        "000000034254436bf037ae325f1c71"
+    )
 
     # decode
-    assert PyObiStruct("""{symbol:string,px:u64}""").decode(
-        bytes.fromhex("000000034254436bf037ae325f1c71")
-    ) == ({"symbol": "BTC", "px": 7777777777777777777}, b"")
+    assert PyObiStruct("""{symbol:string,px:u64}""").decode(bytes.fromhex("000000034254436bf037ae325f1c71")) == (
+        {"symbol": "BTC", "px": 7777777777777777777},
+        b"",
+    )
 
 
 def test_decode_multi_obis():
@@ -365,10 +367,7 @@ def test_encode_decode_single_success():
     }
 
     encoded = obi.encode(test_struct)
-    assert (
-        "000000034254430000000000002328010002010000000a00112233445566778899000f423f00"
-        == encoded.hex()
-    )
+    assert "000000034254430000000000002328010002010000000a00112233445566778899000f423f00" == encoded.hex()
     assert test_struct == obi.decode(encoded)
 
 
@@ -465,10 +464,7 @@ def test_encode_decode_muti():
 
     # struct 1
     encoded = obi.encode(test_structs[0], 0)
-    assert (
-        "000000034254430000000000002328010002010000000a00112233445566778899000f423f00"
-        == encoded.hex()
-    )
+    assert "000000034254430000000000002328010002010000000a00112233445566778899000f423f00" == encoded.hex()
     assert test_structs[0] == obi.decode(encoded, 0)
 
     # struct 2
@@ -511,45 +507,42 @@ def test_encode_decode_muti():
     # struct 7
     encoded = obi.encode(test_structs[6], 6)
     print(encoded.hex())
-    assert (
-        "0000000261310000000261320f00000002613300000002613444000000026135000000026136c8"
-        == encoded.hex()
-    )
+    assert "0000000261310000000261320f00000002613300000002613444000000026135000000026136c8" == encoded.hex()
     assert test_structs[6] == obi.decode(encoded, 6)
 
 
 def test_encode_decode_not_all_data_is_consumed_fail():
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""bool""").decode(bytes.fromhex("00aa"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""i64""").decode(bytes.fromhex("00112233445566778899"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""u64""").decode(bytes.fromhex("00112233445566778899"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""string""").decode(bytes.fromhex("00000000aabb"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""bytes""").decode(bytes.fromhex("00000000aabb"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""[u32]""").decode(bytes.fromhex("00000000aabb"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(DecodeError) as e:
         PyObi("""{ x:i16 }""").decode(bytes.fromhex("00000000"))
 
     assert str(e.value) == "Not all data is consumed after decoding input"

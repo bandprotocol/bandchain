@@ -5,6 +5,7 @@ from typing import List
 from .wallet import Address
 from .data import Coin
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
+from .exceptions import InsufficientCoinError, NegativeIntegerError, ValueTooLargeError
 
 
 class Msg:
@@ -45,9 +46,9 @@ class MsgRequest(Msg):
 
     def validate(self) -> bool:
         if self.oracle_script_id <= 0:
-            raise ValueError("oracle script id cannot less than zero")
+            raise NegativeIntegerError("oracle script id cannot less than zero")
         if len(self.calldata) > MAX_DATA_SIZE:
-            raise ValueError("too large calldata")
+            raise ValueTooLargeError("too large calldata")
         if self.min_count <= 0:
             raise ValueError("invalid min count got: min count: {}".format(self.min_count))
         if self.ask_count < self.min_count:
@@ -55,7 +56,7 @@ class MsgRequest(Msg):
                 "invalid ask count got: min count: {}, ask count: {}".format(self.min_count, self.ask_count)
             )
         if len(self.client_id) > MAX_CLIENT_ID_LENGTH:
-            raise ValueError("too long client id")
+            raise ValueTooLargeError("too long client id")
 
         return True
 
@@ -81,7 +82,7 @@ class MsgSend(Msg):
 
     def validate(self) -> bool:
         if len(self.amount) == 0:
-            raise ValueError("Expect at least 1 coin")
+            raise InsufficientCoinError("Expect at least 1 coin")
 
         for coin in self.amount:
             coin.validate()
