@@ -3,11 +3,13 @@ name = "obi"
 version = "0.0.2"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
+description = "OBI"
+license = "Apache-2.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-obi-derive = { path = "../obi-derive" }
+obi-derive = { path = "../obi-derive" ,version = "0.0.2"}
 
 [features]
 default = ["std"]
