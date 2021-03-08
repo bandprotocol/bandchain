@@ -1,6 +1,6 @@
 [package]
 name = "obi-derive"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Band Protocol <connect@bandprotocol.com>"]
 edition = "2018"
 
@@ -11,5 +11,5 @@ proc-macro = true
 
 [dependencies]
 obi-derive-internal = { path = "../obi-derive-internal"}
-syn = {version = "1", features = ["full", "fold"] }
+syn = {version = "1.0.62", features = ["full", "fold"] }
 quote = "0.3.15"

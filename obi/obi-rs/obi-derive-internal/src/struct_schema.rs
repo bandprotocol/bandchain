@@ -1,9 +1,9 @@
 use crate::helpers::declaration;
-use quote::quote;
-use syn::export::{ToTokens, TokenStream2};
+use proc_macro2::TokenStream;
+use quote::{quote, ToTokens};
 use syn::{Fields, ItemStruct};
 
-pub fn process_struct(input: &ItemStruct) -> syn::Result<TokenStream2> {
+pub fn process_struct(input: &ItemStruct) -> syn::Result<TokenStream> {
     let name = &input.ident;
     let name_str = name.to_token_stream().to_string();
     let generics = &input.generics;
@@ -13,8 +13,8 @@ pub fn process_struct(input: &ItemStruct) -> syn::Result<TokenStream2> {
 
     // Generate function that returns the schema of required types.
     let mut fields_vec = vec![];
-    let mut struct_fields = TokenStream2::new();
-    let mut add_definitions_recursively_rec = TokenStream2::new();
+    let mut struct_fields = TokenStream::new();
+    let mut add_definitions_recursively_rec = TokenStream::new();
     match &input.fields {
         Fields::Named(fields) => {
             for field in &fields.named {
@@ -58,7 +58,7 @@ pub fn process_struct(input: &ItemStruct) -> syn::Result<TokenStream2> {
     let where_clause = if !where_clause.is_empty() {
         quote! { where #(#where_clause),*}
     } else {
-        TokenStream2::new()
+        TokenStream::new()
     };
     Ok(quote! {
         impl #impl_generics obi::OBISchema for #name #ty_generics #where_clause {
@@ -76,7 +76,7 @@ pub fn process_struct(input: &ItemStruct) -> syn::Result<TokenStream2> {
 mod tests {
     use super::*;
 
-    fn assert_eq(expected: TokenStream2, actual: TokenStream2) {
+    fn assert_eq(expected: TokenStream, actual: TokenStream) {
         assert_eq!(expected.to_string(), actual.to_string())
     }
 
