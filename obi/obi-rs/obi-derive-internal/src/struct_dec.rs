@@ -1,14 +1,14 @@
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::export::TokenStream2;
 use syn::{Fields, ItemStruct};
 
-pub fn struct_dec(input: &ItemStruct) -> syn::Result<TokenStream2> {
+pub fn struct_dec(input: &ItemStruct) -> syn::Result<TokenStream> {
     let name = &input.ident;
     let generics = &input.generics;
-    let mut decode_field_types = TokenStream2::new();
+    let mut decode_field_types = TokenStream::new();
     let return_value = match &input.fields {
         Fields::Named(fields) => {
-            let mut body = TokenStream2::new();
+            let mut body = TokenStream::new();
             for field in &fields.named {
                 let field_name = field.ident.as_ref().unwrap();
                 let delta = {
@@ -27,7 +27,7 @@ pub fn struct_dec(input: &ItemStruct) -> syn::Result<TokenStream2> {
             }
         }
         Fields::Unnamed(fields) => {
-            let mut body = TokenStream2::new();
+            let mut body = TokenStream::new();
             for _ in 0..fields.unnamed.len() {
                 let delta = quote! {
                     obi::OBIDecode::decode(buf)?,
