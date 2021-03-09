@@ -69,8 +69,9 @@ TEST_WRONG_SEQUENCE_MSG = {
     ],
 }
 
+TIMEOUT = 3
 
-client = Client(TEST_RPC, 3)
+client = Client(TEST_RPC, TIMEOUT)
 
 
 @patch("requests.post")
