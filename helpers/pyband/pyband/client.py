@@ -23,16 +23,17 @@ from .data import (
 
 
 class Client(object):
-    def __init__(self, rpc_url: str) -> None:
+    def __init__(self, rpc_url: str, timeout: Optional[int] = None) -> None:
         self.rpc_url = rpc_url
+        self.timeout = timeout
 
     def _get(self, path, **kwargs):
-        r = requests.get(self.rpc_url + path, **kwargs)
+        r = requests.get(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 
     def _post(self, path, **kwargs):
-        r = requests.post(self.rpc_url + path, **kwargs)
+        r = requests.post(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 
@@ -120,7 +121,9 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_latest_request(self, oid: int, calldata: bytes, min_count: int, ask_count: int) -> RequestInfo:
+    def get_latest_request(
+        self, oid: int, calldata: bytes, min_count: int, ask_count: int
+    ) -> RequestInfo:
         return from_dict(
             data_class=RequestInfo,
             data=self._get_result(
@@ -163,7 +166,9 @@ class Client(object):
             raise EmptyRequestMsgError("There is no request message in this tx")
         return request_ids
 
-    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
+    def get_reference_data(
+        self, pairs: List[str], min_count: int, ask_count: int
+    ) -> List[ReferencePrice]:
         symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
         data = self._post(
             "/oracle/request_prices",
@@ -192,8 +197,14 @@ class Client(object):
                 results.append(
                     ReferencePrice(
                         pair,
-                        rate=(int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"]))
-                        / (int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])),
+                        rate=(
+                            int(symbol_dict[base_symbol]["px"])
+                            * int(symbol_dict[quote_symbol]["multiplier"])
+                        )
+                        / (
+                            int(symbol_dict[quote_symbol]["px"])
+                            * int(symbol_dict[base_symbol]["multiplier"])
+                        ),
                         updated_at=ReferencePriceUpdated(
                             int(symbol_dict[base_symbol]["resolve_time"]),
                             int(symbol_dict[quote_symbol]["resolve_time"]),
@@ -208,4 +219,7 @@ class Client(object):
 
     def get_request_evm_proof_by_request_id(self, request_id: int) -> EVMProof:
         data = self._get_result("/oracle/proof/{}".format(request_id))
-        return EVMProof(json_proof=data["jsonProof"], evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])))
+        return EVMProof(
+            json_proof=data["jsonProof"],
+            evm_proof_bytes=HexBytes(bytes.fromhex(data["evmProofBytes"])),
+        )
