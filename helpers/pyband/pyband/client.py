@@ -121,9 +121,7 @@ class Client(object):
             config=DACITE_CONFIG,
         )
 
-    def get_latest_request(
-        self, oid: int, calldata: bytes, min_count: int, ask_count: int
-    ) -> RequestInfo:
+    def get_latest_request(self, oid: int, calldata: bytes, min_count: int, ask_count: int) -> RequestInfo:
         return from_dict(
             data_class=RequestInfo,
             data=self._get_result(
@@ -166,9 +164,7 @@ class Client(object):
             raise EmptyRequestMsgError("There is no request message in this tx")
         return request_ids
 
-    def get_reference_data(
-        self, pairs: List[str], min_count: int, ask_count: int
-    ) -> List[ReferencePrice]:
+    def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
         symbols = set([symbol for pair in pairs for symbol in pair.split("/") if symbol != "USD"])
         data = self._post(
             "/oracle/request_prices",
@@ -197,14 +193,8 @@ class Client(object):
                 results.append(
                     ReferencePrice(
                         pair,
-                        rate=(
-                            int(symbol_dict[base_symbol]["px"])
-                            * int(symbol_dict[quote_symbol]["multiplier"])
-                        )
-                        / (
-                            int(symbol_dict[quote_symbol]["px"])
-                            * int(symbol_dict[base_symbol]["multiplier"])
-                        ),
+                        rate=(int(symbol_dict[base_symbol]["px"]) * int(symbol_dict[quote_symbol]["multiplier"]))
+                        / (int(symbol_dict[quote_symbol]["px"]) * int(symbol_dict[base_symbol]["multiplier"])),
                         updated_at=ReferencePriceUpdated(
                             int(symbol_dict[base_symbol]["resolve_time"]),
                             int(symbol_dict[quote_symbol]["resolve_time"]),
