@@ -39,5 +39,5 @@ func TestParseExecutorInvalidExecutorError(t *testing.T) {
 
 func TestParseExecutorInvalidTimeoutError(t *testing.T) {
 	_, _, _, err := parseExecutor("beeb:www.beebprotocol.com?timeout=beeb")
-	require.EqualError(t, err, "Invalid timeout, cannot parse duration with error: time: invalid duration beeb")
+	require.EqualError(t, err, "Invalid timeout, cannot parse duration with error: time: invalid duration \"beeb\"")
 }
