@@ -3,6 +3,7 @@ package emitter
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 
@@ -112,6 +113,9 @@ func (h *Hook) FlushMessages() {
 
 // AfterInitChain specify actions need to do after chain initialization (app.Hook interface).
 func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res abci.ResponseInitChain) {
+	if h.emitStartState {
+		return
+	}
 	var genesisState bandapp.GenesisState
 	h.cdc.MustUnmarshalJSON(req.AppStateBytes, &genesisState)
 	// Auth module
@@ -131,7 +135,7 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 		h.cdc.MustUnmarshalJSON(genTx, &tx)
 		for _, msg := range tx.Msgs {
 			if msg, ok := msg.(staking.MsgCreateValidator); ok {
-				h.handleMsgCreateValidator(ctx, msg)
+				h.handleMsgCreateValidator(ctx, msg, make(common.JsDict))
 			}
 		}
 	}
@@ -149,24 +153,26 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 
 	for _, unbonding := range stakingState.UnbondingDelegations {
 		for _, entry := range unbonding.Entries {
-			h.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
-				"delegator_address": unbonding.DelegatorAddress,
-				"operator_address":  unbonding.ValidatorAddress,
-				"completion_time":   entry.CompletionTime.UnixNano(),
-				"amount":            entry.Balance,
-			})
+			common.EmitNewUnbondingDelegation(
+				h,
+				unbonding.DelegatorAddress,
+				unbonding.ValidatorAddress,
+				entry.CompletionTime.UnixNano(),
+				entry.Balance,
+			)
 		}
 	}
 
 	for _, redelegate := range stakingState.Redelegations {
 		for _, entry := range redelegate.Entries {
-			h.Write("NEW_REDELEGATION", common.JsDict{
-				"delegator_address":    redelegate.DelegatorAddress,
-				"operator_src_address": redelegate.ValidatorSrcAddress,
-				"operator_dst_address": redelegate.ValidatorDstAddress,
-				"completion_time":      entry.CompletionTime.UnixNano(),
-				"amount":               entry.InitialBalance,
-			})
+			common.EmitNewRedelegation(
+				h,
+				redelegate.DelegatorAddress,
+				redelegate.ValidatorSrcAddress,
+				redelegate.ValidatorDstAddress,
+				entry.CompletionTime.UnixNano(),
+				entry.InitialBalance,
+			)
 		}
 	}
 
@@ -210,21 +216,29 @@ func (h *Hook) AfterInitChain(ctx sdk.Context, req abci.RequestInitChain, res ab
 	var oracleState oracle.GenesisState
 	h.cdc.MustUnmarshalJSON(genesisState[oracle.ModuleName], &oracleState)
 	for idx, ds := range oracleState.DataSources {
-		h.emitSetDataSource(types.DataSourceID(idx+1), ds, nil)
+		id := types.DataSourceID(idx + 1)
+		h.emitSetDataSource(id, ds, nil)
+		common.EmitNewDataSourceRequest(h, id)
 	}
 	for idx, os := range oracleState.OracleScripts {
-		h.emitSetOracleScript(types.OracleScriptID(idx+1), os, nil)
+		id := types.OracleScriptID(idx + 1)
+		h.emitSetOracleScript(id, os, nil)
+		common.EmitNewOracleScriptRequest(h, id)
 	}
 	h.Write("COMMIT", common.JsDict{"height": 0})
 	h.FlushMessages()
 }
 
 func (h *Hook) emitNonHistoricalState(ctx sdk.Context) {
+	fmt.Println("Start emit auth module")
 	h.emitAuthModule(ctx)
+	fmt.Println("Start emit staking module")
 	h.emitStakingModule(ctx)
+	fmt.Println("Start emit gov module")
 	h.emitGovModule(ctx)
+	fmt.Println("Start emit oracle module")
 	h.emitOracleModule(ctx)
-	h.Write("COMMIT", common.JsDict{"height": -1})
+	common.EmitCommit(h, -1)
 	h.FlushMessages()
 	h.msgs = []common.Message{}
 }
@@ -240,22 +254,24 @@ func (h *Hook) AfterBeginBlock(ctx sdk.Context, req abci.RequestBeginBlock, res 
 	} else {
 		for _, val := range req.GetLastCommitInfo().Votes {
 			validator := h.stakingKeeper.ValidatorByConsAddr(ctx, val.GetValidator().Address)
-			h.Write("NEW_VALIDATOR_VOTE", common.JsDict{
-				"consensus_address": validator.GetConsAddr().String(),
-				"block_height":      req.Header.GetHeight() - 1,
-				"voted":             val.GetSignedLastBlock(),
-			})
+			common.EmitNewValidatorVote(
+				h,
+				validator.GetConsAddr().String(),
+				req.Header.GetHeight()-1,
+				val.GetSignedLastBlock(),
+			)
 			h.emitUpdateValidatorRewardAndAccumulatedCommission(ctx, validator.GetOperator())
 		}
 	}
-	h.Write("NEW_BLOCK", common.JsDict{
-		"height":    req.Header.GetHeight(),
-		"timestamp": ctx.BlockTime().UnixNano(),
-		"proposer":  sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
-		"hash":      req.GetHash(),
-		"inflation": h.mintKeeper.GetMinter(ctx).Inflation.String(),
-		"supply":    h.supplyKeeper.GetSupply(ctx).GetTotal().String(),
-	})
+	common.EmitNewBlock(
+		h,
+		req.Header.GetHeight(),
+		ctx.BlockTime().UnixNano(),
+		sdk.ConsAddress(req.Header.GetProposerAddress()).String(),
+		req.GetHash(),
+		h.mintKeeper.GetMinter(ctx).Inflation.String(),
+		h.supplyKeeper.GetSupply(ctx).GetTotal().String(),
+	)
 	for _, event := range res.Events {
 		h.handleBeginBlockEndBlockEvent(ctx, event)
 	}
@@ -313,8 +329,7 @@ func (h *Hook) AfterDeliverTx(ctx sdk.Context, req abci.RequestDeliverTx, res ab
 		acc, _ := sdk.AccAddressFromBech32(accStr)
 		relatedAccounts = append(relatedAccounts, acc)
 	}
-
-	txDict["related_accounts"] = relatedAccounts
+	common.EmitSetRelatedTransaction(h, txHash, relatedAccounts)
 	h.AddAccountsInBlock(relatedAccounts...)
 	txDict["messages"] = messages
 }

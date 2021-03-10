@@ -1,6 +1,8 @@
 package emitter
 
 import (
+	"fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/bandprotocol/bandchain/chain/hooks/common"
@@ -20,11 +22,13 @@ func (h *Hook) emitOracleModule(ctx sdk.Context) {
 	for idx, ds := range dataSources {
 		id := types.DataSourceID(idx + 1)
 		h.emitSetDataSource(id, ds, nil)
+		common.EmitNewDataSourceRequest(h, id)
 	}
 	oracleScripts := h.oracleKeeper.GetAllOracleScripts(ctx)
 	for idx, os := range oracleScripts {
 		id := types.OracleScriptID(idx + 1)
 		h.emitSetOracleScript(id, os, nil)
+		common.EmitNewOracleScriptRequest(h, id)
 	}
 	rqCount := h.oracleKeeper.GetRequestCount(ctx)
 	for rid := types.RequestID(1); rid <= types.RequestID(rqCount); rid++ {
@@ -46,6 +50,12 @@ func (h *Hook) emitOracleModule(ctx sdk.Context) {
 		reps := h.oracleKeeper.GetReports(ctx, rid)
 		for _, rep := range reps {
 			h.emitReportAndRawReport(nil, rid, rep.Validator, nil, rep.RawReports)
+		}
+		if rid%100 == 0 {
+			fmt.Printf("flush request = %d\n", rid)
+			common.EmitCommit(h, -1)
+			h.FlushMessages()
+			h.msgs = []common.Message{}
 		}
 	}
 }
@@ -81,6 +91,7 @@ func (h *Hook) emitHistoricalValidatorStatus(ctx sdk.Context, operatorAddress sd
 		"status":           status,
 		"timestamp":        ctx.BlockTime().UnixNano(),
 	})
+	common.EmitHistoricalValidatorStatus(h, operatorAddress, status, ctx.BlockTime().UnixNano())
 }
 
 func (h *Hook) emitRawRequestAndValRequest(requestID types.RequestID, req types.Request) {
@@ -150,6 +161,12 @@ func (h *Hook) handleMsgRequestData(
 		"timestamp":        ctx.BlockTime().UnixNano(),
 	})
 	h.emitRawRequestAndValRequest(id, req)
+	common.EmitSetRequestCountPerDay(h, ctx.BlockTime().UnixNano())
+	common.EmitUpdateOracleScriptRequest(h, msg.OracleScriptID)
+	for _, raw := range req.RawRequests {
+		common.EmitUpdateDataSourceRequest(h, raw.DataSourceID)
+		common.EmitUpdateRelatedDsOs(h, raw.DataSourceID, msg.OracleScriptID)
+	}
 	os := h.oracleKeeper.MustGetOracleScript(ctx, msg.OracleScriptID)
 	extra["id"] = id
 	extra["name"] = os.Name
@@ -170,6 +187,7 @@ func (h *Hook) handleMsgCreateDataSource(
 	id := types.DataSourceID(common.Atoi(evMap[types.EventTypeCreateDataSource+"."+types.AttributeKeyID][0]))
 	ds := h.oracleKeeper.MustGetDataSource(ctx, id)
 	h.emitSetDataSource(id, ds, txHash)
+	common.EmitNewDataSourceRequest(h, id)
 	extra["id"] = id
 }
 
@@ -180,6 +198,7 @@ func (h *Hook) handleMsgCreateOracleScript(
 	id := types.OracleScriptID(common.Atoi(evMap[types.EventTypeCreateOracleScript+"."+types.AttributeKeyID][0]))
 	os := h.oracleKeeper.MustGetOracleScript(ctx, id)
 	h.emitSetOracleScript(id, os, txHash)
+	common.EmitNewOracleScriptRequest(h, id)
 	extra["id"] = id
 }
 

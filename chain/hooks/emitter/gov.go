@@ -78,12 +78,12 @@ func (h *Hook) emitUpdateProposalAfterDeposit(ctx sdk.Context, id uint64) {
 }
 
 // handleMsgSubmitProposal implements emitter handler for MsgSubmitProposal.
-func (app *Hook) handleMsgSubmitProposal(
-	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap,
+func (h *Hook) handleMsgSubmitProposal(
+	ctx sdk.Context, txHash []byte, msg gov.MsgSubmitProposal, evMap common.EvMap, extra common.JsDict,
 ) {
 	proposalId := uint64(common.Atoi(evMap[types.EventTypeSubmitProposal+"."+types.AttributeKeyProposalID][0]))
-	proposal, _ := app.govKeeper.GetProposal(ctx, proposalId)
-	app.Write("NEW_PROPOSAL", common.JsDict{
+	proposal, _ := h.govKeeper.GetProposal(ctx, proposalId)
+	h.Write("NEW_PROPOSAL", common.JsDict{
 		"id":               proposalId,
 		"proposer":         msg.Proposer,
 		"type":             msg.Content.ProposalType(),
@@ -97,7 +97,8 @@ func (app *Hook) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
-	app.emitSetDeposit(ctx, txHash, proposalId, msg.Proposer)
+	extra["title"] = proposal.GetTitle()
+	h.emitSetDeposit(ctx, txHash, proposalId, msg.Proposer)
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
@@ -110,7 +111,7 @@ func (h *Hook) handleMsgDeposit(
 
 // handleMsgVote implements emitter handler for MsgVote.
 func (h *Hook) handleMsgVote(
-	txHash []byte, msg gov.MsgVote,
+	ctx sdk.Context, txHash []byte, msg gov.MsgVote, extra common.JsDict,
 ) {
 	h.Write("SET_VOTE", common.JsDict{
 		"proposal_id": msg.ProposalID,
@@ -118,6 +119,8 @@ func (h *Hook) handleMsgVote(
 		"answer":      int(msg.Option),
 		"tx_hash":     txHash,
 	})
+	proposal, _ := h.govKeeper.GetProposal(ctx, msg.ProposalID)
+	extra["title"] = proposal.GetTitle()
 }
 
 func (h *Hook) handleEventInactiveProposal(evMap common.EvMap) {

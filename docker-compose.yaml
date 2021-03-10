@@ -125,7 +125,7 @@ services:
     image: bandchain_flusher:latest
     networks:
       bandchain:
-    command: sh -c "sleep 30 && python main.py init bandchain test --db postgres:postgrespassword@172.18.0.88:5432/postgres"
+    command: sh -c "sleep 30 && python main.py init bandchain test replay --db postgres:postgrespassword@172.18.0.88:5432/postgres"
 
   flusher-daemon:
     image: bandchain_flusher:latest

@@ -49,15 +49,15 @@ func (h *Hook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.AB
 	case oracle.MsgActivate:
 		h.handleMsgActivate(ctx, msg)
 	case staking.MsgCreateValidator:
-		h.handleMsgCreateValidator(ctx, msg)
+		h.handleMsgCreateValidator(ctx, msg, extra)
 	case staking.MsgEditValidator:
-		h.handleMsgEditValidator(ctx, msg)
+		h.handleMsgEditValidator(ctx, msg, extra)
 	case staking.MsgDelegate:
-		h.handleMsgDelegate(ctx, msg)
+		h.handleMsgDelegate(ctx, msg, extra)
 	case staking.MsgUndelegate:
-		h.handleMsgUndelegate(ctx, msg, evMap)
+		h.handleMsgUndelegate(ctx, msg, evMap, extra)
 	case staking.MsgBeginRedelegate:
-		h.handleMsgBeginRedelegate(ctx, msg, evMap)
+		h.handleMsgBeginRedelegate(ctx, msg, evMap, extra)
 	case bank.MsgSend:
 		h.handleMsgSend(msg)
 	case bank.MsgMultiSend:
@@ -65,15 +65,15 @@ func (h *Hook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.AB
 	case dist.MsgWithdrawDelegatorReward:
 		h.handleMsgWithdrawDelegatorReward(ctx, msg, evMap, extra)
 	case dist.MsgSetWithdrawAddress:
-		h.handleMsgSetWithdrawAddress(msg)
+		h.handleMsgSetWithdrawAddress(msg, extra)
 	case dist.MsgWithdrawValidatorCommission:
 		h.handleMsgWithdrawValidatorCommission(ctx, msg, evMap, extra)
 	case slashing.MsgUnjail:
 		h.handleMsgUnjail(ctx, msg)
 	case gov.MsgSubmitProposal:
-		h.handleMsgSubmitProposal(ctx, txHash, msg, evMap)
+		h.handleMsgSubmitProposal(ctx, txHash, msg, evMap, extra)
 	case gov.MsgVote:
-		h.handleMsgVote(txHash, msg)
+		h.handleMsgVote(ctx, txHash, msg, extra)
 	case gov.MsgDeposit:
 		h.handleMsgDeposit(ctx, txHash, msg)
 	}

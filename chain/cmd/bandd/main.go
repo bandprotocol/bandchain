@@ -27,6 +27,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/app"
 	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
+	"github.com/bandprotocol/bandchain/chain/hooks/replay"
 	"github.com/bandprotocol/bandchain/chain/hooks/request"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
@@ -38,6 +39,8 @@ const (
 	flagEnableFastSync        = "enable-fast-sync"
 	flagWithPricer            = "with-pricer"
 	flagWithRequestSearch     = "with-request-search"
+	flagReplayMode            = "replay-mode"
+	flagStopEmitterHeight     = "stop-emitter-height"
 )
 
 var invCheckPeriod uint
@@ -74,6 +77,8 @@ func main() {
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
+	rootCmd.PersistentFlags().String(flagReplayMode, "", "[Experimental] Use emitter replay mode")
+	rootCmd.PersistentFlags().String(flagStopEmitterHeight, "", "[Experimental] Use emitter replay stop at height")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -130,6 +135,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			oids[idx] = types.OracleScriptID(oid)
 		}
 		bandApp.AddHook(price.NewHook(bandApp.Codec(), bandApp.OracleKeeper, oids, filepath.Join(viper.GetString(cli.HomeFlag), "prices")))
+	}
+	if viper.IsSet(flagReplayMode) {
+		bandApp.AddHook(replay.NewHook(
+			bandApp.Codec(), bandApp.AccountKeeper, bandApp.BankKeeper, bandApp.SupplyKeeper,
+			bandApp.StakingKeeper, bandApp.MintKeeper, bandApp.DistrKeeper, bandApp.GovKeeper,
+			bandApp.OracleKeeper, viper.GetString(flagReplayMode), viper.GetInt64(flagStopEmitterHeight)))
 	}
 	return bandApp
 }
