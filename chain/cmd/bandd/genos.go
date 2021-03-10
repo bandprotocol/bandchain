@@ -33,7 +33,7 @@ func AddGenesisOracleScriptCmd(ctx *server.Context, cdc *codec.Codec, defaultNod
 			if err != nil {
 				return err
 			}
-			vm, err := api.NewVm(0) // Compile didn't use cache
+			vm, err := api.NewVm(0) // The compilation doesn't use cache
 			if err != nil {
 				return err
 			}
