@@ -23,16 +23,17 @@ from .data import (
 
 
 class Client(object):
-    def __init__(self, rpc_url: str) -> None:
+    def __init__(self, rpc_url: str, timeout: Optional[int] = None) -> None:
         self.rpc_url = rpc_url
+        self.timeout = timeout
 
     def _get(self, path, **kwargs):
-        r = requests.get(self.rpc_url + path, **kwargs)
+        r = requests.get(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 
     def _post(self, path, **kwargs):
-        r = requests.post(self.rpc_url + path, **kwargs)
+        r = requests.post(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 

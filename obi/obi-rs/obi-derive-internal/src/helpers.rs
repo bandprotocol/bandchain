@@ -1,8 +1,8 @@
+use proc_macro2::TokenStream;
 use quote::quote;
-use syn::export::TokenStream2;
 use syn::Generics;
 
-pub fn declaration(ident_str: &String, generics: &Generics) -> (TokenStream2, Vec<TokenStream2>) {
+pub fn declaration(ident_str: &String, generics: &Generics) -> (TokenStream, Vec<TokenStream>) {
     let (_, _, where_clause_generics) = generics.split_for_impl();
     // Generate function that returns the name of the type.
     let mut declaration_params = vec![];
