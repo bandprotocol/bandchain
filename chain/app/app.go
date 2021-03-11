@@ -37,6 +37,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/x/oracle"
 	bandante "github.com/bandprotocol/bandchain/chain/x/oracle/ante"
 	bandsupply "github.com/bandprotocol/bandchain/chain/x/supply"
+	"github.com/bandprotocol/go-owasm/api"
 )
 
 const (
@@ -138,7 +139,7 @@ func SetBech32AddressPrefixesAndBip44CoinType(config *sdk.Config) {
 func NewBandApp(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, loadLatest bool,
 	invCheckPeriod uint, skipUpgradeHeights map[int64]bool, home string,
-	disableFeelessReports bool, baseAppOptions ...func(*bam.BaseApp),
+	disableFeelessReports bool, owasmCacheSize uint32, baseAppOptions ...func(*bam.BaseApp),
 ) *BandApp {
 	cdc := MakeCodec()
 	bApp := bam.NewBaseApp(AppName, logger, db, auth.DefaultTxDecoder(cdc), baseAppOptions...)
@@ -156,6 +157,10 @@ func NewBandApp(
 		invCheckPeriod: invCheckPeriod,
 		keys:           keys,
 		tKeys:          tKeys,
+	}
+	owasmVM, err := api.NewVm(owasmCacheSize)
+	if err != nil {
+		panic(err)
 	}
 	// Initialize params keeper and module subspaces.
 	app.ParamsKeeper = params.NewKeeper(cdc, keys[params.StoreKey], tKeys[params.TStoreKey])
@@ -183,7 +188,7 @@ func NewBandApp(
 	app.CrisisKeeper = crisis.NewKeeper(crisisSubspace, invCheckPeriod, app.SupplyKeeper, auth.FeeCollectorName)
 	app.SlashingKeeper = slashing.NewKeeper(cdc, keys[slashing.StoreKey], &stakingKeeper, slashingSubspace)
 	app.UpgradeKeeper = upgrade.NewKeeper(skipUpgradeHeights, keys[upgrade.StoreKey], cdc)
-	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), auth.FeeCollectorName, oracleSubspace, app.SupplyKeeper, &stakingKeeper, app.DistrKeeper)
+	app.OracleKeeper = oracle.NewKeeper(cdc, keys[oracle.StoreKey], filepath.Join(viper.GetString(cli.HomeFlag), "files"), auth.FeeCollectorName, oracleSubspace, app.SupplyKeeper, &stakingKeeper, app.DistrKeeper, owasmVM)
 	// Register the proposal types.
 	govRouter := gov.NewRouter()
 	govRouter.

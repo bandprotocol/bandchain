@@ -6,11 +6,10 @@ import (
 	"os/exec"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
-	"github.com/bandprotocol/bandchain/go-owasm/api"
 )
 
 func compile(code []byte) []byte {
-	compiled, err := api.Compile(code, types.MaxCompiledWasmCodeSize)
+	compiled, err := OwasmVM.Compile(code, types.MaxCompiledWasmCodeSize)
 	if err != nil {
 		panic(err)
 	}
