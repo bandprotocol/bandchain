@@ -1,7 +1,7 @@
 package types
 
 import (
-	"github.com/bandprotocol/bandchain/go-owasm/api"
+	"github.com/bandprotocol/go-owasm/api"
 )
 
 // BaseEnv combines shared functions used in prepare and execution Owasm program,

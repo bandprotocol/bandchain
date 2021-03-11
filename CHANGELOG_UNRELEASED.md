@@ -12,8 +12,6 @@
 
 ### Chain (Non-consensus)
 
-- (impv) [\#2912](https://github.com/bandprotocol/bandchain/pull/2912) proof contain the real block time instead of time hash
-
 ### Yoda
 
 ### Emitter & Flusher
@@ -34,7 +32,7 @@
 - (bugs) [\#2927](https://github.com/bandprotocol/bandchain/pull/2927) Fix default tab on Route's search
 - (feat) [\#2854](https://github.com/bandprotocol/bandchain/pull/2854) Implement reinvest
 - (chore) [\#2793](https://github.com/bandprotocol/bandchain/pull/2793) Remove legacy row and column
-- (impv) [\#2686](https://github.com/bandprotocol/bandchain/pull/2686) Support array on generateDecodeLibSolidity 
+- (impv) [\#2686](https://github.com/bandprotocol/bandchain/pull/2686) Support array on generateDecodeLibSolidity
 
 ### Bridges
 
