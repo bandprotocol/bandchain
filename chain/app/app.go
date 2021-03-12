@@ -77,10 +77,6 @@ var (
 		staking.NotBondedPoolName: {supply.Burner, supply.Staking},
 		gov.ModuleName:            {supply.Burner},
 	}
-	// module accounts that are allowed to receive tokens.
-	allowedReceivingModAcc = map[string]bool{
-		distr.ModuleName: true,
-	}
 )
 
 // BandApp is the application of BandChain, extended base ABCI application.
@@ -176,7 +172,7 @@ func NewBandApp(
 	oracleSubspace := app.ParamsKeeper.Subspace(oracle.DefaultParamspace)
 	// Add module keepers.
 	app.AccountKeeper = auth.NewAccountKeeper(cdc, keys[auth.StoreKey], authSubspace, auth.ProtoBaseAccount)
-	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, app.BlacklistedAccAddrs())
+	app.BankKeeper = bank.NewBaseKeeper(app.AccountKeeper, bankSubspace, app.ModuleAccountAddrs())
 	app.SupplyKeeper = supply.NewKeeper(cdc, keys[supply.StoreKey], app.AccountKeeper, app.BankKeeper, maccPerms)
 	// wrappedSupplyKeeper overrides burn token behavior to instead transfer to community pool.
 	wrappedSupplyKeeper := bandsupply.WrapSupplyKeeperBurnToCommunityPool(app.SupplyKeeper)
@@ -341,15 +337,6 @@ func (app *BandApp) ModuleAccountAddrs() map[string]bool {
 		modAccAddrs[supply.NewModuleAddress(acc).String()] = true
 	}
 	return modAccAddrs
-}
-
-// BlacklistedAccAddrs returns all the app's module account addresses black listed for receiving tokens.
-func (app *BandApp) BlacklistedAccAddrs() map[string]bool {
-	blacklistedAddrs := make(map[string]bool)
-	for acc := range maccPerms {
-		blacklistedAddrs[supply.NewModuleAddress(acc).String()] = !allowedReceivingModAcc[acc]
-	}
-	return blacklistedAddrs
 }
 
 // Codec returns the application's sealed codec.
