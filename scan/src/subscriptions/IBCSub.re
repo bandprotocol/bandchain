@@ -11,9 +11,21 @@ module Request = {
 };
 
 module Response = {
+  // TODO: refactor later (combine with resolve_status on RequestSub)
   type status_t =
+    | Pending
     | Success
-    | Fail;
+    | Failure
+    | Expired
+    | Unknown;
+
+  let parseResolveStatusFromInt =
+  fun
+  | 0 => Pending
+  | 1 => Success
+  | 2 => Failure
+  | 3 => Expired
+  | _ => Unknown;
 
   type t = {
     requestID: ID.Request.t,
@@ -35,11 +47,11 @@ type packet_t =
 
 type t = {
   direction: packet_direction_t,
-  channel: string,
-  port: string,
-  yourChainID: string,
-  yourChannel: string,
-  yourPort: string,
+  srcChannel: string,
+  srcPort: string,
+  chainID: string,
+  dstChannel: string,
+  dstPort: string,
   blockHeight: ID.Block.t,
   packet: packet_t,
 };
@@ -48,10 +60,10 @@ module Internal = {
   type t = {
     isIncoming: bool,
     blockHeight: ID.Block.t,
-    channel: string,
-    port: string,
-    yourChannel: string,
-    yourPort: string,
+    srcChannel: string,
+    srcPort: string,
+    dstChannel: string,
+    dstPort: string,
     packetType: string,
     packetDetail: Js.Json.t,
     acknowledgement: option(Js.Json.t),
@@ -62,21 +74,21 @@ module Internal = {
         {
           isIncoming,
           blockHeight,
-          channel,
-          port,
-          yourChannel,
-          yourPort,
+          srcChannel,
+          srcPort,
+          dstChannel,
+          dstPort,
           packetType,
           packetDetail,
           acknowledgement,
         },
       ) => {
     direction: isIncoming ? Incoming : Outgoing,
-    channel,
-    port,
-    yourChainID: "chain-id",
-    yourChannel,
-    yourPort,
+    srcChannel,
+    srcPort,
+    chainID: "bandchain",
+    dstChannel,
+    dstPort,
     blockHeight,
     packet:
       switch (packetType) {
@@ -99,8 +111,7 @@ module Internal = {
       | "oracle response" =>
         let status =
           packetDetail
-          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.string) == "Success"
-            ? Response.Success : Response.Fail;
+          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.int) |> Response.parseResolveStatusFromInt
         Response(
           JsonUtils.Decode.{
             requestID: ID.Request.ID(packetDetail |> at(["request_id"], int)),
@@ -121,10 +132,10 @@ module Internal = {
       packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
         isIncoming: is_incoming
         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
-        channel: src_channel
-        port: src_port
-        yourChannel: dst_channel
-        yourPort: dst_port
+        srcChannel: src_channel
+        srcPort: src_port
+        dstChannel: dst_channel
+        dstPort: dst_port
         packetType: type
         packetDetail: data
         acknowledgement

@@ -91,11 +91,11 @@ let make = () =>
                i,
                {
                  direction,
-                 channel,
-                 port,
-                 yourChainID,
-                 yourChannel,
-                 yourPort,
+                 srcChannel,
+                 srcPort,
+                 chainID,
+                 dstChannel,
+                 dstPort,
                  blockHeight,
                  packet,
                },
@@ -137,29 +137,23 @@ let make = () =>
                  <Col col=Col.Three>
                    <div className=Styles.hFlex>
                      <Text
-                       value={j|ChainID:‌‌ ‌‌ |j}
+                       value={j|ChainID:‌‌ |j}
                        size=Text.Sm
                        code=true
                        height={Text.Px(16)}
                      />
-                     <Text value=yourChainID size=Text.Sm code=true height={Text.Px(16)} />
+                     <Text value=chainID size=Text.Sm code=true height={Text.Px(16)} />
                    </div>
                    <VSpacing size=Spacing.md />
                    <div className=Styles.hFlex>
                      <Text
-                       value={j|Channel:‌‌ ‌‌ |j}
+                       value={j|Src Channel:‌‌ |j}
                        size=Text.Sm
                        code=true
                        height={Text.Px(16)}
                      />
                      <Text
-                       value={
-                         switch (packet) {
-                         | Request(_) => channel
-                         | Response(_) => yourChannel
-                         | Unknown => "Unknown"
-                         }
-                       }
+                       value={srcChannel}
                        size=Text.Sm
                        code=true
                        height={Text.Px(16)}
@@ -168,19 +162,43 @@ let make = () =>
                    <VSpacing size=Spacing.md />
                    <div className=Styles.hFlex>
                      <Text
-                       value={j|Port:‌‌ ‌‌ ‌‌ ‌‌ ‌‌ |j}
+                       value={j|Src Port:‌‌ |j}
                        size=Text.Sm
                        code=true
                        height={Text.Px(16)}
                      />
                      <Text
-                       value={
-                         switch (packet) {
-                         | Request(_) => port
-                         | Response(_) => yourPort
-                         | Unknown => "Unknown"
-                         }
-                       }
+                       value={srcPort}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Dst Channel:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={dstChannel}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Dst Port:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={dstPort}
                        size=Text.Sm
                        code=true
                        height={Text.Px(16)}
