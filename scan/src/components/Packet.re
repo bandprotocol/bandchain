@@ -118,26 +118,10 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       <VSpacing size=Spacing.md />
       <div className=Styles.topicContainer>
         <Text value="STATUS" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex>
-          <div className=Styles.statusContainer>
-            <Text
-              block=true
-              code=true
-              spacing={Text.Em(0.02)}
-              value={response.status == IBCSub.Response.Success ? "success" : "fail"}
-              weight=Text.Medium
-              ellipsis=true
-            />
-            <HSpacing size=Spacing.md />
-            <img
-              src={response.status == IBCSub.Response.Success ? Images.success : Images.fail}
-              className=Styles.logo
-            />
-          </div>
-        </div>
+        <RequestStatus resolveStatus={response.status} display=RequestStatus.Full />
       </div>
       {switch (response.status, response.result) {
-       | (IBCSub.Response.Success, Some(result)) =>
+       | (RequestStatus.Success, Some(result)) =>
          let outputKVsOpt =
            switch (oracleScriptSub) {
            | Data(oracleScript) => Obi.decode(oracleScript.schema, "output", result)

@@ -162,22 +162,22 @@ let renderRequestStatus = status => {
       align=Text.Right
       value={
         switch (status) {
-        | RequestSub.Success => "Success"
-        | RequestSub.Failure => "Fail"
-        | RequestSub.Pending => "Pending"
-        | RequestSub.Expired => "Expired"
-        | RequestSub.Unknown => "???"
+        | RequestStatus.Success => "Success"
+        | Failure => "Fail"
+        | Pending => "Pending"
+        | Expired => "Expired"
+        | Unknown => "???"
         }
       }
     />
     <img
       src={
         switch (status) {
-        | RequestSub.Success => Images.success
-        | RequestSub.Failure => Images.fail
-        | RequestSub.Pending => Images.pending
-        | RequestSub.Expired => Images.expired
-        | RequestSub.Unknown => Images.unknown
+        | Success => Images.success
+        | Failure => Images.fail
+        | Pending => Images.pending
+        | Expired => Images.expired
+        | Unknown => Images.unknown
         }
       }
       className=Styles.resolveIcon
@@ -203,7 +203,7 @@ type t =
   | OracleScript(ID.OracleScript.t, string)
   | RelatedDataSources(list(ID.DataSource.t))
   | Request(ID.Request.t)
-  | RequestStatus(RequestSub.resolve_status_t);
+  | RequestStatus(RequestStatus.t);
 
 [@react.component]
 let make = (~elementType) => {

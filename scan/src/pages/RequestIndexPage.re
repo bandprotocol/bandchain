@@ -379,7 +379,7 @@ let make = (~reqID) => {
             {switch (requestSub) {
              | Data({oracleScript: {schema}, result: resultOpt, resolveStatus}) =>
                switch (resolveStatus, resultOpt) {
-               | (RequestSub.Success, Some(result)) =>
+               | (RequestStatus.Success, Some(result)) =>
                  let decodesOpt = Obi.decode(schema, "output", result);
                  <KVTableContainer decodesOpt />;
                | (Pending, _) =>

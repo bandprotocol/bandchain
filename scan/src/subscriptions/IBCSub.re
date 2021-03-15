@@ -11,27 +11,12 @@ module Request = {
 };
 
 module Response = {
-  // TODO: refactor later (combine with resolve_status on RequestSub)
-  type status_t =
-    | Pending
-    | Success
-    | Failure
-    | Expired
-    | Unknown;
-
-  let parseResolveStatusFromInt =
-  fun
-  | 0 => Pending
-  | 1 => Success
-  | 2 => Failure
-  | 3 => Expired
-  | _ => Unknown;
 
   type t = {
     requestID: ID.Request.t,
     oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
-    status: status_t,
+    status: RequestStatus.t,
     result: option(JsBuffer.t),
   };
 };
@@ -111,7 +96,7 @@ module Internal = {
       | "oracle response" =>
         let status =
           packetDetail
-          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.int) |> Response.parseResolveStatusFromInt
+          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.int) |> RequestStatus.fromInt
         Response(
           JsonUtils.Decode.{
             requestID: ID.Request.ID(packetDetail |> at(["request_id"], int)),

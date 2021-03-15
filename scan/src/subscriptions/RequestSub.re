@@ -1,24 +1,6 @@
 open ValidatorSub.Mini;
 open TxSub.Mini;
 
-type resolve_status_t =
-  | Pending
-  | Success
-  | Failure
-  | Expired
-  | Unknown;
-
-let parseResolveStatus = json => {
-  let status = json |> Js.Json.decodeString |> Belt_Option.getExn;
-  switch (status) {
-  | "Open" => Pending
-  | "Success" => Success
-  | "Failure" => Failure
-  | "Expired" => Expired
-  | _ => Unknown
-  };
-};
-
 module Mini = {
   type oracle_script_internal_t = {
     scriptID: ID.OracleScript.t,
@@ -41,7 +23,7 @@ module Mini = {
     transactionOpt: option(TxSub.Mini.t),
     reportsAggregate: aggregate_wrapper_intenal_t,
     minCount: int,
-    resolveStatus: resolve_status_t,
+    resolveStatus: RequestStatus.t,
     requestedValidatorsAggregate: aggregate_wrapper_intenal_t,
     result: option(JsBuffer.t),
   };
@@ -61,7 +43,7 @@ module Mini = {
     reportsCount: int,
     minCount: int,
     askCount: int,
-    resolveStatus: resolve_status_t,
+    resolveStatus: RequestStatus.t,
     result: option(JsBuffer.t),
   };
 
@@ -98,7 +80,7 @@ module Mini = {
               count @bsDecoder(fn: "Belt_Option.getExn")
             }
           }
-          resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
+          resolveStatus: resolve_status  @bsDecoder(fn: "RequestStatus.fromJsonString")
           minCount: min_count
           requestedValidatorsAggregate: val_requests_aggregate @bsRecord {
             aggregate @bsRecord {
@@ -144,7 +126,7 @@ module Mini = {
               count @bsDecoder(fn: "Belt_Option.getExn")
             }
           }
-          resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
+          resolveStatus: resolve_status  @bsDecoder(fn: "RequestStatus.fromJsonString")
           minCount: min_count
           requestedValidatorsAggregate: val_requests_aggregate @bsRecord {
             aggregate @bsRecord {
@@ -185,7 +167,7 @@ module Mini = {
               count @bsDecoder(fn: "Belt_Option.getExn")
             }
           }
-          resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
+          resolveStatus: resolve_status  @bsDecoder(fn: "RequestStatus.fromJsonString")
           minCount: min_count
           requestedValidatorsAggregate: val_requests_aggregate @bsRecord {
             aggregate @bsRecord {
@@ -348,7 +330,7 @@ type internal_t = {
   calldata: JsBuffer.t,
   requestedValidators: array(requested_validator_internal_t),
   minCount: int,
-  resolveStatus: resolve_status_t,
+  resolveStatus: RequestStatus.t,
   sender: option(Address.t),
   transactionOpt: option(TxSub.Mini.t),
   rawDataRequests: array(raw_data_request_t),
@@ -365,7 +347,7 @@ type t = {
   calldata: JsBuffer.t,
   requestedValidators: array(requested_validator_internal_t),
   minCount: int,
-  resolveStatus: resolve_status_t,
+  resolveStatus: RequestStatus.t,
   requester: option(Address.t),
   transactionOpt: option(TxSub.Mini.t),
   rawDataRequests: array(raw_data_request_t),
@@ -452,7 +434,7 @@ module SingleRequestConfig = [%graphql
           }
         }
         minCount: min_count
-        resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
+        resolveStatus: resolve_status  @bsDecoder(fn: "RequestStatus.fromJsonString")
         sender @bsDecoder(fn: "GraphQLParser.addressOpt")
         transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
@@ -520,7 +502,7 @@ module MultiRequestConfig = [%graphql
           }
         }
         minCount: min_count
-        resolveStatus: resolve_status  @bsDecoder(fn: "parseResolveStatus")
+        resolveStatus: resolve_status  @bsDecoder(fn: "RequestStatus.fromJsonString")
         sender @bsDecoder(fn: "GraphQLParser.addressOpt")
         transactionOpt: transaction @bsRecord {
           hash @bsDecoder(fn: "GraphQLParser.hash")
