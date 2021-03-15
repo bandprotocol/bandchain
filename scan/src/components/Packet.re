@@ -32,11 +32,17 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
       | _ => None
       };
     <>
-      <div className=Styles.topicContainer>
-        <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
-        <div className=Styles.hFlex> <TypeID.Request id={request.id} /> </div>
-      </div>
-      <VSpacing size=Spacing.md />
+      {switch (request.idOpt) {
+       | Some(id) =>
+         <>
+           <div className=Styles.topicContainer>
+             <Text value="REQUEST ID" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
+             <div className=Styles.hFlex> <TypeID.Request id /> </div>
+           </div>
+           <VSpacing size=Spacing.md />
+         </>
+       | None => React.null
+       }}
       <div className=Styles.topicContainer>
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>

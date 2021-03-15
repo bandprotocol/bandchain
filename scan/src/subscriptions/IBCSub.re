@@ -1,6 +1,6 @@
 module Request = {
   type t = {
-    id: ID.Request.t,
+    idOpt: option(ID.Request.t),
     oracleScriptID: ID.OracleScript.t,
     oracleScriptName: string,
     clientID: string,
@@ -50,11 +50,11 @@ module Internal = {
     blockHeight: ID.Block.t,
     channel: string,
     port: string,
-    yourChainID: string,
     yourChannel: string,
     yourPort: string,
     packetType: string,
     packetDetail: Js.Json.t,
+    acknowledgement: option(Js.Json.t),
   };
 
   let toExternal =
@@ -64,26 +64,30 @@ module Internal = {
           blockHeight,
           channel,
           port,
-          yourChainID,
           yourChannel,
           yourPort,
           packetType,
           packetDetail,
+          acknowledgement,
         },
       ) => {
     direction: isIncoming ? Incoming : Outgoing,
     channel,
     port,
-    yourChainID,
+    yourChainID: "chain-id",
     yourChannel,
     yourPort,
     blockHeight,
     packet:
       switch (packetType) {
-      | "ORACLE REQUEST" =>
+      | "oracle request" =>
         Request(
           JsonUtils.Decode.{
-            id: ID.Request.ID(packetDetail |> at(["request_id"], int)),
+            idOpt:
+              switch (acknowledgement) {
+              | Some(x) => Some(ID.Request.ID(x |> at(["request_id"], int)))
+              | None => None
+              },
             oracleScriptID: ID.OracleScript.ID(packetDetail |> at(["oracle_script_id"], int)),
             oracleScriptName: packetDetail |> at(["oracle_script_name"], string),
             clientID: packetDetail |> at(["client_id"], string),
@@ -92,7 +96,7 @@ module Internal = {
             minCount: packetDetail |> at(["min_count"], int),
           },
         )
-      | "ORACLE RESPONSE" =>
+      | "oracle response" =>
         let status =
           packetDetail
           |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.string) == "Success"
@@ -111,53 +115,49 @@ module Internal = {
       | _ => Unknown
       },
   };
-  // module MultiPacketsConfig = [%graphql
-  //   {|
-  //   subscription Packets($limit: Int!, $offset: Int!) {
-  //     packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
-  //       isIncoming: is_incoming
-  //       blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJsonString")
-  //       channel: my_channel
-  //       port: my_port
-  //       yourChainID: your_chain_id
-  //       yourChannel: your_channel
-  //       yourPort: your_port
-  //       packetType: type
-  //       packetDetail: detail
-  //     }
-  //   }
-  // |}
-  // ];
+  module MultiPacketsConfig = [%graphql
+    {|
+    subscription Packets($limit: Int!, $offset: Int!) {
+      packets(limit: $limit, offset: $offset, order_by: {block_height: desc}) @bsRecord {
+        isIncoming: is_incoming
+        blockHeight: block_height @bsDecoder(fn: "ID.Block.fromInt")
+        channel: src_channel
+        port: src_port
+        yourChannel: dst_channel
+        yourPort: dst_port
+        packetType: type
+        packetDetail: data
+        acknowledgement
+      }
+    }
+  |}
+  ];
 };
 
-// module PacketCountConfig = [%graphql
-//   {|
-//   subscription PacketsCount {
-//     packets_aggregate{
-//       aggregate{
-//         count @bsDecoder(fn: "Belt_Option.getExn")
-//       }
-//     }
-//   }
-// |}
-// ];
+module PacketCountConfig = [%graphql
+  {|
+  subscription PacketsCount {
+    packets_aggregate{
+      aggregate{
+        count @bsDecoder(fn: "Belt_Option.getExn")
+      }
+    }
+  }
+|}
+];
 
 let getList = (~page=1, ~pageSize=10, ()): ApolloHooks.Subscription.variant(array(t)) => {
-  // let offset = (page - 1) * pageSize;
-  // let (result, _) =
-  //   ApolloHooks.useSubscription(
-  //     Internal.MultiPacketsConfig.definition,
-  //     ~variables=Internal.MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
-  //   );
-  // result |> Sub.map(_, x => x##packets->Belt_Array.map(Internal.toExternal));
-  Sub.resolve([||]);
+  let offset = (page - 1) * pageSize;
+  let (result, _) =
+    ApolloHooks.useSubscription(
+      Internal.MultiPacketsConfig.definition,
+      ~variables=Internal.MultiPacketsConfig.makeVariables(~limit=pageSize, ~offset, ()),
+    );
+  result |> Sub.map(_, x => x##packets->Belt_Array.map(Internal.toExternal));
 };
 
 let count = () => {
-  // let (result, _) = ApolloHooks.useSubscription(PacketCountConfig.definition);
-  // result
-  // |> Sub.map(_, x => x##packets_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
-  Sub.resolve(
-    0,
-  );
+  let (result, _) = ApolloHooks.useSubscription(PacketCountConfig.definition);
+  result
+  |> Sub.map(_, x => x##packets_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
 };
