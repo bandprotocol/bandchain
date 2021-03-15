@@ -1,7 +1,7 @@
 import base64
 
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import List, Optional
 from .wallet import Address
 from .data import Coin
 from .constant import MAX_CLIENT_ID_LENGTH, MAX_DATA_SIZE
