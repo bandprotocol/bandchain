@@ -262,12 +262,12 @@ module Msg = {
 
     let decodeSuccess = json => {
       JsonUtils.Decode.{
-        id: json |> at(["extra", "id"], ID.Request.fromJsonString),
+        id: json |> at(["extra", "id"], ID.Request.fromJsonInt),
         oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJsonString),
         oracleScriptName: json |> at(["extra", "name"], string),
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
-        askCount: json |> at(["msg", "ask_count"], int),
-        minCount: json |> at(["msg", "min_count"], int),
+        askCount: json |> at(["msg", "ask_count"], string) |> int_of_string,
+        minCount: json |> at(["msg", "min_count"], string) |> int_of_string,
         schema: json |> at(["extra", "schema"], string),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
@@ -277,8 +277,8 @@ module Msg = {
       JsonUtils.Decode.{
         oracleScriptID: json |> at(["msg", "oracle_script_id"], ID.OracleScript.fromJsonString),
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
-        askCount: json |> at(["msg", "ask_count"], int),
-        minCount: json |> at(["msg", "min_count"], int),
+        askCount: json |> at(["msg", "ask_count"], string) |> int_of_string,
+        minCount: json |> at(["msg", "min_count"], string) |> int_of_string,
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
     };
