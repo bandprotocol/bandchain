@@ -30,7 +30,6 @@ import (
 	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	"github.com/bandprotocol/bandchain/chain/hooks/request"
-	"github.com/bandprotocol/bandchain/chain/x/oracle/ante"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -101,10 +100,28 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		panic(err)
 	}
 
+	var requesters []string
+	if viper.IsSet(flagWhiteListRequesters) {
+		whitelistFile := viper.GetString(flagWhiteListRequesters)
+
+		f, err := os.Open(whitelistFile)
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		scanner := bufio.NewScanner(f)
+		for scanner.Scan() {
+			addr := scanner.Text()
+			requesters = append(requesters, addr)
+		}
+	}
+
 	bandApp := app.NewBandApp(
 		logger, db, traceStore, true, invCheckPeriod, skipUpgradeHeights,
 		viper.GetString(flags.FlagHome),
 		viper.GetBool(flagDisableFeelessReports),
+		requesters,
 		baseapp.SetPruning(pruningOpts),
 		baseapp.SetMinGasPrices(viper.GetString(server.FlagMinGasPrices)),
 		baseapp.SetHaltHeight(viper.GetUint64(server.FlagHaltHeight)),
@@ -123,22 +140,6 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 		bandApp.AddHook(request.NewHook(
 			bandApp.Codec(), bandApp.OracleKeeper,
 			viper.GetString(flagWithRequestSearch)))
-	}
-	if viper.IsSet(flagWhiteListRequesters) {
-		whitelistFile := viper.GetString(flagWhiteListRequesters)
-		f, err := os.Open(whitelistFile)
-		if err != nil {
-			panic(err)
-		}
-		scanner := bufio.NewScanner(f)
-		addresses := []string{}
-
-		for scanner.Scan() {
-			addr := scanner.Text()
-			addresses = append(addresses, addr)
-		}
-
-		ante.SetWhiteList(addresses)
 	}
 
 	if viper.IsSet(flagWithPricer) {
@@ -161,7 +162,7 @@ func exportAppStateAndTMValidators(
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
 
 	if height != -1 {
-		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports))
+		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), nil)
 		err := bandApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -170,6 +171,6 @@ func exportAppStateAndTMValidators(
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports))
+	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), nil)
 	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }

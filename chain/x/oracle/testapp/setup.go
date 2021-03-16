@@ -147,7 +147,7 @@ func NewSimApp(chainID string, logger log.Logger) *bandapp.BandApp {
 	}
 	viper.Set(cli.HomeFlag, dir)
 	db := dbm.NewMemDB()
-	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "", false)
+	app := bandapp.NewBandApp(logger, db, nil, true, 0, map[int64]bool{}, "", false, nil)
 	genesis := bandapp.NewDefaultGenesisState()
 	// Fund seed accounts and validators with 1000000uband and 100000000uband initially.
 	authGenesis := auth.NewGenesisState(auth.DefaultParams(), []authexported.GenesisAccount{

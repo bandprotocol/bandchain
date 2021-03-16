@@ -15,7 +15,6 @@ import (
 var (
 	repTxCount       *lru.Cache
 	nextRepOnlyBlock int64
-	whiteList        map[string]bool
 )
 
 func init() {
@@ -23,14 +22,6 @@ func init() {
 	repTxCount, err = lru.New(20000)
 	if err != nil {
 		panic(err)
-	}
-}
-
-// SetWhiteList to set requesters whitelist
-func SetWhiteList(addresses []string) {
-	whiteList = make(map[string]bool)
-	for _, addr := range addresses {
-		whiteList[addr] = true
 	}
 }
 
@@ -102,9 +93,14 @@ func NewFeelessReportsAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keep
 }
 
 // NewWhiteListAnteHandler returns a new ante handler that filter requests from external addresses out
-func NewWhiteListAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
+func NewWhiteListAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper, requesters []string) sdk.AnteHandler {
+	whiteList := make(map[string]bool)
+	for _, addr := range requesters {
+		whiteList[addr] = true
+	}
+
 	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
-		if ctx.IsCheckTx() && !simulate && len(whiteList) > 0 {
+		if ctx.IsCheckTx() && !simulate {
 
 			for _, msg := range tx.GetMsgs() {
 
