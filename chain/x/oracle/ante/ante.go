@@ -1,6 +1,7 @@
 package ante
 
 import (
+	"errors"
 	"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -14,6 +15,7 @@ import (
 var (
 	repTxCount       *lru.Cache
 	nextRepOnlyBlock int64
+	whiteList        map[string]bool
 )
 
 func init() {
@@ -21,6 +23,14 @@ func init() {
 	repTxCount, err = lru.New(20000)
 	if err != nil {
 		panic(err)
+	}
+}
+
+// SetWhiteList to set requesters whitelist
+func SetWhiteList(addresses []string) {
+	whiteList = make(map[string]bool)
+	for _, addr := range addresses {
+		whiteList[addr] = true
 	}
 }
 
@@ -85,6 +95,31 @@ func NewFeelessReportsAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keep
 				newCtx, err := ante(ctx.WithMinGasPrices(sdk.DecCoins{}), tx, simulate)
 				// Set minimum gas price context and return context to caller.
 				return newCtx.WithMinGasPrices(minGas), err
+			}
+		}
+		return ante(ctx, tx, simulate)
+	}
+}
+
+// NewWhiteListAnteHandler returns a new ante handler that filter requests from external addresses out
+func NewWhiteListAnteHandler(ante sdk.AnteHandler, oracleKeeper oracle.Keeper) sdk.AnteHandler {
+	return func(ctx sdk.Context, tx sdk.Tx, simulate bool) (newCtx sdk.Context, err error) {
+		if ctx.IsCheckTx() && !simulate && len(whiteList) > 0 {
+
+			for _, msg := range tx.GetMsgs() {
+
+				if req, ok := msg.(oracle.MsgRequestData); ok {
+					// is a whitelisted request
+					if _, found := whiteList[req.Sender.String()]; !found {
+						return ctx, sdkerrors.Wrap(sdkerrors.ErrInvalidRequest, "Request is in valid")
+					}
+
+				} else if _, ok = msg.(oracle.MsgReportData); ok {
+					// TODO: check if this is our report
+				} else {
+					// reject all other msg type
+					return ctx, errors.New("Msg type is not allowed")
+				}
 			}
 		}
 		return ante(ctx, tx, simulate)

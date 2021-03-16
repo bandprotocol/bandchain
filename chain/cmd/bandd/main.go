@@ -1,8 +1,10 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -28,6 +30,7 @@ import (
 	"github.com/bandprotocol/bandchain/chain/hooks/emitter"
 	"github.com/bandprotocol/bandchain/chain/hooks/price"
 	"github.com/bandprotocol/bandchain/chain/hooks/request"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/ante"
 	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
@@ -38,6 +41,7 @@ const (
 	flagEnableFastSync        = "enable-fast-sync"
 	flagWithPricer            = "with-pricer"
 	flagWithRequestSearch     = "with-request-search"
+	flagWhiteListRequesters   = "whitelist-requesters"
 )
 
 var invCheckPeriod uint
@@ -74,6 +78,7 @@ func main() {
 	rootCmd.PersistentFlags().Bool(flagEnableFastSync, false, "[Experimental] Enable fast sync mode")
 	rootCmd.PersistentFlags().String(flagWithRequestSearch, "", "[Experimental] Enable mode to save request in sql database")
 	rootCmd.PersistentFlags().String(flagWithPricer, "", "[Experimental] Enable mode to save price in level db")
+	rootCmd.PersistentFlags().String(flagWhiteListRequesters, "", "[Experimental] Whitelist requesters file")
 	err := executor.Execute()
 	if err != nil {
 		panic(err)
@@ -119,6 +124,23 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 			bandApp.Codec(), bandApp.OracleKeeper,
 			viper.GetString(flagWithRequestSearch)))
 	}
+	if viper.IsSet(flagWhiteListRequesters) {
+		whitelistFile := viper.GetString(flagWhiteListRequesters)
+		f, err := os.Open(whitelistFile)
+		if err != nil {
+			panic(err)
+		}
+		scanner := bufio.NewScanner(f)
+		addresses := []string{}
+
+		for scanner.Scan() {
+			addr := scanner.Text()
+			addresses = append(addresses, addr)
+		}
+
+		ante.SetWhiteList(addresses)
+	}
+
 	if viper.IsSet(flagWithPricer) {
 		rawOids := strings.Split(viper.GetString(flagWithPricer), ",")
 		oids := make([]types.OracleScriptID, len(rawOids))

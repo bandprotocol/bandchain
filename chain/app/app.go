@@ -240,6 +240,7 @@ func NewBandApp(
 	if !disableFeelessReports {
 		anteHandler = bandante.NewFeelessReportsAnteHandler(anteHandler, app.OracleKeeper)
 	}
+	anteHandler = bandante.NewWhiteListAnteHandler(anteHandler, app.OracleKeeper)
 	app.SetAnteHandler(anteHandler)
 	app.SetEndBlocker(app.EndBlocker)
 	if loadLatest {
