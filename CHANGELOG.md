@@ -8,6 +8,17 @@
 
 # Changelog
 
+## [v1.2.8-rc0](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.8-rc0)
+
+### Chain (Non-consensus)
+
+- (impv) [\#3195](https://github.com/bandprotocol/bandchain/pull/3195) Patch go owasm update wasmer runtime and introduce caching oracle script
+- (impv) [\#2912](https://github.com/bandprotocol/bandchain/pull/2912) proof contain the real block time instead of time hash
+
+### Yoda
+
+- (impv) [\#2904](https://github.com/bandprotocol/bandchain/pull/2904) Add prometheus metrics for yoda
+
 ## [v1.2.7-rc1](https://github.com/bandprotocol/bandchain/releases/tag/v1.2.7-rc1)
 
 ### Chain (Non-consensus)
