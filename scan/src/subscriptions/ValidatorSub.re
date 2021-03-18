@@ -265,7 +265,22 @@ let getList = (~isActive, ()) => {
     );
   result
   |> Sub.map(_, x =>
-       x##validators->Belt_Array.mapWithIndex((idx, each) => toExternal(each, idx + 1))
+       x##validators
+       ->Belt.Array.keep(each => {
+           let operatorAddress = each.operatorAddress |> Address.toOperatorBech32;
+           switch (operatorAddress) {
+           | "bandvaloper1xdasdrap3a0chue4mjs3as7d0x0ag5lmqrmvj7"
+           | "bandvaloper18kwcnkpy9qyp8tswvlchwp8x7c5uauznukec6l"
+           | "bandvaloper120u947tfjqhal8gx4qqd7xdafp3raaqfw6nmkt"
+           | "bandvaloper1rn7je95tnfjmkdrkvjeu42ayq4e5wa69dljpjj"
+           | "bandvaloper1uj0v9gcc9u340c3h0uw6lm05qewk2w729l2qj8"
+           | "bandvaloper1mjz34hqqh65lnxen9549xyqs5tr7aqjpquz60v"
+           | "bandvaloper1ya8zqwdrm6fm49czexlh3fz5y84nly4vn9uqp6"
+           | "bandvaloper1ef2ak3ddypn9rh6qv7pxsywsp93wj755lye60t" => false
+           | _ => true
+           };
+         })
+       ->Belt.Array.mapWithIndex((idx, each) => toExternal(each, idx + 1))
      );
 };
 
