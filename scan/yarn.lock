@@ -1342,10 +1342,10 @@
   resolved "https://registry.yarnpkg.com/@emotion/weak-memoize/-/weak-memoize-0.2.5.tgz#8eed982e2ee6f7f4e44c253e12962980791efd46"
   integrity sha512-6U71C2Wp7r5XtFtQzYrW5iKFT67OixrSxjI4MptCHzdSVlgabczzqLe0ZSgnub/5Kp4hSbpDB1tMytZY9pwxxA==
 
-"@glennsl/bs-jest@^0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@glennsl/bs-jest/-/bs-jest-0.6.0.tgz#b914f4fb9cf4b4562d16a5d527f0e99f476e9358"
-  integrity sha512-yOHJE/VFaX6tW5UKtM8yNsaneLYWYWlNGuXDjxsT9hfedGN7AO8G/viCxxG684iJbWDidwugoMaY36WQimcVnQ==
+"@glennsl/bs-jest@^0.7.0":
+  version "0.7.0"
+  resolved "https://registry.yarnpkg.com/@glennsl/bs-jest/-/bs-jest-0.7.0.tgz#6b6168edf15aa4dab51cfe7734b36705beac2f11"
+  integrity sha512-GF8+OQQXLYQXCJidTDPJbTejBMAU4VgnkPoLlrznAvSi9qeDSl8Yl3zuo/Wezu8A4rpijW3Gb8ltQozP3pHw7w==
   dependencies:
     jest "^26.5.2"
 
