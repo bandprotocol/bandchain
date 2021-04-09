@@ -130,12 +130,16 @@ function(schema, t, data) {
   |}
 ];
 
-type variable_t =
+type primitive_t =
   | String
   | U64
   | U32
   | U8;
 
+type variable_t =
+  | Single(primitive_t)
+  | Array(primitive_t);
+  
 type field_t = {
   name: string,
   varType: variable_t,
@@ -143,33 +147,66 @@ type field_t = {
 
 let parse = ({fieldName, fieldType}) => {
   let v =
-    switch (fieldType |> ChangeCase.camelCase) {
-    | "string" => Some(String)
-    | "u64" => Some(U64)
-    | "u32" => Some(U32)
-    | "u8" => Some(U8)
-    | _ => None
+    {
+      switch (fieldType) {
+      | "string" => Some(Single(String))
+      | "u64" => Some(Single(U64))
+      | "u32" => Some(Single(U32))
+      | "u8" => Some(Single(U8))
+      | "[string]" => Some(Array(String))
+      | "[u64]" => Some(Array(U64))
+      | "[u32]" => Some(Array(U32))
+      | "[u8]" => Some(Array(U8))
+      | _ => None
+      };
     };
 
   let%Opt varType' = v;
   Some({name: fieldName, varType: varType'});
 };
 
+let declarePrimitiveSol = 
+  fun
+  | String => "string"
+  | U64 => "uint64"
+  | U32 => "uint32"
+  | U8 => "uint8";
+
 let declareSolidity = ({name, varType}) => {
-  switch (varType) {
-  | String => {j|string $name;|j}
-  | U64 => {j|uint64 $name;|j}
-  | U32 => {j|uint32 $name;|j}
-  | U8 => {j|uint8 $name;|j}
+  let type_ = switch (varType) {
+  | Single(x) => declarePrimitiveSol(x)
+  | Array(x) => {
+    let declareType = declarePrimitiveSol(x);
+    {j|$declareType[]|j};
+  }
   };
+  {j|$type_ $name;|j};
 };
 
 let assignSolidity = ({name, varType}) => {
+  let decode = 
+    fun
+    | String => "string(data.decodeBytes());"
+    | U64 => "data.decodeU64();"
+    | U32 => "data.decodeU32();"
+    | U8 => "data.decodeU8();";
+  
   switch (varType) {
-  | String => {j|result.$name = string(data.decodeBytes());|j}
-  | U64 => {j|result.$name = data.decodeU64();|j}
-  | U32 => {j|result.$name = data.decodeU32();|j}
-  | U8 => {j|result.$name = data.decodeU8();|j}
+  | Single(x) => {
+    let decodeFunction = decode(x);
+    {j|result.$name = $decodeFunction|j}
+  }
+  | Array(x) => {
+    let type_ = declarePrimitiveSol(x);
+    let decodeFunction = decode(x);
+    
+    {j|uint32 length = data.decodeU32();
+        $type_[] memory $name = new $type_[](length);
+        for (uint256 i = 0; i < length; i++) {
+          $name[i] = $decodeFunction
+        }
+        result.$name = $name|j};
+    }
   };
 };
 
@@ -227,34 +264,41 @@ import "./Obi.sol";
   Some(template ++ paramsCode ++ resultCode);
 };
 
+// TODO: revisit when using this.
 let declareGo = ({name, varType}) => {
   let capitalizedName = name |> ChangeCase.pascalCase;
-  switch (varType) {
-  | String => {j|$capitalizedName string|j}
-  | U64 => {j|$capitalizedName uint64|j}
-  | U32 => {j|$capitalizedName uint32|j}
-  | U8 => {j|$capitalizedName uint8|j}
+  let type_ = switch (varType) {
+  | Single(String) => {j|string|j}
+  | Single(U64) => {j|uint64|j}
+  | Single(U32) => {j|uint32|j}
+  | Single(U8) => {j|uint8|j}
+  | Array(String) => {j|[]string|j}
+  | Array(U64) => {j|[]uint64|j}
+  | Array(U32) => {j|[]uint32|j}
+  | Array(U8) => {j|[]uint8|j}
   };
+  {j|$capitalizedName $type_|j};
 };
 
 let assignGo = ({name, varType}) => {
   switch (varType) {
-  | String => {j|$name, err := decoder.DecodeString()
+  | Single(String) => {j|$name, err := decoder.DecodeString()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U64 => {j|$name, err := decoder.DecodeU64()
+  | Single(U64) => {j|$name, err := decoder.DecodeU64()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U32 => {j|$name, err := decoder.DecodeU32()
+  | Single(U32) => {j|$name, err := decoder.DecodeU32()
 	if err != nil {
 		return Result{}, err
 	}|j}
-  | U8 => {j|$name, err := decoder.DecodeU8()
+  | Single(U8) => {j|$name, err := decoder.DecodeU8()
 	if err != nil {
 		return Result{}, err
 	}|j}
+  | _ => "// TODO: implement later"
   };
 };
 
@@ -305,10 +349,11 @@ func DecodeResult(data []byte) (Result, error) {
 
 let encodeStructGo = ({name, varType}) => {
   switch (varType) {
-  | U8 => {j|encoder.EncodeU8(result.$name)|j}
-  | U32 => {j|encoder.EncodeU32(result.$name)|j}
-  | U64 => {j|encoder.EncodeU64(result.$name)|j}
-  | String => {j|encoder.EncodeString(result.$name)|j}
+  | Single(U8) => {j|encoder.EncodeU8(result.$name)|j}
+  | Single(U32) => {j|encoder.EncodeU32(result.$name)|j}
+  | Single(U64) => {j|encoder.EncodeU64(result.$name)|j}
+  | Single(String) => {j|encoder.EncodeString(result.$name)|j}
+  | _ => "//TODO: implement later"
   };
 };
 

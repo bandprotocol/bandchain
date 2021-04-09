@@ -6,6 +6,7 @@ from bip32 import BIP32
 from ecdsa import SigningKey, VerifyingKey, SECP256k1, BadSignatureError
 from ecdsa.util import sigencode_string_canonize
 from mnemonic import Mnemonic
+from .exceptions import ConvertError, DecodeError
 
 BECH32_PUBKEY_ACC_PREFIX = "bandpub"
 BECH32_PUBKEY_VAL_PREFIX = "bandvaloperpub"
@@ -115,7 +116,7 @@ class PublicKey:
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
         if bz is None:
-            raise ValueError("Cannot decode bech32")
+            raise DecodeError("Cannot decode bech32")
         bz = convertbits(bz, 5, 8, False)
         self = cls(_error_do_not_use_init_directly=True)
         self.verify_key = VerifyingKey.from_string(bytes(bz[5:]), curve=SECP256k1, hashfunc=hashlib.sha256)
@@ -194,10 +195,10 @@ class Address:
         hrp, bz = bech32_decode(bech)
         assert hrp == prefix, "Invalid bech32 prefix"
         if bz is None:
-            raise ValueError("Cannot decode bech32")
+            raise DecodeError("Cannot decode bech32")
         eight_bit_r = convertbits(bz, 5, 8, False)
         if eight_bit_r is None:
-            raise ValueError("Cannot convert to 8 bit")
+            raise ConvertError("Cannot convert to 8 bit")
 
         return cls(bytes(eight_bit_r))
 

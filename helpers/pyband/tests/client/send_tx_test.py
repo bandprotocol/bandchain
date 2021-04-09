@@ -7,6 +7,8 @@ from pyband.data import (
     TransactionBlockMode,
     HexBytes,
 )
+from requests.exceptions import ReadTimeout
+from unittest.mock import patch
 
 TEST_RPC = "https://api-mock.bandprotocol.com/rest"
 TEST_MSG = {
@@ -67,8 +69,30 @@ TEST_WRONG_SEQUENCE_MSG = {
     ],
 }
 
+TIMEOUT = 3
 
-client = Client(TEST_RPC)
+client = Client(TEST_RPC, TIMEOUT)
+
+
+@patch("requests.post")
+def test_send_tx_sync_mode_timeout(requests_mock):
+    requests_mock.side_effect = ReadTimeout
+    with pytest.raises(ReadTimeout):
+        res = client.send_tx_sync_mode(TEST_MSG)
+
+
+@patch("requests.post")
+def test_send_tx_block_mode_timeout(requests_mock):
+    requests_mock.side_effect = ReadTimeout
+    with pytest.raises(ReadTimeout):
+        res = client.send_tx_block_mode(TEST_MSG)
+
+
+@patch("requests.post")
+def test_send_tx_async_mode_timeout(requests_mock):
+    requests_mock.side_effect = ReadTimeout
+    with pytest.raises(ReadTimeout):
+        res = client.send_tx_async_mode(TEST_MSG)
 
 
 def test_send_tx_sync_mode_success(requests_mock):

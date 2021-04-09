@@ -1,12 +1,12 @@
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
-use syn::export::{Span, TokenStream2};
 use syn::{Fields, Index, ItemStruct};
 
-pub fn struct_enc(input: &ItemStruct) -> syn::Result<TokenStream2> {
+pub fn struct_enc(input: &ItemStruct) -> syn::Result<TokenStream> {
     let name = &input.ident;
     let generics = &input.generics;
-    let mut body = TokenStream2::new();
-    let mut encode_field_types = TokenStream2::new();
+    let mut body = TokenStream::new();
+    let mut encode_field_types = TokenStream::new();
     match &input.fields {
         Fields::Named(fields) => {
             for field in &fields.named {
@@ -52,7 +52,7 @@ pub fn struct_enc(input: &ItemStruct) -> syn::Result<TokenStream2> {
 mod tests {
     use super::*;
 
-    fn assert_eq(expected: TokenStream2, actual: TokenStream2) {
+    fn assert_eq(expected: TokenStream, actual: TokenStream) {
         assert_eq!(expected.to_string(), actual.to_string())
     }
 

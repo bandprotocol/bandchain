@@ -4,6 +4,7 @@ import time
 from dacite import from_dict
 from typing import List, Optional
 from .wallet import Address
+from .exceptions import EmptyRequestMsgError, QueryError
 from .data import (
     Account,
     Block,
@@ -22,16 +23,17 @@ from .data import (
 
 
 class Client(object):
-    def __init__(self, rpc_url: str) -> None:
+    def __init__(self, rpc_url: str, timeout: Optional[int] = None) -> None:
         self.rpc_url = rpc_url
+        self.timeout = timeout
 
     def _get(self, path, **kwargs):
-        r = requests.get(self.rpc_url + path, **kwargs)
+        r = requests.get(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 
     def _post(self, path, **kwargs):
-        r = requests.post(self.rpc_url + path, **kwargs)
+        r = requests.post(self.rpc_url + path, timeout=self.timeout, **kwargs)
         r.raise_for_status()
         return r.json()
 
@@ -159,7 +161,7 @@ class Client(object):
                     request_id = attr_id[0]["value"]
                     request_ids.append(int(request_id))
         if len(request_ids) == 0:
-            raise ValueError("There is no request message in this tx")
+            raise EmptyRequestMsgError("There is no request message in this tx")
         return request_ids
 
     def get_reference_data(self, pairs: List[str], min_count: int, ask_count: int) -> List[ReferencePrice]:
@@ -203,7 +205,7 @@ class Client(object):
             return results
 
         except:
-            raise ValueError("Error quering prices")
+            raise QueryError("Error quering prices")
 
     def get_request_evm_proof_by_request_id(self, request_id: int) -> EVMProof:
         data = self._get_result("/oracle/proof/{}".format(request_id))
