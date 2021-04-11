@@ -32,7 +32,7 @@
     "html-react-parser": "^1.2.4",
     "js-sha256": "^0.9.0",
     "ledger-cosmos-js": "^2.1.8",
-    "marked": "^2.0.0",
+    "marked": "^2.0.3",
     "moment": "^2.29.1",
     "obi.js": "^1.0.2",
     "parcel-plugin-custom-dist-structure": "^1.1.16",
