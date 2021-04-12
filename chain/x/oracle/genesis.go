@@ -12,9 +12,12 @@ import (
 
 // GenesisState is the oracle state that must be provided at genesis.
 type GenesisState struct {
-	Params        types.Params         `json:"params" yaml:"params"`
-	DataSources   []types.DataSource   `json:"data_sources"  yaml:"data_sources"`
-	OracleScripts []types.OracleScript `json:"oracle_scripts"  yaml:"oracle_scripts"`
+	Params            types.Params              `json:"params" yaml:"params"`
+	DataSources       []types.DataSource        `json:"data_sources"  yaml:"data_sources"`
+	OracleScripts     []types.OracleScript      `json:"oracle_scripts"  yaml:"oracle_scripts"`
+	DataSourceFiles   map[string][]byte         `json:"data_source_files" yaml:"data_source_files"`
+	OracleScriptFiles map[string][]byte         `json:"oracle_script_files" yaml:"oracle_script_files"`
+	Reporters         map[string]sdk.ValAddress `json:"reporters" yaml:"reporters"`
 }
 
 // DefaultGenesisState returns the default oracle genesis state.
@@ -52,10 +55,35 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
+	params := k.GetParams(ctx)
+	dataSources := k.GetAllDataSources(ctx)
+	oracleScripts := k.GetAllOracleScripts(ctx)
+
+	dataSourceFiles := make(map[string][]byte)
+	for _, dataSource := range dataSources {
+		dataSourceFile := k.GetFile(dataSource.Filename)
+		if len(dataSourceFile) > 0 {
+			dataSourceFiles[dataSource.Filename] = dataSourceFile
+		}
+	}
+
+	oracleScriptFiles := make(map[string][]byte)
+	for _, oracleScript := range oracleScripts {
+		oracleScriptFile := k.GetFile(oracleScript.Filename)
+		if len(oracleScriptFile) > 0 {
+			oracleScriptFiles[oracleScript.Filename] = oracleScriptFile
+		}
+	}
+
+	reporters := k.GetAllReporters(ctx)
+
 	return GenesisState{
-		Params:        k.GetParams(ctx),
-		DataSources:   k.GetAllDataSources(ctx),
-		OracleScripts: k.GetAllOracleScripts(ctx),
+		Params:            params,
+		DataSources:       dataSources,
+		OracleScripts:     oracleScripts,
+		DataSourceFiles:   dataSourceFiles,
+		OracleScriptFiles: oracleScriptFiles,
+		Reporters:         reporters,
 	}
 }
 
