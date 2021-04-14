@@ -122,6 +122,15 @@ module RenderMobile = {
               <img src=Images.cmcLogo className=Styles.cmcLogo />
             </a>
           </div>
+          <HSpacing size={`px(24)} />
+          <div className=Styles.socialLink>
+            <a
+              href="https://www.coingecko.com/en/coins/band-protocol"
+              target="_blank"
+              rel="noopener">
+              <img src=Images.coingeckoLogo className=Styles.cmcLogo />
+            </a>
+          </div>
         </div>
       </div>
       <div onClick={_ => setShow(prev => !prev)} className={Styles.backdropContainer(show)} />

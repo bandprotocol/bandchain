@@ -42,6 +42,7 @@
 [@bs.module] external close: string = "./close.svg";
 [@bs.module] external menu: string = "./menu.svg";
 [@bs.module] external cmcLogo: string = "./coinmarketcap.svg";
+[@bs.module] external coingeckoLogo: string = "./coingecko.svg";
 [@bs.module] external noBlock: string = "./no-block.svg";
 [@bs.module] external noAccount: string = "./no-account.svg";
 [@bs.module] external noSource: string = "./no-source.svg";

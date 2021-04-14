@@ -94,6 +94,16 @@ module DesktopRender = {
                         className={Css.merge([Styles.cmcLogo, Styles.blockImage])}
                       />
                     </a>
+                    <a
+                      href="https://www.coingecko.com/en/coins/band-protocol"
+                      target="_blank"
+                      rel="noopener"
+                      className=Styles.socialLink>
+                      <img
+                        src=Images.coingeckoLogo
+                        className={Css.merge([Styles.cmcLogo, Styles.blockImage])}
+                      />
+                    </a>
                   </div>
                 </div>
               </div>
