@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
@@ -61,4 +62,40 @@ func TestGetReporters(t *testing.T) {
 	require.Contains(t, reporters, testapp.Alice.Address)
 	require.Contains(t, reporters, testapp.Bob.Address)
 	require.Contains(t, reporters, testapp.Carol.Address)
+}
+
+func TestGetAllReporters(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	// Initially, only validators should be reporters of themselves
+	reporters := k.GetAllReporters(ctx)
+	require.Equal(t, 3, len(reporters))
+	require.Contains(t, reporters, testapp.Validator1.Address.String())
+	require.Equal(t, reporters[testapp.Validator1.Address.String()], sdk.ValAddress(testapp.Validator1.Address))
+	require.Contains(t, reporters, testapp.Validator2.Address.String())
+	require.Equal(t, reporters[testapp.Validator2.Address.String()], sdk.ValAddress(testapp.Validator2.Address))
+	require.Contains(t, reporters, testapp.Validator3.Address.String())
+	require.Equal(t, reporters[testapp.Validator3.Address.String()], sdk.ValAddress(testapp.Validator3.Address))
+
+	// After Alice, Bob, and Carol are added, they should be included in result of GetAllReporters
+	err := k.AddReporter(ctx, testapp.Validator1.ValAddress, testapp.Alice.Address)
+	require.NoError(t, err)
+	err = k.AddReporter(ctx, testapp.Validator1.ValAddress, testapp.Bob.Address)
+	require.NoError(t, err)
+	err = k.AddReporter(ctx, testapp.Validator3.ValAddress, testapp.Carol.Address)
+	require.NoError(t, err)
+
+	reporters = k.GetAllReporters(ctx)
+	require.Equal(t, 6, len(reporters))
+	require.Contains(t, reporters, testapp.Validator1.Address.String())
+	require.Equal(t, reporters[testapp.Validator1.Address.String()], sdk.ValAddress(testapp.Validator1.Address))
+	require.Contains(t, reporters, testapp.Validator2.Address.String())
+	require.Equal(t, reporters[testapp.Validator2.Address.String()], sdk.ValAddress(testapp.Validator2.Address))
+	require.Contains(t, reporters, testapp.Validator3.Address.String())
+	require.Equal(t, reporters[testapp.Validator3.Address.String()], sdk.ValAddress(testapp.Validator3.Address))
+	require.Contains(t, reporters, testapp.Alice.Address.String())
+	require.Equal(t, reporters[testapp.Alice.Address.String()], sdk.ValAddress(testapp.Validator1.Address))
+	require.Contains(t, reporters, testapp.Bob.Address.String())
+	require.Equal(t, reporters[testapp.Bob.Address.String()], sdk.ValAddress(testapp.Validator1.Address))
+	require.Contains(t, reporters, testapp.Carol.Address.String())
+	require.Equal(t, reporters[testapp.Carol.Address.String()], sdk.ValAddress(testapp.Validator3.Address))
 }

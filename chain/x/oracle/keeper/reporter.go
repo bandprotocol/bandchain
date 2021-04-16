@@ -61,7 +61,7 @@ func (k Keeper) GetAllReporters(ctx sdk.Context) map[string]sdk.ValAddress {
 		for _, reporter := range reporters {
 			reporterMap[reporter.String()] = valAddress
 		}
-		return true
+		return false
 	})
 
 	return reporterMap
