@@ -12,23 +12,19 @@ import (
 
 // GenesisState is the oracle state that must be provided at genesis.
 type GenesisState struct {
-	Params            types.Params              `json:"params" yaml:"params"`
-	DataSources       []types.DataSource        `json:"data_sources"  yaml:"data_sources"`
-	OracleScripts     []types.OracleScript      `json:"oracle_scripts"  yaml:"oracle_scripts"`
-	DataSourceFiles   map[string][]byte         `json:"data_source_files" yaml:"data_source_files"`
-	OracleScriptFiles map[string][]byte         `json:"oracle_script_files" yaml:"oracle_script_files"`
-	Reporters         map[string]sdk.ValAddress `json:"reporters" yaml:"reporters"`
+	Params        types.Params              `json:"params" yaml:"params"`
+	DataSources   []types.DataSource        `json:"data_sources"  yaml:"data_sources"`
+	OracleScripts []types.OracleScript      `json:"oracle_scripts"  yaml:"oracle_scripts"`
+	Reporters     map[string]sdk.ValAddress `json:"reporters" yaml:"reporters"`
 }
 
 // DefaultGenesisState returns the default oracle genesis state.
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params:            types.DefaultParams(),
-		DataSources:       []types.DataSource{},
-		OracleScripts:     []types.OracleScript{},
-		DataSourceFiles:   make(map[string][]byte),
-		OracleScriptFiles: make(map[string][]byte),
-		Reporters:         make(map[string]sdk.ValAddress),
+		Params:        types.DefaultParams(),
+		DataSources:   []types.DataSource{},
+		OracleScripts: []types.OracleScript{},
+		Reporters:     make(map[string]sdk.ValAddress),
 	}
 }
 
@@ -48,11 +44,9 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetRequestLastExpired(ctx, 0)
 	k.SetRollingSeed(ctx, make([]byte, types.RollingSeedSizeInBytes))
 	for _, dataSource := range data.DataSources {
-		k.AddExecutableFile(data.DataSourceFiles[dataSource.Filename])
 		_ = k.AddDataSource(ctx, dataSource)
 	}
 	for _, oracleScript := range data.OracleScripts {
-		k.AddOracleScriptFile(data.OracleScriptFiles[oracleScript.Filename])
 		_ = k.AddOracleScript(ctx, oracleScript)
 	}
 	for reporterAddrBech32, valAddr := range data.Reporters {
@@ -65,35 +59,11 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 
 // ExportGenesis returns a GenesisState for a given context and keeper.
 func ExportGenesis(ctx sdk.Context, k Keeper) GenesisState {
-	params := k.GetParams(ctx)
-	dataSources := k.GetAllDataSources(ctx)
-	oracleScripts := k.GetAllOracleScripts(ctx)
-
-	dataSourceFiles := make(map[string][]byte)
-	for _, dataSource := range dataSources {
-		dataSourceFile := k.GetFile(dataSource.Filename)
-		if len(dataSourceFile) > 0 {
-			dataSourceFiles[dataSource.Filename] = dataSourceFile
-		}
-	}
-
-	oracleScriptFiles := make(map[string][]byte)
-	for _, oracleScript := range oracleScripts {
-		oracleScriptFile := k.GetFile(oracleScript.Filename)
-		if len(oracleScriptFile) > 0 {
-			oracleScriptFiles[oracleScript.Filename] = oracleScriptFile
-		}
-	}
-
-	reporters := k.GetAllReporters(ctx)
-
 	return GenesisState{
-		Params:            params,
-		DataSources:       dataSources,
-		OracleScripts:     oracleScripts,
-		DataSourceFiles:   dataSourceFiles,
-		OracleScriptFiles: oracleScriptFiles,
-		Reporters:         reporters,
+		Params:        k.GetParams(ctx),
+		DataSources:   k.GetAllDataSources(ctx),
+		OracleScripts: k.GetAllOracleScripts(ctx),
+		Reporters:     k.GetAllReporters(ctx),
 	}
 }
 
