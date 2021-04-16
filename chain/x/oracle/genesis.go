@@ -23,9 +23,12 @@ type GenesisState struct {
 // DefaultGenesisState returns the default oracle genesis state.
 func DefaultGenesisState() GenesisState {
 	return GenesisState{
-		Params:        types.DefaultParams(),
-		DataSources:   []types.DataSource{},
-		OracleScripts: []types.OracleScript{},
+		Params:            types.DefaultParams(),
+		DataSources:       []types.DataSource{},
+		OracleScripts:     []types.OracleScript{},
+		DataSourceFiles:   make(map[string][]byte),
+		OracleScriptFiles: make(map[string][]byte),
+		Reporters:         make(map[string]sdk.ValAddress),
 	}
 }
 
@@ -45,11 +48,18 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	k.SetRequestLastExpired(ctx, 0)
 	k.SetRollingSeed(ctx, make([]byte, types.RollingSeedSizeInBytes))
 	for _, dataSource := range data.DataSources {
+		k.AddExecutableFile(data.DataSourceFiles[dataSource.Filename])
 		_ = k.AddDataSource(ctx, dataSource)
 	}
 	for _, oracleScript := range data.OracleScripts {
+		k.AddOracleScriptFile(data.OracleScriptFiles[oracleScript.Filename])
 		_ = k.AddOracleScript(ctx, oracleScript)
 	}
+	for reporterAddrBech32, valAddr := range data.Reporters {
+		reporterAddr, _ := sdk.AccAddressFromBech32(reporterAddrBech32)
+		k.AddReporter(ctx, valAddr, reporterAddr)
+	}
+
 	return []abci.ValidatorUpdate{}
 }
 
