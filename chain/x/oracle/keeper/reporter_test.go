@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
+	"github.com/bandprotocol/bandchain/chain/x/oracle/types"
 )
 
 func TestCheckSelfReporter(t *testing.T) {
@@ -68,15 +69,21 @@ func TestGetAllReporters(t *testing.T) {
 	_, ctx, k := testapp.CreateTestInput(true)
 	// Initially, only validators should be reporters of themselves
 	reporters := k.GetAllReporters(ctx)
-	expectedReporters := map[string]sdk.ValAddress{
-		testapp.Validator1.Address.String(): sdk.ValAddress(testapp.Validator1.Address),
-		testapp.Validator2.Address.String(): sdk.ValAddress(testapp.Validator2.Address),
-		testapp.Validator3.Address.String(): sdk.ValAddress(testapp.Validator3.Address),
+	expectedReporters := []types.Reporter{
+		{
+			Reporter:  testapp.Validator1.Address,
+			Validator: sdk.ValAddress(testapp.Validator1.Address),
+		}, {
+			Reporter:  testapp.Validator2.Address,
+			Validator: sdk.ValAddress(testapp.Validator2.Address),
+		}, {
+			Reporter:  testapp.Validator3.Address,
+			Validator: sdk.ValAddress(testapp.Validator3.Address),
+		},
 	}
 	require.Equal(t, len(expectedReporters), len(reporters))
-	for reporter, validator := range expectedReporters {
+	for _, reporter := range expectedReporters {
 		require.Contains(t, reporters, reporter)
-		require.Equal(t, reporters[reporter], sdk.ValAddress(validator))
 	}
 
 	// After Alice, Bob, and Carol are added, they should be included in result of GetAllReporters
@@ -88,17 +95,18 @@ func TestGetAllReporters(t *testing.T) {
 	require.NoError(t, err)
 
 	reporters = k.GetAllReporters(ctx)
-	expectedReporters = map[string]sdk.ValAddress{
-		testapp.Validator1.Address.String(): sdk.ValAddress(testapp.Validator1.Address),
-		testapp.Validator2.Address.String(): sdk.ValAddress(testapp.Validator2.Address),
-		testapp.Validator3.Address.String(): sdk.ValAddress(testapp.Validator3.Address),
-		testapp.Alice.Address.String():      sdk.ValAddress(testapp.Validator1.Address),
-		testapp.Bob.Address.String():        sdk.ValAddress(testapp.Validator1.Address),
-		testapp.Carol.Address.String():      sdk.ValAddress(testapp.Validator3.Address),
-	}
+	expectedReporters = append(expectedReporters, types.NewReporter(
+		testapp.Alice.Address,
+		sdk.ValAddress(testapp.Validator1.Address),
+	), types.NewReporter(
+		testapp.Bob.Address,
+		sdk.ValAddress(testapp.Validator1.Address),
+	), types.NewReporter(
+		testapp.Carol.Address,
+		sdk.ValAddress(testapp.Validator3.Address),
+	))
 	require.Equal(t, len(expectedReporters), len(reporters))
-	for reporter, validator := range expectedReporters {
+	for _, reporter := range expectedReporters {
 		require.Contains(t, reporters, reporter)
-		require.Equal(t, reporters[reporter], sdk.ValAddress(validator))
 	}
 }
