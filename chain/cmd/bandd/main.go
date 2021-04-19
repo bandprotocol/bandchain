@@ -150,9 +150,9 @@ func exportAppStateAndTMValidators(
 			return nil, nil, err
 		}
 
-		return bandApp.ExportAppStateAndValidators(logger, forZeroHeight, jailWhiteList)
+		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
 	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
-	return bandApp.ExportAppStateAndValidators(logger, forZeroHeight, jailWhiteList)
+	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
