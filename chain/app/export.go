@@ -5,6 +5,7 @@ import (
 	"log"
 
 	abci "github.com/tendermint/tendermint/abci/types"
+	tlog "github.com/tendermint/tendermint/libs/log"
 	tmtypes "github.com/tendermint/tendermint/types"
 
 	"github.com/cosmos/cosmos-sdk/codec"
@@ -14,20 +15,24 @@ import (
 )
 
 // ExportAppStateAndValidators export the state of band for a genesis file
-func (app *BandApp) ExportAppStateAndValidators(forZeroHeight bool, jailWhiteList []string,
+func (app *BandApp) ExportAppStateAndValidators(logger tlog.Logger, forZeroHeight bool, jailWhiteList []string,
 ) (appState json.RawMessage, validators []tmtypes.GenesisValidator, err error) {
 	// as if they could withdraw from the start of the next block
 	ctx := app.NewContext(true, abci.Header{Height: app.LastBlockHeight()})
 
 	if forZeroHeight {
+		logger.Info("Preparing state for zero-height genesis")
 		app.prepForZeroHeightGenesis(ctx, jailWhiteList)
 	}
 
+	logger.Info("Begin exporting states from each module")
 	genState := app.mm.ExportGenesis(ctx)
+	logger.Info("Encode exported states to JSON")
 	appState, err = codec.MarshalJSONIndent(app.cdc, genState)
 	if err != nil {
 		return nil, nil, err
 	}
+	logger.Info("Writing validators for the genesis")
 	validators = staking.WriteValidators(ctx, app.StakingKeeper)
 	return appState, validators, nil
 }
