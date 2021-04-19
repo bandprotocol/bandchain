@@ -2,16 +2,16 @@ package types
 
 import sdk "github.com/cosmos/cosmos-sdk/types"
 
-// Reporter represents address of reporter and its associated validator
-type Reporter struct {
-	Reporter  sdk.AccAddress `json:"reporter" yaml:"reporter"`
-	Validator sdk.ValAddress `json:"validator" yaml:"validator"`
+// ReportersPerValidator represents list of reporter address and their associated validator
+type ReportersPerValidator struct {
+	Validator sdk.ValAddress   `json:"validator" yaml:"validator"`
+	Reporters []sdk.AccAddress `json:"reporters" yaml:"reporter"`
 }
 
-// NewReporter creates new instance of Reporter
-func NewReporter(reporter sdk.AccAddress, validator sdk.ValAddress) Reporter {
-	return Reporter{
-		Reporter:  reporter,
+// NewReportersPerValidator creates new instance of ReportersPerValidator
+func NewReportersPerValidator(validator sdk.ValAddress, reporters []sdk.AccAddress) ReportersPerValidator {
+	return ReportersPerValidator{
 		Validator: validator,
+		Reporters: reporters,
 	}
 }

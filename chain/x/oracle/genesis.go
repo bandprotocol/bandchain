@@ -12,10 +12,10 @@ import (
 
 // GenesisState is the oracle state that must be provided at genesis.
 type GenesisState struct {
-	Params        types.Params         `json:"params" yaml:"params"`
-	DataSources   []types.DataSource   `json:"data_sources"  yaml:"data_sources"`
-	OracleScripts []types.OracleScript `json:"oracle_scripts"  yaml:"oracle_scripts"`
-	Reporters     []types.Reporter     `json:"reporters" yaml:"reporters"`
+	Params        types.Params                  `json:"params" yaml:"params"`
+	DataSources   []types.DataSource            `json:"data_sources"  yaml:"data_sources"`
+	OracleScripts []types.OracleScript          `json:"oracle_scripts"  yaml:"oracle_scripts"`
+	Reporters     []types.ReportersPerValidator `json:"reporters" yaml:"reporters"`
 }
 
 // DefaultGenesisState returns the default oracle genesis state.
@@ -24,7 +24,7 @@ func DefaultGenesisState() GenesisState {
 		Params:        types.DefaultParams(),
 		DataSources:   []types.DataSource{},
 		OracleScripts: []types.OracleScript{},
-		Reporters:     []types.Reporter{},
+		Reporters:     []types.ReportersPerValidator{},
 	}
 }
 
@@ -49,8 +49,10 @@ func InitGenesis(ctx sdk.Context, k Keeper, data GenesisState) []abci.ValidatorU
 	for _, oracleScript := range data.OracleScripts {
 		_ = k.AddOracleScript(ctx, oracleScript)
 	}
-	for _, reporter := range data.Reporters {
-		k.AddReporter(ctx, reporter.Validator, reporter.Reporter)
+	for _, reportersPerValidator := range data.Reporters {
+		for _, reporter := range reportersPerValidator.Reporters {
+			k.AddReporter(ctx, reportersPerValidator.Validator, reporter)
+		}
 	}
 
 	return []abci.ValidatorUpdate{}
