@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -140,11 +141,12 @@ func newApp(logger log.Logger, db dbm.DB, traceStore io.Writer) abci.Application
 func exportAppStateAndTMValidators(
 	logger log.Logger, db dbm.DB, traceStore io.Writer, height int64, forZeroHeight bool, jailWhiteList []string,
 ) (json.RawMessage, []tmtypes.GenesisValidator, error) {
-	logger.Info("Start exporting genesis file...")
+	newLogger := log.NewTMLogger(log.NewSyncWriter(os.Stderr))
+	newLogger.Info("Start exporting genesis file...")
 
 	if height != -1 {
-		bandApp := app.NewBandApp(logger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
-		logger.Info("Setup store at specific height", "height", height)
+		bandApp := app.NewBandApp(newLogger, db, traceStore, false, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
+		newLogger.Info("Setup store at specific height", "height", height)
 		err := bandApp.LoadHeight(height)
 		if err != nil {
 			return nil, nil, err
@@ -153,6 +155,6 @@ func exportAppStateAndTMValidators(
 		return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 	}
 
-	bandApp := app.NewBandApp(logger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
+	bandApp := app.NewBandApp(newLogger, db, traceStore, true, uint(1), map[int64]bool{}, "", viper.GetBool(flagDisableFeelessReports), viper.GetUint32(flagWithOwasmCacheSize))
 	return bandApp.ExportAppStateAndValidators(forZeroHeight, jailWhiteList)
 }
