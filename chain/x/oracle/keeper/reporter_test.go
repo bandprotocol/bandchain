@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"testing"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/stretchr/testify/require"
 
 	"github.com/bandprotocol/bandchain/chain/x/oracle/testapp"
@@ -61,4 +62,47 @@ func TestGetReporters(t *testing.T) {
 	require.Contains(t, reporters, testapp.Alice.Address)
 	require.Contains(t, reporters, testapp.Bob.Address)
 	require.Contains(t, reporters, testapp.Carol.Address)
+}
+
+func TestGetAllReporters(t *testing.T) {
+	_, ctx, k := testapp.CreateTestInput(true)
+	// Initially, only validators should be reporters of themselves
+	reporters := k.GetAllReporters(ctx)
+	expectedReporterMap := map[string][]sdk.AccAddress{
+		sdk.ValAddress(testapp.Validator1.Address).String(): {testapp.Validator1.Address},
+		sdk.ValAddress(testapp.Validator2.Address).String(): {testapp.Validator2.Address},
+		sdk.ValAddress(testapp.Validator3.Address).String(): {testapp.Validator3.Address},
+	}
+	require.Equal(t, len(expectedReporterMap), len(reporters))
+	for _, reportersPerValidator := range reporters {
+		valAddr := sdk.ValAddress(reportersPerValidator.Validator).String()
+		require.Contains(t, expectedReporterMap, valAddr)
+		for _, reporter := range reportersPerValidator.Reporters {
+			require.Contains(t, expectedReporterMap[valAddr], reporter)
+		}
+	}
+
+	// After Alice, Bob, and Carol are added, they should be included in result of GetAllReporters
+	err := k.AddReporter(ctx, testapp.Validator1.ValAddress, testapp.Alice.Address)
+	require.NoError(t, err)
+	err = k.AddReporter(ctx, testapp.Validator1.ValAddress, testapp.Bob.Address)
+	require.NoError(t, err)
+	err = k.AddReporter(ctx, testapp.Validator3.ValAddress, testapp.Carol.Address)
+	require.NoError(t, err)
+
+	reporters = k.GetAllReporters(ctx)
+	expectedReporterMap = map[string][]sdk.AccAddress{
+		sdk.ValAddress(testapp.Validator1.Address).String(): {testapp.Validator1.Address, testapp.Bob.Address, testapp.Alice.Address},
+		sdk.ValAddress(testapp.Validator2.Address).String(): {testapp.Validator2.Address},
+		sdk.ValAddress(testapp.Validator3.Address).String(): {testapp.Validator3.Address, testapp.Carol.Address},
+	}
+
+	require.Equal(t, len(expectedReporterMap), len(reporters))
+	for _, reportersPerValidator := range reporters {
+		valAddr := sdk.ValAddress(reportersPerValidator.Validator).String()
+		require.Contains(t, expectedReporterMap, valAddr)
+		for _, reporter := range reportersPerValidator.Reporters {
+			require.Contains(t, expectedReporterMap[valAddr], reporter)
+		}
+	}
 }
