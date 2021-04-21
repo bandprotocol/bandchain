@@ -10,6 +10,8 @@
 
 ### Chain (Consensus)
 
+- (bugs) [\#3298](https://github.com/bandprotocol/bandchain/pull/3298) Disable sending token to distribution module
+
 ### Chain (Non-consensus)
 
 ### Yoda
