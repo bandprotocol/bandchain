@@ -224,7 +224,7 @@ let make = (~reqID) => {
                  }}
               </Col>
             </Row>
-            <Row>
+            <Row marginBottom=24>
               <Col col=Col.Six mbSm=24>
                 <Heading value="TX Hash" size=Heading.H5 />
                 <VSpacing size=Spacing.sm />
@@ -238,7 +238,7 @@ let make = (~reqID) => {
                  }}
               </Col>
               <Col col=Col.Six>
-                <Heading value="Fee" size=Heading.H5 />
+                <Heading value="Tx Fee" size=Heading.H5 />
                 <VSpacing size=Spacing.sm />
                 {switch (requestSub) {
                  | Data({transactionOpt}) =>
@@ -255,6 +255,26 @@ let make = (~reqID) => {
                      />
                    | None => <Text value="Syncing" />
                    }
+                 | _ => <LoadingCensorBar width=200 height=15 />
+                 }}
+              </Col>
+            </Row>
+            <Row>
+              <Col col=Col.Six>
+                <Heading value="Fee Limit" size=Heading.H5 />
+                <VSpacing size=Spacing.sm />
+                {switch (requestSub) {
+                 | Data({feeLimit}) =>
+                   Js.log(feeLimit);
+                   <Text
+                     block=true
+                     value={
+                       (feeLimit |> Coin.getBandAmountFromCoins |> Format.fPretty(~digits=6))
+                       ++ " BAND"
+                     }
+                     size=Text.Lg
+                     color=Colors.gray7
+                   />;
                  | _ => <LoadingCensorBar width=200 height=15 />
                  }}
               </Col>

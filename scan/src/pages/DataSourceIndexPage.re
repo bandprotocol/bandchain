@@ -46,18 +46,42 @@ module Content = {
                 style=Styles.infoHeader
                 marginBottom=24
               />
-              <div className={CssHelper.flexBox()}>
-                <Heading value="Owner" size=Heading.H5 />
-                <HSpacing size=Spacing.xs />
-                <CTooltip tooltipText="The owner of the data source">
-                  <Icon name="fal fa-info-circle" size=10 />
-                </CTooltip>
-              </div>
-              <VSpacing size=Spacing.sm />
-              {switch (dataSourceSub) {
-               | Data({owner}) => <AddressRender address=owner position=AddressRender.Subtitle />
-               | _ => <LoadingCensorBar width=284 height=15 />
-               }}
+              <Row>
+                <Col col=Col.Six mb=24>
+                  <div className={CssHelper.flexBox()}>
+                    <Heading value="Owner" size=Heading.H5 />
+                    <HSpacing size=Spacing.xs />
+                    <CTooltip tooltipText="The owner of the data source">
+                      <Icon name="fal fa-info-circle" size=10 />
+                    </CTooltip>
+                  </div>
+                  <VSpacing size=Spacing.sm />
+                  {switch (dataSourceSub) {
+                   | Data({owner}) =>
+                     <AddressRender address=owner position=AddressRender.Subtitle />
+                   | _ => <LoadingCensorBar width=284 height=15 />
+                   }}
+                </Col>
+                <Col col=Col.Six mb=24>
+                  <Heading value="Fee" size=Heading.H5 />
+                  <VSpacing size=Spacing.sm />
+                  {switch (dataSourceSub) {
+                   | Data({fee}) => <AmountRender coins=fee />
+                   | _ => <LoadingCensorBar width=100 height=15 />
+                   }}
+                </Col>
+              </Row>
+              <Row>
+                <Col col=Col.Six>
+                  <Heading value="Treasury" size=Heading.H5 />
+                  <VSpacing size=Spacing.sm />
+                  {switch (dataSourceSub) {
+                   | Data({treasury}) =>
+                     <AddressRender address=treasury position=AddressRender.Subtitle />
+                   | _ => <LoadingCensorBar width=284 height=15 />
+                   }}
+                </Col>
+              </Row>
               <VSpacing size=Spacing.lg />
               <Heading value="Description" size=Heading.H5 marginBottom=16 />
               {switch (dataSourceSub) {

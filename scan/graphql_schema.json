@@ -10883,6 +10883,22 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "fee",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -11308,6 +11324,22 @@
               "kind": "SCALAR",
               "name": "Int",
               "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "treasury",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
             },
             "description": null
           }
@@ -11833,6 +11865,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -11908,6 +11950,16 @@
             "type": {
               "kind": "INPUT_OBJECT",
               "name": "Int_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "treasury",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
               "ofType": null
             },
             "description": null
@@ -12002,6 +12054,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -12080,6 +12142,16 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "treasury",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -12115,6 +12187,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "fee",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -12155,6 +12239,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "treasury",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -12174,6 +12270,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -12205,6 +12311,16 @@
           },
           {
             "name": "transaction_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "treasury",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12247,6 +12363,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "fee",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -12287,6 +12415,18 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "treasury",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -12306,6 +12446,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -12337,6 +12487,16 @@
           },
           {
             "name": "transaction_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "treasury",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -12530,6 +12690,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -12608,6 +12778,16 @@
               "ofType": null
             },
             "description": null
+          },
+          {
+            "name": "treasury",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
           }
         ],
         "kind": "INPUT_OBJECT",
@@ -12640,6 +12820,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "fee",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "description": "column name"
           },
@@ -12659,6 +12845,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "transaction_id",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "treasury",
             "description": "column name"
           }
         ],
@@ -12688,6 +12880,16 @@
             "description": null
           },
           {
+            "name": "fee",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -12723,6 +12925,16 @@
             "type": {
               "kind": "SCALAR",
               "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "treasury",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
               "ofType": null
             },
             "description": null
@@ -13022,6 +13234,12 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "fee",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "description": "column name"
           },
@@ -13041,6 +13259,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "transaction_id",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "treasury",
             "description": "column name"
           }
         ],
@@ -53587,13 +53811,9 @@
             "deprecationReason": null,
             "name": "validatorByValidatorDstId",
             "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "validators",
-                "ofType": null
-              }
+              "kind": "OBJECT",
+              "name": "validators",
+              "ofType": null
             },
             "description": "An object relationship"
           },
@@ -62385,6 +62605,38 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "fee_limit",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "NON_NULL",
@@ -62434,6 +62686,22 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "NON_NULL",
               "name": null,
@@ -63465,6 +63733,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -63490,6 +63770,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -63548,6 +63840,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -63569,6 +63871,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -63687,6 +63999,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Int_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "String_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -63718,6 +64050,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "Int_comparison_exp",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "INPUT_OBJECT",
@@ -63865,6 +64207,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -63886,6 +64238,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -63966,6 +64328,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -63997,6 +64379,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -64151,6 +64543,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "fee_limit",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -64176,6 +64592,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Int",
@@ -64256,6 +64684,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -64277,6 +64725,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -64371,6 +64829,30 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "fee_limit",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -64396,6 +64878,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Int",
@@ -64476,6 +64970,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -64497,6 +65011,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -64730,6 +65254,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -64761,6 +65305,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -64906,6 +65460,18 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "fee_limit",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "description": "column name"
           },
@@ -64919,6 +65485,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "description": "column name"
           },
           {
@@ -64994,6 +65566,26 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "fee_limit",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -65015,6 +65607,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "SCALAR",
@@ -65117,6 +65719,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -65142,6 +65756,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -65200,6 +65826,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -65221,6 +65857,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65293,6 +65939,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -65318,6 +65976,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -65376,6 +66046,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -65397,6 +66077,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65469,6 +66159,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -65494,6 +66196,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -65552,6 +66266,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -65573,6 +66297,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65645,6 +66379,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -65670,6 +66416,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Int",
@@ -65728,6 +66486,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -65749,6 +66517,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -65824,6 +66602,18 @@
           {
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "fee_limit",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "description": "column name"
           },
@@ -65837,6 +66627,12 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "description": "column name"
+          },
+          {
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "description": "column name"
           },
           {
@@ -65904,6 +66700,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -65929,6 +66737,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -65987,6 +66807,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -66008,6 +66838,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -66080,6 +66920,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -66105,6 +66957,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -66163,6 +67027,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -66184,6 +67058,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",
@@ -66256,6 +67140,18 @@
             "args": [],
             "isDeprecated": false,
             "deprecationReason": null,
+            "name": "execute_gas",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
             "name": "id",
             "type": {
               "kind": "SCALAR",
@@ -66281,6 +67177,18 @@
             "isDeprecated": false,
             "deprecationReason": null,
             "name": "oracle_script_id",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "args": [],
+            "isDeprecated": false,
+            "deprecationReason": null,
+            "name": "prepare_gas",
             "type": {
               "kind": "SCALAR",
               "name": "Float",
@@ -66339,6 +67247,16 @@
             "description": null
           },
           {
+            "name": "execute_gas",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
             "name": "id",
             "defaultValue": null,
             "type": {
@@ -66360,6 +67278,16 @@
           },
           {
             "name": "oracle_script_id",
+            "defaultValue": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "order_by",
+              "ofType": null
+            },
+            "description": null
+          },
+          {
+            "name": "prepare_gas",
             "defaultValue": null,
             "type": {
               "kind": "ENUM",

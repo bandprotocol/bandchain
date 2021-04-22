@@ -140,14 +140,18 @@ module Msg = {
       owner: Address.t,
       name: string,
       executable: JsBuffer.t,
+      fee: list(Coin.t),
       sender: Address.t,
+      treasury: Address.t,
     };
 
     type fail_t = {
       owner: Address.t,
       name: string,
       executable: JsBuffer.t,
+      fee: list(Coin.t),
       sender: Address.t,
+      treasury: Address.t,
     };
 
     let decodeSuccess = json =>
@@ -156,7 +160,9 @@ module Msg = {
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        fee: json |> at(["msg", "fee"], list(Coin.decodeCoin)),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+        treasury: json |> at(["msg", "treasury"], string) |> Address.fromBech32,
       };
 
     let decodeFail = json =>
@@ -164,7 +170,9 @@ module Msg = {
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        fee: json |> at(["msg", "fee"], list(Coin.decodeCoin)),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+        treasury: json |> at(["msg", "treasury"], string) |> Address.fromBech32,
       };
   };
 
@@ -174,7 +182,9 @@ module Msg = {
       owner: Address.t,
       name: string,
       executable: JsBuffer.t,
+      fee: list(Coin.t),
       sender: Address.t,
+      treasury: Address.t,
     };
 
     let decode = json =>
@@ -183,7 +193,9 @@ module Msg = {
         owner: json |> at(["msg", "owner"], string) |> Address.fromBech32,
         name: json |> at(["msg", "name"], string),
         executable: json |> at(["msg", "executable"], string) |> JsBuffer.fromBase64,
+        fee: json |> at(["msg", "fee"], list(Coin.decodeCoin)),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
+        treasury: json |> at(["msg", "treasury"], string) |> Address.fromBech32,
       };
   };
 
@@ -248,6 +260,7 @@ module Msg = {
       calldata: JsBuffer.t,
       askCount: int,
       minCount: int,
+      feeLimit: list(Coin.t),
       schema: string,
       sender: Address.t,
     };
@@ -257,6 +270,7 @@ module Msg = {
       calldata: JsBuffer.t,
       askCount: int,
       minCount: int,
+      feeLimit: list(Coin.t),
       sender: Address.t,
     };
 
@@ -268,6 +282,7 @@ module Msg = {
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
         askCount: json |> at(["msg", "ask_count"], string) |> int_of_string,
         minCount: json |> at(["msg", "min_count"], string) |> int_of_string,
+        feeLimit: json |> at(["msg", "fee_limit"], list(Coin.decodeCoin)),
         schema: json |> at(["extra", "schema"], string),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
@@ -279,6 +294,7 @@ module Msg = {
         calldata: json |> bufferWithDefault(at(["msg", "calldata"])),
         askCount: json |> at(["msg", "ask_count"], string) |> int_of_string,
         minCount: json |> at(["msg", "min_count"], string) |> int_of_string,
+        feeLimit: json |> at(["msg", "fee_limit"], list(Coin.decodeCoin)),
         sender: json |> at(["msg", "sender"], string) |> Address.fromBech32,
       };
     };
