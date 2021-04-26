@@ -69,6 +69,7 @@ type chainID =
   | GuanYuTestnet
   | GuanYuPOA
   | GuanYuMainnet
+  | LaoziTestnet
   | Unknown;
 
 let parseChainID =
@@ -82,9 +83,12 @@ let parseChainID =
   | "bandchain" => GuanYuDevnet
   | "band-guanyu-testnet1"
   | "band-guanyu-testnet2"
-  | "band-guanyu-testnet3" => GuanYuTestnet
+  | "band-guanyu-testnet3"
+  | "band-guanyu-testnet4" => GuanYuTestnet
   | "band-guanyu-poa" => GuanYuPOA
   | "band-guanyu-mainnet" => GuanYuMainnet
+  | "band-laozi-internal"
+  | "band-laozi-testnet1" => LaoziTestnet
   | _ => Unknown;
 
 let getLink =
@@ -95,6 +99,7 @@ let getLink =
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
+  | LaoziTestnet => "https://laozi-testnet1.cosmoscan.io/"
   | Unknown => "";
 
 let getName =
@@ -105,6 +110,7 @@ let getName =
   | GuanYuTestnet => "guanyu-testnet"
   | GuanYuPOA => "guanyu-poa"
   | GuanYuMainnet => "guanyu-mainnet"
+  | LaoziTestnet => "laozi-testnet"
   | Unknown => "unknown";
 
 [@react.component]
