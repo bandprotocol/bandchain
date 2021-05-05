@@ -41,3 +41,11 @@
 - We have deployed our Bridge contract ([0x0A2acDeA5d23e45d2b5919d5aBdF7CA1088d907b](https://baklava-blockscout.celo-testnet.org/address/0x0a2acdea5d23e45d2b5919d5abdf7ca1088d907b/transactions)) on the Celo Baklava test network.
 
 - Please see this [`example`](integration_examples/celo) for more details about Bridge contract deployment and interaction on the Baklava test network .
+
+### [Tron](https://tron.network/)
+
+- The reason we support Tron is that Tron is one of the largest blockchain-based operating systems in the world.
+
+- We have deployed our Bridge contract [TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69](https://shasta.tronscan.org/?_ga=2.202473362.209196786.1598357557-168793461.1597990053#/contract/TPxsemS7h9rrJPZAPDjP7rmLoA4ErYny69/code) on the Shasta test network.
+
+- Please see this [`example`](integration_examples/tron) for more details about Bridge contract deployment and interaction on the Shasta test network.
