@@ -29,7 +29,7 @@ require (
 	github.com/spf13/viper v1.7.1
 	github.com/stretchr/testify v1.6.1
 	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
-	github.com/tendermint/go-amino v0.15.1
+	github.com/tendermint/go-amino v0.16.0
 	github.com/tendermint/iavl v0.14.1
 	github.com/tendermint/tendermint v0.33.9
 	github.com/tendermint/tm-db v0.5.1
