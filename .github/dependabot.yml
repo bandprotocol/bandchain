@@ -1,0 +1,130 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/scan"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - evilpeach
+  - pzshine
+  labels:
+  - scan
+  - chore
+  ignore:
+  - dependency-name: bs-moment
+    versions:
+    - "> 0.4.5"
+  - dependency-name: bs-platform
+    versions:
+    - "> 7.0.1"
+  - dependency-name: "@cosmostation/cosmosjs"
+    versions:
+    - "> 0.5.5"
+  - dependency-name: webpack
+    versions:
+    - "> 5.1.0"
+  - dependency-name: webpack-cli
+    versions:
+    - "> 4.0.0"
+  - dependency-name: "@ledgerhq/hw-transport-webhid"
+    versions:
+    - 5.41.0
+    - 5.43.0
+    - 5.45.0
+    - 5.46.0
+    - 5.48.0
+    - 5.49.0
+  - dependency-name: "@ledgerhq/hw-transport-webusb"
+    versions:
+    - 5.41.0
+    - 5.45.0
+    - 5.46.0
+    - 5.48.0
+    - 5.49.0
+  - dependency-name: marked
+    versions:
+    - 1.2.9
+    - 2.0.1
+    - 2.0.2
+  - dependency-name: y18n
+    versions:
+    - 4.0.1
+    - 4.0.2
+  - dependency-name: axios-hooks
+    versions:
+    - 2.5.0
+    - 2.5.1
+    - 2.6.0
+  - dependency-name: react-select
+    versions:
+    - 4.0.2
+    - 4.1.0
+    - 4.2.0
+    - 4.2.1
+  - dependency-name: cypress
+    versions:
+    - 6.6.0
+    - 6.7.0
+    - 6.7.1
+  - dependency-name: "@sentry/browser"
+    versions:
+    - 6.0.3
+    - 6.2.0
+    - 6.2.1
+  - dependency-name: react
+    versions:
+    - 17.0.1
+  - dependency-name: react-dom
+    versions:
+    - 17.0.1
+  - dependency-name: html-react-parser
+    versions:
+    - 1.2.3
+- package-ecosystem: gomod
+  directory: "/chain"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  reviewers:
+  - taobun
+  - sorawit
+  - benzbeeb
+  ignore:
+  - dependency-name: github.com/tendermint/tm-db
+    versions:
+    - "> 0.5.1"
+  - dependency-name: github.com/segmentio/kafka-go
+    versions:
+    - 0.4.10
+    - 0.4.11
+    - 0.4.12
+    - 0.4.13
+    - 0.4.14
+    - 0.4.9
+  - dependency-name: github.com/tendermint/tendermint
+    versions:
+    - 0.34.3
+    - 0.34.4
+    - 0.34.7
+    - 0.34.8
+    - 0.34.9
+  - dependency-name: github.com/ethereum/go-ethereum
+    versions:
+    - 1.10.0
+    - 1.10.1
+    - 1.9.25
+  - dependency-name: github.com/golang/protobuf
+    versions:
+    - 1.4.3
+    - 1.5.1
+  - dependency-name: github.com/mattn/go-sqlite3
+    versions:
+    - 1.14.6
+  - dependency-name: github.com/go-sql-driver/mysql
+    versions:
+    - 1.5.0
+  - dependency-name: github.com/spf13/cobra
+    versions:
+    - 1.1.1
+    - 1.1.2
