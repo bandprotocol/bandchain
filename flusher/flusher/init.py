@@ -128,3 +128,37 @@ JOIN accounts ON accounts.id = votes.voter_id
 JOIN validators ON accounts.id = validators.account_id;
 """
     )
+
+    engine.execute(
+        """
+BEGIN;
+CREATE TABLE validator_report_count (validator_id integer primary key, count integer);
+
+-- establish initial count
+INSERT INTO validator_report_count SELECT validator_id, count(*) AS COUNT FROM reports GROUP BY validator_id;
+
+CREATE OR REPLACE FUNCTION adjust_count()
+RETURNS TRIGGER AS
+$$
+   DECLARE
+   BEGIN
+   IF TG_OP = 'INSERT' THEN
+      EXECUTE 'INSERT INTO validator_report_count(validator_id, count)
+        VALUES(''' || NEW.validator_id || ''', 1)
+        ON CONFLICT (validator_id) DO UPDATE
+            SET count = validator_report_count.count + 1';
+      RETURN NEW;
+   ELSIF TG_OP = 'DELETE' THEN
+      EXECUTE 'UPDATE validator_report_count set count=count -1 WHERE validator_id = ''' || OLD.validator_id || '''';
+      RETURN OLD;
+   END IF;
+   END;
+$$
+LANGUAGE 'plpgsql';
+
+CREATE TRIGGER validator_report_count_trigger BEFORE INSERT OR DELETE ON reports
+  FOR EACH ROW EXECUTE PROCEDURE adjust_count();
+
+COMMIT;
+"""
+    )
