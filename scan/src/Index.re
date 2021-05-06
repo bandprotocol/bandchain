@@ -22,7 +22,9 @@ ReactDOMRe.render(
   <ApolloClient>
     <GlobalContext>
       <TimeContext>
-        <ModalContext> <AccountContext> <App /> </AccountContext> </ModalContext>
+        <ThemeContext>
+          <ModalContext> <AccountContext> <Checker /> <App /> </AccountContext> </ModalContext>
+        </ThemeContext>
       </TimeContext>
     </GlobalContext>
   </ApolloClient>,

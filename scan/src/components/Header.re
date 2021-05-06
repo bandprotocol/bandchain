@@ -1,10 +1,10 @@
 module Styles = {
   open Css;
 
-  let header =
+  let header = (theme: Theme.t) =>
     style([
       paddingTop(Spacing.lg),
-      backgroundColor(Colors.white),
+      backgroundColor(theme.mainBg),
       borderBottom(`px(2), `solid, Colors.blueGray1),
       zIndex(3),
       Media.mobile([
@@ -33,10 +33,38 @@ module LinkToHome = {
   };
 };
 
+module ToggleThemeButton = {
+  open Css;
+
+  module Styles = {
+    let button = isDarkMode =>
+      style([
+        backgroundColor(Colors.white),
+        padding2(~v=`px(3), ~h=`px(6)),
+        borderRadius(`px(8)),
+        border(`px(1), `solid, isDarkMode ? Colors.white : Colors.black),
+        marginLeft(`px(5)),
+        cursor(`pointer),
+        outlineStyle(`none),
+      ]);
+  };
+
+  [@react.component]
+  let make = () => {
+    let ({ThemeContext.isDarkMode}, toggle) = React.useContext(ThemeContext.context);
+
+    <button className={Styles.button(isDarkMode)} onClick={_ => toggle()}>
+      <Icon name={isDarkMode ? "fas fa-sun" : "fas fa-moon"} size=14 color=Colors.black />
+    </button>;
+  };
+};
+
 module DesktopRender = {
   [@react.component]
   let make = () => {
-    <header className=Styles.header>
+    let ({ThemeContext.theme}, _) = React.useContext(ThemeContext.context);
+
+    <header className={Styles.header(theme)}>
       <div className="container">
         <Row alignItems=Row.Center marginBottom=12>
           <Col col=Col.Five>
@@ -103,7 +131,12 @@ module DesktopRender = {
         </Row>
         <Row alignItems=Row.Center>
           <Col col=Col.Eight> <NavBar /> </Col>
-          <Col col=Col.Four> <UserAccount /> </Col>
+          <Col col=Col.Four>
+            <div className={CssHelper.flexBox(~justify=`flexEnd, ())}>
+              <UserAccount />
+              <ToggleThemeButton />
+            </div>
+          </Col>
         </Row>
       </div>
     </header>;
@@ -113,7 +146,9 @@ module DesktopRender = {
 module MobileRender = {
   [@react.component]
   let make = () => {
-    <header className=Styles.header>
+    let ({ThemeContext.theme}, _) = React.useContext(ThemeContext.context);
+
+    <header className={Styles.header(theme)}>
       <Row alignItems=Row.Center>
         <Col colSm=Col.Six>
           <div className={CssHelper.flexBox(~align=`flexEnd, ())}>

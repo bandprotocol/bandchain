@@ -197,6 +197,7 @@ a:not(:hover) {
 
 * {
   box-sizing: border-box;
+  transition: color,background-color 200ms;
 }
 
 html,
@@ -207,14 +208,12 @@ body {
 body {
   margin: 0;
   padding: 0;
-  color: #555;
   display: flex;
   flex-direction: column;
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -moz-osx-font-smoothing: grayscale;
-  background: #FCFCFC;
 }
 
 button, input {

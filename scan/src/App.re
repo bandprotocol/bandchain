@@ -4,14 +4,6 @@ module Styles = {
   let container =
     style([width(`percent(100.)), height(`percent(100.)), position(`relative)]);
 
-  let innerContainer =
-    style([
-      marginLeft(`auto),
-      marginRight(`auto),
-      padding2(~v=`zero, ~h=`px(15)),
-      Media.mobile([marginTop(`px(58))]),
-    ]);
-
   let routeContainer =
     style([
       minHeight(`calc((`sub, `vh(100.), `px(200)))),
@@ -22,31 +14,7 @@ module Styles = {
 
 [@react.component]
 let make = () => {
-  exception WrongNetwork(string);
-  switch (Env.network) {
-  | "WENCHANG"
-  | "GUANYU38"
-  | "GUANYU" => ()
-  | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
-  };
   let currentRoute = ReasonReactRouter.useUrl() |> Route.fromUrl;
-  let (syncing, setSyncing) = React.useState(_ => false);
-  let (_, dispatchModal) = React.useContext(ModalContext.context);
-  let trackingSub = TrackingSub.use();
-
-  // If database is syncing the state (when replayOffset = -2).
-  React.useEffect2(
-    () => {
-      switch (trackingSub) {
-      | Data({replayOffset}) when replayOffset != (-2) && !syncing =>
-        Syncing->OpenModal->dispatchModal;
-        setSyncing(_ => true);
-      | _ => ()
-      };
-      None;
-    },
-    (trackingSub, syncing),
-  );
 
   <div className=Styles.container>
     <Header />
