@@ -276,7 +276,9 @@ let getList = (~isActive, ()) => {
            | "bandvaloper1uj0v9gcc9u340c3h0uw6lm05qewk2w729l2qj8"
            | "bandvaloper1mjz34hqqh65lnxen9549xyqs5tr7aqjpquz60v"
            | "bandvaloper1ya8zqwdrm6fm49czexlh3fz5y84nly4vn9uqp6"
-           | "bandvaloper1ef2ak3ddypn9rh6qv7pxsywsp93wj755lye60t" => false
+           | "bandvaloper1ef2ak3ddypn9rh6qv7pxsywsp93wj755lye60t"
+           | "bandvaloper1rcwsty7tefgkamxanaynft470w57ty4ruyrxsk"
+           | "bandvaloper1uxc6fened49j7hexjru2tamgnu2dpsj3d8jv4y" => false
            | _ => true
            };
          })
@@ -286,8 +288,12 @@ let getList = (~isActive, ()) => {
 
 let count = () => {
   let (result, _) = ApolloHooks.useSubscription(ValidatorCountConfig.definition);
+
+  // minus by filtered amount
   result
-  |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  |> Sub.map(_, x =>
+       x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count - 10)
+     );
 };
 
 let countByActive = isActive => {
@@ -296,8 +302,12 @@ let countByActive = isActive => {
       ValidatorCountByJailedConfig.definition,
       ~variables=ValidatorCountByJailedConfig.makeVariables(~jailed=!isActive, ()),
     );
+
+  // minus by filtered amount
   result
-  |> Sub.map(_, x => x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count));
+  |> Sub.map(_, x =>
+       x##validators_aggregate##aggregate |> Belt_Option.getExn |> (y => y##count - 10)
+     );
 };
 
 let getTotalBondedAmount = () => {
