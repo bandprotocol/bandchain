@@ -47,8 +47,11 @@ let make = (~packet: IBCSub.packet_t, ~oracleScriptID: ID.OracleScript.t) => {
         <Text value="ORACLE SCRIPT" size=Text.Sm weight=Text.Thin spacing={Text.Em(0.06)} />
         <div className=Styles.hFlex>
           <TypeID.OracleScript id={request.oracleScriptID} />
-          <HSpacing size=Spacing.sm />
-          <Text value={request.oracleScriptName} />
+          {switch (request.oracleScriptNameOpt) {
+           | Some(oracleScriptName) =>
+             <> <HSpacing size=Spacing.sm /> <Text value=oracleScriptName /> </>
+           | None => React.null
+           }}
         </div>
       </div>
       <VSpacing size=Spacing.lg />

@@ -2,7 +2,7 @@ module Request = {
   type t = {
     idOpt: option(ID.Request.t),
     oracleScriptID: ID.OracleScript.t,
-    oracleScriptName: string,
+    oracleScriptNameOpt: option(string),
     clientID: string,
     calldata: JsBuffer.t,
     askCount: int,
@@ -11,7 +11,6 @@ module Request = {
 };
 
 module Response = {
-
   type t = {
     requestID: ID.Request.t,
     oracleScriptID: ID.OracleScript.t,
@@ -80,13 +79,13 @@ module Internal = {
       | "oracle request" =>
         Request(
           JsonUtils.Decode.{
-            idOpt:
-              switch (acknowledgement) {
-              | Some(x) => Some(ID.Request.ID(x |> at(["request_id"], int)))
-              | None => None
-              },
+            idOpt: {
+              let x = acknowledgement->Belt.Option.getExn;
+              let success = x |> field("success", bool);
+              success ? Some(ID.Request.ID(x |> at(["request_id"], int))) : None;
+            },
             oracleScriptID: ID.OracleScript.ID(packetDetail |> at(["oracle_script_id"], int)),
-            oracleScriptName: packetDetail |> at(["oracle_script_name"], string),
+            oracleScriptNameOpt: packetDetail |> optional(at(["oracle_script_name"], string)),
             clientID: packetDetail |> at(["client_id"], string),
             calldata: packetDetail |> at(["calldata"], string) |> JsBuffer.fromHex,
             askCount: packetDetail |> at(["ask_count"], int),
@@ -96,7 +95,8 @@ module Internal = {
       | "oracle response" =>
         let status =
           packetDetail
-          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.int) |> RequestStatus.fromInt
+          |> JsonUtils.Decode.at(["resolve_status"], JsonUtils.Decode.int)
+          |> RequestStatus.fromInt;
         Response(
           JsonUtils.Decode.{
             requestID: ID.Request.ID(packetDetail |> at(["request_id"], int)),
