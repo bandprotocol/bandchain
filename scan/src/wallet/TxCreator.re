@@ -119,15 +119,15 @@ let decodeAccountInt = json => {
 };
 
 let getAccountInfo = address => {
-  let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
+  let url = Env.rpc ++ "/cosmos/auth/v1beta1/accounts/" ++ (address |> Address.toBech32);
   let%Promise info = Axios.get(url);
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], decodeAccountInt),
+      accountNumber: data |> at(["account", "account_number"], decodeAccountInt),
       sequence:
         data
-        |> optional(at(["result", "value", "sequence"], decodeAccountInt))
+        |> optional(at(["account", "sequence"], decodeAccountInt))
         |> Belt_Option.getWithDefault(_, 0),
     },
   );
