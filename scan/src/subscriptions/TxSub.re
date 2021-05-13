@@ -632,7 +632,7 @@ module Msg = {
         title: json |> at(["msg", "content", "title"], string),
         description: json |> at(["msg", "content", "description"], string),
         initialDeposit: json |> at(["msg", "initial_deposit"], list(Coin.decodeCoin)),
-        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJsonString),
+        proposalID: json |> at(["extra", "proposal_id"], ID.Proposal.fromJsonInt),
       };
     };
 
