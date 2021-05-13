@@ -53811,9 +53811,13 @@
             "deprecationReason": null,
             "name": "validatorByValidatorDstId",
             "type": {
-              "kind": "OBJECT",
-              "name": "validators",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "validators",
+                "ofType": null
+              }
             },
             "description": "An object relationship"
           },
