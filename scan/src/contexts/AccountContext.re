@@ -37,7 +37,19 @@ let reducer = state =>
           let%Promise rawTx =
             TxCreator.createRawTx(
               ~address,
-              ~msgs=[|Request(oracleScriptID, calldata, askCount, minCount, address, clientID)|],
+              ~msgs=[|
+                Request(
+                  oracleScriptID,
+                  calldata,
+                  askCount,
+                  minCount,
+                  address,
+                  clientID,
+                  {amount: 100. |> Js.Float.toString, denom: "uband"},
+                  "30000",
+                  "50000",
+                ),
+              |],
               ~chainID,
               ~gas="700000",
               ~feeAmount="0",

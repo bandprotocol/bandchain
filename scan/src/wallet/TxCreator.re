@@ -39,6 +39,9 @@ type msg_request_t = {
   min_count: string,
   sender: string,
   client_id: string,
+  fee_limit: array(amount_t),
+  prepare_gas: string,
+  execute_gas: string,
 };
 
 type msg_vote_t = {
@@ -53,7 +56,17 @@ type msg_input_t =
   | Undelegate(Address.t, amount_t)
   | Redelegate(Address.t, Address.t, amount_t)
   | WithdrawReward(Address.t)
-  | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string)
+  | Request(
+      ID.OracleScript.t,
+      JsBuffer.t,
+      string,
+      string,
+      Address.t,
+      string,
+      amount_t,
+      string,
+      string,
+    )
   | Vote(ID.Proposal.t, string);
 
 type msg_payload_t = {
@@ -223,7 +236,17 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
       }
       |> Belt_Option.getExn
       |> Js.Json.parseExn
-    | Request(ID.OracleScript.ID(oracleScriptID), calldata, askCount, minCount, sender, clientID) =>
+    | Request(
+        ID.OracleScript.ID(oracleScriptID),
+        calldata,
+        askCount,
+        minCount,
+        sender,
+        clientID,
+        feeLimit,
+        prepareGas,
+        executeGas,
+      ) =>
       Js.Json.stringifyAny({
         oracle_script_id: oracleScriptID |> string_of_int,
         calldata: calldata |> JsBuffer.toBase64,
@@ -231,6 +254,9 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
         min_count: minCount,
         sender: sender |> Address.toBech32,
         client_id: clientID,
+        fee_limit: [|feeLimit|],
+        prepare_gas: prepareGas,
+        execute_gas: executeGas,
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn
