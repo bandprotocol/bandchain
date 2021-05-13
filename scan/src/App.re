@@ -76,7 +76,7 @@ let make = () => {
        | ProposalHomePage => <ProposalHomePage />
        | ProposalIndexPage(proposalID) =>
          <ProposalIndexPage proposalID={ID.Proposal.ID(proposalID)} />
-       | IBCHomePage => <IBCHomePage />
+       | IBCHomePage
        | NotFound => <NotFound />
        }}
     </div>
