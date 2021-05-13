@@ -47,7 +47,7 @@ type msg_request_t = {
 type msg_vote_t = {
   proposal_id: string,
   voter: string,
-  option: string,
+  option: int,
 };
 
 type msg_input_t =
@@ -67,7 +67,7 @@ type msg_input_t =
       string,
       string,
     )
-  | Vote(ID.Proposal.t, string);
+  | Vote(ID.Proposal.t, int);
 
 type msg_payload_t = {
   [@bs.as "type"]

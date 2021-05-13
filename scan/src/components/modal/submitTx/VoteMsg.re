@@ -31,16 +31,16 @@ module VoteInput = {
           variant=Button.Outline
           px=15
           py=9
-          onClick={_ => setAnswerOpt(_ => Some("Yes"))}
-          disabled={answerOpt == Some("Yes")}>
+          onClick={_ => setAnswerOpt(_ => Some(1))}
+          disabled={answerOpt == Some(1)}>
           <Text size=Text.Lg value="Yes" />
         </Button>
         <Button
           variant=Button.Outline
           px=15
           py=9
-          onClick={_ => setAnswerOpt(_ => Some("No"))}
-          disabled={answerOpt == Some("No")}>
+          onClick={_ => setAnswerOpt(_ => Some(3))}
+          disabled={answerOpt == Some(3)}>
           <Text size=Text.Lg value="No" />
         </Button>
       </div>
@@ -49,16 +49,16 @@ module VoteInput = {
           variant=Button.Outline
           px=15
           py=9
-          onClick={_ => setAnswerOpt(_ => Some("NoWithVeto"))}
-          disabled={answerOpt == Some("NoWithVeto")}>
+          onClick={_ => setAnswerOpt(_ => Some(4))}
+          disabled={answerOpt == Some(4)}>
           <Text size=Text.Lg value="No with Veto" />
         </Button>
         <Button
           variant=Button.Outline
           px=15
           py=9
-          onClick={_ => setAnswerOpt(_ => Some("Abstain"))}
-          disabled={answerOpt == Some("Abstain")}>
+          onClick={_ => setAnswerOpt(_ => Some(2))}
+          disabled={answerOpt == Some(2)}>
           <Text size=Text.Lg value="Abstain" />
         </Button>
       </div>

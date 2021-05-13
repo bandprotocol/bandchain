@@ -30,7 +30,11 @@ module Styles = {
           border(`px(1), `solid, Colors.bandBlue),
           hover([backgroundColor(Colors.buttonBaseHover)]),
           active([backgroundColor(Colors.buttonBaseActive)]),
-          disabled([backgroundColor(Colors.buttonDisabled), color(Colors.white), borderColor(Colors.buttonDisabled)]),
+          disabled([
+            backgroundColor(Colors.buttonDisabled),
+            color(Colors.white),
+            borderColor(Colors.buttonDisabled),
+          ]),
         ])
       | Outline =>
         style([
@@ -39,7 +43,7 @@ module Styles = {
           border(`px(1), `solid, Colors.bandBlue),
           hover([backgroundColor(Colors.buttonOutlineHover)]),
           active([backgroundColor(Colors.buttonOutlineActive)]),
-          disabled([borderColor(Colors.buttonDisabled), color(Colors.buttonDisabled), hover([backgroundColor(Colors.white)])]),
+          disabled([borderColor(Colors.buttonDisabled), color(Colors.buttonDisabled)]),
         ])
       };
     merge([base, custom]);
