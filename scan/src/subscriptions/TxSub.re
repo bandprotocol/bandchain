@@ -379,7 +379,7 @@ module Msg = {
       commissionMaxChange: float,
       delegatorAddress: Address.t,
       validatorAddress: Address.t,
-      publicKey: PubKey.t,
+      // publicKey: PubKey.t,
       minSelfDelegation: Coin.t,
       selfDelegation: Coin.t,
     };
@@ -394,7 +394,7 @@ module Msg = {
         commissionMaxChange: json |> at(["msg", "commission", "max_change_rate"], floatstr),
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         validatorAddress: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
-        publicKey: json |> at(["msg", "pubkey"], string) |> PubKey.fromBech32,
+        // publicKey: json |> at(["msg", "pubkey"], string) |> PubKey.fromBech32,
         minSelfDelegation:
           json |> at(["msg", "min_self_delegation"], floatstr) |> Coin.newUBANDFromAmount,
         selfDelegation: json |> at(["msg", "value"], Coin.decodeCoin),
@@ -423,7 +423,7 @@ module Msg = {
           website: json |> at(["msg", "description", "website"], string),
           details: json |> at(["msg", "description", "details"], string),
           commissionRate: json |> optional(at(["msg", "commission_rate"], floatstr)),
-          sender: json |> at(["msg", "address"], string) |> Address.fromBech32,
+          sender: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
           minSelfDelegation:
             json
             |> optional(at(["msg", "min_self_delegation"], floatstr))
@@ -436,7 +436,7 @@ module Msg = {
           website: json |> at(["msg", "website"], string),
           details: json |> at(["msg", "details"], string),
           commissionRate: json |> optional(at(["msg", "commission_rate"], floatstr)),
-          sender: json |> at(["msg", "address"], string) |> Address.fromBech32,
+          sender: json |> at(["msg", "validator_address"], string) |> Address.fromBech32,
           minSelfDelegation:
             json
             |> optional(at(["msg", "min_self_delegation"], floatstr))
