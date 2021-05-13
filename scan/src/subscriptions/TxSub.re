@@ -577,7 +577,7 @@ module Msg = {
         delegatorAddress: json |> at(["msg", "delegator_address"], string) |> Address.fromBech32,
         amount: json |> at(["extra", "reward_amount"], string) |> GraphQLParser.coins,
         moniker: json |> at(["extra", "moniker"], string),
-        identity: json |> at(["extra", "moniker"], string),
+        identity: json |> at(["extra", "identity"], string),
       };
     };
 
