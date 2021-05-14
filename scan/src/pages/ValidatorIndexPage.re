@@ -359,7 +359,7 @@ let make = (~address, ~hashtag: Route.validator_tab_t) => {
                 <Heading value="Website" size=Heading.H5 marginBottom=8 />
                 {switch (allSub) {
                  | Data(({website}, _, _)) =>
-                   <a href=website target="_blank" className=Styles.link>
+                   <a href=website target="_blank" rel="noopener" className=Styles.link>
                      <Text value=website size=Text.Lg color=Colors.bandBlue block=true />
                    </a>
                  | _ => <LoadingCensorBar width=260 height=15 />
