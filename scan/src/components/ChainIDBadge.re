@@ -88,7 +88,9 @@ let parseChainID =
   | "band-guanyu-poa" => GuanYuPOA
   | "band-guanyu-mainnet" => GuanYuMainnet
   | "band-laozi-internal"
-  | "band-laozi-testnet1" => LaoziTestnet
+  | "band-laozi-testnet1"
+  | "band-laozi-testnet2"
+  | "band-guanyu-laozi1" => LaoziTestnet
   | _ => Unknown;
 
 let getLink =
