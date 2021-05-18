@@ -132,6 +132,7 @@ function(schema, t, data) {
 
 type primitive_t =
   | String
+  | Bytes
   | U64
   | U32
   | U8;
@@ -139,74 +140,74 @@ type primitive_t =
 type variable_t =
   | Single(primitive_t)
   | Array(primitive_t);
-  
+
 type field_t = {
   name: string,
   varType: variable_t,
 };
 
 let parse = ({fieldName, fieldType}) => {
-  let v =
-    {
-      switch (fieldType) {
-      | "string" => Some(Single(String))
-      | "u64" => Some(Single(U64))
-      | "u32" => Some(Single(U32))
-      | "u8" => Some(Single(U8))
-      | "[string]" => Some(Array(String))
-      | "[u64]" => Some(Array(U64))
-      | "[u32]" => Some(Array(U32))
-      | "[u8]" => Some(Array(U8))
-      | _ => None
-      };
+  let v = {
+    switch (fieldType) {
+    | "string" => Some(Single(String))
+    | "u64" => Some(Single(U64))
+    | "u32" => Some(Single(U32))
+    | "u8" => Some(Single(U8))
+    | "bytes" => Some(Single(Bytes))
+    | "[string]" => Some(Array(String))
+    | "[u64]" => Some(Array(U64))
+    | "[u32]" => Some(Array(U32))
+    | "[u8]" => Some(Array(U8))
+    | _ => None
     };
+  };
 
   let%Opt varType' = v;
   Some({name: fieldName, varType: varType'});
 };
 
-let declarePrimitiveSol = 
+let declarePrimitiveSol =
   fun
   | String => "string"
+  | Bytes => "bytes"
   | U64 => "uint64"
   | U32 => "uint32"
   | U8 => "uint8";
 
 let declareSolidity = ({name, varType}) => {
-  let type_ = switch (varType) {
-  | Single(x) => declarePrimitiveSol(x)
-  | Array(x) => {
-    let declareType = declarePrimitiveSol(x);
-    {j|$declareType[]|j};
-  }
-  };
+  let type_ =
+    switch (varType) {
+    | Single(x) => declarePrimitiveSol(x)
+    | Array(x) =>
+      let declareType = declarePrimitiveSol(x);
+      {j|$declareType[]|j};
+    };
   {j|$type_ $name;|j};
 };
 
 let assignSolidity = ({name, varType}) => {
-  let decode = 
+  let decode =
     fun
     | String => "string(data.decodeBytes());"
+    | Bytes => "data.decodeBytes()"
     | U64 => "data.decodeU64();"
     | U32 => "data.decodeU32();"
     | U8 => "data.decodeU8();";
-  
+
   switch (varType) {
-  | Single(x) => {
+  | Single(x) =>
     let decodeFunction = decode(x);
-    {j|result.$name = $decodeFunction|j}
-  }
-  | Array(x) => {
+    {j|result.$name = $decodeFunction|j};
+  | Array(x) =>
     let type_ = declarePrimitiveSol(x);
     let decodeFunction = decode(x);
-    
+
     {j|uint32 length = data.decodeU32();
         $type_[] memory $name = new $type_[](length);
         for (uint256 i = 0; i < length; i++) {
           $name[i] = $decodeFunction
         }
         result.$name = $name|j};
-    }
   };
 };
 
@@ -267,16 +268,19 @@ import "./Obi.sol";
 // TODO: revisit when using this.
 let declareGo = ({name, varType}) => {
   let capitalizedName = name |> ChangeCase.pascalCase;
-  let type_ = switch (varType) {
-  | Single(String) => {j|string|j}
-  | Single(U64) => {j|uint64|j}
-  | Single(U32) => {j|uint32|j}
-  | Single(U8) => {j|uint8|j}
-  | Array(String) => {j|[]string|j}
-  | Array(U64) => {j|[]uint64|j}
-  | Array(U32) => {j|[]uint32|j}
-  | Array(U8) => {j|[]uint8|j}
-  };
+  let type_ =
+    switch (varType) {
+    | Single(String) => {j|string|j}
+    | Single(Bytes) => {j|bytes|j}
+    | Single(U64) => {j|uint64|j}
+    | Single(U32) => {j|uint32|j}
+    | Single(U8) => {j|uint8|j}
+    | Array(String) => {j|[]string|j}
+    | Array(Bytes) => {j|[bytes|j}
+    | Array(U64) => {j|[]uint64|j}
+    | Array(U32) => {j|[]uint32|j}
+    | Array(U8) => {j|[]uint8|j}
+    };
   {j|$capitalizedName $type_|j};
 };
 
