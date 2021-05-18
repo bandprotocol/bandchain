@@ -132,6 +132,7 @@ function(schema, t, data) {
 
 type variable_t =
   | String
+  | Bytes
   | U64
   | U32
   | U8;
@@ -145,6 +146,7 @@ let parse = ({fieldName, fieldType}) => {
   let v =
     switch (fieldType |> ChangeCase.camelCase) {
     | "string" => Some(String)
+    | "bytes" => Some(Bytes)
     | "u64" => Some(U64)
     | "u32" => Some(U32)
     | "u8" => Some(U8)
@@ -158,6 +160,7 @@ let parse = ({fieldName, fieldType}) => {
 let declareSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|string $name;|j}
+  | Bytes => {j|bytes $name;|j}
   | U64 => {j|uint64 $name;|j}
   | U32 => {j|uint32 $name;|j}
   | U8 => {j|uint8 $name;|j}
@@ -167,6 +170,7 @@ let declareSolidity = ({name, varType}) => {
 let assignSolidity = ({name, varType}) => {
   switch (varType) {
   | String => {j|result.$name = string(data.decodeBytes());|j}
+  | Bytes => {j|result.$name = data.decodeBytes();|j}
   | U64 => {j|result.$name = data.decodeU64();|j}
   | U32 => {j|result.$name = data.decodeU32();|j}
   | U8 => {j|result.$name = data.decodeU8();|j}
@@ -231,6 +235,7 @@ let declareGo = ({name, varType}) => {
   let capitalizedName = name |> ChangeCase.pascalCase;
   switch (varType) {
   | String => {j|$capitalizedName string|j}
+  | Bytes => {j|$capitalizedName bytes|j}
   | U64 => {j|$capitalizedName uint64|j}
   | U32 => {j|$capitalizedName uint32|j}
   | U8 => {j|$capitalizedName uint8|j}
@@ -240,6 +245,10 @@ let declareGo = ({name, varType}) => {
 let assignGo = ({name, varType}) => {
   switch (varType) {
   | String => {j|$name, err := decoder.DecodeString()
+	if err != nil {
+		return Result{}, err
+	}|j}
+  | Bytes => {j|$name, err := decoder.DecodeBytes()
 	if err != nil {
 		return Result{}, err
 	}|j}
@@ -309,6 +318,7 @@ let encodeStructGo = ({name, varType}) => {
   | U32 => {j|encoder.EncodeU32(result.$name)|j}
   | U64 => {j|encoder.EncodeU64(result.$name)|j}
   | String => {j|encoder.EncodeString(result.$name)|j}
+  | Bytes => {j|encoder.EncodeBytes(result.$name)|j}
   };
 };
 
