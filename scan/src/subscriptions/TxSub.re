@@ -1028,12 +1028,10 @@ module Msg = {
   module ChannelOpenConfirm = {
     type t = {
       signer: Address.t,
-      common: ChannelCommon.t,
     };
     let decode = json => {
       JsonUtils.Decode.{
         signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
       };
     };
   };

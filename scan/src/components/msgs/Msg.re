@@ -111,7 +111,7 @@ let make = (~msg: TxSub.Msg.t, ~width: int) => {
      | ChannelOpenInitMsg({common: {channelID}}) => <IBCMsg.ChannelOpenInit channelID />
      | ChannelOpenTryMsg({common: {channelID}}) => <IBCMsg.ChannelOpenTry channelID />
      | ChannelOpenAckMsg({common: {channelID}}) => <IBCMsg.ChannelOpenAck channelID />
-     | ChannelOpenConfirmMsg({common: {channelID}}) => <IBCMsg.ChannelOpenConfirm channelID />
+     | ChannelOpenConfirmMsg(_) => <IBCMsg.ChannelOpenConfirm />
      | ChannelCloseInitMsg({common: {channelID}}) => <IBCMsg.ChannelCloseInit channelID />
      | ChannelCloseConfirmMsg({common: {channelID}}) => <IBCMsg.ChannelCloseConfirm channelID />
      | PacketMsg({data}) => <IBCMsg.Packet data />
