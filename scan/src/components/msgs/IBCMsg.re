@@ -118,15 +118,16 @@ module ChannelOpenInit = {
 
 module ChannelOpenTry = {
   [@react.component]
-  let make = (~channelID) => {
-    <div
-      className={Css.merge([
-        CssHelper.flexBox(~wrap=`nowrap, ()),
-        CssHelper.overflowHidden,
-        Styles.msgContainer,
-      ])}>
-      <Text value=channelID color=Colors.gray7 nowrap=true block=true ellipsis=true />
-    </div>;
+  let make = () => {
+    // <div
+    //   className={Css.merge([
+    //     CssHelper.flexBox(~wrap=`nowrap, ()),
+    //     CssHelper.overflowHidden,
+    //     Styles.msgContainer,
+    //   ])}>
+    //   <Text value=channelID color=Colors.gray7 nowrap=true block=true ellipsis=true />
+    // </div>;
+    React.null;
   };
 };
 

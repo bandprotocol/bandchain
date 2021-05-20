@@ -129,20 +129,21 @@ module ChannelOpenInitMsg = {
 module ChannelOpenTryMsg = {
   [@react.component]
   let make = (~info: TxSub.Msg.ChannelOpenTry.t) => {
-    <Row>
-      <Col col=Col.Six mb=24>
-        <Heading value="Chain ID" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg value={info.common.chainID} />
-      </Col>
-      <Col col=Col.Six mb=24>
-        <Heading value="Port ID" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg value={info.common.portID} />
-      </Col>
-      <Col col=Col.Six>
-        <Heading value="Channel ID" size=Heading.H5 marginBottom=8 />
-        <Text size=Text.Lg value={info.common.channelID} />
-      </Col>
-    </Row>;
+    // <Row>
+    //   <Col col=Col.Six mb=24>
+    //     <Heading value="Chain ID" size=Heading.H5 marginBottom=8 />
+    //     <Text size=Text.Lg value={info.common.chainID} />
+    //   </Col>
+    //   <Col col=Col.Six mb=24>
+    //     <Heading value="Port ID" size=Heading.H5 marginBottom=8 />
+    //     <Text size=Text.Lg value={info.common.portID} />
+    //   </Col>
+    //   <Col col=Col.Six>
+    //     <Heading value="Channel ID" size=Heading.H5 marginBottom=8 />
+    //     <Text size=Text.Lg value={info.common.channelID} />
+    //   </Col>
+    // </Row>;
+    React.null;
   };
 };
 

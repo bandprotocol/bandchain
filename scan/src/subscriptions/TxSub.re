@@ -998,12 +998,12 @@ module Msg = {
   module ChannelOpenTry = {
     type t = {
       signer: Address.t,
-      common: ChannelCommon.t,
+      // common: ChannelCommon.t,
     };
     let decode = json => {
       JsonUtils.Decode.{
         signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
-        common: json |> ChannelCommon.decode,
+        // common: json |> ChannelCommon.decode,
       };
     };
   };
@@ -1333,6 +1333,7 @@ function(json) {
 
   let decodeAction = rawJson => {
     let json = rawJson |> parseJson;
+    Js.log(json);
     JsonUtils.Decode.(
       switch (json |> field("type", string) |> getBadgeVariantFromString) {
       | SendBadge => SendMsgSuccess(json |> Send.decode)
