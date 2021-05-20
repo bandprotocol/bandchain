@@ -140,7 +140,7 @@ let make = () => {
     ("Data Sources", DataSourceHomePage),
     ("Oracle Scripts", OracleScriptHomePage),
     ("Requests", RequestHomePage),
-    // ("IBCs", IBCHomePage),
+    ("IBCs", IBCHomePage),
   ];
 
   Media.isMobile() ? <RenderMobile routes /> : <RenderDesktop routes />;
