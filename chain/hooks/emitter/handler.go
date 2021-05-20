@@ -75,7 +75,7 @@ func (h *Hook) handleMsg(ctx sdk.Context, txHash []byte, msg sdk.Msg, log sdk.AB
 	case gov.MsgVote:
 		h.handleMsgVote(ctx, txHash, msg, extra)
 	case gov.MsgDeposit:
-		h.handleMsgDeposit(ctx, txHash, msg)
+		h.handleMsgDeposit(ctx, txHash, msg, extra)
 	}
 }
 

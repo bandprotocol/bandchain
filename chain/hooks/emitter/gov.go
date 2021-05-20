@@ -97,16 +97,19 @@ func (h *Hook) handleMsgSubmitProposal(
 		"voting_time":      proposal.VotingStartTime.UnixNano(),
 		"voting_end_time":  proposal.VotingEndTime.UnixNano(),
 	})
+	extra["proposal_id"] = proposalId
 	extra["title"] = proposal.GetTitle()
 	h.emitSetDeposit(ctx, txHash, proposalId, msg.Proposer)
 }
 
 // handleMsgDeposit implements emitter handler for MsgDeposit.
 func (h *Hook) handleMsgDeposit(
-	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit,
+	ctx sdk.Context, txHash []byte, msg gov.MsgDeposit, extra common.JsDict,
 ) {
 	h.emitSetDeposit(ctx, txHash, msg.ProposalID, msg.Depositor)
 	h.emitUpdateProposalAfterDeposit(ctx, msg.ProposalID)
+	proposal, _ := h.govKeeper.GetProposal(ctx, msg.ProposalID)
+	extra["title"] = proposal.GetTitle()
 }
 
 // handleMsgVote implements emitter handler for MsgVote.
