@@ -35,7 +35,7 @@
     "marked": "^2.0.0",
     "moment": "^2.29.1",
     "obi.js": "^1.0.2",
-    "parcel-plugin-custom-dist-structure": "^1.1.16",
+    "parcel-plugin-custom-dist-structure": "^1.1.18",
     "qrcode.react": "^1.0.1",
     "react": "^16.14.0",
     "react-countup": "^4.3.3",
