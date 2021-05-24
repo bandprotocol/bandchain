@@ -38,19 +38,13 @@ class Handler(object):
         self.conn = conn
 
     def get_transaction_id(self, tx_hash):
-        return self.conn.execute(
-            select([transactions.c.id]).where(transactions.c.hash == tx_hash)
-        ).scalar()
+        return self.conn.execute(select([transactions.c.id]).where(transactions.c.hash == tx_hash)).scalar()
 
     def get_validator_id(self, val):
-        return self.conn.execute(
-            select([validators.c.id]).where(validators.c.operator_address == val)
-        ).scalar()
+        return self.conn.execute(select([validators.c.id]).where(validators.c.operator_address == val)).scalar()
 
     def get_account_id(self, address):
-        return self.conn.execute(
-            select([accounts.c.id]).where(accounts.c.address == address)
-        ).scalar()
+        return self.conn.execute(select([accounts.c.id]).where(accounts.c.address == address)).scalar()
 
     def get_request_count(self, date):
         return self.conn.execute(
@@ -58,23 +52,17 @@ class Handler(object):
         ).scalar()
 
     def get_data_source_id(self, id):
-        return self.conn.execute(
-            select([data_sources.c.id]).where(data_sources.c.id == id)
-        ).scalar()
+        return self.conn.execute(select([data_sources.c.id]).where(data_sources.c.id == id)).scalar()
 
     def get_oracle_script_id(self, id):
-        return self.conn.execute(
-            select([oracle_scripts.c.id]).where(oracle_scripts.c.id == id)
-        ).scalar()
+        return self.conn.execute(select([oracle_scripts.c.id]).where(oracle_scripts.c.id == id)).scalar()
 
     def handle_new_block(self, msg):
         self.conn.execute(blocks.insert(), msg)
 
     def handle_new_transaction(self, msg):
         self.conn.execute(
-            insert(transactions)
-            .values(**msg)
-            .on_conflict_do_update(constraint="transactions_pkey", set_=msg)
+            insert(transactions).values(**msg).on_conflict_do_update(constraint="transactions_pkey", set_=msg)
         )
 
     def handle_set_related_transaction(self, msg):
@@ -194,9 +182,7 @@ class Handler(object):
 
     def handle_update_validator(self, msg):
         self.conn.execute(
-            validators.update()
-            .where(validators.c.operator_address == msg["operator_address"])
-            .values(**msg)
+            validators.update().where(validators.c.operator_address == msg["operator_address"]).values(**msg)
         )
 
     def handle_set_delegation(self, msg):
@@ -205,9 +191,7 @@ class Handler(object):
         msg["validator_id"] = self.get_validator_id(msg["operator_address"])
         del msg["operator_address"]
         self.conn.execute(
-            insert(delegations)
-            .values(**msg)
-            .on_conflict_do_update(constraint="delegations_pkey", set_=msg)
+            insert(delegations).values(**msg).on_conflict_do_update(constraint="delegations_pkey", set_=msg)
         )
 
     def handle_update_delegation(self, msg):
@@ -242,9 +226,7 @@ class Handler(object):
 
     def handle_remove_unbonding(self, msg):
         self.conn.execute(
-            unbonding_delegations.delete().where(
-                unbonding_delegations.c.completion_time <= msg["timestamp"]
-            )
+            unbonding_delegations.delete().where(unbonding_delegations.c.completion_time <= msg["timestamp"])
         )
 
     def handle_new_redelegation(self, msg):
@@ -257,9 +239,7 @@ class Handler(object):
         self.conn.execute(insert(redelegations).values(**msg))
 
     def handle_remove_redelegation(self, msg):
-        self.conn.execute(
-            redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"])
-        )
+        self.conn.execute(redelegations.delete().where(redelegations.c.completion_time <= msg["timestamp"]))
 
     def handle_new_proposal(self, msg):
         msg["proposer_id"] = self.get_account_id(msg["proposer"])
@@ -271,20 +251,14 @@ class Handler(object):
         del msg["depositor"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        self.conn.execute(
-            insert(deposits)
-            .values(**msg)
-            .on_conflict_do_update(constraint="deposits_pkey", set_=msg)
-        )
+        self.conn.execute(insert(deposits).values(**msg).on_conflict_do_update(constraint="deposits_pkey", set_=msg))
 
     def handle_set_vote(self, msg):
         msg["voter_id"] = self.get_account_id(msg["voter"])
         del msg["voter"]
         msg["tx_id"] = self.get_transaction_id(msg["tx_hash"])
         del msg["tx_hash"]
-        self.conn.execute(
-            insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg)
-        )
+        self.conn.execute(insert(votes).values(**msg).on_conflict_do_update(constraint="votes_pkey", set_=msg))
 
     def handle_update_proposal(self, msg):
         condition = True
@@ -298,9 +272,7 @@ class Handler(object):
         self.conn.execute(
             insert(historical_bonded_token_on_validators)
             .values(**msg)
-            .on_conflict_do_update(
-                constraint="historical_bonded_token_on_validators_pkey", set_=msg
-            )
+            .on_conflict_do_update(constraint="historical_bonded_token_on_validators_pkey", set_=msg)
         )
 
     def handle_set_reporter(self, msg):
@@ -311,7 +283,7 @@ class Handler(object):
         self.conn.execute(reporters.insert(), msg)
 
     def handle_remove_reporter(self, msg):
-        msg["validator_id"] = self.get_validator_id(msg["validator"])
+        msg["operator_address"] = msg["validator"]
         del msg["validator"]
         msg["reporter_id"] = self.get_account_id(msg["reporter"])
         del msg["reporter"]
@@ -329,35 +301,25 @@ class Handler(object):
 
     def handle_new_data_source_request(self, msg):
         self.conn.execute(
-            insert(data_source_requests)
-            .values(msg)
-            .on_conflict_do_nothing(constraint="data_source_requests_pkey")
+            insert(data_source_requests).values(msg).on_conflict_do_nothing(constraint="data_source_requests_pkey")
         )
 
     def handle_update_data_source_request(self, msg):
         condition = True
         for col in data_source_requests.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
-        self.conn.execute(
-            data_source_requests.update(condition).values(count=data_source_requests.c.count + 1)
-        )
+        self.conn.execute(data_source_requests.update(condition).values(count=data_source_requests.c.count + 1))
 
     def handle_new_oracle_script_request(self, msg):
         self.conn.execute(
-            insert(oracle_script_requests)
-            .values(msg)
-            .on_conflict_do_nothing(constraint="oracle_script_requests_pkey")
+            insert(oracle_script_requests).values(msg).on_conflict_do_nothing(constraint="oracle_script_requests_pkey")
         )
 
     def handle_update_oracle_script_request(self, msg):
         condition = True
         for col in oracle_script_requests.primary_key.columns.values():
             condition = (col == msg[col.name]) & condition
-        self.conn.execute(
-            oracle_script_requests.update(condition).values(
-                count=oracle_script_requests.c.count + 1
-            )
-        )
+        self.conn.execute(oracle_script_requests.update(condition).values(count=oracle_script_requests.c.count + 1))
 
     def handle_set_request_count_per_day(self, msg):
         if self.get_request_count(msg["date"]) is None:
@@ -368,7 +330,5 @@ class Handler(object):
             for col in request_count_per_days.primary_key.columns.values():
                 condition = (col == msg[col.name]) & condition
             self.conn.execute(
-                request_count_per_days.update(condition).values(
-                    count=request_count_per_days.c.count + 1
-                )
+                request_count_per_days.update(condition).values(count=request_count_per_days.c.count + 1)
             )
