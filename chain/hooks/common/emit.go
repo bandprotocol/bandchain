@@ -36,11 +36,10 @@ func EmitNewBlock(e Emitter, height int64, timestamp int64, proposer string, has
 	})
 }
 
-func EmitNewUnbondingDelegation(e Emitter, delegator sdk.AccAddress, validator sdk.ValAddress, height, completeTime int64, amount sdk.Int) {
+func EmitNewUnbondingDelegation(e Emitter, delegator sdk.AccAddress, validator sdk.ValAddress, completeTime int64, amount sdk.Int) {
 	e.Write("NEW_UNBONDING_DELEGATION", JsDict{
 		"delegator_address": delegator,
 		"operator_address":  validator,
-		"creation_height":   height,
 		"completion_time":   completeTime,
 		"amount":            amount,
 	})

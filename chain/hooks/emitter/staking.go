@@ -184,14 +184,13 @@ func (h *Hook) handleMsgUndelegate(
 
 func (h *Hook) emitUnbondingDelegation(ctx sdk.Context, msg staking.MsgUndelegate, evMap common.EvMap) {
 	completeTime, _ := time.Parse(time.RFC3339, evMap[types.EventTypeUnbond+"."+types.AttributeKeyCompletionTime][0])
-	common.EmitNewUnbondingDelegation(
-		h,
-		msg.DelegatorAddress,
-		msg.ValidatorAddress,
-		ctx.BlockHeight(),
-		completeTime.UnixNano(),
-		sdk.NewInt(common.Atoi(evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0])),
-	)
+	h.Write("NEW_UNBONDING_DELEGATION", common.JsDict{
+		"delegator_address": msg.DelegatorAddress,
+		"operator_address":  msg.ValidatorAddress,
+		"creation_height":   ctx.BlockHeight(),
+		"completion_time":   completeTime.UnixNano(),
+		"amount":            evMap[types.EventTypeUnbond+"."+sdk.AttributeKeyAmount][0],
+	})
 }
 
 // handleMsgBeginRedelegate implements emitter handler for MsgBeginRedelegate
