@@ -2,17 +2,25 @@ module CreateDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.success_t) => {
     <Row>
-      <Col col=Col.Six mbSm=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col>
-      <Col col=Col.Six>
+      <Col col=Col.Six mb=24>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
           <HSpacing size=Spacing.sm />
           <Text value={dataSource.name} size=Text.Lg />
         </div>
+      </Col>
+      <Col col=Col.Six>
+        <Heading value="Treasury" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={dataSource.treasury} />
+      </Col>
+      <Col col=Col.Six>
+        <Heading value="Fee" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins={dataSource.fee} />
       </Col>
     </Row>;
   };
@@ -22,13 +30,21 @@ module CreateDataSourceFailMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.CreateDataSource.fail_t) => {
     <Row>
-      <Col col=Col.Six mbSm=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col>
-      <Col col=Col.Six>
+      <Col col=Col.Six mb=24>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <Text value={dataSource.name} size=Text.Lg />
+      </Col>
+      <Col col=Col.Six>
+        <Heading value="Treasury" size=Heading.H5 marginBottom=8 />
+        <AddressRender position=AddressRender.Subtitle address={dataSource.treasury} />
+      </Col>
+      <Col col=Col.Six>
+        <Heading value="Fee" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins={dataSource.fee} />
       </Col>
     </Row>;
   };
@@ -38,11 +54,11 @@ module EditDataSourceMsg = {
   [@react.component]
   let make = (~dataSource: TxSub.Msg.EditDataSource.t) => {
     <Row>
-      <Col col=Col.Six mbSm=24>
+      <Col col=Col.Six mb=24>
         <Heading value="Owner" size=Heading.H5 marginBottom=8 />
         <AddressRender position=AddressRender.Subtitle address={dataSource.owner} />
       </Col>
-      <Col col=Col.Six>
+      <Col col=Col.Six mb=24>
         <Heading value="Name" size=Heading.H5 marginBottom=8 />
         <div className={CssHelper.flexBox()}>
           <TypeID.DataSource position=TypeID.Subtitle id={dataSource.id} />
@@ -50,6 +66,10 @@ module EditDataSourceMsg = {
              ? React.null
              : <> <HSpacing size=Spacing.sm /> <Text value={dataSource.name} size=Text.Lg /> </>}
         </div>
+      </Col>
+      <Col col=Col.Six>
+        <Heading value="Fee" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins={dataSource.fee} />
       </Col>
     </Row>;
   };
@@ -132,6 +152,10 @@ module RequestMsg = {
           <HSpacing size=Spacing.sm />
           <Text value={request.oracleScriptName} size=Text.Lg />
         </div>
+      </Col>
+      <Col col=Col.Six mb=24>
+        <Heading value="Fee Limit" size=Heading.H5 marginBottom=8 />
+        <AmountRender coins={request.feeLimit} />
       </Col>
       <Col mb=24>
         <div

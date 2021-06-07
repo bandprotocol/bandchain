@@ -15,7 +15,7 @@ type t = {
 //       name
 //       transaction @bsRecord {
 //         txHash: tx_hash @bsDecoder(fn: "GraphQLParser.hash")
-//         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJson")
+//         blockHeight: block_height @bsDecoder(fn: "ID.Block.fromJsonString")
 //         timestamp @bsDecoder(fn: "GraphQLParser.timeMS")
 //       }
 //     }

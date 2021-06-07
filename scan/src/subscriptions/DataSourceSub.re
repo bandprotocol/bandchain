@@ -4,9 +4,11 @@ type request_stat_t = {count: int};
 type internal_t = {
   id: ID.DataSource.t,
   owner: Address.t,
+  treasury: Address.t,
   name: string,
   description: string,
   executable: JsBuffer.t,
+  fee: list(Coin.t),
   transaction: option(transaction_t),
   requestStat: option(request_stat_t),
 };
@@ -14,26 +16,41 @@ type internal_t = {
 type t = {
   id: ID.DataSource.t,
   owner: Address.t,
+  treasury: Address.t,
   name: string,
   description: string,
   executable: JsBuffer.t,
+  fee: list(Coin.t),
   timestamp: option(MomentRe.Moment.t),
   requestCount: int,
 };
 
 let toExternal =
-    ({id, owner, name, description, executable, transaction: txOpt, requestStat: requestStatOpt}) => {
+    (
+      {
+        id,
+        owner,
+        treasury,
+        name,
+        description,
+        executable,
+        fee,
+        transaction: txOpt,
+        requestStat: requestStatOpt,
+      },
+    ) => {
   id,
   owner,
+  treasury,
   name,
   description,
   executable,
+  fee,
   timestamp: {
     let%Opt tx = txOpt;
     Some(tx.block.timestamp);
   },
-  // Note: requestCount can't be nullable value.
-  requestCount: requestStatOpt->Belt.Option.map(({count}) => count)->Belt.Option.getExn,
+  requestCount: requestStatOpt->Belt.Option.mapWithDefault(0, ({count}) => count),
 };
 
 module MultiConfig = [%graphql
@@ -42,9 +59,11 @@ module MultiConfig = [%graphql
     data_sources(limit: $limit, offset: $offset, where: {name: {_ilike: $searchTerm}}, order_by: {transaction: {block: {timestamp: desc}}, id: desc}) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
+      treasury @bsDecoder(fn: "Address.fromBech32")
       name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
+      fee @bsDecoder(fn: "GraphQLParser.coins")
       transaction @bsRecord {
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")
@@ -64,9 +83,11 @@ module SingleConfig = [%graphql
     data_sources_by_pk(id: $id) @bsRecord {
       id @bsDecoder(fn: "ID.DataSource.fromInt")
       owner @bsDecoder(fn: "Address.fromBech32")
+      treasury @bsDecoder(fn: "Address.fromBech32")
       name
       description
       executable @bsDecoder(fn: "GraphQLParser.buffer")
+      fee @bsDecoder(fn: "GraphQLParser.coins")
       transaction @bsRecord {
         block @bsRecord {
           timestamp @bsDecoder(fn: "GraphQLParser.timestamp")

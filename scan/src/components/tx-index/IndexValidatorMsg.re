@@ -57,10 +57,10 @@ module CreateValidatorMsg = {
           accountType=`validator
         />
       </Col>
-      <Col mb=24>
-        <Heading value="Public Key" size=Heading.H5 marginBottom=8 />
-        <PubKeyRender pubKey={validator.publicKey} alignLeft=true position=PubKeyRender.Subtitle />
-      </Col>
+      // <Col mb=24>
+      //   <Heading value="Public Key" size=Heading.H5 marginBottom=8 />
+      //   <PubKeyRender pubKey={validator.publicKey} alignLeft=true position=PubKeyRender.Subtitle />
+      // </Col>
       <Col col=Col.Six mb=24>
         <Heading value="Min Self Delegation" size=Heading.H5 marginBottom=8 />
         <AmountRender coins=[validator.minSelfDelegation] pos=AmountRender.TxIndex />

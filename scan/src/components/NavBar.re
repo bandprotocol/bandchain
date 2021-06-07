@@ -131,27 +131,17 @@ module RenderMobile = {
 
 [@react.component]
 let make = () => {
-  let wenchangRoutes = [
+  let routes = [
     ("Home", Route.HomePage),
     ("Validators", ValidatorHomePage),
     ("Blocks", BlockHomePage),
     ("Transactions", TxHomePage),
     ("Proposals", ProposalHomePage),
+    ("Data Sources", DataSourceHomePage),
+    ("Oracle Scripts", OracleScriptHomePage),
+    ("Requests", RequestHomePage),
+    ("IBCs", IBCHomePage),
   ];
-
-  exception WrongNetwork(string);
-  let routes =
-    switch (Env.network) {
-    | "WENCHANG" => wenchangRoutes
-    | "GUANYU38"
-    | "GUANYU" =>
-      wenchangRoutes->Belt.List.concat([
-        ("Data Sources", DataSourceHomePage),
-        ("Oracle Scripts", OracleScriptHomePage),
-        ("Requests", RequestHomePage),
-      ])
-    | _ => raise(WrongNetwork("Incorrect or unspecified NETWORK environment variable"))
-    };
 
   Media.isMobile() ? <RenderMobile routes /> : <RenderDesktop routes />;
 };

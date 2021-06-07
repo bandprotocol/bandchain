@@ -61,194 +61,167 @@ let make = () =>
 
     let pageCount = Page.getPageCount(packetsCount, pageSize);
 
-    React.null
-    // TODO: Revisit
-    // <Section>
-    //   <div className=CssHelper.container>
-    //     <Row>
-    //       <Col> <img src=Images.ibcLogo className=Styles.logo /> </Col>
-    //       <Col>
-    //         <div className=Styles.title>
-    //           <Text
-    //             value="ALL IBC PACKETS"
-    //             weight=Text.Semibold
-    //             color=Colors.gray7
-    //             nowrap=true
-    //             spacing={Text.Em(0.06)}
-    //           />
-    //           <div className=Styles.seperatedLine />
-    //           <Text value={(packetsCount |> Format.iPretty) ++ " in total"} />
-    //         </div>
-    //       </Col>
-    //     </Row>
-    //     <VSpacing size=Spacing.xl />
-    //     <THead>
-    //       <div className=Styles.hFlex>
-    //         <Col> <HSpacing size=Spacing.md /> </Col>
-    //         <Col size=9.7>
-    //           <Text
-    //             block=true
-    //             value="PACKET"
-    //             size=Text.Sm
-    //             weight=Text.Semibold
-    //             color=Colors.gray5
-    //             spacing={Text.Em(0.1)}
-    //           />
-    //         </Col>
-    //         <Col size=18.3>
-    //           <Text
-    //             block=true
-    //             value="PEER INFO"
-    //             size=Text.Sm
-    //             weight=Text.Semibold
-    //             color=Colors.gray5
-    //             spacing={Text.Em(0.1)}
-    //           />
-    //         </Col>
-    //         <Col size=8.1>
-    //           <Text
-    //             block=true
-    //             value="BLOCK"
-    //             size=Text.Sm
-    //             weight=Text.Semibold
-    //             color=Colors.gray5
-    //             spacing={Text.Em(0.1)}
-    //           />
-    //         </Col>
-    //         <Col size=44.2>
-    //           <Text
-    //             block=true
-    //             value="DETAIL"
-    //             size=Text.Sm
-    //             weight=Text.Semibold
-    //             color=Colors.gray5
-    //             spacing={Text.Em(0.1)}
-    //           />
-    //         </Col>
-    //         <Col> <HSpacing size=Spacing.md /> </Col>
-    //       </div>
-    //     </THead>
-    //     {packets
-    //      ->Belt_Array.mapWithIndex(
-    //          (
-    //            i,
-    //            {
-    //              direction,
-    //              channel,
-    //              port,
-    //              yourChainID,
-    //              yourChannel,
-    //              yourPort,
-    //              blockHeight,
-    //              packet,
-    //            },
-    //          ) => {
-    //          <TBody key={i |> string_of_int} paddingV={`px(20)}>
-    //            <Row alignItems=`flexStart>
-    //              <Col> <HSpacing size=Spacing.md /> </Col>
-    //              <Col size=9.7>
-    //                <div className={Styles.badge(Colors.orange1)}>
-    //                  <Text
-    //                    value={
-    //                      switch (packet) {
-    //                      | Request(_) => "ORACLE REQUEST"
-    //                      | Response(_) => "ORACLE RESPONSE"
-    //                      | Unknown => "Unknown"
-    //                      }
-    //                    }
-    //                    size=Text.Xs
-    //                    color=Colors.orange6
-    //                    spacing={Text.Em(0.07)}
-    //                  />
-    //                </div>
-    //                <VSpacing size=Spacing.md />
-    //                <div className={Styles.badge(Colors.blue1)}>
-    //                  <Text
-    //                    value={
-    //                      switch (direction) {
-    //                      | Incoming => "INCOMING"
-    //                      | Outgoing => "OUTGOING"
-    //                      }
-    //                    }
-    //                    size=Text.Xs
-    //                    color=Colors.blue7
-    //                    spacing={Text.Em(0.07)}
-    //                  />
-    //                </div>
-    //                <VSpacing size=Spacing.md />
-    //                <img src=Images.ibcDirArrow className={Styles.dirArrow(direction)} />
-    //              </Col>
-    //              <Col size=18.3>
-    //                <div className=Styles.hFlex>
-    //                  <Text
-    //                    value={j|ChainID:‌‌ ‌‌ |j}
-    //                    size=Text.Sm
-    //                    code=true
-    //                    height={Text.Px(16)}
-    //                  />
-    //                  <Text value=yourChainID size=Text.Sm code=true height={Text.Px(16)} />
-    //                </div>
-    //                <VSpacing size=Spacing.md />
-    //                <div className=Styles.hFlex>
-    //                  <Text
-    //                    value={j|Channel:‌‌ ‌‌ |j}
-    //                    size=Text.Sm
-    //                    code=true
-    //                    height={Text.Px(16)}
-    //                  />
-    //                  <Text
-    //                    value={
-    //                      switch (packet) {
-    //                      | Request(_) => channel
-    //                      | Response(_) => yourChannel
-    //                      | Unknown => "Unknown"
-    //                      }
-    //                    }
-    //                    size=Text.Sm
-    //                    code=true
-    //                    height={Text.Px(16)}
-    //                  />
-    //                </div>
-    //                <VSpacing size=Spacing.md />
-    //                <div className=Styles.hFlex>
-    //                  <Text
-    //                    value={j|Port:‌‌ ‌‌ ‌‌ ‌‌ ‌‌ |j}
-    //                    size=Text.Sm
-    //                    code=true
-    //                    height={Text.Px(16)}
-    //                  />
-    //                  <Text
-    //                    value={
-    //                      switch (packet) {
-    //                      | Request(_) => port
-    //                      | Response(_) => yourPort
-    //                      | Unknown => "Unknown"
-    //                      }
-    //                    }
-    //                    size=Text.Sm
-    //                    code=true
-    //                    height={Text.Px(16)}
-    //                  />
-    //                </div>
-    //              </Col>
-    //              <Col size=8.1> <TypeID.Block id=blockHeight /> </Col>
-    //              <Col size=44.2>
-    //                {switch (packet) {
-    //                 | Request({oracleScriptID}) => <Packet packet oracleScriptID />
-    //                 | Response({oracleScriptID}) => <Packet packet oracleScriptID />
-    //                 | Unknown => React.null
-    //                 }}
-    //              </Col>
-    //              <Col> <HSpacing size=Spacing.md /> </Col>
-    //            </Row>
-    //          </TBody>
-    //        })
-    //      ->React.array}
-    //     <VSpacing size=Spacing.lg />
-    //     <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
-    //     <VSpacing size=Spacing.lg />
-    //   </div>
-    // </Section>
+    <Section>
+      <div className=CssHelper.container>
+        <Row alignItems=Row.Center marginBottom=40 marginBottomSm=24>
+          <Col col=Col.Twelve>
+            <Heading value="All IBC Packets" size=Heading.H2 marginBottom=40 marginBottomSm=24 />
+            <Heading value={(packetsCount |> Format.iPretty) ++ " in total"} size=Heading.H3 />
+          </Col>
+        </Row>
+        <THead>
+          <Row alignItems=Row.Center>
+            <Col col=Col.Two>
+              <Text block=true value="Packet" weight=Text.Semibold color=Colors.gray7 />
+            </Col>
+            <Col col=Col.Three>
+              <Text block=true value="Perr Info" weight=Text.Semibold color=Colors.gray7 />
+            </Col>
+            <Col col=Col.Two>
+              <Text block=true value="Block" weight=Text.Semibold color=Colors.gray7 />
+            </Col>
+            <Col col=Col.Five>
+              <Text block=true value="Detail" weight=Text.Semibold color=Colors.gray7 />
+            </Col>
+          </Row>
+        </THead>
+        {packets
+         ->Belt_Array.mapWithIndex(
+             (
+               i,
+               {
+                 direction,
+                 srcChannel,
+                 srcPort,
+                 chainID,
+                 dstChannel,
+                 dstPort,
+                 blockHeight,
+                 packet,
+               },
+             ) => {
+             <TBody key={i |> string_of_int} paddingH={`px(24)}>
+               <Row>
+                 <Col col=Col.Two>
+                   <div className={Styles.badge(Colors.orange1)}>
+                     <Text
+                       value={
+                         switch (packet) {
+                         | Request(_) => "ORACLE REQUEST"
+                         | Response(_) => "ORACLE RESPONSE"
+                         | Unknown => "Unknown"
+                         }
+                       }
+                       size=Text.Xs
+                       color=Colors.orange6
+                       spacing={Text.Em(0.07)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className={Styles.badge(Colors.blue1)}>
+                     <Text
+                       value={
+                         switch (direction) {
+                         | Incoming => "INCOMING"
+                         | Outgoing => "OUTGOING"
+                         }
+                       }
+                       size=Text.Xs
+                       color=Colors.blue7
+                       spacing={Text.Em(0.07)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <img src=Images.ibcDirArrow className={Styles.dirArrow(direction)} />
+                 </Col>
+                 <Col col=Col.Three>
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|ChainID:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text value=chainID size=Text.Sm code=true height={Text.Px(16)} />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Src Channel:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={srcChannel}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Src Port:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={srcPort}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Dst Channel:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={dstChannel}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                   <VSpacing size=Spacing.md />
+                   <div className=Styles.hFlex>
+                     <Text
+                       value={j|Dst Port:‌‌ |j}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                     <Text
+                       value={dstPort}
+                       size=Text.Sm
+                       code=true
+                       height={Text.Px(16)}
+                     />
+                   </div>
+                 </Col>
+                 <Col col=Col.Two> <TypeID.Block id=blockHeight /> </Col>
+                 <Col col=Col.Five>
+                   {switch (packet) {
+                    | Request({oracleScriptID}) => <Packet packet oracleScriptID />
+                    | Response({oracleScriptID}) => <Packet packet oracleScriptID />
+                    | Unknown => React.null
+                    }}
+                 </Col>
+               </Row>
+             </TBody>
+           })
+         ->React.array}
+        <VSpacing size=Spacing.lg />
+        <Pagination currentPage=page pageCount onPageChange={newPage => setPage(_ => newPage)} />
+        <VSpacing size=Spacing.lg />
+      </div>
+    </Section>
     |> Sub.resolve;
   }
   |> Sub.default(_, React.null);

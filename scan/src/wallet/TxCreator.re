@@ -39,12 +39,15 @@ type msg_request_t = {
   min_count: string,
   sender: string,
   client_id: string,
+  fee_limit: array(amount_t),
+  prepare_gas: string,
+  execute_gas: string,
 };
 
 type msg_vote_t = {
   proposal_id: string,
   voter: string,
-  option: string,
+  option: int,
 };
 
 type msg_input_t =
@@ -53,8 +56,18 @@ type msg_input_t =
   | Undelegate(Address.t, amount_t)
   | Redelegate(Address.t, Address.t, amount_t)
   | WithdrawReward(Address.t)
-  | Request(ID.OracleScript.t, JsBuffer.t, string, string, Address.t, string)
-  | Vote(ID.Proposal.t, string);
+  | Request(
+      ID.OracleScript.t,
+      JsBuffer.t,
+      string,
+      string,
+      Address.t,
+      string,
+      amount_t,
+      string,
+      string,
+    )
+  | Vote(ID.Proposal.t, int);
 
 type msg_payload_t = {
   [@bs.as "type"]
@@ -119,15 +132,15 @@ let decodeAccountInt = json => {
 };
 
 let getAccountInfo = address => {
-  let url = Env.rpc ++ "/auth/accounts/" ++ (address |> Address.toBech32);
+  let url = Env.rpc ++ "/cosmos/auth/v1beta1/accounts/" ++ (address |> Address.toBech32);
   let%Promise info = Axios.get(url);
   let data = info##data;
   Promise.ret(
     JsonUtils.Decode.{
-      accountNumber: data |> at(["result", "value", "account_number"], decodeAccountInt),
+      accountNumber: data |> at(["account", "account_number"], decodeAccountInt),
       sequence:
         data
-        |> optional(at(["result", "value", "sequence"], decodeAccountInt))
+        |> optional(at(["account", "sequence"], decodeAccountInt))
         |> Belt_Option.getWithDefault(_, 0),
     },
   );
@@ -223,7 +236,17 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
       }
       |> Belt_Option.getExn
       |> Js.Json.parseExn
-    | Request(ID.OracleScript.ID(oracleScriptID), calldata, askCount, minCount, sender, clientID) =>
+    | Request(
+        ID.OracleScript.ID(oracleScriptID),
+        calldata,
+        askCount,
+        minCount,
+        sender,
+        clientID,
+        feeLimit,
+        prepareGas,
+        executeGas,
+      ) =>
       Js.Json.stringifyAny({
         oracle_script_id: oracleScriptID |> string_of_int,
         calldata: calldata |> JsBuffer.toBase64,
@@ -231,6 +254,9 @@ let createMsg = (sender, msg: msg_input_t): msg_payload_t => {
         min_count: minCount,
         sender: sender |> Address.toBech32,
         client_id: clientID,
+        fee_limit: [|feeLimit|],
+        prepare_gas: prepareGas,
+        execute_gas: executeGas,
       })
       |> Belt_Option.getExn
       |> Js.Json.parseExn
