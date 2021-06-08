@@ -200,6 +200,68 @@ module CountInputs = {
   };
 };
 
+module GasFeeInput = {
+  [@react.component]
+  let make = (~feeLimit, ~prepareGas, ~executeGas, ~setFeeLimit, ~setPrepareGas, ~setExecuteGas) => {
+    <Row marginBottom=24>
+      <Col col=Col.Four colSm=Col.Four>
+        <Text
+          value="Fee Limit"
+          color=Colors.gray7
+          weight=Text.Semibold
+          transform=Text.Capitalize
+        />
+        <VSpacing size=Spacing.sm />
+        <input
+          className=Styles.input
+          type_="text"
+          value=feeLimit
+          onChange={event => {
+            let newVal = ReactEvent.Form.target(event)##value;
+            setFeeLimit(newVal);
+          }}
+        />
+      </Col>
+      <Col col=Col.Four colSm=Col.Four>
+        <Text
+          value="Prepare Gas"
+          color=Colors.gray7
+          weight=Text.Semibold
+          transform=Text.Capitalize
+        />
+        <VSpacing size=Spacing.sm />
+        <input
+          className=Styles.input
+          type_="text"
+          value=prepareGas
+          onChange={event => {
+            let newVal = ReactEvent.Form.target(event)##value;
+            setPrepareGas(newVal);
+          }}
+        />
+      </Col>
+      <Col col=Col.Four colSm=Col.Four>
+        <Text
+          value="Execute Gas"
+          color=Colors.gray7
+          weight=Text.Semibold
+          transform=Text.Capitalize
+        />
+        <VSpacing size=Spacing.sm />
+        <input
+          className=Styles.input
+          type_="text"
+          value=executeGas
+          onChange={event => {
+            let newVal = ReactEvent.Form.target(event)##value;
+            setExecuteGas(newVal);
+          }}
+        />
+      </Col>
+    </Row>;
+  };
+};
+
 let clientIDInput = (clientID, setClientID) => {
   <div className=Styles.listContainer>
     <div className={CssHelper.flexBox()}>
@@ -266,6 +328,9 @@ module ExecutionPart = {
     let (clientID, setClientID) = React.useState(_ => "from_scan");
     let (askCount, setAskCount) = React.useState(_ => "1");
     let (minCount, setMinCount) = React.useState(_ => "1");
+    let (feeLimit, setFeeLimit) = React.useState(_ => "10000000");
+    let (prepareGas, setPrepareGas) = React.useState(_ => "300000");
+    let (executeGas, setExecuteGas) = React.useState(_ => "50000");
     let (result, setResult) = React.useState(_ => Nothing);
 
     // TODO: Change when input can be empty
@@ -363,6 +428,14 @@ module ExecutionPart = {
                    </div>}
               <div> {clientIDInput(clientID, setClientID)} </div>
               <hr className=Styles.separatorLine />
+              <GasFeeInput
+                feeLimit
+                prepareGas
+                executeGas
+                setFeeLimit
+                setExecuteGas
+                setPrepareGas
+              />
               {switch (validatorCount) {
                | Data(count) =>
                  let limitCount = count > 16 ? 16 : count;
@@ -406,6 +479,9 @@ module ExecutionPart = {
                                  | true => "from_scan"
                                  };
                                },
+                               feeLimit,
+                               prepareGas,
+                               executeGas,
                              }),
                            );
                            ();

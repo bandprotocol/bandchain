@@ -143,8 +143,8 @@ module Content = {
                        relatedDataSources->Belt.List.size > 0
                          ? relatedDataSources
                            ->Belt.List.map(({dataSourceName, dataSourceID}) =>
-                               <>
-                                 <div key={dataSourceID |> ID.DataSource.toString}>
+                               <React.Fragment key={dataSourceID |> ID.DataSource.toString}>
+                                 <div>
                                    <CTooltip
                                      mobile=false
                                      align=`center
@@ -157,7 +157,7 @@ module Content = {
                                    </CTooltip>
                                  </div>
                                  <HSpacing size=Spacing.xs />
-                               </>
+                               </React.Fragment>
                              )
                            ->Belt.List.toArray
                            ->React.array
