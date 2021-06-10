@@ -69,7 +69,7 @@ let make = (~request: RequestSub.t) => {
           pySm=10
           pxSm=12
         />
-        {let nonEVMProofOpt = proof.proof->NonEVMProof.createProoffromJsonString;
+        {let nonEVMProofOpt = proof.jsonProof->NonEVMProof.createProoffromJsonString;
          switch (nonEVMProofOpt) {
          | Some(proof) =>
            <CopyButton
@@ -84,7 +84,7 @@ let make = (~request: RequestSub.t) => {
       {showProof
          ? <div className=Styles.scriptContainer>
              <ReactHighlight className=Styles.padding>
-               {proof.proof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
+               {proof.jsonProof |> Js.Json.stringifyWithSpace(_, 2) |> React.string}
              </ReactHighlight>
            </div>
          : React.null}
