@@ -1,12 +1,12 @@
 module Proof = {
   type t = {
-    jsonProof: Js.Json.t,
+    proof: Js.Json.t,
     evmProofBytes: JsBuffer.t,
   };
 
   let decodeProof = json =>
     JsonUtils.Decode.{
-      jsonProof: json |> at(["result", "jsonProof"], json => json),
+      proof: json |> at(["result", "proof"], json => json),
       evmProofBytes: json |> at(["result", "evmProofBytes"], string) |> JsBuffer.fromHex,
     };
 };
