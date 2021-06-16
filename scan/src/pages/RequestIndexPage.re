@@ -536,6 +536,7 @@ let make = (~reqID) => {
                                  color=Colors.gray7
                                  weight=Text.Thin
                                  align=Text.Right
+                                 breakAll=true
                                />
                              </div>
                            </Col>
