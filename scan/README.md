@@ -1,4 +1,6 @@
-# Scan
+# Scan (Deprecated)
+
+Move to https://github.com/bandprotocol/cosmoscan
 
 ## Installation
 
