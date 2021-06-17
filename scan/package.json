@@ -47,7 +47,7 @@
     "reason-react": ">=0.7.1",
     "ripemd160": "^2.0.2",
     "secp256k1": "^4.0.2",
-    "semver": "^7.3.2"
+    "semver": "^7.3.5"
   },
   "devDependencies": {
     "@baransu/graphql_ppx_re": "^0.7.1",
