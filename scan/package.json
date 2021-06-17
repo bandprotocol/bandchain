@@ -55,7 +55,7 @@
     "bs-platform": "^7.0.1",
     "bsb-js": "^1.1.7",
     "cypress": "^6.8.0",
-    "parcel-bundler": "^1.12.4",
+    "parcel-bundler": "^1.12.5",
     "serve": "^11.3.0",
     "start-server-and-test": "^1.12.0"
   },
