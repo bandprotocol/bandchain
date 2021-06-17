@@ -70,6 +70,7 @@ type chainID =
   | GuanYuPOA
   | GuanYuMainnet
   | LaoziTestnet
+  | LaoziPoa
   | Unknown;
 
 let parseChainID =
@@ -89,6 +90,7 @@ let parseChainID =
   | "band-guanyu-mainnet" => GuanYuMainnet
   | "band-laozi-internal"
   | "band-laozi-testnet1" => LaoziTestnet
+  | "band-laozi-poa" => LaoziPoa
   | _ => Unknown;
 
 let getLink =
@@ -100,6 +102,7 @@ let getLink =
   | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
   | LaoziTestnet => "https://laozi-testnet1.cosmoscan.io/"
+  | LaoziPoa => "https://laozi-poa.cosmoscan.io/"
   | Unknown => "";
 
 let getName =
@@ -111,6 +114,7 @@ let getName =
   | GuanYuPOA => "guanyu-poa"
   | GuanYuMainnet => "guanyu-mainnet"
   | LaoziTestnet => "laozi-testnet"
+  | LaoziPoa => "laozi-poa"
   | Unknown => "unknown";
 
 [@react.component]
@@ -138,7 +142,7 @@ let make = () =>
       <HSpacing size=Spacing.sm />
       <img src=Images.triangleDown className={Styles.downIcon(show)} />
       <div className={Styles.dropdown(show)}>
-        {[|GuanYuMainnet, GuanYuTestnet, GuanYuPOA|]
+        {[|GuanYuMainnet, GuanYuTestnet, LaoziTestnet, LaoziPoa|]
          ->Belt.Array.keep(chainID => chainID != currentChainID)
          ->Belt.Array.map(chainID => {
              let name = chainID->getName;
