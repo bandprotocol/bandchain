@@ -5171,11 +5171,12 @@ html-escaper@^2.0.0:
   resolved "https://registry.yarnpkg.com/html-escaper/-/html-escaper-2.0.1.tgz#beed86b5d2b921e92533aa11bce6d8e3b583dee7"
   integrity sha512-hNX23TjWwD3q56HpWjUHOKj1+4KKlnjv9PcmBUYKVpga+2cnb9nDx/B1o0yO4n+RZXZdiNxzx6B24C9aNMTkkQ==
 
-html-react-parser@^1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.2.4.tgz#812ed948722a29da641e1662a9b6eaec80f8d5de"
-  integrity sha512-56JaGqDmYSRKGTJw8lxfiFrfwYLHnyz3qaq/A0/RivjlguOEOMPvt5WuD1zAtAz9/Cr2OZZk2eGDOJUcAKLHcw==
+html-react-parser@^1.2.6:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/html-react-parser/-/html-react-parser-1.2.6.tgz#610b9bbcdcf51cdfabf644a83ac3815b1d485436"
+  integrity sha512-C1bm5OwmXxv1KJg5EqDMUCDO3lVsMNCfc1H/aEk8iJb4qek7ZzdYy9dUR0ciuPoRZBsGJpyHa/UzZ0Lw3DHnMQ==
   dependencies:
+    domhandler "4.0.0"
     html-dom-parser "1.0.0"
     react-property "1.0.1"
     style-to-js "1.1.0"
