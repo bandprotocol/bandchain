@@ -593,7 +593,9 @@ module Msg = {
     type t = {address: Address.t};
 
     let decode = json => {
-      JsonUtils.Decode.{address: json |> at(["msg", "address"], string) |> Address.fromBech32};
+      JsonUtils.Decode.{
+        address: json |> at(["msg", "validator_addr"], string) |> Address.fromBech32,
+      };
     };
   };
 
@@ -1026,13 +1028,9 @@ module Msg = {
   };
 
   module ChannelOpenConfirm = {
-    type t = {
-      signer: Address.t,
-    };
+    type t = {signer: Address.t};
     let decode = json => {
-      JsonUtils.Decode.{
-        signer: json |> at(["msg", "signer"], string) |> Address.fromBech32,
-      };
+      JsonUtils.Decode.{signer: json |> at(["msg", "signer"], string) |> Address.fromBech32};
     };
   };
 
