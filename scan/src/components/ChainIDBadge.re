@@ -88,7 +88,8 @@ let parseChainID =
   | "band-guanyu-poa" => GuanYuPOA
   | "band-guanyu-mainnet" => GuanYuMainnet
   | "band-laozi-internal"
-  | "band-laozi-testnet1" => LaoziTestnet
+  | "band-laozi-testnet1"
+  | "band-laozi-testnet2" => LaoziTestnet
   | _ => Unknown;
 
 let getLink =
@@ -99,7 +100,7 @@ let getLink =
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
-  | LaoziTestnet => "https://laozi-testnet1.cosmoscan.io/"
+  | LaoziTestnet => "https://laozi-testnet2.cosmoscan.io/"
   | Unknown => "";
 
 let getName =
