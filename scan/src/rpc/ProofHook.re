@@ -6,8 +6,8 @@ module Proof = {
 
   let decodeProof = json =>
     JsonUtils.Decode.{
-      jsonProof: json |> at(["result", "jsonProof"], json => json),
-      evmProofBytes: json |> at(["result", "evmProofBytes"], string) |> JsBuffer.fromHex,
+      jsonProof: json |> at(["result", "proof"], json => json),
+      evmProofBytes: json |> at(["result", "evm_proof_bytes"], string) |> JsBuffer.fromHex,
     };
 };
 
