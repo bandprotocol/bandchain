@@ -26,7 +26,7 @@
     "bs-moment": "^0.4.5",
     "bs-webapi": "^0.19.1",
     "change-case": "^4.1.2",
-    "chart.js": "^2.9.4",
+    "chart.js": "^3.4.0",
     "clipboard-copy": "^4.0.1",
     "crypto": "^1.0.1",
     "html-react-parser": "^1.2.4",
