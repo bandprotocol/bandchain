@@ -10,8 +10,8 @@ require (
 	github.com/gin-gonic/gin v1.6.3
 	github.com/go-gorp/gorp v2.2.0+incompatible
 	github.com/go-sql-driver/mysql v1.4.0
-	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.2
+	github.com/gogo/protobuf v1.3.2
+	github.com/golang/protobuf v1.5.2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/gorilla/mux v1.7.4
 	github.com/hashicorp/golang-lru v0.5.4
@@ -25,16 +25,15 @@ require (
 	github.com/prometheus/client_golang v1.5.1
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/segmentio/kafka-go v0.3.7
-	github.com/spf13/cobra v1.0.0
-	github.com/spf13/viper v1.7.1
-	github.com/stretchr/testify v1.6.1
+	github.com/spf13/cobra v1.2.0
+	github.com/spf13/viper v1.8.1
+	github.com/stretchr/testify v1.7.0
 	github.com/syndtr/goleveldb v1.0.1-0.20190923125748-758128399b1d
 	github.com/tendermint/go-amino v0.15.1
 	github.com/tendermint/iavl v0.14.1
 	github.com/tendermint/tendermint v0.33.9
 	github.com/tendermint/tm-db v0.5.1
 	github.com/ziutek/mymysql v1.5.4 // indirect
-	google.golang.org/grpc v1.30.0 // indirect
 )
 
 replace github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.2-alpha.regen.1
