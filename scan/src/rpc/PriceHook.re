@@ -36,11 +36,11 @@ let getBandUsd24Change = () => {
 
 let getBandInfo = client => {
   let ratesPromise = client->BandChainJS.getReferenceData([|"BAND/USD", "BAND/BTC"|]);
-  let supplyPromise = Axios.get("https://supply.bandchain.org/circulating");
+  // let supplyPromise = Axios.get("https://supply.bandchain.org/circulating");
   let usd24HrChangePromise = getBandUsd24Change();
 
-  let%Promise (rates, supplyData, usd24HrChange) =
-    Js.Promise.all3((ratesPromise, supplyPromise, usd24HrChangePromise));
+  let%Promise (rates, usd24HrChange) = Js.Promise.all2((ratesPromise, usd24HrChangePromise));
+  
   let bandInfoOpt = {
     let%Opt {rate: bandUsd} = rates->Belt.Array.get(0);
     let%Opt {rate: bandBtc} = rates->Belt.Array.get(1);
