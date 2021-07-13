@@ -44,7 +44,8 @@ let getBandInfo = client => {
   let bandInfoOpt = {
     let%Opt {rate: bandUsd} = rates->Belt.Array.get(0);
     let%Opt {rate: bandBtc} = rates->Belt.Array.get(1);
-    let supply = supplyData##data;
+    // let supply = supplyData##data;
+    let supply = 35191821.;
 
     Some({
       usdPrice: bandUsd,
