@@ -101,7 +101,7 @@ let getLink =
   | GuanYuDevnet => "https://guanyu-devnet.cosmoscan.io/"
   | GuanYuTestnet => "https://guanyu-testnet3.cosmoscan.io/"
   | GuanYuPOA => "https://guanyu-poa.cosmoscan.io/"
-  | LaoziTestnet => "https://laozi-testnet1.cosmoscan.io/"
+  | LaoziTestnet => "https://laozi-testnet2.cosmoscan.io/"
   | LaoziPoa => "https://laozi-poa.cosmoscan.io/"
   | Unknown => "";
 
